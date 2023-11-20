@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  social-dev:
+    container_name: social-dev
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    env_file:
+      - .env.local
+    command: npm run start:debug
+    ports:
+      - 3000:3000
+    networks:
+      - social-media
+
+  postgres:
+    container_name: social-dev-db
+    image: postgres:15.1-alpine
+    restart: always
+    env_file:
+      - .env.local
+      #- ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - '5432:5432'
+    networks:
+      - social-media
+
+  adminer:
+    container_name: social-adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - social-media
+
+networks:
+  shared_network:
+    external: true
+  social-media:
+    driver: bridge
