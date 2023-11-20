@@ -1,0 +1,6 @@
+<testExecutions version="1">
+<file path="test/unit/user/user.service.spec.ts">
+<testCase name="UserService should have the it defined" duration="23" />
+<testCase name="UserService #store should be defined" duration="5" />
+</file>
+</testExecutions>

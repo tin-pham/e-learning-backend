@@ -1,9 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
+
   const optionsSwagger = new DocumentBuilder()
     .setTitle('Social Media Backend')
     .setDescription('Social Media Backend API')
@@ -11,6 +17,7 @@ async function bootstrap() {
     .build();
   const documentSwagger = SwaggerModule.createDocument(app, optionsSwagger);
   SwaggerModule.setup('docs', app, documentSwagger);
+
   await app.listen(3000);
 }
 bootstrap();
