@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
-import { AppController } from './app.controller';
 import { ConfigModule } from './config';
 import { DatabaseModule, databaseConfig } from './database';
+import { UserModule } from './user';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { DatabaseModule, databaseConfig } from './database';
       username: databaseConfig.user,
       password: databaseConfig.password,
     }),
+    UserModule,
   ],
-  controllers: [AppController],
 })
 export class AppModule {}
