@@ -1,7 +1,5 @@
-import { Generated } from 'kysely';
-
 export class UserEntity {
-  id!: Generated<string>;
+  id!: string;
 
   username: string;
 
@@ -13,7 +11,7 @@ export class UserEntity {
 
   displayName: string;
 
-  createdAt!: Generated<Date>;
+  createdAt!: Date;
 
   updatedAt?: Date;
 

@@ -14,6 +14,7 @@ const config: Config = {
     '!src/common/**/*.ts',
     '!src/database/**/*.ts',
     '!src/migrations/**/*.ts',
+    '!src/**/*.repository.ts',
     '!src/config/**/*.ts',
   ],
   reporters: [
