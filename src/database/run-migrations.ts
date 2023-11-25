@@ -32,7 +32,7 @@ async function migrateToLatest() {
     provider: new FileMigrationProvider({
       fs,
       path,
-      migrationFolder: path.join(__dirname, '../../src/v2/migrations'),
+      migrationFolder: path.join(__dirname, '../migrations'),
     }),
   });
 

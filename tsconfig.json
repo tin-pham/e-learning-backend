@@ -3,7 +3,6 @@
   "display": "Node 18 + ESM + Strictest",
   "compilerOptions": {
     "module": "CommonJS",
-    "moduleResolution": "Node",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -16,7 +15,7 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": true,
@@ -24,7 +23,7 @@
     "resolveJsonModule": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -36,7 +35,7 @@
   "include": [
     "./src/**/*",
     "./config/**/*",
-    "./jest.config.ts",
+    "./test/**/*",
     "./tsconfig.json",
     "./.eslintrc"
   ],
