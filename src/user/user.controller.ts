@@ -1,6 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { API } from '../common';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { API, HttpExceptionRO } from '../common';
 import { UserService } from './user.service';
 import { UserStoreDTO } from './dto/user.dto';
 import { UserStoreRO } from './ro/user.ro';
@@ -14,6 +20,8 @@ export class UserController {
 
   @ApiOperation({ summary: STORE.OPERATION })
   @ApiCreatedResponse({ type: UserStoreRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @Post(STORE.ROUTE)
   @HttpCode(HttpStatus.CREATED)
   async store(@Body() dto: UserStoreDTO) {

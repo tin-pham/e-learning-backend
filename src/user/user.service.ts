@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { BaseService } from '../base';
 import { EXCEPTION } from '../common';
 import { UserRepository } from './user.repository';
@@ -17,7 +17,7 @@ export class UserService extends BaseService {
   async store(dto: UserStoreDTO) {
     await this.validateStore(dto);
 
-    const salt = await bcrypt.genSalt();
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(dto.password, salt);
 
     const userData = new UserEntity();
@@ -49,7 +49,7 @@ export class UserService extends BaseService {
   }
 
   private async validateStore(dto: UserStoreDTO) {
-    const { count: userNameCount } = await this.userRepository.countByUserName(
+    const userNameCount = await this.userRepository.countByUserName(
       dto.username,
     );
     if (userNameCount) {
@@ -62,9 +62,7 @@ export class UserService extends BaseService {
     }
 
     if (dto.email) {
-      const { count: emailCount } = await this.userRepository.countByEmail(
-        dto.email,
-      );
+      const emailCount = await this.userRepository.countByEmail(dto.email);
       if (emailCount) {
         const { status, code, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
         this.formatException({

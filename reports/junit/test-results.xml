@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="2" failures="0" errors="0" time="2.893">
-  <testsuite name="UserService" errors="0" failures="0" skipped="0" timestamp="2023-11-23T15:54:37" time="2.801" tests="2">
-    <testcase classname="UserService should have the it defined" name="UserService should have the it defined" time="0.014">
-    </testcase>
-    <testcase classname="UserService #store should be defined" name="UserService #store should be defined" time="0.006">
-    </testcase>
-  </testsuite>
-</testsuites>

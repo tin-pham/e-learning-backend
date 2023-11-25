@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserEntity, UserModule } from 'src/user';
-import { UserStoreDTO } from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/user.repository';
 import { UserService } from 'src/user/user.service';
+import { UserStoreDTO } from 'src/user/dto/user.dto';
 
 describe('UserService', () => {
   let service: UserService;
@@ -48,13 +48,8 @@ describe('UserService', () => {
       deletedAt: null,
     };
     beforeEach(() => {
-      jest.spyOn(service, 'store');
-      jest
-        .spyOn(mockUserRepository, 'countByUserName')
-        .mockResolvedValue({ count: 0 });
-      jest
-        .spyOn(mockUserRepository, 'countByEmail')
-        .mockResolvedValue({ count: 0 });
+      jest.spyOn(mockUserRepository, 'countByUserName').mockResolvedValue(0);
+      jest.spyOn(mockUserRepository, 'countByEmail').mockResolvedValue(0);
       jest.spyOn(mockUserRepository, 'store').mockResolvedValue(user);
     });
 
@@ -62,20 +57,29 @@ describe('UserService', () => {
       expect(service.store).toBeDefined();
     });
 
+    it('should success when store successfully', async () => {
+      const response = await service.store(userData);
+
+      expect(response).toEqual({
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        displayName: user.displayName,
+      });
+    });
+
     it('should fail when username already exists', async () => {
       jest
         .spyOn(mockUserRepository, 'countByUserName')
-        .mockResolvedValueOnce({ count: 1 });
+        .mockResolvedValueOnce(1);
 
-      expect(service.store(userData)).rejects.toThrow();
+      await expect(service.store(userData)).rejects.toThrow();
     });
 
     it('should fail when email already exists', async () => {
-      jest
-        .spyOn(mockUserRepository, 'countByEmail')
-        .mockResolvedValueOnce({ count: 1 });
+      jest.spyOn(mockUserRepository, 'countByEmail').mockResolvedValueOnce(1);
 
-      expect(service.store(userData)).rejects.toThrow();
+      await expect(service.store(userData)).rejects.toThrow();
     });
 
     it('should fail when repository fail to store', async () => {
@@ -83,9 +87,7 @@ describe('UserService', () => {
         .spyOn(mockUserRepository, 'store')
         .mockRejectedValueOnce(new Error('repository error'));
 
-      expect(service.store(userData)).rejects.toThrow();
+      await expect(service.store(userData)).rejects.toThrow();
     });
-
-    it('should success when store successfully', async () => {});
   });
 });

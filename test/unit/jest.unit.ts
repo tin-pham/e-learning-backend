@@ -4,17 +4,20 @@ import sharedConfig from '../jest.config';
 const config: Config = {
   ...sharedConfig,
   rootDir: '../../',
-  coverageDirectory: '../../reports/coverage',
-  coverageReporters: ['html', 'json'],
+  coverageDirectory: 'reports/coverage',
+  coverageReporters: ['text', 'lcov', 'cobertura'],
+  collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.ts',
     '!*/node_modules/**',
     '!src/main.ts',
+    '!src/app.module.ts',
     '!src/base/**/*.ts',
     '!src/common/**/*.ts',
     '!src/database/**/*.ts',
     '!src/migrations/**/*.ts',
     '!src/**/*.repository.ts',
+    '!src/**/*.controller.ts',
     '!src/config/**/*.ts',
   ],
   reporters: [
@@ -41,10 +44,10 @@ const config: Config = {
   ],
   coverageThreshold: {
     global: {
-      branches: 10,
-      functions: 10,
-      lines: 10,
-      statements: 10,
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
     },
   },
 };

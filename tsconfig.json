@@ -3,7 +3,6 @@
   "display": "Node 18 + ESM + Strictest",
   "compilerOptions": {
     "module": "CommonJS",
-    "moduleResolution": "Node",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

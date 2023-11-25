@@ -18,6 +18,15 @@ async function bootstrap() {
   const documentSwagger = SwaggerModule.createDocument(app, optionsSwagger);
   SwaggerModule.setup('docs', app, documentSwagger);
 
+  const options = {
+    origin: '*',
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
+  };
+  app.enableCors(options);
+
   await app.listen(3000);
 }
 bootstrap();

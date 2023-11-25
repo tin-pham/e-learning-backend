@@ -6,7 +6,7 @@ import { UserEntity } from './user.entity';
 export class UserRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  store(user: UserEntity) {
+  store(user: UserEntity): Promise<UserEntity> {
     return this.database
       .insertInto('users')
       .values({
@@ -20,23 +20,23 @@ export class UserRepository {
       .executeTakeFirstOrThrow();
   }
 
-  countByUserName(username: string): Promise<{ count: number }> {
-    return this.database
+  async countByUserName(username: string): Promise<number> {
+    const { count } = await this.database
       .selectFrom('users')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('users.username', '=', username)
       .where('users.deletedAt', 'is', null)
-      .$narrowType<{ count: number }>()
       .executeTakeFirstOrThrow();
+    return Number(count);
   }
 
-  countByEmail(email: string): Promise<{ count: number }> {
-    return this.database
+  async countByEmail(email: string): Promise<number> {
+    const { count } = await this.database
       .selectFrom('users')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('users.email', '=', email)
       .where('users.deletedAt', 'is', null)
-      .$narrowType<{ count: number }>()
       .executeTakeFirstOrThrow();
+    return Number(count);
   }
 }

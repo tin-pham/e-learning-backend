@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -13,12 +20,16 @@ export class UserStoreDTO {
   password: string;
 
   @ApiProperty({ required: false, example: 'tinpham@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
   @IsString()
   @IsOptional()
   email?: string;
 
   @ApiProperty({ required: false, example: '0987654321' })
-  @IsString()
+  @IsPhoneNumber('VN')
+  @IsNotEmpty()
+  @IsNumberString()
   @IsOptional()
   phone?: string;
 
