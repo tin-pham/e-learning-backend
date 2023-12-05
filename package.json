@@ -1,5 +1,5 @@
 {
-  "name": "social-media-backend",
+  "name": "school-media-backend",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -8,8 +8,8 @@
   "scripts": {
     "up": "docker compose -f ./docker-compose.dev.yml up -d",
     "down": "docker compose -f ./docker-compose.dev.yml down",
-    "app": "docker logs social-dev --follow",
-    "app-run": "docker exec -it social-dev npm run",
+    "app": "docker logs school-dev --follow",
+    "app-run": "docker exec -it school-dev npm run",
     "migrations": "ts-node -r tsconfig-paths/register ./src/database/run-migrations.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
