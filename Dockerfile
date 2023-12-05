@@ -34,4 +34,4 @@ from node:18-alpine as production
 copy --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 copy --chown=node:node --from=build /usr/src/app/dist ./dist
 
-CMD ["node", "dist/services/social-media-backend/src/main.js"]
+CMD ["node", "dist/services/school-media-backend/src/main.js"]

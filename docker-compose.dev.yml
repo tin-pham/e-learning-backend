@@ -1,8 +1,8 @@
 version: '3.9'
 
 services:
-  social-dev:
-    container_name: social-dev
+  school-dev:
+    container_name: school-dev
     restart: always
     build:
       dockerfile: Dockerfile
@@ -22,10 +22,10 @@ services:
     ports:
       - 3000:3000
     networks:
-      - social-media
+      - school-media
 
   postgres:
-    container_name: social-dev-db
+    container_name: school-dev-db
     image: postgres:15.1-alpine
     restart: always
     env_file:
@@ -38,16 +38,16 @@ services:
     ports:
       - '5432:5432'
     networks:
-      - social-media
+      - school-media
 
   adminer:
-    container_name: social-adminer
+    container_name: school-adminer
     image: adminer
     restart: always
     ports:
       - 8080:8080
     networks:
-      - social-media
+      - school-media
 
   memcached:
     image: sameersbn/memcached:1.5.6-2
@@ -60,5 +60,5 @@ services:
 networks:
   shared_network:
     external: true
-  social-media:
+  school-media:
     driver: bridge
