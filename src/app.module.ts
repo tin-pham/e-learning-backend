@@ -7,14 +7,6 @@ import { UserModule } from './user';
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule.forRoot(databaseConfig),
-    DbValidatorsModule.register({
-      host: databaseConfig.host,
-      port: databaseConfig.port,
-      type: 'postgres',
-      database: databaseConfig.database,
-      username: databaseConfig.user,
-      password: databaseConfig.password,
-    }),
     UserModule,
   ],
 })
