@@ -7,3 +7,8 @@ export class SignInRO {
   @ApiProperty()
   refreshToken: string;
 }
+
+export class RefreshTokenRO {
+  @ApiProperty()
+  accessToken: string;
+}
