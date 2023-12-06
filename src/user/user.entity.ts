@@ -1,3 +1,5 @@
+import { USER_ROLE } from './user-role.enum';
+
 export class UserEntity {
   id!: string;
 
@@ -8,6 +10,8 @@ export class UserEntity {
   email?: string;
 
   phone?: string;
+
+  role: USER_ROLE;
 
   displayName: string;
 

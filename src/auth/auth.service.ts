@@ -6,7 +6,7 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { UserRepository } from '../user/user.repository';
 import { SignInDTO } from './dto/auth.dto';
-import { SignInRO } from './ro/auth.ro';
+import { RefreshTokenRO, SignInRO } from './ro/auth.ro';
 import { UserEntity } from '../user/user.entity';
 import { RefreshTokenService } from './jwt/refresh-token.service';
 import { ConfigService } from '@nestjs/config';
@@ -87,7 +87,7 @@ export class AuthService extends BaseService {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_FAILED;
       this.formatException({ status, code, message });
     }
-    return { accessToken };
+    return plainToInstance(RefreshTokenRO, { accessToken });
   }
 
   async validatePayload(payload: IJwtPayload) {
