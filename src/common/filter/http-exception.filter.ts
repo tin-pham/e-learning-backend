@@ -16,12 +16,22 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const exceptionResponse = exception.getResponse();
 
+    const message = this.getExceptionMessage(exceptionResponse);
+
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: exceptionResponse['message'].message,
+      message,
       code: exceptionResponse['message'].code,
     });
+  }
+
+  getExceptionMessage(exception: object | string) {
+    if (Array.isArray(exception['message'])) {
+      return exception['message'].join(', ');
+    }
+
+    return exception['message'].message;
   }
 }

@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsIn,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
+import { USER_ROLE } from '../user-role.enum';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -37,4 +39,10 @@ export class UserStoreDTO {
   @IsString()
   @IsNotEmpty()
   displayName: string;
+
+  @ApiProperty({ example: 'admin' })
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(Object.values(USER_ROLE))
+  role: string;
 }

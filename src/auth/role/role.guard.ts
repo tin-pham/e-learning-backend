@@ -1,23 +1,15 @@
-import { CanActivate, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { CanActivate, ExecutionContext, Type, mixin } from '@nestjs/common';
+import { USER_ROLE } from '../../user/user-role.enum';
+import { IRequestWithUser } from 'src/common';
 
-export class RoleGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
-
-  matchRoles(roles: string[], userRole: string) {
-    return roles.some((role) => role === userRole);
-  }
-
-  canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-
-    if (!roles) {
-      return true;
+export const RoleGuard = (...roles: USER_ROLE[]): Type<CanActivate> => {
+  class RoleGuardMixin implements CanActivate {
+    canActivate(context: ExecutionContext) {
+      const request = context.switchToHttp().getRequest<IRequestWithUser>();
+      const user = request.user;
+      return roles.some((role) => user?.role === role);
     }
-
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-
-    return this.matchRoles(roles, user.role);
   }
-}
+
+  return mixin(RoleGuardMixin);
+};
