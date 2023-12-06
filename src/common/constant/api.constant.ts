@@ -3,8 +3,12 @@ export const API = {
     TAGS: 'Auth',
     CONTROLLER: 'auth',
     SIGNIN: {
-      ROUTE: 'signin',
+      ROUTE: 'sign-in',
       OPERATION: 'Signin',
+    },
+    REFRESH_TOKEN: {
+      ROUTE: 'refresh-token',
+      OPERATION: 'Refresh token',
     },
   },
 };

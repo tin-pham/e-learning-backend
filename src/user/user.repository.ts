@@ -6,11 +6,20 @@ import { UserEntity } from './user.entity';
 export class UserRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  findByUsername(username: string): Promise<UserEntity> {
+  findOneByUsername(username: string): Promise<UserEntity> {
     return this.database
       .selectFrom('users')
       .selectAll()
       .where('users.username', '=', username)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirstOrThrow();
+  }
+
+  findOneById(id: string): Promise<UserEntity> {
+    return this.database
+      .selectFrom('users')
+      .selectAll()
+      .where('users.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirstOrThrow();
   }

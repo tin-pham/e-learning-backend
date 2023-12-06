@@ -1,5 +1,3 @@
-import * as bcrypt from 'bcryptjs';
-
 export class UserEntity {
   id!: string;
 
@@ -18,8 +16,4 @@ export class UserEntity {
   updatedAt?: Date;
 
   deletedAt?: Date;
-
-  async validatePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
-  }
 }
