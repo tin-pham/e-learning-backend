@@ -2,7 +2,14 @@ export const API = {
   AUTH: {
     TAGS: 'Auth',
     CONTROLLER: 'auth',
-    LOGIN: 'login',
+    SIGNIN: {
+      ROUTE: 'sign-in',
+      OPERATION: 'Signin',
+    },
+    REFRESH_TOKEN: {
+      ROUTE: 'refresh-token',
+      OPERATION: 'Refresh token',
+    }
   },
   USER: {
     TAGS: 'User',

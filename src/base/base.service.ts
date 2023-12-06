@@ -8,7 +8,7 @@ interface Exception {
 
 @Injectable()
 export class BaseService {
-  formatException(exception: Exception) {
+  protected formatException(exception: Exception) {
     const { status, code, message } = exception;
     throw new HttpException({ message: { code, message } }, status);
   }

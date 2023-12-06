@@ -37,7 +37,8 @@
     "./config/**/*",
     "./test/**/*",
     "./tsconfig.json",
-    "./.eslintrc"
+    "./.eslintrc",
+    "./types/**/*"
   ],
   "exclude": ["node_modules", "dist"]
 }

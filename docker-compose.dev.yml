@@ -12,8 +12,10 @@ services:
       - .:/usr/src/app
     depends_on:
       - postgres
+      - memcached
     links:
       - postgres
+      - memcached
     env_file:
       - .env.local
     command: npm run start:debug
@@ -44,6 +46,14 @@ services:
     restart: always
     ports:
       - 8080:8080
+    networks:
+      - school-media
+
+  memcached:
+    image: sameersbn/memcached:1.5.6-2
+    ports:
+      - '11211:11211'
+    restart: always
     networks:
       - school-media
 

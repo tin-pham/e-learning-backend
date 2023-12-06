@@ -1,19 +1,31 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
 import { AppModule } from './app.module';
+import { getLogLevels } from './logger/get-log-levels.util';
 import { HttpExceptionFilter } from './common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new HttpExceptionFilter());
+  const app = await NestFactory.create(AppModule, {
+    logger: getLogLevels(process.env.NODE_ENV === 'production'),
+  });
 
   const optionsSwagger = new DocumentBuilder()
-    .setTitle('Social Media Backend')
+    .setTitle('School Media Backend')
     .setDescription('Social Media Backend API')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'Authorization',
+    )
     .build();
   const documentSwagger = SwaggerModule.createDocument(app, optionsSwagger);
   SwaggerModule.setup('docs', app, documentSwagger);
@@ -26,6 +38,9 @@ async function bootstrap() {
     credentials: true,
   };
   app.enableCors(options);
+
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(3000);
 }

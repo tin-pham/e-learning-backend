@@ -39,4 +39,22 @@ export class UserRepository {
       .executeTakeFirstOrThrow();
     return Number(count);
   }
+
+  findOneByUsername(username: string): Promise<UserEntity> {
+    return this.database
+      .selectFrom('users')
+      .selectAll()
+      .where('users.username', '=', username)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirstOrThrow();
+  }
+
+  findOneById(id: string): Promise<UserEntity> {
+    return this.database
+      .selectFrom('users')
+      .selectAll()
+      .where('users.id', '=', id)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirstOrThrow();
+  }
 }
