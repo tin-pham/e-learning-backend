@@ -23,4 +23,12 @@ export const API = {
       OPERATION: 'Store user by api key',
     },
   },
+  HEALTH: {
+    TAGS: 'Health',
+    CONTROLLER: 'health',
+    CHECK: {
+      ROUTE: 'check',
+      OPERATION: 'Check health',
+    },
+  },
 };

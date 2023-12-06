@@ -3,6 +3,7 @@ import { ConfigModule } from './config';
 import { DatabaseModule, databaseConfig } from './database';
 import { UserModule } from './user';
 import { AuthModule } from './auth';
+import { HealthModule } from './health/health.module';
 import { LogsMiddleware } from './logger/logs.middleware';
 
 @Module({
@@ -11,6 +12,7 @@ import { LogsMiddleware } from './logger/logs.middleware';
     DatabaseModule.forRoot(databaseConfig),
     UserModule,
     AuthModule,
+    HealthModule,
   ],
 })
 export class AppModule {
