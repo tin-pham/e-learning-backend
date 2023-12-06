@@ -9,7 +9,7 @@ export const API = {
     REFRESH_TOKEN: {
       ROUTE: 'refresh-token',
       OPERATION: 'Refresh token',
-    }
+    },
   },
   USER: {
     TAGS: 'User',
@@ -17,6 +17,10 @@ export const API = {
     STORE: {
       ROUTE: 'store',
       OPERATION: 'Store user',
+    },
+    STORE_BY_API_KEY: {
+      ROUTE: 'store-by-api-key',
+      OPERATION: 'Store user by api key',
     },
   },
 };

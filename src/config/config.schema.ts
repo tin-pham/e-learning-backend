@@ -10,4 +10,5 @@ export const configSchema = {
   JWT_EXPIRATION_TIME: Joi.string().required(),
   JWT_REFRESH_SECRET: Joi.string().required(),
   JWT_REFRESH_EXPIRATION_TIME: Joi.string().required(),
+  API_KEY: Joi.string().required(),
 };

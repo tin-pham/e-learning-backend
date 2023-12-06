@@ -37,4 +37,9 @@ export class UserStoreDTO {
   @IsString()
   @IsNotEmpty()
   displayName: string;
+
+  @ApiProperty({ example: 'admin' })
+  @IsString()
+  @IsNotEmpty()
+  role: string;
 }
