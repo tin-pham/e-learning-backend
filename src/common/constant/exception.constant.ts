@@ -16,11 +16,11 @@ export const EXCEPTION = {
       status: HttpStatus.CONFLICT,
       code: 'USER_EMAIL_ALREADY_EXISTS',
       message: 'Email already exists',
-      DOES_NOT_EXIST: {
-        status: HttpStatus.BAD_REQUEST,
-        message: 'User does not exist',
-        code: 'USER_DOES_NOT_EXIST',
-      },
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'User does not exist',
+      code: 'USER_DOES_NOT_EXIST',
     },
   },
   AUTH: {

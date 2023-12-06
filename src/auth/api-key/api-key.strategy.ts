@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
+import { Request } from 'express';
 import { ApiKeyService } from './api-key.service';
 
 @Injectable()
@@ -9,13 +10,13 @@ export class HeaderApiKeyStrategy extends PassportStrategy(
   'api-key',
 ) {
   constructor(private readonly apiKeyService: ApiKeyService) {
-    super({ header: 'X-API-KEY', prefix: '' }, true, async (apiKey: string) => {
-      return this.validate(apiKey);
+    super({
+      passReqToCallback: true,
     });
   }
 
-  public validate = (apiKey: string) => {
-    console.log();
+  validate(req: Request) {
+    const apiKey = req.headers['x-api-key'] as string;
     return this.apiKeyService.validate(apiKey);
-  };
+  }
 }

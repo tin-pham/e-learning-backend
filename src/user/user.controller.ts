@@ -8,20 +8,23 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
   ApiSecurity,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO } from '../common';
-import { Roles } from '../auth/role/role.decorator';
+import { USER_ROLE } from './user-role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { UserService } from './user.service';
 import { UserStoreDTO } from './dto/user.dto';
 import { UserStoreRO } from './ro/user.ro';
-import { USER_ROLE } from './user-role.enum';
 import { ApiKeyGuard } from 'src/auth/api-key/api-key.guard';
+import { RoleGuard } from 'src/auth/role/role.guard';
 
 const { TAGS, CONTROLLER, STORE, STORE_BY_API_KEY } = API.USER;
 
@@ -33,10 +36,12 @@ export class UserController {
   @ApiOperation({ summary: STORE.OPERATION })
   @ApiCreatedResponse({ type: UserStoreRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard)
-  @Roles(USER_ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
   @HttpCode(HttpStatus.CREATED)
   async store(@Body() dto: UserStoreDTO) {
     return this.userService.store(dto);
@@ -45,6 +50,7 @@ export class UserController {
   @ApiOperation({ summary: STORE_BY_API_KEY.OPERATION })
   @ApiCreatedResponse({ type: UserStoreRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiSecurity('api-key')
   @Post(STORE_BY_API_KEY.ROUTE)
