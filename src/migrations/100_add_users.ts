@@ -14,6 +14,7 @@ export async function up(database: Kysely<unknown>): Promise<void> {
     .addColumn(SCHEMA.EMAIL, 'varchar(50)', (column) => column)
     .addColumn(SCHEMA.PHONE, 'varchar(50)', (column) => column)
     .addColumn(SCHEMA.DISPLAY_NAME, 'varchar(50)')
+    .addColumn(SCHEMA.ROLE, 'varchar(50)', (column) => column.notNull())
     .addColumn(SCHEMA.CREATED_AT, 'timestamp', (column) =>
       column.defaultTo(sql`now()`),
     )

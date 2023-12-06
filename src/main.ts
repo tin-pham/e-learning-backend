@@ -20,11 +20,19 @@ async function bootstrap() {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        name: 'JWT',
+        name: 'Authorization',
         description: 'Enter JWT token',
         in: 'header',
       },
       'Authorization',
+    )
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'X-API-KEY',
+        in: 'header',
+      },
+      'api-key',
     )
     .build();
   const documentSwagger = SwaggerModule.createDocument(app, optionsSwagger);
@@ -39,7 +47,12 @@ async function bootstrap() {
   };
   app.enableCors(options);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
   app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(3000);
