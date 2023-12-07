@@ -1,5 +1,3 @@
-import { USER_ROLE } from './user-role.enum';
-
 export class UserEntity {
   id!: string;
 
