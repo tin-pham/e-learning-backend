@@ -18,7 +18,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO } from '../common';
-import { USER_ROLE } from './user-role.enum';
+import { USER_ROLE } from '../user-role/user-role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { UserService } from './user.service';
 import { UserStoreDTO } from './dto/user.dto';

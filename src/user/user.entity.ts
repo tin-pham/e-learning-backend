@@ -11,8 +11,6 @@ export class UserEntity {
 
   phone?: string;
 
-  role: USER_ROLE;
-
   displayName: string;
 
   createdAt!: Date;
