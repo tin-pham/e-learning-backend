@@ -1,6 +1,13 @@
 import { HttpStatus } from '@nestjs/common';
 
 export const EXCEPTION = {
+  APP: {
+    EXCEED_RATE_LIMIT: {
+      status: HttpStatus.TOO_MANY_REQUESTS,
+      code: 'APP_EXCEED_RATE_LIMIT',
+      message: 'Exceed rate limit',
+    },
+  },
   USER: {
     FAILED_TO_CREATE: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,

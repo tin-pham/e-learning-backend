@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { getLogLevels } from './logger/get-log-levels.util';
 import { HttpExceptionFilter } from './common';
@@ -46,6 +46,7 @@ async function bootstrap() {
     credentials: true,
   };
   app.enableCors(options);
+  app.use(helmet());
 
   app.useGlobalPipes(
     new ValidationPipe({
