@@ -1,4 +1,11 @@
-import { Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -8,7 +15,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { API, HttpExceptionRO, IRequestWithUser, Public } from '../common';
+import { API, HttpExceptionRO, IRequestWithUser } from '../common';
 import { LocalGuard } from './local/local.guard';
 import { JwtRefreshTokenGuard } from './jwt/jwt-refresh-token.guard';
 import { AuthService } from './auth.service';
@@ -22,7 +29,6 @@ const { TAGS, CONTROLLER, SIGNIN, REFRESH_TOKEN } = API.AUTH;
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @ApiOperation({ summary: SIGNIN.OPERATION })
   @ApiBody({ type: SignInDTO })
   @UseGuards(LocalGuard)

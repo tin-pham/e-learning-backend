@@ -3,7 +3,10 @@ import { ConfigModule } from './config';
 import { DatabaseModule, databaseConfig } from './database';
 import { UserModule } from './user';
 import { AuthModule } from './auth';
+import { HealthModule } from './health/health.module';
+import { ThrottlerModule } from './throttler/throttler.module';
 import { LogsMiddleware } from './logger/logs.middleware';
+import { appProviders } from './app.provider';
 
 @Module({
   imports: [
@@ -11,7 +14,10 @@ import { LogsMiddleware } from './logger/logs.middleware';
     DatabaseModule.forRoot(databaseConfig),
     UserModule,
     AuthModule,
+    HealthModule,
+    ThrottlerModule,
   ],
+  providers: [...appProviders],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
