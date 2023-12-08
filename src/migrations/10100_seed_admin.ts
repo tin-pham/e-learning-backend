@@ -31,7 +31,7 @@ export async function up(database: DatabaseService): Promise<void> {
 
   // Add role
   await database
-    .insertInto('user_role')
+    .insertInto('userRole')
     .values({
       userId,
       roleId,

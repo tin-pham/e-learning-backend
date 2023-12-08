@@ -4,4 +4,6 @@ export class RoleEntity {
   name: string;
 
   createdAt: Date;
+
+  deletedAt: Date;
 }

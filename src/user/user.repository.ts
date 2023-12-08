@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  store(user: UserEntity): Promise<UserEntity> {
-    return this.database
+  insertWithTransaction(
+    transaction: Transaction,
+    user: UserEntity,
+  ): Promise<UserEntity> {
+    return transaction
       .insertInto('users')
       .values({
         username: user.username,

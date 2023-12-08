@@ -1,3 +1,5 @@
+import { RoleEntity } from '../role/role.entity';
+
 export class UserEntity {
   id!: string;
 
@@ -16,4 +18,6 @@ export class UserEntity {
   updatedAt?: Date;
 
   deletedAt?: Date;
+
+  roles: RoleEntity[];
 }

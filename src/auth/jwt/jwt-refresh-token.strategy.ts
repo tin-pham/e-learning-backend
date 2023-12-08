@@ -13,7 +13,9 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh-token',
 ) {
-  constructor(private readonly refreshTokenService: RefreshTokenService) {
+  constructor(
+    private readonly refreshTokenService: RefreshTokenService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -22,7 +24,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(req: Request, payload: IJwtPayload): Promise<any> {
+  validate(req: Request, payload: IJwtPayload): Promise<any> {
     const token = req.headers.authorization.replace('Bearer ', '');
     return this.refreshTokenService.validatePayloadAndRefreshToken(
       payload,
