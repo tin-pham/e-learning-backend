@@ -26,8 +26,18 @@ export const EXCEPTION = {
     },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
-      message: 'User does not exist',
       code: 'USER_DOES_NOT_EXIST',
+      message: 'User does not exist',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      code: 'USER_NOT_FOUND',
+      message: 'User not found',
+    },
+    FAILED_TO_GET_DETAIL: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      code: 'USER_FAILED_TO_GET_DETAIL',
+      message: 'Failed to get user detail',
     },
   },
   AUTH: {
@@ -55,6 +65,18 @@ export const EXCEPTION = {
       status: HttpStatus.UNAUTHORIZED,
       message: 'Api key invalid',
       code: 'AUTH_API_KEY_INVALID',
+    },
+    USER_DOES_NOT_HAVE_ROLES: {
+      status: HttpStatus.UNAUTHORIZED,
+      message: 'User does not have roles',
+      code: 'AUTH_USER_DOES_NOT_HAVE_ROLES',
+    },
+  },
+  ROLE: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Role does not exist',
+      code: 'ROLE_DOES_NOT_EXIST',
     },
   },
 };

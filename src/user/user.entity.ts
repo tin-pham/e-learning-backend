@@ -1,4 +1,4 @@
-import { USER_ROLE } from './user-role.enum';
+import { RoleEntity } from '../role/role.entity';
 
 export class UserEntity {
   id!: string;
@@ -11,8 +11,6 @@ export class UserEntity {
 
   phone?: string;
 
-  role: USER_ROLE;
-
   displayName: string;
 
   createdAt!: Date;
@@ -20,4 +18,6 @@ export class UserEntity {
   updatedAt?: Date;
 
   deletedAt?: Date;
+
+  roles: RoleEntity[];
 }

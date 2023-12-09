@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayMinSize,
+  IsArray,
   IsEmail,
-  IsIn,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import { USER_ROLE } from '../user-role.enum';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -40,9 +40,10 @@ export class UserStoreDTO {
   @IsNotEmpty()
   displayName: string;
 
-  @ApiProperty({ example: 'admin' })
-  @IsString()
+  @ApiProperty({ type: [String] })
+  @ArrayMinSize(1)
+  @IsString({ each: true })
+  @IsArray()
   @IsNotEmpty()
-  @IsIn(Object.values(USER_ROLE))
-  role: string;
+  roleIds: string[];
 }

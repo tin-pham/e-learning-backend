@@ -31,4 +31,12 @@ export const API = {
       OPERATION: 'Check health',
     },
   },
+  ROLE: {
+    TAGS: 'Role',
+    CONTROLLER: 'role',
+    GET_LIST: {
+      ROUTE: 'get-list',
+      OPERATION: 'Get list roles',
+    },
+  },
 };

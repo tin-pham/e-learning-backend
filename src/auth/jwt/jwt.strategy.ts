@@ -17,7 +17,7 @@ export class JwtStrtegy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: IJwtPayload): Promise<any> {
+  validate(payload: IJwtPayload) {
     return this.authService.validatePayload(payload);
   }
 }
