@@ -15,7 +15,7 @@ export const API = {
     TAGS: 'User',
     CONTROLLER: 'user',
     STORE: {
-      ROUTE: 'store',
+      ROUTE: '',
       OPERATION: 'Store user',
     },
     STORE_BY_API_KEY: {
@@ -35,8 +35,20 @@ export const API = {
     TAGS: 'Role',
     CONTROLLER: 'role',
     GET_LIST: {
-      ROUTE: 'get-list',
+      ROUTE: '',
       OPERATION: 'Get list roles',
+    },
+  },
+  STUDENT: {
+    TAGS: 'Student',
+    CONTROLLER: 'student',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store student',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list students',
     },
   },
 };

@@ -32,4 +32,11 @@ export const DATABASE_TABLE = {
       CREATED_AT: 'created_at',
     },
   },
+  STUDENT: {
+    NAME: 'student',
+    SCHEMA: {
+      ID: 'id',
+      USER_ID: 'user_id',
+    },
+  },
 };

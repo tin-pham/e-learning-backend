@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
-import { UserRoleEntiy } from './user-role.entity';
+import { UserRoleEntity } from './user-role.entity';
 import { RoleEntity } from '../role/role.entity';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class UserRoleRepository {
 
   insertMultipleWithTransaction(
     transaction: Transaction,
-    entities: UserRoleEntiy[],
+    entities: UserRoleEntity[],
   ) {
     return transaction
       .insertInto('userRole')
@@ -25,5 +25,13 @@ export class UserRoleRepository {
       .selectAll('role')
       .where('userRole.userId', '=', userId)
       .execute();
+  }
+
+  insertWithTransaction(transaction: Transaction, entity: UserRoleEntity) {
+    return transaction
+      .insertInto('userRole')
+      .values(entity)
+      .returningAll()
+      .executeTakeFirstOrThrow();
   }
 }

@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  ArrayMinSize,
-  IsArray,
   IsEmail,
   IsNotEmpty,
   IsNumberString,
@@ -9,6 +7,7 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
+import { PaginationDTO } from 'src/common/dto/paginate.dto';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -39,11 +38,6 @@ export class UserStoreDTO {
   @IsString()
   @IsNotEmpty()
   displayName: string;
-
-  @ApiProperty({ type: [String] })
-  @ArrayMinSize(1)
-  @IsString({ each: true })
-  @IsArray()
-  @IsNotEmpty()
-  roleIds: string[];
 }
+
+export class UserGetListDTO extends PaginationDTO {}

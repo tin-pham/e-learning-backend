@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -12,29 +14,29 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
-  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO } from '../common';
-import { USER_ROLE } from '../user-role/user-role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
-import { ApiKeyGuard } from '../auth/api-key/api-key.guard';
 import { RoleGuard } from '../auth/role/role.guard';
-import { UserService } from './user.service';
-import { UserStoreDTO } from './dto/user.dto';
-import { UserStoreRO } from './ro/user.ro';
+import { USER_ROLE } from '../user-role/user-role.enum';
+import { StudentService } from './student.service';
+import { StudentStoreDTO } from './dto/student.dto';
+import { UserGetListDTO } from '../user/dto/user.dto';
+import { StudentGetListRO, StudentStoreRO } from './ro/student.ro';
 
-const { TAGS, CONTROLLER, STORE, STORE_BY_API_KEY } = API.USER;
+const { TAGS, CONTROLLER, STORE, GET_LIST } = API.STUDENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class StudentController {
+  constructor(private readonly studentService: StudentService) {}
 
   @ApiOperation({ summary: STORE.OPERATION })
-  @ApiCreatedResponse({ type: UserStoreRO })
+  @ApiCreatedResponse({ type: StudentStoreRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -43,20 +45,20 @@ export class UserController {
   @Post(STORE.ROUTE)
   @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
   @HttpCode(HttpStatus.CREATED)
-  async store(@Body() dto: UserStoreDTO) {
-    return this.userService.store(dto);
+  async store(@Body() dto: StudentStoreDTO) {
+    return this.studentService.store(dto);
   }
 
-  @ApiOperation({ summary: STORE_BY_API_KEY.OPERATION })
-  @ApiCreatedResponse({ type: UserStoreRO })
+  @ApiOperation({ summary: GET_LIST.OPERATION })
+  @ApiOkResponse({ type: StudentGetListRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
-  @ApiSecurity('api-key')
-  @Post(STORE_BY_API_KEY.ROUTE)
-  @UseGuards(ApiKeyGuard)
-  @HttpCode(HttpStatus.CREATED)
-  async storeByApiKey(@Body() dto: UserStoreDTO) {
-    return this.userService.store(dto);
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
+  async getList(@Query() dto: UserGetListDTO) {
+    return this.studentService.getList(dto);
   }
 }

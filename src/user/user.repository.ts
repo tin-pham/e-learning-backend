@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { UserEntity } from './user.entity';
+import { USER_ROLE } from 'src/user-role/user-role.enum';
+import { paginate } from 'src/common/function/paginate';
+import { PaginationDTO } from 'src/common/dto/paginate.dto';
 
 @Injectable()
 export class UserRepository {
@@ -59,5 +62,20 @@ export class UserRepository {
       .where('users.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
+  }
+
+  findByRole(filter: PaginationDTO, role: USER_ROLE) {
+    const query = this.database
+      .selectFrom('users')
+      .innerJoin('userRole', 'users.id', 'userRole.userId')
+      .innerJoin('role', 'userRole.roleId', 'role.id')
+      .selectAll('users')
+      .where('role.name', '=', role)
+      .where('users.deletedAt', 'is', null);
+
+    return paginate(query, {
+      limit: filter.limit,
+      page: filter.page,
+    });
   }
 }

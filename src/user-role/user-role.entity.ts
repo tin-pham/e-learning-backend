@@ -1,4 +1,4 @@
-export class UserRoleEntiy {
+export class UserRoleEntity {
   id: string;
 
   userId: string;

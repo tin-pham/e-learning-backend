@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
+import { USER_ROLE } from '../user-role/user-role.enum';
 
 @Injectable()
 export class RoleRepository {
@@ -22,5 +23,14 @@ export class RoleRepository {
       .select(['id', 'name'])
       .where('deletedAt', 'is', null)
       .execute();
+  }
+
+  getIdByName(name: USER_ROLE): Promise<{ id: string }> {
+    return this.databaseService
+      .selectFrom('role')
+      .select(['id'])
+      .where('name', '=', name)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
   }
 }
