@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  localstack:
+    container_name: school-localstack
+    image: localstack/localstack
+    hostname: localstack
+    networks:
+      - test-net
+    ports:
+      - '4566:4566'
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=docker-reuse
+      - LAMBDA_REMOTE_DOCKER=false
+      - LAMBDA_REMOVE_CONTAINERS=true
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=/tmp/localstack/host
+      - LOCALSTACK_AUTH_TOKEN=ls-COfApOBo-YiJE-jAQO-tUzU-616967023c32
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+networks:
+  test-net:
+    external: false
+    driver: bridge
+    name: test-net

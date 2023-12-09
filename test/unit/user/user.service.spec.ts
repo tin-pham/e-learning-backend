@@ -8,7 +8,7 @@ describe('UserService', () => {
   let service: UserService;
 
   const mockUserRepository: Partial<UserRepository> = {
-    store: jest.fn(),
+    insertWithTransaction: jest.fn(),
     countByUserName: jest.fn(),
     countByEmail: jest.fn(),
   };

@@ -11,6 +11,7 @@ import { UserRepository } from '../user/user.repository';
 import { AuthService } from './auth.service';
 import { RefreshTokenService } from './jwt/refresh-token.service';
 import { ApiKeyService } from './api-key/api-key.service';
+import { UserRoleRepository } from 'src/user-role/user-role.repository';
 
 const configService = new ConfigService();
 
@@ -34,6 +35,7 @@ const configService = new ConfigService();
     RefreshTokenService,
     ApiKeyService,
     HeaderApiKeyStrategy,
+    UserRoleRepository,
   ],
 })
 export class AuthModule {}

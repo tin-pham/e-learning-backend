@@ -1,9 +1,10 @@
-import { Kysely, sql } from 'kysely';
+import { sql } from 'kysely';
+import { DatabaseService } from '../database';
 import { DATABASE_TABLE } from '../common';
 
 const { NAME, SCHEMA } = DATABASE_TABLE.USERS;
 
-export async function up(database: Kysely<unknown>): Promise<void> {
+export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'varchar(50)', (column) =>
@@ -14,7 +15,6 @@ export async function up(database: Kysely<unknown>): Promise<void> {
     .addColumn(SCHEMA.EMAIL, 'varchar(50)', (column) => column)
     .addColumn(SCHEMA.PHONE, 'varchar(50)', (column) => column)
     .addColumn(SCHEMA.DISPLAY_NAME, 'varchar(50)')
-    .addColumn(SCHEMA.ROLE, 'varchar(50)', (column) => column.notNull())
     .addColumn(SCHEMA.CREATED_AT, 'timestamp', (column) =>
       column.defaultTo(sql`now()`),
     )
@@ -23,6 +23,6 @@ export async function up(database: Kysely<unknown>): Promise<void> {
     .execute();
 }
 
-export async function down(database: Kysely<unknown>): Promise<void> {
+export async function down(database: DatabaseService): Promise<void> {
   await database.schema.dropTable(NAME).execute();
 }

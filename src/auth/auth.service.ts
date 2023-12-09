@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { plainToInstance } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
@@ -9,7 +10,7 @@ import { SignInDTO } from './dto/auth.dto';
 import { RefreshTokenRO, SignInRO } from './ro/auth.ro';
 import { UserEntity } from '../user/user.entity';
 import { RefreshTokenService } from './jwt/refresh-token.service';
-import { ConfigService } from '@nestjs/config';
+import { UserRoleRepository } from 'src/user-role/user-role.repository';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -20,6 +21,7 @@ export class AuthService extends BaseService {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
+    private readonly userRoleRepository: UserRoleRepository,
   ) {
     super();
   }
@@ -47,7 +49,7 @@ export class AuthService extends BaseService {
     return plainToInstance(SignInRO, { accessToken, refreshToken });
   }
 
-  async validateSignIn(dto: SignInDTO) {
+  async validateSignIn(dto: SignInDTO): Promise<UserEntity> {
     const { username, password } = dto;
 
     // Check username exists
@@ -66,6 +68,12 @@ export class AuthService extends BaseService {
     if (!isValidPassword) {
       const { status, code, message } =
         EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
+      this.formatException({ status, code, message });
+    }
+
+    user.roles = await this.userRoleRepository.findRolesByUserId(user.id);
+    if (!user.roles) {
+      const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
       this.formatException({ status, code, message });
     }
 
@@ -90,12 +98,19 @@ export class AuthService extends BaseService {
     return plainToInstance(RefreshTokenRO, { accessToken });
   }
 
-  async validatePayload(payload: IJwtPayload) {
+  async validatePayload(payload: IJwtPayload): Promise<UserEntity> {
     const user = await this.userRepository.findOneById(payload.userId);
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.AUTHORIZE_FAILED;
       this.formatException({ status, code, message });
     }
+
+    user.roles = await this.userRoleRepository.findRolesByUserId(user.id);
+    if (!user.roles) {
+      const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
+      this.formatException({ status, code, message });
+    }
+
     return user;
   }
 
