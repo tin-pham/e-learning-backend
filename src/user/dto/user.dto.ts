@@ -40,8 +40,9 @@ export class UserStoreDTO {
   @IsNotEmpty()
   displayName: string;
 
-  @ApiProperty({ example: 1, isArray: true })
+  @ApiProperty({ type: [String] })
   @ArrayMinSize(1)
+  @IsString({ each: true })
   @IsArray()
   @IsNotEmpty()
   roleIds: string[];

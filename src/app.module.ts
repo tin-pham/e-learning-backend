@@ -7,6 +7,7 @@ import { HealthModule } from './health/health.module';
 import { ThrottlerModule } from './throttler/throttler.module';
 import { LogsMiddleware } from './logger/logs.middleware';
 import { appProviders } from './app.provider';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { appProviders } from './app.provider';
     AuthModule,
     HealthModule,
     ThrottlerModule,
+    RoleModule,
   ],
   providers: [...appProviders],
 })

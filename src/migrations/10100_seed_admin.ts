@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { DatabaseService } from '../database';
-import { USER_ROLE } from 'src/user-role/user-role.enum';
+import { USER_ROLE } from '../user-role/user-role.enum';
 
 const configService = new ConfigService();
 

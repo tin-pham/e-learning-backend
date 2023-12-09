@@ -11,8 +11,16 @@ export class RoleRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('role.id', 'in', ids)
       .where('role.deletedAt', 'is', null)
-      .executeTakeFirstOrThrow();
+      .executeTakeFirst();
 
     return Number(count);
+  }
+
+  getAll(): Promise<{ id: string; name: string }[]> {
+    return this.databaseService
+      .selectFrom('role')
+      .select(['id', 'name'])
+      .where('deletedAt', 'is', null)
+      .execute();
   }
 }

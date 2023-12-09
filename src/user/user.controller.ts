@@ -20,11 +20,11 @@ import {
 import { API, HttpExceptionRO } from '../common';
 import { USER_ROLE } from '../user-role/user-role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
+import { ApiKeyGuard } from '../auth/api-key/api-key.guard';
+import { RoleGuard } from '../auth/role/role.guard';
 import { UserService } from './user.service';
 import { UserStoreDTO } from './dto/user.dto';
 import { UserStoreRO } from './ro/user.ro';
-import { ApiKeyGuard } from 'src/auth/api-key/api-key.guard';
-import { RoleGuard } from 'src/auth/role/role.guard';
 
 const { TAGS, CONTROLLER, STORE, STORE_BY_API_KEY } = API.USER;
 

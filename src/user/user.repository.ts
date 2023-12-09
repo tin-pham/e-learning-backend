@@ -29,7 +29,7 @@ export class UserRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('users.username', '=', username)
       .where('users.deletedAt', 'is', null)
-      .executeTakeFirstOrThrow();
+      .executeTakeFirst();
     return Number(count);
   }
 
@@ -39,7 +39,7 @@ export class UserRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('users.email', '=', email)
       .where('users.deletedAt', 'is', null)
-      .executeTakeFirstOrThrow();
+      .executeTakeFirst();
     return Number(count);
   }
 
@@ -49,7 +49,7 @@ export class UserRepository {
       .selectAll()
       .where('users.username', '=', username)
       .where('users.deletedAt', 'is', null)
-      .executeTakeFirstOrThrow();
+      .executeTakeFirst();
   }
 
   findOneById(id: string): Promise<UserEntity> {
@@ -58,6 +58,6 @@ export class UserRepository {
       .selectAll()
       .where('users.id', '=', id)
       .where('users.deletedAt', 'is', null)
-      .executeTakeFirstOrThrow();
+      .executeTakeFirst();
   }
 }
