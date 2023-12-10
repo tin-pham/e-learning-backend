@@ -11,7 +11,6 @@ export class RoleRepository {
       .selectFrom('role')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('role.id', 'in', ids)
-      .where('role.deletedAt', 'is', null)
       .executeTakeFirst();
 
     return Number(count);
@@ -21,7 +20,6 @@ export class RoleRepository {
     return this.databaseService
       .selectFrom('role')
       .select(['id', 'name'])
-      .where('deletedAt', 'is', null)
       .execute();
   }
 
@@ -30,7 +28,6 @@ export class RoleRepository {
       .selectFrom('role')
       .select(['id'])
       .where('name', '=', name)
-      .where('deletedAt', 'is', null)
       .executeTakeFirst();
   }
 }

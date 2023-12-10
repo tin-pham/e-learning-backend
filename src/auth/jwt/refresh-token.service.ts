@@ -55,8 +55,6 @@ export class RefreshTokenService extends BaseService {
         message,
       });
     }
-
-    return user;
   }
 
   private getKey(userId: string): string {

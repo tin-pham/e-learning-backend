@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
 import { StudentEntity } from './student.entity';
@@ -10,7 +11,7 @@ import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
 import { StudentStoreDTO } from './dto/student.dto';
 import { StudentGetListRO, StudentStoreRO } from './ro/student.ro';
-import { UserGetListDTO } from 'src/user/dto/user.dto';
+import { UserGetListDTO } from '../user/dto/user.dto';
 
 @Injectable()
 export class StudentService extends UserService {
@@ -24,12 +25,17 @@ export class StudentService extends UserService {
     super(userRepository, roleRepository, userRoleRepository);
   }
 
-  async store(dto: StudentStoreDTO) {
+  async store(dto: StudentStoreDTO, decoded: IJwtPayload) {
+    await this.validateStore(dto);
     const response = new StudentStoreRO();
-
+    console.log(decoded);
     await this.database.transaction().execute(async (transaction) => {
       // Store user
-      const user = await super.storeUserWithTransaction(transaction, dto);
+      const user = await super.storeUserWithTransaction(
+        transaction,
+        dto,
+        decoded.userId,
+      );
 
       // Get student role id
       const { id: roleId } = await this.roleRepository.getIdByName(

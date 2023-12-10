@@ -50,5 +50,9 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Get list students',
     },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get student detail',
+    },
   },
 };

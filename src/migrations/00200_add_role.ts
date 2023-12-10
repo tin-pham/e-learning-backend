@@ -14,8 +14,6 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.CREATED_AT, 'timestamp', (column) =>
       column.defaultTo(sql`now()`),
     )
-    .addColumn(SCHEMA.UPDATED_AT, 'timestamp')
-    .addColumn(SCHEMA.DELETED_AT, 'timestamp')
     .execute();
 }
 

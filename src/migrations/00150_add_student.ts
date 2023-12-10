@@ -9,7 +9,7 @@ export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'varchar(50)', (column) =>
-      column.primaryKey().defaultTo(sql`uuid_generate_v4()`),
+      column.primaryKey().defaultTo(sql`generate_student_id()`),
     )
     .addColumn(SCHEMA.USER_ID, 'varchar(50)', (column) =>
       column.references(`${USERS_TABLE}.${USER_SCHEMA.ID}`).notNull(),

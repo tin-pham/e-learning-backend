@@ -19,7 +19,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { API, HttpExceptionRO } from '../common';
+import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { USER_ROLE } from '../user-role/user-role.enum';
@@ -27,8 +27,9 @@ import { StudentService } from './student.service';
 import { StudentStoreDTO } from './dto/student.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import { StudentGetListRO, StudentStoreRO } from './ro/student.ro';
+import { JwtPayload } from 'src/common/decorator';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST } = API.STUDENT;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL } = API.STUDENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -45,8 +46,11 @@ export class StudentController {
   @Post(STORE.ROUTE)
   @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
   @HttpCode(HttpStatus.CREATED)
-  async store(@Body() dto: StudentStoreDTO) {
-    return this.studentService.store(dto);
+  async store(
+    @Body() dto: StudentStoreDTO,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
+    return this.studentService.store(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_LIST.OPERATION })
@@ -61,4 +65,15 @@ export class StudentController {
   async getList(@Query() dto: UserGetListDTO) {
     return this.studentService.getList(dto);
   }
+
+  @ApiOperation({ summary: GET_DETAIL.OPERATION })
+  @ApiOkResponse({ type: StudentGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
+  async getDetail() {}
 }

@@ -9,8 +9,11 @@ export const DATABASE_TABLE = {
       PHONE: 'phone',
       EMAIL: 'email',
       CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
       UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
       DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
     },
   },
   ROLE: {
@@ -19,8 +22,6 @@ export const DATABASE_TABLE = {
       ID: 'id',
       NAME: 'name',
       CREATED_AT: 'created_at',
-      UPDATED_AT: 'updated_at',
-      DELETED_AT: 'deleted_at',
     },
   },
   USER_ROLE: {

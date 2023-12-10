@@ -15,7 +15,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { API, HttpExceptionRO, IRequestWithUser } from '../common';
+import { API, HttpExceptionRO, IJwtPayload, IRequestWithUser } from '../common';
+import { JwtPayload } from '../common/decorator';
 import { LocalGuard } from './local/local.guard';
 import { JwtRefreshTokenGuard } from './jwt/jwt-refresh-token.guard';
 import { AuthService } from './auth.service';
@@ -46,10 +47,11 @@ export class AuthController {
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
+  @ApiBearerAuth('Refresh')
   @UseGuards(JwtRefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Post(REFRESH_TOKEN.ROUTE)
-  async refreshToken(@Req() req: IRequestWithUser) {
-    return this.authService.refreshAccessTokenByUser(req.user);
+  async refreshToken(@JwtPayload() decoded: IJwtPayload) {
+    return this.authService.refreshAccessTokenByUser(decoded);
   }
 }

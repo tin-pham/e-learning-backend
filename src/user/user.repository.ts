@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { UserEntity } from './user.entity';
-import { USER_ROLE } from 'src/user-role/user-role.enum';
-import { paginate } from 'src/common/function/paginate';
-import { PaginationDTO } from 'src/common/dto/paginate.dto';
+import { USER_ROLE } from '../user-role/user-role.enum';
+import { paginate } from '../common/function/paginate';
+import { PaginationDTO } from '../common/dto/paginate.dto';
 
 @Injectable()
 export class UserRepository {
@@ -11,17 +11,11 @@ export class UserRepository {
 
   insertWithTransaction(
     transaction: Transaction,
-    user: UserEntity,
+    entity: UserEntity,
   ): Promise<UserEntity> {
     return transaction
       .insertInto('users')
-      .values({
-        username: user.username,
-        password: user.password,
-        email: user.email,
-        phone: user.phone,
-        displayName: user.displayName,
-      })
+      .values(entity)
       .returningAll()
       .executeTakeFirstOrThrow();
   }

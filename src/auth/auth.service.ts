@@ -32,6 +32,7 @@ export class AuthService extends BaseService {
       username: user.username,
       email: user.email,
       displayName: user.displayName,
+      roles: user.roles.map((role) => role.name),
     };
 
     const accessToken = await this.jwtService.signAsync(payload, {
@@ -80,14 +81,15 @@ export class AuthService extends BaseService {
     return user;
   }
 
-  async refreshAccessTokenByUser(user: UserEntity) {
+  async refreshAccessTokenByUser(decoded: IJwtPayload) {
     let accessToken: string;
     try {
       accessToken = await this.jwtService.signAsync({
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        displayName: user.displayName,
+        userId: decoded.userId,
+        username: decoded.username,
+        email: decoded.email,
+        displayName: decoded.displayName,
+        roles: decoded.roles,
       });
     } catch (error) {
       this.logger.error(error);
@@ -98,7 +100,7 @@ export class AuthService extends BaseService {
     return plainToInstance(RefreshTokenRO, { accessToken });
   }
 
-  async validatePayload(payload: IJwtPayload): Promise<UserEntity> {
+  async validatePayload(payload: IJwtPayload) {
     const user = await this.userRepository.findOneById(payload.userId);
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.AUTHORIZE_FAILED;
@@ -110,8 +112,6 @@ export class AuthService extends BaseService {
       const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
       this.formatException({ status, code, message });
     }
-
-    return user;
   }
 
   private async validatePassword(

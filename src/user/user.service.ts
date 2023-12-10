@@ -23,7 +23,9 @@ export class UserService extends BaseService {
   protected async storeUserWithTransaction(
     transaction: Transaction,
     dto: UserStoreDTO,
+    creatorId: string,
   ) {
+    console.log(creatorId);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(dto.password, salt);
     const userData = new UserEntity();
@@ -32,6 +34,7 @@ export class UserService extends BaseService {
     userData.email = dto.email;
     userData.phone = dto.phone;
     userData.displayName = dto.displayName;
+    userData.createdBy = creatorId;
     return this.userRepository.insertWithTransaction(transaction, userData);
   }
 

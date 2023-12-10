@@ -26,6 +26,17 @@ async function bootstrap() {
       },
       'Authorization',
     )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Refresh-Token',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'Refresh',
+    )
     .addApiKey(
       {
         type: 'apiKey',
