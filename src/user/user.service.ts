@@ -25,7 +25,6 @@ export class UserService extends BaseService {
     dto: UserStoreDTO,
     creatorId: string,
   ) {
-    console.log(creatorId);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(dto.password, salt);
     const userData = new UserEntity();

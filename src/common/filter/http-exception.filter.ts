@@ -32,6 +32,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return exception['message'].join(', ');
     }
 
+    if (typeof exception['message'] === 'string') {
+      return exception['message'];
+    }
+
     return exception['message'].message;
   }
 }

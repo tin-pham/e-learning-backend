@@ -40,6 +40,16 @@ export class UserRepository {
     return Number(count);
   }
 
+  async countByPhone(phone: string): Promise<number> {
+    const { count } = await this.database
+      .selectFrom('users')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('users.phone', '=', phone)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   findOneByUsername(username: string): Promise<UserEntity> {
     return this.database
       .selectFrom('users')
@@ -71,5 +81,15 @@ export class UserRepository {
       limit: filter.limit,
       page: filter.page,
     });
+  }
+
+  update(id: string, entity: UserEntity) {
+    return this.database
+      .updateTable('users')
+      .set(entity)
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .returningAll()
+      .executeTakeFirstOrThrow();
   }
 }

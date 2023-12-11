@@ -7,7 +7,7 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import { PaginationDTO } from 'src/common/dto/paginate.dto';
+import { PaginationDTO } from '../../common/dto/paginate.dto';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -41,3 +41,36 @@ export class UserStoreDTO {
 }
 
 export class UserGetListDTO extends PaginationDTO {}
+export class UserUpdateDTO {
+  @ApiProperty({ example: 'tinpham' })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  username?: string;
+
+  @ApiProperty({ example: '123456' })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  password?: string;
+
+  @ApiProperty({ required: false, example: 'tinpham@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({ required: false, example: '0987654321' })
+  @IsPhoneNumber('VN')
+  @IsNotEmpty()
+  @IsNumberString()
+  @IsOptional()
+  phone?: string;
+
+  @ApiProperty({ example: 'Tin Pham' })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  displayName?: string;
+}

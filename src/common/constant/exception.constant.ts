@@ -24,6 +24,11 @@ export const EXCEPTION = {
       code: 'USER_EMAIL_ALREADY_EXISTS',
       message: 'Email already exists',
     },
+    PHONE_ALREADY_EXISTS: {
+      status: HttpStatus.CONFLICT,
+      code: 'USER_PHONE_ALREADY_EXISTS',
+      message: 'Phone already exists',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       code: 'USER_DOES_NOT_EXIST',
@@ -77,6 +82,28 @@ export const EXCEPTION = {
       status: HttpStatus.BAD_REQUEST,
       message: 'Role does not exist',
       code: 'ROLE_DOES_NOT_EXIST',
+    },
+  },
+  STUDENT: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Student not found',
+      code: 'STUDENT_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Student does not exist',
+      code: 'STUDENT_DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store student',
+      code: 'STUDENT_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update student',
+      code: 'STUDENT_UPDATE_FAILED',
     },
   },
 };

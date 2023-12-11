@@ -13,15 +13,23 @@ export class StudentRepository {
     return transaction
       .insertInto('student')
       .values(entity)
+      .returning('id')
       .executeTakeFirstOrThrow();
   }
 
   find(filter: PaginationDTO) {
     const query = this.database
-      .selectFrom('users')
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
       .innerJoin('userRole', 'users.id', 'userRole.userId')
       .innerJoin('role', 'userRole.roleId', 'role.id')
-      .selectAll('users')
+      .select([
+        'users.username',
+        'users.email',
+        'users.phone',
+        'users.displayName',
+        'student.id',
+      ])
       .where('role.name', '=', USER_ROLE.STUDENT)
       .where('users.deletedAt', 'is', null);
 
@@ -29,5 +37,40 @@ export class StudentRepository {
       limit: filter.limit,
       page: filter.page,
     });
+  }
+
+  findOneById(id: string): Promise<StudentEntity> {
+    return this.database
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .select([
+        'users.username',
+        'users.email',
+        'users.phone',
+        'users.displayName',
+        'student.id',
+        'student.userId',
+      ])
+      .where('student.id', '=', id)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
+  countById(id: string) {
+    return this.database
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('student.id', '=', id)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
+  getIdByUserId(userId: string) {
+    return this.database
+      .selectFrom('student')
+      .select('student.id')
+      .where('student.userId', '=', userId)
+      .executeTakeFirst();
   }
 }
