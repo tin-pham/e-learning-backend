@@ -131,7 +131,7 @@ export class StudentService extends UserService {
       if (dto.displayName) {
         userData.displayName = dto.displayName;
       }
-      const user = await this.userRepository.update(id, userData);
+      const user = await this.userRepository.updateByStudentId(id, userData);
       const { id: studentId } = await this.studentRepository.getIdByUserId(
         user.id,
       );

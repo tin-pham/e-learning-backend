@@ -92,4 +92,15 @@ export class UserRepository {
       .returningAll()
       .executeTakeFirstOrThrow();
   }
+
+  updateByStudentId(studentId: string, entity: UserEntity) {
+    return this.database
+      .updateTable('users')
+      .set(entity)
+      .innerJoin('student', 'users.id', 'student.userId')
+      .where('student.id', '=', studentId)
+      .where('users.deletedAt', 'is', null)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
 }
