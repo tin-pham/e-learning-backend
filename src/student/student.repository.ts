@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
+import { USER_ROLE } from '../user-role/user-role.enum';
 import { StudentEntity } from './student.entity';
-import { USER_ROLE } from 'src/user-role/user-role.enum';
-import { PaginationDTO } from 'src/common/dto/paginate.dto';
+import { PaginationDTO } from '../common/dto/paginate.dto';
 
 @Injectable()
 export class StudentRepository {
@@ -39,28 +39,21 @@ export class StudentRepository {
     });
   }
 
-  findOneById(id: string): Promise<StudentEntity> {
+  findUserById(id: string) {
     return this.database
       .selectFrom('student')
       .innerJoin('users', 'users.id', 'student.userId')
-      .select([
-        'users.username',
-        'users.email',
-        'users.phone',
-        'users.displayName',
-        'student.id',
-        'student.userId',
-      ])
+      .selectAll('users')
       .where('student.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
   }
 
-  countById(id: string) {
+  findOneById(id: string) {
     return this.database
       .selectFrom('student')
       .innerJoin('users', 'users.id', 'student.userId')
-      .select(({ fn }) => fn.countAll().as('count'))
+      .selectAll('student')
       .where('student.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
@@ -71,6 +64,14 @@ export class StudentRepository {
       .selectFrom('student')
       .select('student.id')
       .where('student.userId', '=', userId)
+      .executeTakeFirst();
+  }
+
+  getUserIdByStudentId(id: string) {
+    return this.database
+      .selectFrom('student')
+      .select('student.userId')
+      .where('student.id', '=', id)
       .executeTakeFirst();
   }
 }

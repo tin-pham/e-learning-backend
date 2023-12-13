@@ -35,6 +35,7 @@ import {
   StudentGetDetailRO,
   StudentGetListRO,
   StudentStoreRO,
+  StudentUpdateRO,
 } from './ro/student.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE } = API.STUDENT;
@@ -49,6 +50,7 @@ export class StudentController {
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
@@ -88,11 +90,11 @@ export class StudentController {
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })
-  @ApiOkResponse({ type: StudentGetDetailRO })
+  @ApiOkResponse({ type: StudentUpdateRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
-  @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Put(UPDATE.ROUTE)

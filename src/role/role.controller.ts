@@ -9,9 +9,9 @@ import {
 import { API, HttpExceptionRO } from '../common';
 import { RoleGetListRO } from './ro/role.ro';
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/jwt/jwt.guard';
-import { RoleGuard } from 'src/auth/role/role.guard';
-import { USER_ROLE } from 'src/user-role/user-role.enum';
+import { JwtGuard } from '../auth/jwt/jwt.guard';
+import { RoleGuard } from '../auth/role/role.guard';
+import { USER_ROLE } from '../user-role/user-role.enum';
 import { RoleService } from './role.service';
 
 const { TAGS, CONTROLLER, GET_LIST } = API.ROLE;

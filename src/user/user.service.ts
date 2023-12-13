@@ -8,7 +8,7 @@ import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { RoleRepository } from '../role/role.repository';
-import { UserStoreDTO } from './dto/user.dto';
+import { UserStoreDTO, UserUpdateDTO } from './dto/user.dto';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -20,7 +20,7 @@ export class UserService extends BaseService {
     super();
   }
 
-  protected async storeUserWithTransaction(
+  protected async storeWithTransaction(
     transaction: Transaction,
     dto: UserStoreDTO,
     creatorId: string,
@@ -77,5 +77,39 @@ export class UserService extends BaseService {
         });
       }
     }
+  }
+
+  protected async updateWithTransaction(
+    transaction: Transaction,
+    id: string,
+    dto: UserUpdateDTO,
+    updaterId: string,
+  ) {
+    // Set data
+    const userData = new UserEntity();
+    userData.updatedBy = updaterId;
+    userData.updatedAt = new Date();
+    if (dto.email) {
+      userData.email = dto.email;
+    }
+    if (dto.phone) {
+      userData.phone = dto.phone;
+    }
+    if (dto.displayName) {
+      userData.displayName = dto.displayName;
+    }
+    if (dto.password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(dto.password, salt);
+      userData.password = hashedPassword;
+    }
+
+    // Update user
+    const user = await this.userRepository.updateWithTransaction(
+      transaction,
+      id,
+      userData,
+    );
+    return user;
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { BaseService } from '../../base';
 import { EXCEPTION } from '../../common';
-import { BaseService } from 'src/base';
 
 @Injectable()
 export class ApiKeyService extends BaseService {

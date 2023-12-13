@@ -42,12 +42,6 @@ export class UserStoreDTO {
 
 export class UserGetListDTO extends PaginationDTO {}
 export class UserUpdateDTO {
-  @ApiProperty({ example: 'tinpham' })
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  username?: string;
-
   @ApiProperty({ example: '123456' })
   @IsString()
   @IsNotEmpty()

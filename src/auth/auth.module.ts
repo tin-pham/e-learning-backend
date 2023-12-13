@@ -8,10 +8,10 @@ import { HeaderApiKeyStrategy } from './api-key/api-key.strategy';
 import { JwtRefreshTokenStrategy } from './jwt/jwt-refresh-token.strategy';
 import { AuthController } from './auth.controller';
 import { UserRepository } from '../user/user.repository';
+import { UserRoleRepository } from '../user-role/user-role.repository';
 import { AuthService } from './auth.service';
 import { RefreshTokenService } from './jwt/refresh-token.service';
 import { ApiKeyService } from './api-key/api-key.service';
-import { UserRoleRepository } from 'src/user-role/user-role.repository';
 
 const configService = new ConfigService();
 

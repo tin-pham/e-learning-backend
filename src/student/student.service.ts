@@ -8,10 +8,9 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
 import { StudentEntity } from './student.entity';
-import { UserEntity } from '../user/user.entity';
 import { StudentRepository } from './student.repository';
-import { UserRepository } from 'src/user/user.repository';
-import { RoleRepository } from 'src/role/role.repository';
+import { UserRepository } from '../user/user.repository';
+import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
@@ -44,7 +43,7 @@ export class StudentService extends UserService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Store user
-        const user = await super.storeUserWithTransaction(
+        const user = await super.storeWithTransaction(
           transaction,
           dto,
           decoded.userId,
@@ -97,7 +96,7 @@ export class StudentService extends UserService {
   }
 
   async getDetail(id: string) {
-    const student = await this.studentRepository.findOneById(id);
+    const student = await this.studentRepository.findUserById(id);
 
     if (!student) {
       const { code, status, message } = EXCEPTION.STUDENT.NOT_FOUND;
@@ -119,32 +118,29 @@ export class StudentService extends UserService {
     const response = new StudentUpdateRO();
 
     try {
-      const userData = new UserEntity();
-      userData.updatedBy = decoded.userId;
-      userData.updatedAt = new Date();
-      if (dto.email) {
-        userData.email = dto.email;
-      }
-      if (dto.phone) {
-        userData.phone = dto.phone;
-      }
-      if (dto.displayName) {
-        userData.displayName = dto.displayName;
-      }
-      const user = await this.userRepository.updateByStudentId(id, userData);
-      const { id: studentId } = await this.studentRepository.getIdByUserId(
-        user.id,
-      );
-      if (!studentId) {
-        throw new InternalServerErrorException();
-      }
+      const { userId } = await this.studentRepository.getUserIdByStudentId(id);
+      await this.database.transaction().execute(async (transaction) => {
+        // Update user
+        const user = await super.updateWithTransaction(
+          transaction,
+          userId,
+          dto,
+          decoded.userId,
+        );
 
-      response.id = studentId;
-      response.userId = user.id;
-      response.username = user.username;
-      response.email = user.email;
-      response.phone = user.phone;
-      response.displayName = user.displayName;
+        // Set response
+        const { id: studentId } = await this.studentRepository.getIdByUserId(
+          user.id,
+        );
+        if (!studentId) {
+          throw new InternalServerErrorException();
+        }
+        response.id = studentId;
+        response.username = user.username;
+        response.email = user.email;
+        response.phone = user.phone;
+        response.displayName = user.displayName;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.UPDATE_FAILED;
       this.logger.error(error);
@@ -162,8 +158,8 @@ export class StudentService extends UserService {
 
   private async validateUpdate(id: string, dto: StudentUpdateDTO) {
     // Check id exists
-    const studentCount = await this.studentRepository.countById(id);
-    if (!studentCount) {
+    const student = await this.studentRepository.findOneById(id);
+    if (!student) {
       const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
       this.formatException({
         code,
@@ -174,7 +170,10 @@ export class StudentService extends UserService {
 
     // Check email unique
     if (dto.email) {
-      const emailCount = await this.userRepository.countByEmail(dto.email);
+      const emailCount = await this.userRepository.countByEmailExceptId(
+        dto.email,
+        student.userId,
+      );
       if (emailCount) {
         const { code, status, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
         this.formatException({
@@ -187,7 +186,10 @@ export class StudentService extends UserService {
 
     // Check phone unique
     if (dto.phone) {
-      const phoneCount = await this.userRepository.countByPhone(dto.phone);
+      const phoneCount = await this.userRepository.countByPhoneExceptId(
+        dto.phone,
+        student.userId,
+      );
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
         this.formatException({

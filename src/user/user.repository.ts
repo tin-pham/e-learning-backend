@@ -40,11 +40,23 @@ export class UserRepository {
     return Number(count);
   }
 
-  async countByPhone(phone: string): Promise<number> {
+  async countByEmailExceptId(email: string, id: string): Promise<number> {
+    const { count } = await this.database
+      .selectFrom('users')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('users.email', '=', email)
+      .where('users.id', '!=', id)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByPhoneExceptId(phone: string, id: string): Promise<number> {
     const { count } = await this.database
       .selectFrom('users')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('users.phone', '=', phone)
+      .where('users.id', '!=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
@@ -83,23 +95,16 @@ export class UserRepository {
     });
   }
 
-  update(id: string, entity: UserEntity) {
-    return this.database
+  updateWithTransaction(
+    transaction: Transaction,
+    id: string,
+    entity: UserEntity,
+  ) {
+    return transaction
       .updateTable('users')
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returningAll()
-      .executeTakeFirstOrThrow();
-  }
-
-  updateByStudentId(studentId: string, entity: UserEntity) {
-    return this.database
-      .updateTable('users')
-      .set(entity)
-      .innerJoin('student', 'users.id', 'student.userId')
-      .where('student.id', '=', studentId)
-      .where('users.deletedAt', 'is', null)
       .returningAll()
       .executeTakeFirstOrThrow();
   }
