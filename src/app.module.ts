@@ -18,6 +18,7 @@ import { StudentModule } from './student/student.module';
     ThrottlerModule,
     RoleModule,
     StudentModule,
+    TeacherModule,
   ],
   providers: [...appProviders],
 })

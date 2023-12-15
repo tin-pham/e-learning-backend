@@ -111,4 +111,31 @@ export const EXCEPTION = {
       code: 'STUDENT_DELETE_FAILED',
     },
   },
+  TEACHER: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Teacher not found',
+      code: 'TEACHER_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Teacher does not exist',
+      code: 'TEACHER_DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store teacher',
+      code: 'TEACHER_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update teacher',
+      code: 'TEACHER_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete teacher',
+      code: 'TEACHER_DELETE_FAILED',
+    },
+  },
 };

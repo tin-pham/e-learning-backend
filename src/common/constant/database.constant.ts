@@ -42,4 +42,11 @@ export const DATABASE_TABLE = {
       USER_ID: 'user_id',
     },
   },
+  TEACHER: {
+    NAME: 'teacher',
+    SCHEMA: {
+      ID: 'id',
+      USER_ID: 'user_id',
+    },
+  },
 };
