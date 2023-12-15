@@ -58,5 +58,9 @@ export const API = {
       ROUTE: ':id',
       OPERATION: 'Update student',
     },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete student',
+    },
   },
 };

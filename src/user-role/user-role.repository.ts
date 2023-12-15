@@ -34,4 +34,13 @@ export class UserRoleRepository {
       .returningAll()
       .executeTakeFirstOrThrow();
   }
+
+  deleteWithTransaction(transaction: Transaction, entity: UserRoleEntity) {
+    return transaction
+      .deleteFrom('userRole')
+      .where('userId', '=', entity.userId)
+      .where('roleId', '=', entity.roleId)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
 }

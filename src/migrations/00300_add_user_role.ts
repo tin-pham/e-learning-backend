@@ -21,6 +21,8 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.CREATED_AT, 'timestamp', (column) =>
       column.defaultTo(sql`now()`),
     )
+    .addColumn(SCHEMA.CREATED_BY, 'varchar(50)')
+
     .execute();
 }
 

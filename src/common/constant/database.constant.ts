@@ -22,6 +22,7 @@ export const DATABASE_TABLE = {
       ID: 'id',
       NAME: 'name',
       CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
     },
   },
   USER_ROLE: {
@@ -31,6 +32,7 @@ export const DATABASE_TABLE = {
       USER_ID: 'user_id',
       ROLE_ID: 'role_id',
       CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
     },
   },
   STUDENT: {

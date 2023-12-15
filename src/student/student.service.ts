@@ -156,6 +156,26 @@ export class StudentService extends UserService {
     });
   }
 
+  async delete(id: string, decoded: IJwtPayload) {
+    await this.validateDelete(id);
+
+    try {
+      const { userId } = await this.studentRepository.getUserIdByStudentId(id);
+      await this.database.transaction().execute(async (transaction) => {
+        // Delete user
+        await super.deleteWithTransaction(transaction, userId, decoded.userId);
+        // Delete user role  
+    }catch(error) {
+      const { code, status, message } = EXCEPTION.STUDENT.DELETE_FAILED;
+      this.logger.error(error);
+      this.formatException({
+        code,
+        status,
+        message,
+      })
+    }
+  }
+
   private async validateUpdate(id: string, dto: StudentUpdateDTO) {
     // Check id exists
     const student = await this.studentRepository.findOneById(id);
@@ -198,6 +218,19 @@ export class StudentService extends UserService {
           message,
         });
       }
+    }
+  }
+
+  private async validateDelete(id: string) {
+    // Check id exists
+    const studentCount = await this.studentRepository.countById(id);
+    if (!studentCount) {
+      const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
+      this.formatException({
+        code,
+        status,
+        message,
+      });
     }
   }
 }

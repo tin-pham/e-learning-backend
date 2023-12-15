@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -32,13 +33,15 @@ import { StudentService } from './student.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import {
+  StudentDeleteRO,
   StudentGetDetailRO,
   StudentGetListRO,
   StudentStoreRO,
   StudentUpdateRO,
 } from './ro/student.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE } = API.STUDENT;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } =
+  API.STUDENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -56,10 +59,7 @@ export class StudentController {
   @Post(STORE.ROUTE)
   @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
   @HttpCode(HttpStatus.CREATED)
-  async store(
-    @Body() dto: StudentStoreDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  store(@Body() dto: StudentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.store(dto, decoded);
   }
 
@@ -72,7 +72,7 @@ export class StudentController {
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
   @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
-  async getList(@Query() dto: UserGetListDTO) {
+  getList(@Query() dto: UserGetListDTO) {
     return this.studentService.getList(dto);
   }
 
@@ -85,7 +85,7 @@ export class StudentController {
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
   @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
-  async getDetail(@Param('id') id: string) {
+  getDetail(@Param('id') id: string) {
     return this.studentService.getDetail(id);
   }
 
@@ -98,12 +98,25 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Put(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
-  async update(
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  update(
     @Param('id') id: string,
     @Body() dto: StudentUpdateDTO,
     @JwtPayload() decoded: IJwtPayload,
   ) {
     return this.studentService.update(id, dto, decoded);
+  }
+
+  @ApiOperation({ summary: DELETE.OPERATION })
+  @ApiOkResponse({ type: StudentDeleteRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Delete(DELETE.ROUTE)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+    return this.studentService.delete(id, decoded);
   }
 }

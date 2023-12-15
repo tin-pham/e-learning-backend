@@ -106,3 +106,9 @@ export class UserUpdateRO {
   @Expose()
   displayName: string;
 }
+
+export class UserDeleteRO {
+  @ApiProperty()
+  @Expose()
+  id: string;
+}

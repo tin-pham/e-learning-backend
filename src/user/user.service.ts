@@ -112,4 +112,21 @@ export class UserService extends BaseService {
     );
     return user;
   }
+
+  protected async deleteWithTransaction(
+    transaction: Transaction,
+    id: string,
+    deleterId: string,
+  ) {
+    // Set data
+    const userData = new UserEntity();
+    userData.deletedAt = new Date();
+    userData.deletedBy = deleterId;
+
+    // Delete user
+    await this.userRepository.deleteWithTransaction(transaction, id, userData);
+
+    // Delete user role
+    await this.userRoleRepository.deleteWithTransaction(transaction, userId);
+  }
 }

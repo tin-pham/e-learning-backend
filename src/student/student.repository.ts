@@ -59,6 +59,16 @@ export class StudentRepository {
       .executeTakeFirst();
   }
 
+  countById(id: string) {
+    return this.database
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('student.id', '=', id)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
   getIdByUserId(userId: string) {
     return this.database
       .selectFrom('student')

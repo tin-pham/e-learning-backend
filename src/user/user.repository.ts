@@ -5,7 +5,6 @@ import { USER_ROLE } from '../user-role/user-role.enum';
 import { paginate } from '../common/function/paginate';
 import { PaginationDTO } from '../common/dto/paginate.dto';
 
-@Injectable()
 export class UserRepository {
   constructor(private readonly database: DatabaseService) {}
 
@@ -96,6 +95,20 @@ export class UserRepository {
   }
 
   updateWithTransaction(
+    transaction: Transaction,
+    id: string,
+    entity: UserEntity,
+  ) {
+    return transaction
+      .updateTable('users')
+      .set(entity)
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
+
+  deleteWithTransaction(
     transaction: Transaction,
     id: string,
     entity: UserEntity,

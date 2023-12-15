@@ -105,5 +105,10 @@ export const EXCEPTION = {
       message: 'Failed to update student',
       code: 'STUDENT_UPDATE_FAILED',
     },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete student',
+      code: 'STUDENT_DELETE_FAILED',
+    },
   },
 };
