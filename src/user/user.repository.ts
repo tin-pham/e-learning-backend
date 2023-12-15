@@ -5,6 +5,7 @@ import { USER_ROLE } from '../user-role/user-role.enum';
 import { paginate } from '../common/function/paginate';
 import { PaginationDTO } from '../common/dto/paginate.dto';
 
+@Injectable()
 export class UserRepository {
   constructor(private readonly database: DatabaseService) {}
 

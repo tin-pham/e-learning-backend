@@ -43,4 +43,15 @@ export class UserRoleRepository {
       .returningAll()
       .executeTakeFirstOrThrow();
   }
+
+  deleteMultipleByUserIdWithTransaction(
+    transaction: Transaction,
+    userId: string,
+  ) {
+    return transaction
+      .deleteFrom('userRole')
+      .where('userId', '=', userId)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
 }

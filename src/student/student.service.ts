@@ -16,6 +16,7 @@ import { UserService } from '../user/user.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import {
+  StudentDeleteRO,
   StudentGetDetailRO,
   StudentGetListRO,
   StudentStoreRO,
@@ -164,16 +165,28 @@ export class StudentService extends UserService {
       await this.database.transaction().execute(async (transaction) => {
         // Delete user
         await super.deleteWithTransaction(transaction, userId, decoded.userId);
-        // Delete user role  
-    }catch(error) {
+        // Delete user role
+        await super.deleteUserRoleWithTransaction(transaction, userId);
+      });
+    } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.DELETE_FAILED;
       this.logger.error(error);
       this.formatException({
         code,
         status,
         message,
-      })
+      });
     }
+
+    return plainToInstance(
+      StudentDeleteRO,
+      {
+        id,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 
   private async validateUpdate(id: string, dto: StudentUpdateDTO) {
