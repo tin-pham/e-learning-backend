@@ -8,6 +8,8 @@ import { LogsMiddleware } from './logger/logs.middleware';
 import { appProviders } from './app.provider';
 import { RoleModule } from './role/role.module';
 import { StudentModule } from './student/student.module';
+import { TeacherModule } from './teacher/teacher.module';
+import { ParentModule } from './parent/parent.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { StudentModule } from './student/student.module';
     RoleModule,
     StudentModule,
     TeacherModule,
+    ParentModule,
   ],
   providers: [...appProviders],
 })

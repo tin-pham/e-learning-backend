@@ -87,4 +87,28 @@ export const API = {
       OPERATION: 'Delete teacher',
     },
   },
+  PARENT: {
+    TAGS: 'Parent',
+    CONTROLLER: 'parent',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store parent',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list parents',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get parent detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update parent',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete parent',
+    },
+  },
 };

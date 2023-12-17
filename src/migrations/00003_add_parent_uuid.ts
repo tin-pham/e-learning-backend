@@ -4,16 +4,16 @@ import { DatabaseService } from '../database';
 export async function up(database: DatabaseService): Promise<void> {
   await database.executeQuery(
     sql`
-      CREATE OR REPLACE FUNCTION generate_teacher_id()
+      CREATE OR REPLACE FUNCTION generate_parent_id()
       RETURNS VARCHAR(50) AS $$
       DECLARE
         max_id VARCHAR(50);
-        prefix VARCHAR(3) := 'TEA';
+        prefix VARCHAR(3) := 'PAR';
         number_part INT;
         next_id VARCHAR(50);
       BEGIN
         -- Find the maximum existing ID
-        SELECT MAX(id) INTO max_id FROM teacher;
+        SELECT MAX(id) INTO max_id FROM parent;
 
         -- Initialize the parts of the ID
         IF max_id IS NOT NULL THEN
@@ -26,7 +26,7 @@ export async function up(database: DatabaseService): Promise<void> {
         IF number_part < 999 THEN
           next_id := prefix || '-' || LPAD((number_part + 1)::VARCHAR, 3, '0');
         ELSE
-          prefix := 'TEA-0'; -- Change the prefix
+          prefix := 'PAR-0'; -- Change the prefix
           next_id := prefix || LPAD('0000' || (number_part + 1)::VARCHAR, 4, '0');
         END IF;
 
@@ -40,7 +40,7 @@ export async function up(database: DatabaseService): Promise<void> {
 export async function down(database: DatabaseService): Promise<void> {
   await database.executeQuery(
     sql`
-      DROP FUNCTION IF EXISTS generate_teacher_id();
+      DROP FUNCTION IF EXISTS generate_parent_id();
     `.compile(database),
   );
 }

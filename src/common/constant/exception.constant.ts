@@ -138,4 +138,31 @@ export const EXCEPTION = {
       code: 'TEACHER_DELETE_FAILED',
     },
   },
+  PARENT: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Parent not found',
+      code: 'PARENT_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Parent does not exist',
+      code: 'PARENT_DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store parent',
+      code: 'PARENT_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update parent',
+      code: 'PARENT_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete parent',
+      code: 'PARENT_DELETE_FAILED',
+    },
+  },
 };

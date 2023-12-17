@@ -7,41 +7,39 @@ import { plainToInstance } from 'class-transformer';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
-import { StudentEntity } from './student.entity';
-import { StudentRepository } from './student.repository';
+import { ParentEntity } from './parent.entity';
+import { ParentRepository } from './parent.repository';
 import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
-import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
+import { ParentStoreDTO, ParentUpdateDTO } from './dto/parent.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import {
-  StudentDeleteRO,
-  StudentGetDetailRO,
-  StudentGetListRO,
-  StudentStoreRO,
-  StudentUpdateRO,
-} from './ro/student.ro';
-import { ParentRepository } from '../parent/parent.repository';
+  ParentDeleteRO,
+  ParentGetDetailRO,
+  ParentGetListRO,
+  ParentStoreRO,
+  ParentUpdateRO,
+} from './ro/parent.ro';
 
 @Injectable()
-export class StudentService extends UserService {
-  private readonly logger = new Logger(StudentService.name);
+export class ParentService extends UserService {
+  private readonly logger = new Logger(ParentService.name);
 
   constructor(
     userRepository: UserRepository,
     roleRepository: RoleRepository,
     userRoleRepository: UserRoleRepository,
     private readonly database: DatabaseService,
-    private readonly studentRepository: StudentRepository,
     private readonly parentRepository: ParentRepository,
   ) {
     super(userRepository, roleRepository, userRoleRepository);
   }
 
-  async store(dto: StudentStoreDTO, decoded: IJwtPayload) {
+  async store(dto: ParentStoreDTO, decoded: IJwtPayload) {
     await super.validateStore(dto);
-    const response = new StudentStoreRO();
+    const response = new ParentStoreRO();
 
     try {
       await this.database.transaction().execute(async (transaction) => {
@@ -52,31 +50,30 @@ export class StudentService extends UserService {
           decoded.userId,
         );
 
-        // Get student role id
+        // Get parent role id
         const { id: roleId } = await this.roleRepository.getIdByName(
-          USER_ROLE.STUDENT,
+          USER_ROLE.PARENT,
         );
 
         // Store user role
         await super.storeUserRoleWithTransaction(transaction, user.id, roleId);
 
-        // Store student
-        const studentData = new StudentEntity();
-        studentData.userId = user.id;
-        const { id } = await this.studentRepository.storeWithTransaction(
+        // Store parent
+        const parentData = new ParentEntity();
+        parentData.userId = user.id;
+        const { id } = await this.parentRepository.storeWithTransaction(
           transaction,
-          studentData,
+          parentData,
         );
 
         // Set response
         response.id = id;
         response.username = user.username;
-        response.email = user.email;
         response.phone = user.phone;
         response.displayName = user.displayName;
       });
     } catch (error) {
-      const { code, status, message } = EXCEPTION.STUDENT.STORE_FAILED;
+      const { code, status, message } = EXCEPTION.PARENT.STORE_FAILED;
       this.logger.error(error);
       this.formatException({
         code,
@@ -85,24 +82,24 @@ export class StudentService extends UserService {
       });
     }
 
-    return plainToInstance(StudentStoreRO, response, {
+    return plainToInstance(ParentStoreRO, response, {
       excludeExtraneousValues: true,
     });
   }
 
   async getList(dto: UserGetListDTO) {
-    const data = await this.studentRepository.find(dto);
+    const data = await this.parentRepository.find(dto);
 
-    return plainToInstance(StudentGetListRO, data, {
+    return plainToInstance(ParentGetListRO, data, {
       excludeExtraneousValues: true,
     });
   }
 
   async getDetail(id: string) {
-    const student = await this.studentRepository.findUserById(id);
+    const parent = await this.parentRepository.findUserById(id);
 
-    if (!student) {
-      const { code, status, message } = EXCEPTION.STUDENT.NOT_FOUND;
+    if (!parent) {
+      const { code, status, message } = EXCEPTION.TEACHER.NOT_FOUND;
       this.formatException({
         code,
         status,
@@ -110,18 +107,18 @@ export class StudentService extends UserService {
       });
     }
 
-    return plainToInstance(StudentGetDetailRO, student, {
+    return plainToInstance(ParentGetDetailRO, parent, {
       excludeExtraneousValues: true,
     });
   }
 
-  async update(id: string, dto: StudentUpdateDTO, decoded: IJwtPayload) {
+  async update(id: string, dto: ParentUpdateDTO, decoded: IJwtPayload) {
     await this.validateUpdate(id, dto);
 
-    const response = new StudentUpdateRO();
+    const response = new ParentUpdateRO();
 
     try {
-      const { userId } = await this.studentRepository.getUserIdByStudentId(id);
+      const { userId } = await this.parentRepository.getUserIdByParentId(id);
       await this.database.transaction().execute(async (transaction) => {
         // Update user
         const user = await super.updateWithTransaction(
@@ -131,31 +128,20 @@ export class StudentService extends UserService {
           decoded.userId,
         );
 
-        // Update student
-        if (dto.parentId) {
-          const studentData = new StudentEntity();
-          studentData.parentId = dto.parentId;
-          await this.studentRepository.updateWithTransaction(
-            transaction,
-            studentData,
-          );
-        }
-
         // Set response
-        const { id: studentId } = await this.studentRepository.getIdByUserId(
+        const { id: parentId } = await this.parentRepository.getIdByUserId(
           user.id,
         );
-        if (!studentId) {
+        if (!parentId) {
           throw new InternalServerErrorException();
         }
-        response.id = studentId;
+        response.id = parentId;
         response.username = user.username;
-        response.email = user.email;
         response.phone = user.phone;
         response.displayName = user.displayName;
       });
     } catch (error) {
-      const { code, status, message } = EXCEPTION.STUDENT.UPDATE_FAILED;
+      const { code, status, message } = EXCEPTION.PARENT.UPDATE_FAILED;
       this.logger.error(error);
       this.formatException({
         code,
@@ -164,7 +150,7 @@ export class StudentService extends UserService {
       });
     }
 
-    return plainToInstance(StudentUpdateRO, response, {
+    return plainToInstance(ParentUpdateRO, response, {
       excludeExtraneousValues: true,
     });
   }
@@ -173,7 +159,7 @@ export class StudentService extends UserService {
     await this.validateDelete(id);
 
     try {
-      const { userId } = await this.studentRepository.getUserIdByStudentId(id);
+      const { userId } = await this.parentRepository.getUserIdByParentId(id);
       await this.database.transaction().execute(async (transaction) => {
         // Delete user
         await super.deleteWithTransaction(transaction, userId, decoded.userId);
@@ -181,7 +167,7 @@ export class StudentService extends UserService {
         await super.deleteUserRoleWithTransaction(transaction, userId);
       });
     } catch (error) {
-      const { code, status, message } = EXCEPTION.STUDENT.DELETE_FAILED;
+      const { code, status, message } = EXCEPTION.PARENT.DELETE_FAILED;
       this.logger.error(error);
       this.formatException({
         code,
@@ -191,7 +177,7 @@ export class StudentService extends UserService {
     }
 
     return plainToInstance(
-      StudentDeleteRO,
+      ParentDeleteRO,
       {
         id,
       },
@@ -201,11 +187,11 @@ export class StudentService extends UserService {
     );
   }
 
-  private async validateUpdate(id: string, dto: StudentUpdateDTO) {
+  private async validateUpdate(id: string, dto: ParentUpdateDTO) {
     // Check id exists
-    const student = await this.studentRepository.findOneById(id);
-    if (!student) {
-      const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
+    const parent = await this.parentRepository.findOneById(id);
+    if (!parent) {
+      const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
       this.formatException({
         code,
         status,
@@ -213,43 +199,14 @@ export class StudentService extends UserService {
       });
     }
 
-    // Check email unique
-    if (dto.email) {
-      const emailCount = await this.userRepository.countByEmailExceptId(
-        dto.email,
-        student.userId,
-      );
-      if (emailCount) {
-        const { code, status, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
-        this.formatException({
-          code,
-          status,
-          message,
-        });
-      }
-    }
-
     // Check phone unique
     if (dto.phone) {
       const phoneCount = await this.userRepository.countByPhoneExceptId(
         dto.phone,
-        student.userId,
+        parent.userId,
       );
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
-        this.formatException({
-          code,
-          status,
-          message,
-        });
-      }
-    }
-
-    // Check parent exist
-    if (dto.parentId) {
-      const parentCount = await this.parentRepository.countById(dto.parentId);
-      if (!parentCount) {
-        const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
         this.formatException({
           code,
           status,
@@ -261,9 +218,9 @@ export class StudentService extends UserService {
 
   private async validateDelete(id: string) {
     // Check id exists
-    const studentCount = await this.studentRepository.countById(id);
-    if (!studentCount) {
-      const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
+    const parentCount = await this.parentRepository.countById(id);
+    if (!parentCount) {
+      const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
       this.formatException({
         code,
         status,

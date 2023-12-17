@@ -2,34 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
-import { StudentEntity } from './student.entity';
+import { ParentEntity } from './parent.entity';
 import { PaginationDTO } from '../common/dto/paginate.dto';
 
 @Injectable()
-export class StudentRepository {
+export class ParentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  storeWithTransaction(transaction: Transaction, entity: StudentEntity) {
+  storeWithTransaction(transaction: Transaction, entity: ParentEntity) {
     return transaction
-      .insertInto('student')
+      .insertInto('parent')
       .values(entity)
-      .returning('id')
-      .executeTakeFirstOrThrow();
-  }
-
-  updateWithTransaction(transaction: Transaction, entity: StudentEntity) {
-    return transaction
-      .updateTable('student')
-      .set(entity)
-      .where('id', '=', entity.id)
       .returning('id')
       .executeTakeFirstOrThrow();
   }
 
   find(filter: PaginationDTO) {
     const query = this.database
-      .selectFrom('student')
-      .innerJoin('users', 'users.id', 'student.userId')
+      .selectFrom('parent')
+      .innerJoin('users', 'users.id', 'parent.userId')
       .innerJoin('userRole', 'users.id', 'userRole.userId')
       .innerJoin('role', 'userRole.roleId', 'role.id')
       .select([
@@ -37,9 +28,9 @@ export class StudentRepository {
         'users.email',
         'users.phone',
         'users.displayName',
-        'student.id',
+        'parent.id',
       ])
-      .where('role.name', '=', USER_ROLE.STUDENT)
+      .where('role.name', '=', USER_ROLE.PARENT)
       .where('users.deletedAt', 'is', null);
 
     return paginate(query, {
@@ -50,47 +41,47 @@ export class StudentRepository {
 
   findUserById(id: string) {
     return this.database
-      .selectFrom('student')
-      .innerJoin('users', 'users.id', 'student.userId')
+      .selectFrom('parent')
+      .innerJoin('users', 'users.id', 'parent.userId')
       .selectAll('users')
-      .where('student.id', '=', id)
+      .where('parent.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
   }
 
   findOneById(id: string) {
     return this.database
-      .selectFrom('student')
-      .innerJoin('users', 'users.id', 'student.userId')
-      .selectAll('student')
-      .where('student.id', '=', id)
+      .selectFrom('parent')
+      .innerJoin('users', 'users.id', 'parent.userId')
+      .selectAll('parent')
+      .where('parent.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
   }
 
   countById(id: string) {
     return this.database
-      .selectFrom('student')
-      .innerJoin('users', 'users.id', 'student.userId')
+      .selectFrom('parent')
+      .innerJoin('users', 'users.id', 'parent.userId')
       .select(({ fn }) => fn.countAll().as('count'))
-      .where('student.id', '=', id)
+      .where('parent.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
   }
 
   getIdByUserId(userId: string) {
     return this.database
-      .selectFrom('student')
-      .select('student.id')
-      .where('student.userId', '=', userId)
+      .selectFrom('parent')
+      .select('parent.id')
+      .where('parent.userId', '=', userId)
       .executeTakeFirst();
   }
 
-  getUserIdByStudentId(id: string) {
+  getUserIdByParentId(id: string) {
     return this.database
-      .selectFrom('student')
-      .select('student.userId')
-      .where('student.id', '=', id)
+      .selectFrom('parent')
+      .select('parent.userId')
+      .where('parent.id', '=', id)
       .executeTakeFirst();
   }
 }

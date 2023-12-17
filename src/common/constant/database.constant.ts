@@ -40,10 +40,18 @@ export const DATABASE_TABLE = {
     SCHEMA: {
       ID: 'id',
       USER_ID: 'user_id',
+      PARENT_ID: 'parent_id',
     },
   },
   TEACHER: {
     NAME: 'teacher',
+    SCHEMA: {
+      ID: 'id',
+      USER_ID: 'user_id',
+    },
+  },
+  PARENT: {
+    NAME: 'parent',
     SCHEMA: {
       ID: 'id',
       USER_ID: 'user_id',
