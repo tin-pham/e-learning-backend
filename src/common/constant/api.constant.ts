@@ -111,4 +111,28 @@ export const API = {
       OPERATION: 'Delete parent',
     },
   },
+  SUBJECT: {
+    TAGS: 'Subject',
+    CONTROLLER: 'subject',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store subject',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list subjects',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get subject detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update subject',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete subject',
+    },
+  },
 };

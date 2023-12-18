@@ -3,13 +3,13 @@ import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
 import { StudentEntity } from './student.entity';
-import { PaginationDTO } from '../common/dto/paginate.dto';
+import { PaginateDTO } from '../common/dto/paginate.dto';
 
 @Injectable()
 export class StudentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  storeWithTransaction(transaction: Transaction, entity: StudentEntity) {
+  insertWithTransaction(transaction: Transaction, entity: StudentEntity) {
     return transaction
       .insertInto('student')
       .values(entity)
@@ -26,7 +26,7 @@ export class StudentRepository {
       .executeTakeFirstOrThrow();
   }
 
-  find(filter: PaginationDTO) {
+  find(filter: PaginateDTO) {
     const query = this.database
       .selectFrom('student')
       .innerJoin('users', 'users.id', 'student.userId')

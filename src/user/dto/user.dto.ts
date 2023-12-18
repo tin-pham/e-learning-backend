@@ -7,7 +7,7 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import { PaginationDTO } from '../../common/dto/paginate.dto';
+import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -40,7 +40,7 @@ export class UserStoreDTO {
   displayName: string;
 }
 
-export class UserGetListDTO extends PaginationDTO {}
+export class UserGetListDTO extends PaginateDTO {}
 export class UserUpdateDTO {
   @ApiProperty({ example: '123456' })
   @IsString()

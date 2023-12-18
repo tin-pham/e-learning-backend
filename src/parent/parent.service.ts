@@ -61,7 +61,7 @@ export class ParentService extends UserService {
         // Store parent
         const parentData = new ParentEntity();
         parentData.userId = user.id;
-        const { id } = await this.parentRepository.storeWithTransaction(
+        const { id } = await this.parentRepository.insertWithTransaction(
           transaction,
           parentData,
         );

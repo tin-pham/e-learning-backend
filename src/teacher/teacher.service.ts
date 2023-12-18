@@ -61,7 +61,7 @@ export class TeacherService extends UserService {
         // Store teacher
         const teacherData = new TeacherEntity();
         teacherData.userId = user.id;
-        const { id } = await this.teacherRepository.storeWithTransaction(
+        const { id } = await this.teacherRepository.insertWithTransaction(
           transaction,
           teacherData,
         );

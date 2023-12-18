@@ -3,13 +3,13 @@ import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
 import { ParentEntity } from './parent.entity';
-import { PaginationDTO } from '../common/dto/paginate.dto';
+import { PaginateDTO } from '../common/dto/paginate.dto';
 
 @Injectable()
 export class ParentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  storeWithTransaction(transaction: Transaction, entity: ParentEntity) {
+  insertWithTransaction(transaction: Transaction, entity: ParentEntity) {
     return transaction
       .insertInto('parent')
       .values(entity)
@@ -17,7 +17,7 @@ export class ParentRepository {
       .executeTakeFirstOrThrow();
   }
 
-  find(filter: PaginationDTO) {
+  find(filter: PaginateDTO) {
     const query = this.database
       .selectFrom('parent')
       .innerJoin('users', 'users.id', 'parent.userId')

@@ -3,7 +3,7 @@ import { DatabaseService, Transaction } from '../database';
 import { UserEntity } from './user.entity';
 import { USER_ROLE } from '../user-role/user-role.enum';
 import { paginate } from '../common/function/paginate';
-import { PaginationDTO } from '../common/dto/paginate.dto';
+import { PaginateDTO } from '../common/dto/paginate.dto';
 
 @Injectable()
 export class UserRepository {
@@ -80,7 +80,7 @@ export class UserRepository {
       .executeTakeFirst();
   }
 
-  findByRole(filter: PaginationDTO, role: USER_ROLE) {
+  findByRole(filter: PaginateDTO, role: USER_ROLE) {
     const query = this.database
       .selectFrom('users')
       .innerJoin('userRole', 'users.id', 'userRole.userId')

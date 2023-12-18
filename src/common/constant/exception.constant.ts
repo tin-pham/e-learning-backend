@@ -9,11 +9,6 @@ export const EXCEPTION = {
     },
   },
   USER: {
-    FAILED_TO_CREATE: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      code: 'USER_FAILED_TO_CREATE',
-      message: 'Failed to create user',
-    },
     USERNAME_ALREADY_EXISTS: {
       status: HttpStatus.CONFLICT,
       code: 'USER_USERNAME_ALREADY_EXISTS',
@@ -38,11 +33,6 @@ export const EXCEPTION = {
       status: HttpStatus.NOT_FOUND,
       code: 'USER_NOT_FOUND',
       message: 'User not found',
-    },
-    FAILED_TO_GET_DETAIL: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      code: 'USER_FAILED_TO_GET_DETAIL',
-      message: 'Failed to get user detail',
     },
   },
   AUTH: {
@@ -163,6 +153,43 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to delete parent',
       code: 'PARENT_DELETE_FAILED',
+    },
+  },
+  SUBJECT: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Subject not found',
+      code: 'SUBJECT_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Subject does not exist',
+      code: 'SUBJECT_DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Subject already exist',
+      code: 'SUBJECT_ALREADY_EXIST',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list subject',
+      code: 'SUBJECT_GET_LIST_FAILED',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store subject',
+      code: 'SUBJECT_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update subject',
+      code: 'SUBJECT_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete subject',
+      code: 'SUBJECT_DELETE_FAILED',
     },
   },
 };

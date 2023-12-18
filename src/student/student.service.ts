@@ -63,7 +63,7 @@ export class StudentService extends UserService {
         // Store student
         const studentData = new StudentEntity();
         studentData.userId = user.id;
-        const { id } = await this.studentRepository.storeWithTransaction(
+        const { id } = await this.studentRepository.insertWithTransaction(
           transaction,
           studentData,
         );

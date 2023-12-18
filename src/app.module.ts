@@ -10,6 +10,7 @@ import { RoleModule } from './role/role.module';
 import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { ParentModule } from './parent/parent.module';
+import { SubjectModule } from './subject/subject.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ParentModule } from './parent/parent.module';
     StudentModule,
     TeacherModule,
     ParentModule,
+    SubjectModule,
   ],
   providers: [...appProviders],
 })
