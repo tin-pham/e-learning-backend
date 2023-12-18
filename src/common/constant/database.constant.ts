@@ -70,4 +70,25 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  GROUP: {
+    NAME: 'group',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
+  SUBJECT_GROUP: {
+    NAME: 'subject_group',
+    SCHEMA: {
+      ID: 'id',
+      SUBJECT_ID: 'subject_id',
+      GROUP_ID: 'group_id',
+    },
+  },
 };

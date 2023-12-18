@@ -11,6 +11,8 @@ import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { ParentModule } from './parent/parent.module';
 import { SubjectModule } from './subject/subject.module';
+import { GroupModule } from './group/group.module';
+import { ElasticSearchLoggerModule } from './elastic-search/elastic-search-logger.module';
 
 @Module({
   imports: [
@@ -18,12 +20,14 @@ import { SubjectModule } from './subject/subject.module';
     DatabaseModule.forRoot(databaseConfig),
     AuthModule,
     HealthModule,
+    ElasticSearchLoggerModule,
     ThrottlerModule,
     RoleModule,
     StudentModule,
     TeacherModule,
     ParentModule,
     SubjectModule,
+    GroupModule,
   ],
   providers: [...appProviders],
 })

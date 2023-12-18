@@ -12,6 +12,7 @@ import { UserRoleRepository } from '../user-role/user-role.repository';
 import { AuthService } from './auth.service';
 import { RefreshTokenService } from './jwt/refresh-token.service';
 import { ApiKeyService } from './api-key/api-key.service';
+import { ElasticSearchLoggerService } from 'src/elastic-search/elastic-search-logger.service';
 
 const configService = new ConfigService();
 
@@ -36,6 +37,7 @@ const configService = new ConfigService();
     ApiKeyService,
     HeaderApiKeyStrategy,
     UserRoleRepository,
+    ElasticSearchLoggerService,
   ],
 })
 export class AuthModule {}

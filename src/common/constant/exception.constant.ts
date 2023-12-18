@@ -192,4 +192,41 @@ export const EXCEPTION = {
       code: 'SUBJECT_DELETE_FAILED',
     },
   },
+  GROUP: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Group not found',
+      code: 'GROUP_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Group does not exist',
+      code: 'GROUP_DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Group already exist',
+      code: 'GROUP_ALREADY_EXIST',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list group',
+      code: 'GROUP_GET_LIST_FAILED',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store group',
+      code: 'GROUP_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update group',
+      code: 'GROUP_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete group',
+      code: 'GROUP_DELETE_FAILED',
+    },
+  },
 };

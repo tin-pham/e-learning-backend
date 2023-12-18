@@ -31,6 +31,14 @@ export const API = {
       OPERATION: 'Check health',
     },
   },
+  LOG: {
+    TAGS: 'Log',
+    CONTROLLER: 'log',
+    GET_DETAIL: {
+      ROUTE: '',
+      OPERATION: 'Get detail logs',
+    },
+  },
   ROLE: {
     TAGS: 'Role',
     CONTROLLER: 'role',
@@ -133,6 +141,30 @@ export const API = {
     DELETE: {
       ROUTE: ':id',
       OPERATION: 'Delete subject',
+    },
+  },
+  GROUP: {
+    TAGS: 'Group',
+    CONTROLLER: 'group',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store group',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list groups',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get group detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update group',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete group',
     },
   },
 };

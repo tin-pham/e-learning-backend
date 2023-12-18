@@ -9,6 +9,7 @@ import { UserEntity } from '../user/user.entity';
 import { UserRepository } from '../user/user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { RefreshTokenService } from './jwt/refresh-token.service';
+import { ElasticSearchLoggerService } from '../elastic-search/elastic-search-logger.service';
 import { SignInDTO } from './dto/auth.dto';
 import { RefreshTokenRO, SignInRO } from './ro/auth.ro';
 
@@ -18,9 +19,10 @@ export class AuthService extends BaseService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
+    private readonly elasticLogger: ElasticSearchLoggerService,
+    private readonly userRepository: UserRepository,
     private readonly userRoleRepository: UserRoleRepository,
   ) {
     super();
@@ -46,6 +48,8 @@ export class AuthService extends BaseService {
 
     // Store refresh token in cache
     await this.refreshTokenService.store(user.id, refreshToken);
+
+    await this.elasticLogger.info(`Sign in user: ${user.username}`);
 
     return plainToInstance(SignInRO, { accessToken, refreshToken });
   }

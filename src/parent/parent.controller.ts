@@ -6,8 +6,8 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -57,7 +57,7 @@ export class ParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: ParentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.parentService.store(dto, decoded);
@@ -97,8 +97,8 @@ export class ParentController {
   @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
-  @Put(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @Patch(UPDATE.ROUTE)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
   update(
     @Param('id') id: string,
     @Body() dto: ParentUpdateDTO,
@@ -115,7 +115,7 @@ export class ParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.parentService.delete(id, decoded);
   }

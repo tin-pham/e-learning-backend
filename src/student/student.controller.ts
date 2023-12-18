@@ -6,8 +6,8 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -57,7 +57,7 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: StudentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.store(dto, decoded);
@@ -71,7 +71,10 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
+  @UseGuards(
+    JwtGuard,
+    RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
+  )
   getList(@Query() dto: UserGetListDTO) {
     return this.studentService.getList(dto);
   }
@@ -84,7 +87,10 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
+  @UseGuards(
+    JwtGuard,
+    RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
+  )
   getDetail(@Param('id') id: string) {
     return this.studentService.getDetail(id);
   }
@@ -97,8 +103,8 @@ export class StudentController {
   @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
-  @Put(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @Patch(UPDATE.ROUTE)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
   update(
     @Param('id') id: string,
     @Body() dto: StudentUpdateDTO,
@@ -115,7 +121,7 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.delete(id, decoded);
   }
