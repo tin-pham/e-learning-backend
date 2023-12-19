@@ -34,9 +34,13 @@ export const API = {
   LOG: {
     TAGS: 'Log',
     CONTROLLER: 'log',
-    GET_DETAIL: {
-      ROUTE: '',
-      OPERATION: 'Get detail logs',
+    GET_ERROR: {
+      ROUTE: 'error',
+      OPERATION: 'Get error logs',
+    },
+    GET_INFO: {
+      ROUTE: 'info',
+      OPERATION: 'Get info logs',
     },
   },
   ROLE: {

@@ -32,7 +32,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       this.elasticLogger.error({
         status,
         message,
-        actor: request.user.username,
+        actorId: request.user.id,
       });
     }
 

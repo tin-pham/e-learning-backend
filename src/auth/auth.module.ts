@@ -2,7 +2,6 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { CacheModule } from '../cache/cache.module';
-import { ElasticsearchLoggerModule } from '../elastic-search-logger/elastic-search-logger.module';
 import { LocalStrategy } from './local/local.stategy';
 import { JwtStrtegy } from './jwt/jwt.strategy';
 import { HeaderApiKeyStrategy } from './api-key/api-key.strategy';
@@ -25,7 +24,6 @@ const configService = new ConfigService();
       signOptions: { expiresIn: configService.get('JWT_EXPIRATION_TIME') },
     }),
     CacheModule,
-    ElasticsearchLoggerModule,
   ],
   controllers: [AuthController],
   providers: [

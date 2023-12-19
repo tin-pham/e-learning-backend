@@ -1,13 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import {
-  LOG_LEVELS,
+  LOG_INDEXES,
   ROLLING_INDEX_MODE,
 } from './enum/elastic-search-logger.enum';
 import {
-  ErrorLevelException,
-  InfoLevelException,
+  ErrorIndexException,
+  InfoIndexException,
+  QueryIndex,
 } from './interface/elastic-search-logger.interface';
+import { plainToInstance } from 'class-transformer';
+import {
+  ElasticsearchLoggerGetErrorRO,
+  ElasticsearchLoggerGetInfoRO,
+} from './ro/elastic-searrch-logger.ro';
+import { PaginateDTO } from 'src/common/dto/paginate.dto';
 
 @Injectable()
 export class ElasticsearchLoggerService {
@@ -15,36 +22,115 @@ export class ElasticsearchLoggerService {
   private readonly stdout = false;
   private readonly indexesCache: Array<string> = [];
   private readonly logger = new Logger(ElasticsearchLoggerService.name);
+
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
-  public async info(message: InfoLevelException): Promise<string> {
-    return this.log(message, LOG_LEVELS.INFO);
+  info(message: InfoIndexException): Promise<string> {
+    return this.log(message, LOG_INDEXES.INFO);
   }
 
-  public async error(exception: ErrorLevelException): Promise<string> {
-    return this.log(exception, LOG_LEVELS.ERROR);
+  error(exception: ErrorIndexException): Promise<string> {
+    return this.log(exception, LOG_INDEXES.ERROR);
   }
 
-  public async debug<T>(message: T): Promise<string> {
-    return this.log(message, LOG_LEVELS.DEBUG);
+  warning<T>(message: T): Promise<string> {
+    return this.log(message, LOG_INDEXES.WARNING);
   }
 
-  public async warning<T>(message: T): Promise<string> {
-    return this.log(message, LOG_LEVELS.WARNING);
+  // WARNING: Some how enum not init index, first string, then enum, need fix
+  query(query: QueryIndex): Promise<string> {
+    return this.log(query, LOG_INDEXES.QUERY);
   }
 
-  public async trace<T>(message: T): Promise<string> {
-    return this.log(message, LOG_LEVELS.TRACE);
+  async getError(dto: PaginateDTO) {
+    // Get logs
+    const offset = (dto.page - 1) * dto.limit;
+    const { body } = await this.elasticsearchService.search({
+      index: LOG_INDEXES.ERROR,
+      size: dto.limit,
+      from: offset,
+      body: {
+        sort: [
+          {
+            date: { order: 'desc' },
+          },
+        ],
+      },
+    });
+
+    const response = body['hits'].hits;
+    const data = response.map((item) => ({
+      message: item._source.message,
+      date: new Date(item._source.date).toLocaleString(),
+    }));
+
+    // Count total logs
+    const { body: bodyCount } = await this.elasticsearchService.count({
+      index: LOG_INDEXES.INFO,
+    });
+
+    return plainToInstance(
+      ElasticsearchLoggerGetErrorRO,
+      {
+        data,
+        meta: {
+          itemsPerPage: dto.limit,
+          currentPage: dto.page,
+          totalItems: bodyCount['count'],
+          totalPage: Math.ceil(bodyCount['count'] / dto.limit),
+        },
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 
-  /**
-   * Primary log message handler.
-   *
-   * @param {string} level
-   * @param message
-   * @param indice
-   */
-  public async log<T>(message: T, indice?: string): Promise<string> {
+  async getInfo(dto: PaginateDTO) {
+    // Get logs
+    const offset = (dto.page - 1) * dto.limit;
+    const { body } = await this.elasticsearchService.search({
+      index: LOG_INDEXES.INFO,
+      size: dto.limit,
+      from: offset,
+      body: {
+        sort: [
+          {
+            date: { order: 'desc' },
+          },
+        ],
+      },
+    });
+
+    const response = body['hits'].hits;
+    const data = response.map((item) => ({
+      message: item._source.message,
+      date: new Date(item._source.date).toLocaleString(),
+    }));
+
+    // Count total logs
+    const { body: bodyCount } = await this.elasticsearchService.count({
+      index: LOG_INDEXES.INFO,
+    });
+
+    return plainToInstance(
+      ElasticsearchLoggerGetInfoRO,
+      {
+        data,
+        meta: {
+          itemsPerPage: dto.limit,
+          currentPage: dto.page,
+          totalItems: bodyCount['count'],
+          totalPage: Math.ceil(bodyCount['count'] / dto.limit),
+        },
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+  }
+
+  private async log<T>(message: T, indice?: string): Promise<string> {
     if (!!!indice) {
       indice = this.getRollingIndex(indice, this.rollingOffsetMode);
     }
@@ -57,27 +143,6 @@ export class ElasticsearchLoggerService {
         ...message,
         date: new Date().toISOString(),
       },
-    });
-
-    if (this.stdout) {
-      this.logger.log(
-        `[${ElasticsearchLoggerService.name}] ${JSON.stringify(message)}`,
-      );
-    }
-
-    return result.body['_id'];
-  }
-
-  public async raw<T>(message: T, indice?: string): Promise<string> {
-    if (!!!indice) {
-      indice = this.getRollingIndex(indice, this.rollingOffsetMode);
-    }
-
-    await this.createIndexIfNotExists(indice);
-
-    const result = await this.elasticsearchService.index({
-      index: indice,
-      body: message,
     });
 
     if (this.stdout) {

@@ -13,6 +13,7 @@ import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ParentStoreDTO, ParentUpdateDTO } from './dto/parent.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import {
@@ -33,6 +34,7 @@ export class ParentService extends UserService {
     userRoleRepository: UserRoleRepository,
     private readonly database: DatabaseService,
     private readonly parentRepository: ParentRepository,
+    private readonly elasticLogger: ElasticsearchLoggerService,
   ) {
     super(userRepository, roleRepository, userRoleRepository);
   }
@@ -75,6 +77,12 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.STORE_FAILED;
       this.logger.error(error);
+      this.elasticLogger.error({
+        code,
+        status,
+        message,
+        actorId: decoded.userId,
+      });
       this.formatException({
         code,
         status,

@@ -3,7 +3,6 @@ import {
   HealthCheckError,
   HealthIndicator,
   HealthIndicatorResult,
-  MemoryHealthIndicator,
 } from '@nestjs/terminus';
 import { CacheService } from '../../cache/cache.service';
 
@@ -20,7 +19,7 @@ export class MemcacheHealthIndicator extends HealthIndicator {
       return this.getStatus('memcache', true);
     } catch (error) {
       throw new HealthCheckError(
-        `${MemoryHealthIndicator.name} failed`,
+        `${MemcacheHealthIndicator.name} failed`,
         this.getStatus('memcache', false),
       );
     }

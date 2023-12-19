@@ -5,6 +5,9 @@ FROM node:18-alpine AS development
 USER root
 WORKDIR /usr/src/app
 
+RUN apk add --no-cache tzdata
+ENV TZ=Asia/Saigon
+
 COPY --chown=node:node package*.json pnpm-lock.yaml ./
 
 RUN corepack enable && corepack prepare pnpm@7.18.0 --activate
