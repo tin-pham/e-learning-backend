@@ -15,17 +15,17 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.EMAIL, 'varchar(50)', (column) => column)
     .addColumn(SCHEMA.PHONE, 'varchar(50)', (column) => column)
     .addColumn(SCHEMA.DISPLAY_NAME, 'varchar(50)')
-    .addColumn(SCHEMA.CREATED_AT, 'timestamp', (column) =>
+    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
       column.defaultTo(sql`now()`),
     )
     .addColumn(SCHEMA.CREATED_BY, 'varchar(50)', (column) =>
       column.references(`${NAME}.${SCHEMA.ID}`),
     )
-    .addColumn(SCHEMA.UPDATED_AT, 'timestamp')
+    .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')
     .addColumn(SCHEMA.UPDATED_BY, 'varchar(50)', (column) =>
       column.references(`${NAME}.${SCHEMA.ID}`),
     )
-    .addColumn(SCHEMA.DELETED_AT, 'timestamp')
+    .addColumn(SCHEMA.DELETED_AT, 'timestamptz')
     .addColumn(SCHEMA.DELETED_BY, 'varchar(50)', (column) =>
       column.references(`${NAME}.${SCHEMA.ID}`),
     )

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { plainToInstance } from 'class-transformer';
 import {
   LOG_INDEXES,
   ROLLING_INDEX_MODE,
@@ -9,12 +10,12 @@ import {
   InfoIndexException,
   QueryIndex,
 } from './interface/elastic-search-logger.interface';
-import { plainToInstance } from 'class-transformer';
+import { PaginateDTO } from '../common/dto/paginate.dto';
+import { ElasticsearchLoggerGetInfoDTO } from './dto/elastic-search-logger.dto';
 import {
   ElasticsearchLoggerGetErrorRO,
   ElasticsearchLoggerGetInfoRO,
 } from './ro/elastic-searrch-logger.ro';
-import { PaginateDTO } from 'src/common/dto/paginate.dto';
 
 @Injectable()
 export class ElasticsearchLoggerService {
@@ -86,7 +87,7 @@ export class ElasticsearchLoggerService {
     );
   }
 
-  async getInfo(dto: PaginateDTO) {
+  async getInfo(dto: ElasticsearchLoggerGetInfoDTO) {
     // Get logs
     const offset = (dto.page - 1) * dto.limit;
     const { body } = await this.elasticsearchService.search({
@@ -94,6 +95,7 @@ export class ElasticsearchLoggerService {
       size: dto.limit,
       from: offset,
       body: {
+        // TODO: Filter by date
         sort: [
           {
             date: { order: 'desc' },

@@ -18,7 +18,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.ROLE_ID, 'varchar(50)', (column) =>
       column.references(`${ROLES_NAME}.${ROLE_SCHEMA.ID}`).notNull(),
     )
-    .addColumn(SCHEMA.CREATED_AT, 'timestamp', (column) =>
+    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
       column.defaultTo(sql`now()`),
     )
     .addColumn(SCHEMA.CREATED_BY, 'varchar(50)')
