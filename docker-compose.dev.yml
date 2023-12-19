@@ -70,10 +70,9 @@ services:
       - '9200:9200'
       - '9300:9300'
     environment:
-      node.name: 'elasticsearch'
-      ES_JAVA_OPTS: '-Xmx256m -Xms256m'
-      discovery-type: 'single-node'
-      cluster.initial_master_nodes: 'elasticsearch'
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xmx256m -Xms256m
     ulimits:
       memlock:
         soft: -1

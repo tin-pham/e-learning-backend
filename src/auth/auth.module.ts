@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { CacheModule } from '../cache/cache.module';
+import { ElasticsearchLoggerModule } from '../elastic-search-logger/elastic-search-logger.module';
 import { LocalStrategy } from './local/local.stategy';
 import { JwtStrtegy } from './jwt/jwt.strategy';
 import { HeaderApiKeyStrategy } from './api-key/api-key.strategy';
@@ -12,7 +13,6 @@ import { UserRoleRepository } from '../user-role/user-role.repository';
 import { AuthService } from './auth.service';
 import { RefreshTokenService } from './jwt/refresh-token.service';
 import { ApiKeyService } from './api-key/api-key.service';
-import { ElasticSearchLoggerService } from 'src/elastic-search/elastic-search-logger.service';
 
 const configService = new ConfigService();
 
@@ -25,6 +25,7 @@ const configService = new ConfigService();
       signOptions: { expiresIn: configService.get('JWT_EXPIRATION_TIME') },
     }),
     CacheModule,
+    ElasticsearchLoggerModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -37,7 +38,6 @@ const configService = new ConfigService();
     ApiKeyService,
     HeaderApiKeyStrategy,
     UserRoleRepository,
-    ElasticSearchLoggerService,
   ],
 })
 export class AuthModule {}

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-import { ElasticSearchLoggerService } from './elastic-search-logger.service';
+import { ElasticsearchLoggerService } from './elastic-search-logger.service';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { ElasticSearchLoggerService } from './elastic-search-logger.service';
       }),
     }),
   ],
-  providers: [ElasticSearchLoggerService],
-  exports: [ElasticSearchLoggerService],
+  providers: [ElasticsearchLoggerService],
+  exports: [ElasticsearchLoggerService],
 })
-export class ElasticSearchLoggerModule {}
+export class ElasticsearchLoggerModule {}

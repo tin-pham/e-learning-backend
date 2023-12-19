@@ -3,13 +3,15 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { plainToInstance } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
+import { difference } from 'moderndash';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { USER_ROLE } from '../user-role/user-role.enum';
 import { UserEntity } from '../user/user.entity';
 import { UserRepository } from '../user/user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { RefreshTokenService } from './jwt/refresh-token.service';
-import { ElasticSearchLoggerService } from '../elastic-search/elastic-search-logger.service';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { SignInDTO } from './dto/auth.dto';
 import { RefreshTokenRO, SignInRO } from './ro/auth.ro';
 
@@ -21,7 +23,7 @@ export class AuthService extends BaseService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
-    private readonly elasticLogger: ElasticSearchLoggerService,
+    private readonly elasticLogger: ElasticsearchLoggerService,
     private readonly userRepository: UserRepository,
     private readonly userRoleRepository: UserRoleRepository,
   ) {
@@ -49,7 +51,14 @@ export class AuthService extends BaseService {
     // Store refresh token in cache
     await this.refreshTokenService.store(user.id, refreshToken);
 
-    await this.elasticLogger.info(`Sign in user: ${user.username}`);
+    // Only log admin and moderator sign in
+    const modder: string[] = [USER_ROLE.ADMIN, USER_ROLE.MODERATOR];
+    const userRoles = user.roles.map((role) => role.name);
+    if (difference(userRoles, modder).length === 0) {
+      await this.elasticLogger.info({
+        message: `User ${user.username} logged in successfully`,
+      });
+    }
 
     return plainToInstance(SignInRO, { accessToken, refreshToken });
   }

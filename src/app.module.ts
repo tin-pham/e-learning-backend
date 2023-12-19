@@ -12,15 +12,15 @@ import { TeacherModule } from './teacher/teacher.module';
 import { ParentModule } from './parent/parent.module';
 import { SubjectModule } from './subject/subject.module';
 import { GroupModule } from './group/group.module';
-import { ElasticSearchLoggerModule } from './elastic-search/elastic-search-logger.module';
+import { ElasticsearchLoggerModule } from './elastic-search-logger/elastic-search-logger.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule.forRoot(databaseConfig),
+    ElasticsearchLoggerModule,
     AuthModule,
     HealthModule,
-    ElasticSearchLoggerModule,
     ThrottlerModule,
     RoleModule,
     StudentModule,

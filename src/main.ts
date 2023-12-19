@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { getLogLevels } from './logger/get-log-levels.util';
 import { HttpExceptionFilter } from './common';
+import { ElasticsearchLoggerService } from './elastic-search-logger/elastic-search-logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -65,7 +66,11 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  app.useGlobalFilters(new HttpExceptionFilter());
+
+  const elasticLogger = app.get<ElasticsearchLoggerService>(
+    ElasticsearchLoggerService,
+  );
+  app.useGlobalFilters(new HttpExceptionFilter(elasticLogger));
 
   await app.listen(3000);
 }
