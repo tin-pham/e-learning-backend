@@ -8,16 +8,18 @@ import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { RoleRepository } from '../role/role.repository';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { UserStoreDTO, UserUpdateDTO } from './dto/user.dto';
 
 @Injectable()
 export class UserService extends BaseService {
   constructor(
+    elasticLogger: ElasticsearchLoggerService,
     protected readonly userRepository: UserRepository,
     protected readonly roleRepository: RoleRepository,
     protected readonly userRoleRepository: UserRoleRepository,
   ) {
-    super();
+    super(elasticLogger);
   }
 
   protected async storeWithTransaction(
@@ -51,17 +53,18 @@ export class UserService extends BaseService {
     );
   }
 
-  protected async validateStore(dto: UserStoreDTO) {
+  protected async validateStore(dto: UserStoreDTO, actorId: string) {
     // Check name exists
     const userNameCount = await this.userRepository.countByUserName(
       dto.username,
     );
     if (userNameCount) {
       const { status, code, message } = EXCEPTION.USER.USERNAME_ALREADY_EXISTS;
-      this.formatException({
+      this.throwException({
         status,
         code,
         message,
+        actorId,
       });
     }
 
@@ -70,10 +73,11 @@ export class UserService extends BaseService {
       const emailCount = await this.userRepository.countByEmail(dto.email);
       if (emailCount) {
         const { status, code, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
-        this.formatException({
+        this.throwException({
           status,
           code,
           message,
+          actorId,
         });
       }
     }

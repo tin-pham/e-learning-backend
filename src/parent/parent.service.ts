@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
@@ -32,15 +31,17 @@ export class ParentService extends UserService {
     userRepository: UserRepository,
     roleRepository: RoleRepository,
     userRoleRepository: UserRoleRepository,
+    elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
     private readonly parentRepository: ParentRepository,
-    private readonly elasticLogger: ElasticsearchLoggerService,
   ) {
-    super(userRepository, roleRepository, userRoleRepository);
+    super(elasticLogger, userRepository, roleRepository, userRoleRepository);
   }
 
   async store(dto: ParentStoreDTO, decoded: IJwtPayload) {
-    await super.validateStore(dto);
+    const actorId = decoded.userId;
+    await super.validateStore(dto, actorId);
+
     const response = new ParentStoreRO();
 
     try {
@@ -77,51 +78,77 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.STORE_FAILED;
       this.logger.error(error);
-      this.elasticLogger.error({
+      this.throwException({
+        code,
+        status,
+        message,
+        actorId,
+      });
+    }
+
+    return this.success({
+      classRO: ParentStoreRO,
+      response,
+      message: 'Parent created successfully',
+      actorId,
+    });
+  }
+
+  async getList(dto: UserGetListDTO, decoded: IJwtPayload) {
+    try {
+      const response = await this.parentRepository.find(dto);
+      return this.success({
+        classRO: ParentGetListRO,
+        response,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.PARENT.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({
         code,
         status,
         message,
         actorId: decoded.userId,
       });
-      this.formatException({
+    }
+  }
+
+  async getDetail(id: string, decoded: IJwtPayload) {
+    const response = new ParentGetDetailRO();
+    const actorId = decoded.userId;
+
+    try {
+      const parent = await this.parentRepository.findUserById(id);
+      if (!parent) {
+        const { code, status, message } = EXCEPTION.PARENT.NOT_FOUND;
+        this.throwException({
+          code,
+          status,
+          message,
+          actorId,
+        });
+      }
+      // WARNING: Forget to set response
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.PARENT.GET_DETAIL_FAILED;
+      this.logger.error(error);
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(ParentStoreRO, response, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async getList(dto: UserGetListDTO) {
-    const data = await this.parentRepository.find(dto);
-
-    return plainToInstance(ParentGetListRO, data, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async getDetail(id: string) {
-    const parent = await this.parentRepository.findUserById(id);
-
-    if (!parent) {
-      const { code, status, message } = EXCEPTION.TEACHER.NOT_FOUND;
-      this.formatException({
-        code,
-        status,
-        message,
-      });
-    }
-
-    return plainToInstance(ParentGetDetailRO, parent, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: ParentGetDetailRO,
+      response,
     });
   }
 
   async update(id: string, dto: ParentUpdateDTO, decoded: IJwtPayload) {
-    await this.validateUpdate(id, dto);
+    const actorId = decoded.userId;
+    await this.validateUpdate(id, dto, actorId);
 
     const response = new ParentUpdateRO();
 
@@ -143,6 +170,7 @@ export class ParentService extends UserService {
         if (!parentId) {
           throw new InternalServerErrorException();
         }
+
         response.id = parentId;
         response.username = user.username;
         response.phone = user.phone;
@@ -151,20 +179,25 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.UPDATE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(ParentUpdateRO, response, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: ParentUpdateRO,
+      response,
+      message: 'Parent updated successfully',
+      actorId,
     });
   }
 
   async delete(id: string, decoded: IJwtPayload) {
-    await this.validateDelete(id);
+    const actorId = decoded.userId;
+    await this.validateDelete(id, actorId);
 
     try {
       const { userId } = await this.parentRepository.getUserIdByParentId(id);
@@ -177,33 +210,38 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.DELETE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(
-      ParentDeleteRO,
-      {
+    return this.success({
+      classRO: ParentDeleteRO,
+      response: {
         id,
       },
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+      message: 'Parent deleted successfully',
+      actorId,
+    });
   }
 
-  private async validateUpdate(id: string, dto: ParentUpdateDTO) {
+  private async validateUpdate(
+    id: string,
+    dto: ParentUpdateDTO,
+    actorId: string,
+  ) {
     // Check id exists
     const parent = await this.parentRepository.findOneById(id);
     if (!parent) {
       const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
@@ -215,24 +253,26 @@ export class ParentService extends UserService {
       );
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
-        this.formatException({
+        this.throwException({
           code,
           status,
           message,
+          actorId,
         });
       }
     }
   }
 
-  private async validateDelete(id: string) {
+  private async validateDelete(id: string, actorId: string) {
     // Check id exists
     const parentCount = await this.parentRepository.countById(id);
     if (!parentCount) {
       const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
   }

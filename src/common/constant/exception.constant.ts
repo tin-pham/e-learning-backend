@@ -85,6 +85,16 @@ export const EXCEPTION = {
       message: 'Student does not exist',
       code: 'STUDENT_DOES_NOT_EXIST',
     },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list student',
+      code: 'STUDENT_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail student',
+      code: 'STUDENT_GET_DETAIL_FAILED',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store student',
@@ -112,6 +122,16 @@ export const EXCEPTION = {
       message: 'Teacher does not exist',
       code: 'TEACHER_DOES_NOT_EXIST',
     },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list teacher',
+      code: 'TEACHER_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail teacher',
+      code: 'TEACHER_GET_DETAIL_FAILED',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store teacher',
@@ -138,6 +158,16 @@ export const EXCEPTION = {
       status: HttpStatus.BAD_REQUEST,
       message: 'Parent does not exist',
       code: 'PARENT_DOES_NOT_EXIST',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list parent',
+      code: 'PARENT_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail parent',
+      code: 'PARENT_GET_DETAIL_FAILED',
     },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,

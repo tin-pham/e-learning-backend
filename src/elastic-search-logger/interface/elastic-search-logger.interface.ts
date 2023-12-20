@@ -1,12 +1,13 @@
-export interface ErrorIndexException {
+export interface ErrorIndex {
   status: number;
   code?: string;
   actorId?: string;
   message: string;
 }
 
-export interface InfoIndexException {
+export interface InfoIndex {
   message: string;
+  actorId?: string;
 }
 
 export interface QueryIndex {

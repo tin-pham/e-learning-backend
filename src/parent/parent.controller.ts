@@ -72,8 +72,8 @@ export class ParentController {
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
   @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
-  getList(@Query() dto: UserGetListDTO) {
-    return this.parentService.getList(dto);
+  getList(@Query() dto: UserGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.parentService.getList(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_DETAIL.OPERATION })
@@ -85,8 +85,8 @@ export class ParentController {
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
   @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
-  getDetail(@Param('id') id: string) {
-    return this.parentService.getDetail(id);
+  getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+    return this.parentService.getDetail(id, decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })

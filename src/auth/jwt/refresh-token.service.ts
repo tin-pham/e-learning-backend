@@ -4,15 +4,17 @@ import { EXCEPTION, IJwtPayload } from '../../common';
 import { UserRepository } from '../../user/user.repository';
 import { UserRoleRepository } from '../../user-role/user-role.repository';
 import { CacheService } from '../../cache/cache.service';
+import { ElasticsearchLoggerService } from '../../elastic-search-logger/elastic-search-logger.service';
 
 @Injectable()
 export class RefreshTokenService extends BaseService {
   constructor(
+    elasticLogger: ElasticsearchLoggerService,
     private readonly cacheService: CacheService,
     private readonly userRepository: UserRepository,
     private readonly userRoleRepository: UserRoleRepository,
   ) {
-    super();
+    super(elasticLogger);
   }
 
   async store(userId: string, tokenId: string): Promise<void> {
@@ -28,10 +30,11 @@ export class RefreshTokenService extends BaseService {
     const storedId = await this.cacheService.get(this.getKey(payload.userId));
     if (storedId !== tokenId) {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_INVALID;
-      this.formatException({
+      this.throwException({
         status,
         code,
         message,
+        actorId: payload.userId,
       });
     }
 
@@ -39,20 +42,22 @@ export class RefreshTokenService extends BaseService {
     const user = await this.userRepository.findOneById(payload.userId);
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_INVALID;
-      this.formatException({
+      this.throwException({
         status,
         code,
         message,
+        actorId: payload.userId,
       });
     }
 
     user.roles = await this.userRoleRepository.findRolesByUserId(user.id);
     if (!user.roles) {
       const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
-      this.formatException({
+      this.throwException({
         status,
         code,
         message,
+        actorId: payload.userId,
       });
     }
   }

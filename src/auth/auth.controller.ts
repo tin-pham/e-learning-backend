@@ -21,7 +21,7 @@ import { LocalGuard } from './local/local.guard';
 import { JwtRefreshTokenGuard } from './jwt/jwt-refresh-token.guard';
 import { AuthService } from './auth.service';
 import { SignInDTO } from './dto/auth.dto';
-import { SignInRO } from './ro/auth.ro';
+import { RefreshTokenRO, SignInRO } from './ro/auth.ro';
 
 const { TAGS, CONTROLLER, SIGNIN, REFRESH_TOKEN } = API.AUTH;
 
@@ -43,7 +43,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: REFRESH_TOKEN.OPERATION })
-  @ApiOkResponse({ type: SignInRO })
+  @ApiOkResponse({ type: RefreshTokenRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')

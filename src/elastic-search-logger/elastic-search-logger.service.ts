@@ -6,8 +6,8 @@ import {
   ROLLING_INDEX_MODE,
 } from './enum/elastic-search-logger.enum';
 import {
-  ErrorIndexException,
-  InfoIndexException,
+  ErrorIndex,
+  InfoIndex,
   QueryIndex,
 } from './interface/elastic-search-logger.interface';
 import { PaginateDTO } from '../common/dto/paginate.dto';
@@ -26,11 +26,11 @@ export class ElasticsearchLoggerService {
 
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
-  info(message: InfoIndexException): Promise<string> {
-    return this.log(message, LOG_INDEXES.INFO);
+  info(obj: InfoIndex): Promise<string> {
+    return this.log(obj, LOG_INDEXES.INFO);
   }
 
-  error(exception: ErrorIndexException): Promise<string> {
+  error(exception: ErrorIndex): Promise<string> {
     return this.log(exception, LOG_INDEXES.ERROR);
   }
 

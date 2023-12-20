@@ -1,27 +1,31 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
-import { SubjectGetListDTO, SubjectStoreDTO } from './dto/subject.dto';
-import { SubjectRepository } from './subject.repository';
 import { SubjectEntity } from './subject.entity';
+import { SubjectRepository } from './subject.repository';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
+import { SubjectGetListDTO, SubjectStoreDTO } from './dto/subject.dto';
 import { SubjectGetListRO, SubjectStoreRO } from './ro/subject.ro';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class SubjectService extends BaseService {
   private readonly logger = new Logger(SubjectService.name);
-  constructor(private readonly subjectRepository: SubjectRepository) {
-    super();
+  constructor(
+    elasticLogger: ElasticsearchLoggerService,
+    private readonly subjectRepository: SubjectRepository,
+  ) {
+    super(elasticLogger);
   }
   async store(dto: SubjectStoreDTO, payload: IJwtPayload) {
-    await this.validateStore(dto);
+    const actorId = payload.userId;
+    await this.validateStore(dto, actorId);
 
     const response = new SubjectStoreRO();
 
     try {
       const subjectData = new SubjectEntity();
       subjectData.name = dto.name;
-      subjectData.createdBy = payload.userId;
+      subjectData.createdBy = actorId;
       const subject = await this.subjectRepository.insert(subjectData);
 
       response.id = subject.id;
@@ -29,48 +33,52 @@ export class SubjectService extends BaseService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.SUBJECT.STORE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(SubjectStoreRO, response, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: SubjectStoreRO,
+      response,
+      message: 'Subject stored successfully',
+      actorId,
     });
   }
 
-  async getList(dto: SubjectGetListDTO) {
-    let result = new SubjectGetListRO();
+  async getList(dto: SubjectGetListDTO, decoded: IJwtPayload) {
     try {
-      const data = await this.subjectRepository.find(dto);
+      const subjects = await this.subjectRepository.find(dto);
 
-      result = plainToInstance(SubjectGetListRO, data, {
-        excludeExtraneousValues: true,
+      return this.success({
+        classRO: SubjectGetListRO,
+        response: subjects,
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.SUBJECT.GET_LIST_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId: decoded.userId,
       });
     }
-
-    return result;
   }
 
-  private async validateStore(dto: SubjectStoreDTO) {
+  private async validateStore(dto: SubjectStoreDTO, actorId: string) {
     // Check name exists
     const nameCount = await this.subjectRepository.countByName(dto.name);
     if (nameCount) {
       const { code, status, message } = EXCEPTION.SUBJECT.ALREADY_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
   }

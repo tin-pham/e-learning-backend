@@ -1,22 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { BaseService } from '../base';
+import { GroupEntity } from './group.entity';
 import { GroupRepository } from './group.repository';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { GroupStoreDTO, GroupUpdateDTO } from './dto/group.dto';
 import { GroupGetListRO, GroupStoreRO, GroupUpdateRO } from './ro/group.ro';
-import { GroupEntity } from './group.entity';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class GroupService extends BaseService {
   private readonly logger = new Logger(GroupService.name);
 
-  constructor(private readonly groupRepository: GroupRepository) {
-    super();
+  constructor(
+    elasticLogger: ElasticsearchLoggerService,
+    private readonly groupRepository: GroupRepository,
+  ) {
+    super(elasticLogger);
   }
 
   async store(dto: GroupStoreDTO, payload: IJwtPayload) {
-    await this.validateStore(dto);
+    const actorId = payload.userId;
+    await this.validateStore(dto, actorId);
 
     const response = new GroupStoreRO();
 
@@ -31,41 +35,44 @@ export class GroupService extends BaseService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.GROUP.STORE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(GroupStoreRO, response, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: GroupStoreRO,
+      response,
+      message: 'Group stored successfully',
+      actorId,
     });
   }
 
-  async getList() {
-    const response = new GroupGetListRO();
+  async getList(decoded: IJwtPayload) {
     try {
       const groups = await this.groupRepository.find();
-
-      response.data = groups;
+      return this.success({
+        classRO: GroupGetListRO,
+        response: groups,
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.GROUP.GET_LIST_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId: decoded.userId,
       });
     }
-
-    return plainToInstance(GroupGetListRO, response, {
-      excludeExtraneousValues: true,
-    });
   }
 
   async update(id: string, dto: GroupUpdateDTO, payload: IJwtPayload) {
-    await this.validateUpdate(id, dto);
+    const actorId = payload.userId;
+    await this.validateUpdate(id, dto, actorId);
 
     const response = new GroupUpdateRO();
 
@@ -83,40 +90,50 @@ export class GroupService extends BaseService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.GROUP.UPDATE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(GroupUpdateRO, response, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: GroupUpdateRO,
+      response,
+      message: 'Group updated successfully',
+      actorId,
     });
   }
 
-  private async validateStore(dto: GroupStoreDTO) {
+  private async validateStore(dto: GroupStoreDTO, actorId: string) {
     // Check name exist
     const nameCount = await this.groupRepository.countByName(dto.name);
     if (nameCount) {
       const { code, status, message } = EXCEPTION.GROUP.ALREADY_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
   }
 
-  private async validateUpdate(id: string, dto: GroupUpdateDTO) {
+  private async validateUpdate(
+    id: string,
+    dto: GroupUpdateDTO,
+    actorId: string,
+  ) {
     // Check exist
     const groupCount = await this.groupRepository.countById(id);
     if (!groupCount) {
       const { code, status, message } = EXCEPTION.GROUP.DOES_NOT_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
@@ -127,10 +144,11 @@ export class GroupService extends BaseService {
     );
     if (duplicateNameCount) {
       const { code, status, message } = EXCEPTION.GROUP.ALREADY_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
   }

@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
@@ -13,6 +12,7 @@ import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
+import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
 import { TeacherStoreDTO, TeacherUpdateDTO } from './dto/teacher.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import {
@@ -28,17 +28,19 @@ export class TeacherService extends UserService {
   private readonly logger = new Logger(TeacherService.name);
 
   constructor(
+    elasticLogger: ElasticsearchLoggerService,
     userRepository: UserRepository,
     roleRepository: RoleRepository,
     userRoleRepository: UserRoleRepository,
     private readonly database: DatabaseService,
     private readonly teacherRepository: TeacherRepository,
   ) {
-    super(userRepository, roleRepository, userRoleRepository);
+    super(elasticLogger, userRepository, roleRepository, userRoleRepository);
   }
 
   async store(dto: TeacherStoreDTO, decoded: IJwtPayload) {
-    await super.validateStore(dto);
+    const actorId = decoded.userId;
+    await super.validateStore(dto, actorId);
     const response = new TeacherStoreRO();
 
     try {
@@ -47,7 +49,7 @@ export class TeacherService extends UserService {
         const user = await super.storeWithTransaction(
           transaction,
           dto,
-          decoded.userId,
+          actorId,
         );
 
         // Get teacher role id
@@ -76,46 +78,83 @@ export class TeacherService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.STORE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(TeacherStoreRO, response, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: TeacherStoreRO,
+      response,
+      message: 'Teacher stored successfully',
+      actorId,
     });
   }
 
-  async getList(dto: UserGetListDTO) {
-    const data = await this.teacherRepository.find(dto);
+  async getList(dto: UserGetListDTO, decoded: IJwtPayload) {
+    try {
+      const teachers = await this.teacherRepository.find(dto);
 
-    return plainToInstance(TeacherGetListRO, data, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async getDetail(id: string) {
-    const teacher = await this.teacherRepository.findUserById(id);
-
-    if (!teacher) {
-      const { code, status, message } = EXCEPTION.TEACHER.NOT_FOUND;
-      this.formatException({
+      return this.success({
+        classRO: TeacherGetListRO,
+        response: teachers,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.TEACHER.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({
         code,
         status,
         message,
+        actorId: decoded.userId,
+      });
+    }
+  }
+
+  async getDetail(id: string, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const response = new TeacherGetDetailRO();
+    try {
+      const teacher = await this.teacherRepository.findUserById(id);
+
+      if (!teacher) {
+        const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
+        this.throwException({
+          code,
+          status,
+          message,
+          actorId,
+        });
+      }
+
+      response.id = teacher.id;
+      response.username = teacher.username;
+      response.email = teacher.email;
+      response.phone = teacher.phone;
+      response.displayName = teacher.displayName;
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.TEACHER.GET_DETAIL_FAILED;
+      this.logger.error(error);
+      this.throwException({
+        code,
+        status,
+        message,
+        actorId,
       });
     }
 
-    return plainToInstance(TeacherGetDetailRO, teacher, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: TeacherGetDetailRO,
+      response,
     });
   }
 
   async update(id: string, dto: TeacherUpdateDTO, decoded: IJwtPayload) {
-    await this.validateUpdate(id, dto);
-
+    const actorId = decoded.userId;
+    await this.validateUpdate(id, dto, actorId);
     const response = new TeacherUpdateRO();
 
     try {
@@ -145,20 +184,25 @@ export class TeacherService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.UPDATE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(TeacherUpdateRO, response, {
-      excludeExtraneousValues: true,
+    return this.success({
+      classRO: TeacherUpdateRO,
+      response,
+      message: 'Teacher updated successfully',
+      actorId,
     });
   }
 
   async delete(id: string, decoded: IJwtPayload) {
-    await this.validateDelete(id);
+    const actorId = decoded.userId;
+    await this.validateDelete(id, actorId);
 
     try {
       const { userId } = await this.teacherRepository.getUserIdByTeacherId(id);
@@ -171,33 +215,36 @@ export class TeacherService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.DELETE_FAILED;
       this.logger.error(error);
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
-    return plainToInstance(
-      TeacherDeleteRO,
-      {
+    return this.success({
+      classRO: TeacherDeleteRO,
+      response: {
         id,
       },
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    });
   }
 
-  private async validateUpdate(id: string, dto: TeacherUpdateDTO) {
+  private async validateUpdate(
+    id: string,
+    dto: TeacherUpdateDTO,
+    actorId: string,
+  ) {
     // Check id exists
     const teacher = await this.teacherRepository.findOneById(id);
     if (!teacher) {
       const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
 
@@ -209,10 +256,11 @@ export class TeacherService extends UserService {
       );
       if (emailCount) {
         const { code, status, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
-        this.formatException({
+        this.throwException({
           code,
           status,
           message,
+          actorId,
         });
       }
     }
@@ -225,24 +273,26 @@ export class TeacherService extends UserService {
       );
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
-        this.formatException({
+        this.throwException({
           code,
           status,
           message,
+          actorId,
         });
       }
     }
   }
 
-  private async validateDelete(id: string) {
+  private async validateDelete(id: string, actorId: string) {
     // Check id exists
     const teacherCount = await this.teacherRepository.countById(id);
     if (!teacherCount) {
       const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
-      this.formatException({
+      this.throwException({
         code,
         status,
         message,
+        actorId,
       });
     }
   }

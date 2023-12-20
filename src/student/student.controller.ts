@@ -75,8 +75,8 @@ export class StudentController {
     JwtGuard,
     RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
   )
-  getList(@Query() dto: UserGetListDTO) {
-    return this.studentService.getList(dto);
+  getList(@Query() dto: UserGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.studentService.getList(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_DETAIL.OPERATION })
@@ -91,8 +91,8 @@ export class StudentController {
     JwtGuard,
     RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
   )
-  getDetail(@Param('id') id: string) {
-    return this.studentService.getDetail(id);
+  getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+    return this.studentService.getDetail(id, decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })

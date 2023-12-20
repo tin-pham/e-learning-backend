@@ -64,8 +64,8 @@ export class GroupController {
     JwtGuard,
     RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
   )
-  getList() {
-    return this.groupService.getList();
+  getList(@JwtPayload() payload: IJwtPayload) {
+    return this.groupService.getList(payload);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })

@@ -63,7 +63,7 @@ export class SubjectController {
     JwtGuard,
     RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
   )
-  getList(@Query() dto: SubjectGetListDTO) {
-    return this.subjectService.getList(dto);
+  getList(@Query() dto: SubjectGetListDTO, @JwtPayload() payload: IJwtPayload) {
+    return this.subjectService.getList(dto, payload);
   }
 }

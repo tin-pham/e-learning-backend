@@ -20,14 +20,14 @@ export class AuthService extends BaseService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
+    elasticLogger: ElasticsearchLoggerService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
-    private readonly elasticLogger: ElasticsearchLoggerService,
     private readonly userRepository: UserRepository,
     private readonly userRoleRepository: UserRoleRepository,
   ) {
-    super();
+    super(elasticLogger);
   }
 
   async signIn(user: UserEntity) {
@@ -71,7 +71,7 @@ export class AuthService extends BaseService {
     if (!user) {
       const { status, code, message } =
         EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
-      this.formatException({ status, code, message });
+      this.throwException({ status, code, message, actorId: '' });
     }
 
     // Check password match
@@ -82,48 +82,54 @@ export class AuthService extends BaseService {
     if (!isValidPassword) {
       const { status, code, message } =
         EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
-      this.formatException({ status, code, message });
+      this.throwException({ status, code, message, actorId: user.id });
     }
 
     user.roles = await this.userRoleRepository.findRolesByUserId(user.id);
     if (!user.roles) {
       const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
-      this.formatException({ status, code, message });
+      this.throwException({ status, code, message, actorId: user.id });
     }
 
     return user;
   }
 
   async refreshAccessTokenByUser(decoded: IJwtPayload) {
-    let accessToken: string;
+    const actorId = decoded.userId;
+    const response = new RefreshTokenRO();
     try {
-      accessToken = await this.jwtService.signAsync({
+      const accessToken = await this.jwtService.signAsync({
         userId: decoded.userId,
         username: decoded.username,
         email: decoded.email,
         displayName: decoded.displayName,
         roles: decoded.roles,
       });
-    } catch (error) {
-      this.logger.error(error);
 
+      response.accessToken = accessToken;
+      return this.success({
+        classRO: RefreshTokenRO,
+        response,
+      });
+    } catch (error) {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_FAILED;
-      this.formatException({ status, code, message });
+      this.logger.error(error);
+      this.throwException({ status, code, message, actorId });
     }
-    return plainToInstance(RefreshTokenRO, { accessToken });
   }
 
   async validatePayload(payload: IJwtPayload) {
+    const actorId = payload.userId;
     const user = await this.userRepository.findOneById(payload.userId);
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.AUTHORIZE_FAILED;
-      this.formatException({ status, code, message });
+      this.throwException({ status, code, message, actorId });
     }
 
     user.roles = await this.userRoleRepository.findRolesByUserId(user.id);
     if (!user.roles) {
       const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
-      this.formatException({ status, code, message });
+      this.throwException({ status, code, message, actorId });
     }
   }
 
