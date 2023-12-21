@@ -1,8 +1,9 @@
 export interface ErrorIndex {
   status: number;
+  message: string;
   code?: string;
   actorId?: string;
-  message: string;
+  error?: string;
 }
 
 export interface InfoIndex {

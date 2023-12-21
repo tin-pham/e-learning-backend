@@ -78,12 +78,7 @@ export class TeacherService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.STORE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -95,22 +90,15 @@ export class TeacherService extends UserService {
   }
 
   async getList(dto: UserGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
     try {
       const teachers = await this.teacherRepository.find(dto);
 
-      return this.success({
-        classRO: TeacherGetListRO,
-        response: teachers,
-      });
+      return this.success({ classRO: TeacherGetListRO, response: teachers });
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.GET_LIST_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId: decoded.userId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
   }
 
@@ -122,12 +110,7 @@ export class TeacherService extends UserService {
 
       if (!teacher) {
         const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
+        this.throwException({ code, status, message, actorId });
       }
 
       response.id = teacher.id;
@@ -138,18 +121,10 @@ export class TeacherService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.GET_DETAIL_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
-    return this.success({
-      classRO: TeacherGetDetailRO,
-      response,
-    });
+    return this.success({ classRO: TeacherGetDetailRO, response });
   }
 
   async update(id: string, dto: TeacherUpdateDTO, decoded: IJwtPayload) {
@@ -184,12 +159,7 @@ export class TeacherService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.UPDATE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -215,20 +185,10 @@ export class TeacherService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.DELETE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
-    return this.success({
-      classRO: TeacherDeleteRO,
-      response: {
-        id,
-      },
-    });
+    return this.success({ classRO: TeacherDeleteRO, response: { id } });
   }
 
   private async validateUpdate(
@@ -240,12 +200,7 @@ export class TeacherService extends UserService {
     const teacher = await this.teacherRepository.findOneById(id);
     if (!teacher) {
       const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
 
     // Check email unique
@@ -256,12 +211,7 @@ export class TeacherService extends UserService {
       );
       if (emailCount) {
         const { code, status, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
+        this.throwException({ code, status, message, actorId });
       }
     }
 
@@ -273,12 +223,7 @@ export class TeacherService extends UserService {
       );
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
+        this.throwException({ code, status, message, actorId });
       }
     }
   }
@@ -288,12 +233,7 @@ export class TeacherService extends UserService {
     const teacherCount = await this.teacherRepository.countById(id);
     if (!teacherCount) {
       const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
   }
 }

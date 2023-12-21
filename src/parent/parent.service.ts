@@ -78,12 +78,7 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.STORE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -95,6 +90,7 @@ export class ParentService extends UserService {
   }
 
   async getList(dto: UserGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
     try {
       const response = await this.parentRepository.find(dto);
       return this.success({
@@ -104,12 +100,7 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.GET_LIST_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId: decoded.userId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
   }
 
@@ -121,29 +112,20 @@ export class ParentService extends UserService {
       const parent = await this.parentRepository.findUserById(id);
       if (!parent) {
         const { code, status, message } = EXCEPTION.PARENT.NOT_FOUND;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
+        this.throwException({ code, status, message, actorId });
       }
-      // WARNING: Forget to set response
+
+      response.id = parent.id;
+      response.username = parent.username;
+      response.phone = parent.phone;
+      response.displayName = parent.displayName;
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.GET_DETAIL_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
-    return this.success({
-      classRO: ParentGetDetailRO,
-      response,
-    });
+    return this.success({ classRO: ParentGetDetailRO, response });
   }
 
   async update(id: string, dto: ParentUpdateDTO, decoded: IJwtPayload) {
@@ -179,12 +161,7 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.UPDATE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -210,12 +187,7 @@ export class ParentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.DELETE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -237,12 +209,7 @@ export class ParentService extends UserService {
     const parent = await this.parentRepository.findOneById(id);
     if (!parent) {
       const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
 
     // Check phone unique
@@ -253,12 +220,7 @@ export class ParentService extends UserService {
       );
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
+        this.throwException({ code, status, message, actorId });
       }
     }
   }
@@ -268,12 +230,7 @@ export class ParentService extends UserService {
     const parentCount = await this.parentRepository.countById(id);
     if (!parentCount) {
       const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
   }
 }

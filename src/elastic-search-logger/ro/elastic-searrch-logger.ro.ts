@@ -31,6 +31,14 @@ export class ElasticsearchLoggerGetErrorDataRO {
   @ApiProperty()
   @Expose()
   status: number;
+
+  @ApiProperty()
+  @Expose()
+  actorId: string;
+
+  @ApiProperty()
+  @Expose()
+  error: string;
 }
 
 export class ElasticsearchLoggerGetErrorRO extends PaginateRO<ElasticsearchLoggerGetErrorDataRO> {

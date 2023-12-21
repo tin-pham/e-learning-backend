@@ -60,12 +60,7 @@ export class UserService extends BaseService {
     );
     if (userNameCount) {
       const { status, code, message } = EXCEPTION.USER.USERNAME_ALREADY_EXISTS;
-      this.throwException({
-        status,
-        code,
-        message,
-        actorId,
-      });
+      this.throwException({ status, code, message, actorId });
     }
 
     // Check email exists
@@ -73,12 +68,7 @@ export class UserService extends BaseService {
       const emailCount = await this.userRepository.countByEmail(dto.email);
       if (emailCount) {
         const { status, code, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
-        this.throwException({
-          status,
-          code,
-          message,
-          actorId,
-        });
+        this.throwException({ status, code, message, actorId });
       }
     }
   }

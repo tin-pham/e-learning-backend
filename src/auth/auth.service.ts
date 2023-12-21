@@ -114,7 +114,7 @@ export class AuthService extends BaseService {
     } catch (error) {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_FAILED;
       this.logger.error(error);
-      this.throwException({ status, code, message, actorId });
+      this.throwException({ status, code, message, actorId, error });
     }
   }
 

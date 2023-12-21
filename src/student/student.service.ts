@@ -80,12 +80,7 @@ export class StudentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.STORE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -97,6 +92,7 @@ export class StudentService extends UserService {
   }
 
   async getList(dto: UserGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
     try {
       const response = await this.studentRepository.find(dto);
       return this.success({
@@ -106,12 +102,7 @@ export class StudentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.GET_LIST_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId: decoded.userId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
   }
 
@@ -124,12 +115,7 @@ export class StudentService extends UserService {
 
       if (!student) {
         const { code, status, message } = EXCEPTION.STUDENT.NOT_FOUND;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
+        this.throwException({ code, status, message, actorId });
       }
 
       response.id = student.id;
@@ -140,18 +126,10 @@ export class StudentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.GET_DETAIL_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
-    return this.success({
-      classRO: StudentGetDetailRO,
-      response,
-    });
+    return this.success({ classRO: StudentGetDetailRO, response });
   }
 
   async update(id: string, dto: StudentUpdateDTO, decoded: IJwtPayload) {
@@ -197,12 +175,7 @@ export class StudentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.UPDATE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -228,12 +201,7 @@ export class StudentService extends UserService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.DELETE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -315,12 +283,7 @@ export class StudentService extends UserService {
     const studentCount = await this.studentRepository.countById(id);
     if (!studentCount) {
       const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
   }
 }

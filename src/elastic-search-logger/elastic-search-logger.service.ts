@@ -21,26 +21,24 @@ import {
 export class ElasticsearchLoggerService {
   private readonly rollingOffsetMode = ROLLING_INDEX_MODE.MONTHLY;
   private readonly stdout = false;
-  private readonly indexesCache: Array<string> = [];
   private readonly logger = new Logger(ElasticsearchLoggerService.name);
 
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
   info(obj: InfoIndex): Promise<string> {
-    return this.log(obj, LOG_INDEXES.INFO);
+    return this.log(obj, 'info');
   }
 
   error(exception: ErrorIndex): Promise<string> {
-    return this.log(exception, LOG_INDEXES.ERROR);
+    return this.log(exception, 'error');
   }
 
   warning<T>(message: T): Promise<string> {
-    return this.log(message, LOG_INDEXES.WARNING);
+    return this.log(message, 'warning');
   }
 
-  // WARNING: Some how enum not init index, first string, then enum, need fix
   query(query: QueryIndex): Promise<string> {
-    return this.log(query, LOG_INDEXES.QUERY);
+    return this.log(query, 'query');
   }
 
   async getError(dto: PaginateDTO) {
@@ -62,6 +60,9 @@ export class ElasticsearchLoggerService {
     const response = body['hits'].hits;
     const data = response.map((item) => ({
       message: item._source.message,
+      status: item._source.status,
+      actorId: item._source.actorId,
+      error: item._source.error,
       date: new Date(item._source.date).toLocaleString(),
     }));
 
@@ -137,8 +138,6 @@ export class ElasticsearchLoggerService {
       indice = this.getRollingIndex(indice, this.rollingOffsetMode);
     }
 
-    await this.createIndexIfNotExists(indice);
-
     const result = await this.elasticsearchService.index({
       index: indice,
       body: {
@@ -154,19 +153,6 @@ export class ElasticsearchLoggerService {
     }
 
     return result.body['_id'];
-  }
-
-  private async createIndexIfNotExists(index: string) {
-    if (this.indexesCache.indexOf(index) > -1) {
-      return;
-    }
-
-    const result = await this.elasticsearchService.indices.exists({ index });
-
-    if (result.statusCode !== 200) {
-      await this.elasticsearchService.indices.create({ index });
-    }
-    this.indexesCache.push(index);
   }
 
   private getRollingIndex(prefix: string, mode: ROLLING_INDEX_MODE) {

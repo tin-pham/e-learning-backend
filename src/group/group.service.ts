@@ -35,12 +35,7 @@ export class GroupService extends BaseService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.GROUP.STORE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -52,6 +47,7 @@ export class GroupService extends BaseService {
   }
 
   async getList(decoded: IJwtPayload) {
+    const actorId = decoded.userId;
     try {
       const groups = await this.groupRepository.find();
       return this.success({
@@ -61,12 +57,7 @@ export class GroupService extends BaseService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.GROUP.GET_LIST_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId: decoded.userId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
   }
 
@@ -90,12 +81,7 @@ export class GroupService extends BaseService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.GROUP.UPDATE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -111,12 +97,7 @@ export class GroupService extends BaseService {
     const nameCount = await this.groupRepository.countByName(dto.name);
     if (nameCount) {
       const { code, status, message } = EXCEPTION.GROUP.ALREADY_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
   }
 
@@ -129,12 +110,7 @@ export class GroupService extends BaseService {
     const groupCount = await this.groupRepository.countById(id);
     if (!groupCount) {
       const { code, status, message } = EXCEPTION.GROUP.DOES_NOT_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
 
     // Check name unique
@@ -144,12 +120,7 @@ export class GroupService extends BaseService {
     );
     if (duplicateNameCount) {
       const { code, status, message } = EXCEPTION.GROUP.ALREADY_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
   }
 }

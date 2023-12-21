@@ -26,39 +26,25 @@ export class RefreshTokenService extends BaseService {
   }
 
   async validatePayloadAndRefreshToken(payload: IJwtPayload, tokenId: string) {
+    const actorId = payload.userId;
     // Validate token match
     const storedId = await this.cacheService.get(this.getKey(payload.userId));
     if (storedId !== tokenId) {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_INVALID;
-      this.throwException({
-        status,
-        code,
-        message,
-        actorId: payload.userId,
-      });
+      this.throwException({ status, code, message, actorId });
     }
 
     // Validate user exists
     const user = await this.userRepository.findOneById(payload.userId);
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_INVALID;
-      this.throwException({
-        status,
-        code,
-        message,
-        actorId: payload.userId,
-      });
+      this.throwException({ status, code, message, actorId });
     }
 
     user.roles = await this.userRoleRepository.findRolesByUserId(user.id);
     if (!user.roles) {
       const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
-      this.throwException({
-        status,
-        code,
-        message,
-        actorId: payload.userId,
-      });
+      this.throwException({ status, code, message, actorId });
     }
   }
 

@@ -33,12 +33,7 @@ export class SubjectService extends BaseService {
     } catch (error) {
       const { code, status, message } = EXCEPTION.SUBJECT.STORE_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
 
     return this.success({
@@ -50,22 +45,15 @@ export class SubjectService extends BaseService {
   }
 
   async getList(dto: SubjectGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
     try {
       const subjects = await this.subjectRepository.find(dto);
 
-      return this.success({
-        classRO: SubjectGetListRO,
-        response: subjects,
-      });
+      return this.success({ classRO: SubjectGetListRO, response: subjects });
     } catch (error) {
       const { code, status, message } = EXCEPTION.SUBJECT.GET_LIST_FAILED;
       this.logger.error(error);
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId: decoded.userId,
-      });
+      this.throwException({ code, status, message, actorId, error });
     }
   }
 
@@ -74,12 +62,7 @@ export class SubjectService extends BaseService {
     const nameCount = await this.subjectRepository.countByName(dto.name);
     if (nameCount) {
       const { code, status, message } = EXCEPTION.SUBJECT.ALREADY_EXIST;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId,
-      });
+      this.throwException({ code, status, message, actorId });
     }
   }
 }

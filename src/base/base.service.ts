@@ -7,6 +7,7 @@ interface Exception {
   code: string;
   message: string;
   actorId: string;
+  error?: Error;
 }
 
 interface Success {
@@ -21,13 +22,14 @@ export class BaseService {
   constructor(protected readonly elasticLogger: ElasticsearchLoggerService) {}
 
   protected throwException(exception: Exception) {
-    const { status, code, message, actorId } = exception;
+    const { status, code, message, actorId, error } = exception;
 
     this.elasticLogger.error({
       status,
       code,
       message,
       actorId,
+      error: error.message,
     });
     throw new HttpException({ message: { code, message } }, status);
   }

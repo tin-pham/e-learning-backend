@@ -18,12 +18,7 @@ export class ApiKeyService extends BaseService {
 
     if (!isMatch) {
       const { code, status, message } = EXCEPTION.AUTH.API_KEY_INVALID;
-      this.throwException({
-        code,
-        status,
-        message,
-        actorId: 'api-key',
-      });
+      this.throwException({ code, status, message, actorId: 'api-key' });
     }
 
     return true;
