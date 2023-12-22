@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -27,10 +29,19 @@ import { USER_ROLE } from '../user-role/user-role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { GroupService } from './group.service';
-import { GroupStoreDTO, GroupUpdateDTO } from './dto/group.dto';
-import { GroupGetListRO, GroupStoreRO, GroupUpdateRO } from './ro/group.ro';
+import {
+  GroupGetListDTO,
+  GroupStoreDTO,
+  GroupUpdateDTO,
+} from './dto/group.dto';
+import {
+  GroupDeleteRO,
+  GroupGetListRO,
+  GroupStoreRO,
+  GroupUpdateRO,
+} from './ro/group.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE } = API.GROUP;
+const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE, DELETE } = API.GROUP;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -64,8 +75,8 @@ export class GroupController {
     JwtGuard,
     RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
   )
-  getList(@JwtPayload() payload: IJwtPayload) {
-    return this.groupService.getList(payload);
+  getList(@Query() dto: GroupGetListDTO, @JwtPayload() payload: IJwtPayload) {
+    return this.groupService.getList(dto, payload);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })
@@ -77,12 +88,25 @@ export class GroupController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
   update(
     @Param('id') id: string,
     @Body() dto: GroupUpdateDTO,
-    @JwtPayload() payload: IJwtPayload,
+    @JwtPayload() decoded: IJwtPayload,
   ) {
-    return this.groupService.update(id, dto, payload);
+    return this.groupService.update(id, dto, decoded);
+  }
+
+  @ApiOperation({ summary: DELETE.OPERATION })
+  @ApiOkResponse({ type: GroupDeleteRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Delete(DELETE.ROUTE)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+    return this.groupService.delete(id, decoded);
   }
 }

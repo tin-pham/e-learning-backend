@@ -171,4 +171,16 @@ export const API = {
       OPERATION: 'Delete group',
     },
   },
+  SUBJECT_GROUP: {
+    TAGS: 'SubjectGroup',
+    CONTROLLER: 'subject-group',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store subject groups',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete subject groups',
+    },
+  },
 };

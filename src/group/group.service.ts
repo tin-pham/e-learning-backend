@@ -4,8 +4,17 @@ import { BaseService } from '../base';
 import { GroupEntity } from './group.entity';
 import { GroupRepository } from './group.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { GroupStoreDTO, GroupUpdateDTO } from './dto/group.dto';
-import { GroupGetListRO, GroupStoreRO, GroupUpdateRO } from './ro/group.ro';
+import {
+  GroupGetListDTO,
+  GroupStoreDTO,
+  GroupUpdateDTO,
+} from './dto/group.dto';
+import {
+  GroupDeleteRO,
+  GroupGetListRO,
+  GroupStoreRO,
+  GroupUpdateRO,
+} from './ro/group.ro';
 
 @Injectable()
 export class GroupService extends BaseService {
@@ -46,14 +55,11 @@ export class GroupService extends BaseService {
     });
   }
 
-  async getList(decoded: IJwtPayload) {
+  async getList(dto: GroupGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     try {
-      const groups = await this.groupRepository.find();
-      return this.success({
-        classRO: GroupGetListRO,
-        response: groups,
-      });
+      const groups = await this.groupRepository.find(dto);
+      return this.success({ classRO: GroupGetListRO, response: groups });
     } catch (error) {
       const { code, status, message } = EXCEPTION.GROUP.GET_LIST_FAILED;
       this.logger.error(error);
@@ -92,6 +98,30 @@ export class GroupService extends BaseService {
     });
   }
 
+  async delete(id: string, payload: IJwtPayload) {
+    const actorId = payload.userId;
+    const { group } = await this.validateDelete(id, actorId);
+
+    try {
+      group.deletedAt = new Date();
+      group.deletedBy = payload.userId;
+      await this.groupRepository.delete(id, group);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.GROUP.DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId, error });
+    }
+
+    return this.success({
+      classRO: GroupDeleteRO,
+      response: {
+        id,
+      },
+      message: 'Group deleted successfully',
+      actorId,
+    });
+  }
+
   private async validateStore(dto: GroupStoreDTO, actorId: string) {
     // Check name exist
     const nameCount = await this.groupRepository.countByName(dto.name);
@@ -122,5 +152,18 @@ export class GroupService extends BaseService {
       const { code, status, message } = EXCEPTION.GROUP.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+  }
+
+  private async validateDelete(id: string, actorId: string) {
+    // Check exist
+    const group = await this.groupRepository.findOneById(id);
+    if (!group) {
+      const { code, status, message } = EXCEPTION.GROUP.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return {
+      group,
+    };
   }
 }

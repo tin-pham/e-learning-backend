@@ -19,7 +19,7 @@ services:
       - memcached
     env_file:
       - .env.local
-    command: npm run start:debug
+    command: npm run start:dev
     ports:
       - 3000:3000
     networks:

@@ -259,4 +259,21 @@ export const EXCEPTION = {
       code: 'GROUP_DELETE_FAILED',
     },
   },
+  SUBJECT_GROUP: {
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store subject group',
+      code: 'SUBJECT_GROUP_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete subject group',
+      code: 'SUBJECT_GROUP_BULK_DELETE_FAILED',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Subject group already exist',
+      code: 'SUBJECT_GROUP_ALREADY_EXIST',
+    },
+  },
 };

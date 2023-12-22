@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import {
   UserGetListDTO,
@@ -9,7 +9,7 @@ import {
 export class StudentStoreDTO extends UserStoreDTO {}
 export class StudentGetListDTO extends UserGetListDTO {}
 export class StudentUpdateDTO extends UserUpdateDTO {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
   @IsNotEmpty()
   @IsOptional()

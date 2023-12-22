@@ -17,11 +17,15 @@ export class StudentRepository {
       .executeTakeFirstOrThrow();
   }
 
-  updateWithTransaction(transaction: Transaction, entity: StudentEntity) {
+  updateWithTransaction(
+    transaction: Transaction,
+    id: string,
+    entity: StudentEntity,
+  ) {
     return transaction
       .updateTable('student')
       .set(entity)
-      .where('id', '=', entity.id)
+      .where('id', '=', id)
       .returning('id')
       .executeTakeFirstOrThrow();
   }
@@ -75,14 +79,6 @@ export class StudentRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('student.id', '=', id)
       .where('users.deletedAt', 'is', null)
-      .executeTakeFirst();
-  }
-
-  getIdByUserId(userId: string) {
-    return this.database
-      .selectFrom('student')
-      .select('student.id')
-      .where('student.userId', '=', userId)
       .executeTakeFirst();
   }
 

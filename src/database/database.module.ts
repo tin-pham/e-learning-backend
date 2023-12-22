@@ -6,7 +6,7 @@ import {
 import { DatabaseOptions } from './database.options';
 import { Pool } from 'pg';
 import { PostgresDialect, CamelCasePlugin } from 'kysely';
-import { DatabaseService } from './database';
+import { DatabaseService } from './database.service';
 import { ElasticsearchLoggerModule } from '../elastic-search-logger/elastic-search-logger.module';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 

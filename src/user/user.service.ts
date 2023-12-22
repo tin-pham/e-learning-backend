@@ -71,6 +71,15 @@ export class UserService extends BaseService {
         this.throwException({ status, code, message, actorId });
       }
     }
+
+    // Check phone exists
+    if (dto.phone) {
+      const phoneCount = await this.userRepository.countByPhone(dto.phone);
+      if (phoneCount) {
+        const { status, code, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
+        this.throwException({ status, code, message, actorId });
+      }
+    }
   }
 
   protected async updateWithTransaction(

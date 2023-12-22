@@ -40,6 +40,16 @@ export class UserRepository {
     return Number(count);
   }
 
+  async countByPhone(phone: string): Promise<number> {
+    const { count } = await this.database
+      .selectFrom('users')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('users.phone', '=', phone)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   async countByEmailExceptId(email: string, id: string): Promise<number> {
     const { count } = await this.database
       .selectFrom('users')

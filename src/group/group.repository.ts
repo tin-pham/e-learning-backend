@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
 import { GroupEntity } from './group.entity';
+import { GroupGetListDTO } from './dto/group.dto';
+import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class GroupRepository {
@@ -13,7 +15,6 @@ export class GroupRepository {
       .where('name', '=', name)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
-
     return Number(count);
   }
 
@@ -24,7 +25,16 @@ export class GroupRepository {
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
+    return Number(count);
+  }
 
+  async countByIds(ids: string[]) {
+    const { count } = await this.database
+      .selectFrom('group')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', 'in', ids)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
     return Number(count);
   }
 
@@ -40,6 +50,15 @@ export class GroupRepository {
     return Number(count);
   }
 
+  findOneById(id: string) {
+    return this.database
+      .selectFrom('group')
+      .selectAll()
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
   insert(entity: GroupEntity) {
     return this.database
       .insertInto('group')
@@ -48,15 +67,38 @@ export class GroupRepository {
       .executeTakeFirstOrThrow();
   }
 
-  find() {
-    return this.database
+  find(dto: GroupGetListDTO) {
+    const withSubject = Boolean(dto.subjectId);
+
+    const query = this.database
       .selectFrom('group')
-      .select(['id', 'name'])
-      .where('deletedAt', 'is', null)
-      .execute();
+      .select(['group.id', 'group.name'])
+      .where('group.deletedAt', 'is', null)
+      .$if(withSubject, (query) =>
+        query
+          .innerJoin('subjectGroup', 'subjectGroup.groupId', 'group.id')
+          .innerJoin('subject', 'subject.id', 'subjectGroup.subjectId')
+          .where('subjectGroup.subjectId', '=', dto.subjectId)
+          .where('subject.deletedAt', 'is', null),
+      );
+
+    return paginate(query, {
+      limit: dto.limit,
+      page: dto.page,
+    });
   }
 
   update(id: string, entity: GroupEntity) {
+    return this.database
+      .updateTable('group')
+      .set(entity)
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
+
+  delete(id: string, entity: GroupEntity) {
     return this.database
       .updateTable('group')
       .set(entity)

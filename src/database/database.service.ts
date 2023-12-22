@@ -7,6 +7,7 @@ import { TeacherEntity } from '../teacher/teacher.entity';
 import { ParentEntity } from '../parent/parent.entity';
 import { SubjectEntity } from '../subject/subject.entity';
 import { GroupEntity } from '../group/group.entity';
+import { SubjectGroupEntity } from '../subject-group/subject-group.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -17,6 +18,7 @@ export interface KyselyTables {
   parent: ParentEntity;
   subject: SubjectEntity;
   group: GroupEntity;
+  subjectGroup: SubjectGroupEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

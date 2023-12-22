@@ -4,8 +4,16 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { SubjectEntity } from './subject.entity';
 import { SubjectRepository } from './subject.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { SubjectGetListDTO, SubjectStoreDTO } from './dto/subject.dto';
-import { SubjectGetListRO, SubjectStoreRO } from './ro/subject.ro';
+import {
+  SubjectGetListDTO,
+  SubjectStoreDTO,
+  SubjectUpdateDTO,
+} from './dto/subject.dto';
+import {
+  SubjectGetListRO,
+  SubjectStoreRO,
+  SubjectUpdateRO,
+} from './ro/subject.ro';
 
 @Injectable()
 export class SubjectService extends BaseService {
@@ -57,10 +65,62 @@ export class SubjectService extends BaseService {
     }
   }
 
+  async update(id: string, dto: SubjectUpdateDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateUpdate(id, dto, actorId);
+
+    const response = new SubjectUpdateRO();
+
+    try {
+      const subjectData = new SubjectEntity();
+      if (dto.name) {
+        subjectData.name = dto.name;
+      }
+
+      const subject = await this.subjectRepository.update(id, subjectData);
+
+      response.id = subject.id;
+      response.name = subject.name;
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.SUBJECT.UPDATE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId, error });
+    }
+
+    return this.success({
+      classRO: SubjectStoreRO,
+      response,
+      message: 'Subject updated successfully',
+      actorId,
+    });
+  }
+
   private async validateStore(dto: SubjectStoreDTO, actorId: string) {
     // Check name exists
     const nameCount = await this.subjectRepository.countByName(dto.name);
     if (nameCount) {
+      const { code, status, message } = EXCEPTION.SUBJECT.ALREADY_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateUpdate(
+    id: string,
+    dto: SubjectUpdateDTO,
+    actorId: string,
+  ) {
+    // Check id exists
+    const subjectCount = await this.subjectRepository.countById(id);
+    if (!subjectCount) {
+      const { code, status, message } = EXCEPTION.SUBJECT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check name unique
+    const duplicateNameCount = await this.subjectRepository.countByName(
+      dto.name,
+    );
+    if (duplicateNameCount) {
       const { code, status, message } = EXCEPTION.SUBJECT.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }

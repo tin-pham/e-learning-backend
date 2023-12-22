@@ -13,6 +13,7 @@ import { ParentModule } from './parent/parent.module';
 import { SubjectModule } from './subject/subject.module';
 import { GroupModule } from './group/group.module';
 import { ElasticsearchLoggerModule } from './elastic-search-logger/elastic-search-logger.module';
+import { SubjectGroupModule } from './subject-group/subject-group.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ElasticsearchLoggerModule } from './elastic-search-logger/elastic-searc
     ParentModule,
     SubjectModule,
     GroupModule,
+    SubjectGroupModule,
   ],
   providers: [...appProviders],
 })

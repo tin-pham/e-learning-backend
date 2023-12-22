@@ -59,14 +59,15 @@ export class ParentRepository {
       .executeTakeFirst();
   }
 
-  countById(id: string) {
-    return this.database
+  async countById(id: string) {
+    const { count } = await this.database
       .selectFrom('parent')
       .innerJoin('users', 'users.id', 'parent.userId')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('parent.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
+    return Number(count);
   }
 
   getIdByUserId(userId: string) {

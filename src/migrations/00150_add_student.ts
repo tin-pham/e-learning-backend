@@ -16,7 +16,7 @@ export async function up(database: DatabaseService): Promise<void> {
       column.references(`${USERS_TABLE}.${USER_SCHEMA.ID}`).notNull(),
     )
     .addColumn(SCHEMA.PARENT_ID, 'varchar(50)', (column) =>
-      column.references(`${PARENTS_TABLE}.${PARENT_SCHEMA.ID}`).notNull(),
+      column.references(`${PARENTS_TABLE}.${PARENT_SCHEMA.ID}`),
     )
     .execute();
 }

@@ -9,9 +9,6 @@ const { NAME: ROLES_NAME, SCHEMA: ROLE_SCHEMA } = DATABASE_TABLE.ROLE;
 export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
-    .addColumn(SCHEMA.ID, 'varchar(50)', (column) =>
-      column.primaryKey().defaultTo(sql`uuid_generate_v4()`),
-    )
     .addColumn(SCHEMA.USER_ID, 'varchar(50)', (column) =>
       column.references(`${USERS_NAME}.${USER_SCHEMA.ID}`).notNull(),
     )
@@ -22,6 +19,7 @@ export async function up(database: DatabaseService): Promise<void> {
       column.defaultTo(sql`now()`),
     )
     .addColumn(SCHEMA.CREATED_BY, 'varchar(50)')
+    .addPrimaryKeyConstraint('pk_user_role', [SCHEMA.USER_ID, SCHEMA.ROLE_ID])
 
     .execute();
 }

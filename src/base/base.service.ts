@@ -29,7 +29,12 @@ export class BaseService {
       code,
       message,
       actorId,
-      error: error.message,
+      // remove escape character
+      error: error
+        ? JSON.stringify(error.message, (_, value) => {
+            return value.replace(/[^\w\s]/gi, '');
+          })
+        : undefined,
     });
     throw new HttpException({ message: { code, message } }, status);
   }

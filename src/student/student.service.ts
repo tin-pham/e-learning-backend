@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { USER_ROLE } from '../user-role/user-role.enum';
@@ -134,7 +130,7 @@ export class StudentService extends UserService {
 
   async update(id: string, dto: StudentUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateUpdate(id, dto, actorId);
+    const { student } = await this.validateUpdate(id, dto, actorId);
 
     const response = new StudentUpdateRO();
 
@@ -150,22 +146,21 @@ export class StudentService extends UserService {
         );
 
         // Update student
+        let studentId: string;
         if (dto.parentId) {
-          const studentData = new StudentEntity();
-          studentData.parentId = dto.parentId;
-          await this.studentRepository.updateWithTransaction(
+          if (dto.parentId) {
+            student.parentId = dto.parentId;
+          }
+          const newStudent = await this.studentRepository.updateWithTransaction(
             transaction,
-            studentData,
+            student.id,
+            student,
           );
+
+          studentId = newStudent.id;
         }
 
         // Set response
-        const { id: studentId } = await this.studentRepository.getIdByUserId(
-          user.id,
-        );
-        if (!studentId) {
-          throw new InternalServerErrorException();
-        }
         response.id = studentId;
         response.username = user.username;
         response.email = user.email;
@@ -276,6 +271,10 @@ export class StudentService extends UserService {
         });
       }
     }
+
+    return {
+      student,
+    };
   }
 
   private async validateDelete(id: string, actorId: string) {
