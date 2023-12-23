@@ -123,6 +123,18 @@ export const API = {
       OPERATION: 'Delete parent',
     },
   },
+  STUDENT_PARENT: {
+    TAGS: 'StudentParent',
+    CONTROLLER: 'student-parent',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store student parent',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete student parent',
+    },
+  },
   SUBJECT: {
     TAGS: 'Subject',
     CONTROLLER: 'subject',

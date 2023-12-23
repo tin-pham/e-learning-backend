@@ -8,6 +8,7 @@ import { ParentEntity } from '../parent/parent.entity';
 import { SubjectEntity } from '../subject/subject.entity';
 import { GroupEntity } from '../group/group.entity';
 import { SubjectGroupEntity } from '../subject-group/subject-group.entity';
+import { StudentParentEntity } from '../student-parent/student-parent.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -16,6 +17,7 @@ export interface KyselyTables {
   student: StudentEntity;
   teacher: TeacherEntity;
   parent: ParentEntity;
+  studentParent: StudentParentEntity;
   subject: SubjectEntity;
   group: GroupEntity;
   subjectGroup: SubjectGroupEntity;

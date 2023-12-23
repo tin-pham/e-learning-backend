@@ -28,7 +28,6 @@ export const DATABASE_TABLE = {
   USER_ROLE: {
     NAME: 'user_role',
     SCHEMA: {
-      ID: 'id',
       USER_ID: 'user_id',
       ROLE_ID: 'role_id',
       CREATED_AT: 'created_at',
@@ -55,6 +54,13 @@ export const DATABASE_TABLE = {
     SCHEMA: {
       ID: 'id',
       USER_ID: 'user_id',
+    },
+  },
+  STUDENT_PARENT: {
+    NAME: 'student_parent',
+    SCHEMA: {
+      STUDENT_ID: 'student_id',
+      PARENT_ID: 'parent_id',
     },
   },
   SUBJECT: {
@@ -86,7 +92,6 @@ export const DATABASE_TABLE = {
   SUBJECT_GROUP: {
     NAME: 'subject_group',
     SCHEMA: {
-      ID: 'id',
       SUBJECT_ID: 'subject_id',
       GROUP_ID: 'group_id',
     },

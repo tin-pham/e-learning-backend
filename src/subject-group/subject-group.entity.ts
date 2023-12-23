@@ -1,6 +1,4 @@
 export class SubjectGroupEntity {
-  id: string;
-
   subjectId: string;
 
   groupId: string;

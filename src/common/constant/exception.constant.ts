@@ -185,6 +185,28 @@ export const EXCEPTION = {
       code: 'PARENT_DELETE_FAILED',
     },
   },
+  STUDENT_PARENT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Student parent already exist',
+      code: 'STUDENT_PARENT_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Student parent does not exist',
+      code: 'STUDENT_PARENT_DOES_NOT_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store student parent',
+      code: 'STUDENT_PARENT_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete student parent',
+      code: 'STUDENT_PARENT_BULK_DELETE_FAILED',
+    },
+  },
   SUBJECT: {
     NOT_FOUND: {
       status: HttpStatus.NOT_FOUND,

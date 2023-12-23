@@ -59,14 +59,15 @@ export class TeacherRepository {
       .executeTakeFirst();
   }
 
-  countById(id: string) {
-    return this.database
+  async countById(id: string) {
+    const { count } = await this.database
       .selectFrom('teacher')
       .innerJoin('users', 'users.id', 'teacher.userId')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('teacher.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
+    return Number(count);
   }
 
   getIdByUserId(userId: string) {

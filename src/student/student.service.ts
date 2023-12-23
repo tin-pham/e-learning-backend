@@ -7,7 +7,6 @@ import { StudentRepository } from './student.repository';
 import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
-import { ParentRepository } from '../parent/parent.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { UserService } from '../user/user.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
@@ -31,7 +30,6 @@ export class StudentService extends UserService {
     userRoleRepository: UserRoleRepository,
     private readonly database: DatabaseService,
     private readonly studentRepository: StudentRepository,
-    private readonly parentRepository: ParentRepository,
   ) {
     super(elasticLogger, userRepository, roleRepository, userRoleRepository);
   }
@@ -130,7 +128,7 @@ export class StudentService extends UserService {
 
   async update(id: string, dto: StudentUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const { student } = await this.validateUpdate(id, dto, actorId);
+    await this.validateUpdate(id, dto, actorId);
 
     const response = new StudentUpdateRO();
 
@@ -145,23 +143,8 @@ export class StudentService extends UserService {
           actorId,
         );
 
-        // Update student
-        let studentId: string;
-        if (dto.parentId) {
-          if (dto.parentId) {
-            student.parentId = dto.parentId;
-          }
-          const newStudent = await this.studentRepository.updateWithTransaction(
-            transaction,
-            student.id,
-            student,
-          );
-
-          studentId = newStudent.id;
-        }
-
         // Set response
-        response.id = studentId;
+        response.id = id;
         response.username = user.username;
         response.email = user.email;
         response.phone = user.phone;
@@ -249,20 +232,6 @@ export class StudentService extends UserService {
       );
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
-      }
-    }
-
-    // Check parent exist
-    if (dto.parentId) {
-      const parentCount = await this.parentRepository.countById(dto.parentId);
-      if (!parentCount) {
-        const { code, status, message } = EXCEPTION.PARENT.DOES_NOT_EXIST;
         this.throwException({
           code,
           status,

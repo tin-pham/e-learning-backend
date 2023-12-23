@@ -70,6 +70,17 @@ export class ParentRepository {
     return Number(count);
   }
 
+  async countByIds(ids: string[]) {
+    const { count } = await this.database
+      .selectFrom('parent')
+      .innerJoin('users', 'users.id', 'parent.userId')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('parent.id', 'in', ids)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   getIdByUserId(userId: string) {
     return this.database
       .selectFrom('parent')

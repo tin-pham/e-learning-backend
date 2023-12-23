@@ -72,14 +72,26 @@ export class StudentRepository {
       .executeTakeFirst();
   }
 
-  countById(id: string) {
-    return this.database
+  async countById(id: string) {
+    const { count } = await this.database
       .selectFrom('student')
       .innerJoin('users', 'users.id', 'student.userId')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('student.id', '=', id)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByIds(ids: string[]) {
+    const { count } = await this.database
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('student.id', 'in', ids)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
   }
 
   getUserIdByStudentId(id: string) {
