@@ -57,6 +57,7 @@ export class AuthService extends BaseService {
     if (difference(userRoles, modder).length === 0) {
       await this.elasticLogger.info({
         message: `User ${user.username} logged in successfully`,
+        actorId: user.id,
       });
     }
 

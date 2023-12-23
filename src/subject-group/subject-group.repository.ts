@@ -10,6 +10,14 @@ export class SubjectGroupRepository {
     return this.database.insertInto('subjectGroup').values(entities).execute();
   }
 
+  deleteMultiple(subjectIds: string[], groupIds: string[]) {
+    return this.database
+      .deleteFrom('subjectGroup')
+      .where('subjectId', 'in', subjectIds)
+      .where('groupId', 'in', groupIds)
+      .execute();
+  }
+
   async countBySubjectIdsAndGroupIds(subjectIds: string[], groupIds: string[]) {
     const { count } = await this.database
       .selectFrom('subjectGroup')

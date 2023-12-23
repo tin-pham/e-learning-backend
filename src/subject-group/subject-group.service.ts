@@ -5,7 +5,10 @@ import { SubjectGroupRepository } from './subject-group.repository';
 import { SubjectRepository } from '../subject/subject.repository';
 import { GroupRepository } from '../group/group.repository';
 import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
-import { SubjectGroupBulkStoreDTO } from './dto/subject-group.dto';
+import {
+  SubjectGroupBulkDeleteDTO,
+  SubjectGroupBulkStoreDTO,
+} from './dto/subject-group.dto';
 import { SubjectGroupEntity } from './subject-group.entity';
 import { ResultRO } from 'src/common/ro/result.ro';
 
@@ -49,7 +52,33 @@ export class SubjectGroupService extends BaseService {
     });
   }
 
-  async validateBulkStore(dto: SubjectGroupBulkStoreDTO, actorId: string) {
+  async bulkDelete(dto: SubjectGroupBulkDeleteDTO, decoded: IJwtPayload) {
+    const { subjectIds, groupIds } = dto;
+    const actorId = decoded.userId;
+
+    await this.validateBulkDelete(dto, actorId);
+
+    try {
+      await this.subjectGroupRepository.deleteMultiple(subjectIds, groupIds);
+    } catch (error) {
+      const { code, status, message } =
+        EXCEPTION.SUBJECT_GROUP.BULK_DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId, error });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Subject group deleted successfully',
+      actorId,
+    });
+  }
+
+  private async validateBulkStore(
+    dto: SubjectGroupBulkStoreDTO,
+    actorId: string,
+  ) {
     const { subjectIds, groupIds } = dto;
     // Check subjects exists
     const subjectCount = await this.subjectRepository.countByIds(subjectIds);
@@ -73,6 +102,37 @@ export class SubjectGroupService extends BaseService {
       );
     if (subjectGroupCount) {
       const { code, status, message } = EXCEPTION.SUBJECT_GROUP.ALREADY_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateBulkDelete(
+    dto: SubjectGroupBulkDeleteDTO,
+    actorId: string,
+  ) {
+    const { subjectIds, groupIds } = dto;
+    // Check subjects exists
+    const subjectCount = await this.subjectRepository.countByIds(subjectIds);
+    if (subjectCount !== subjectIds.length) {
+      const { code, status, message } = EXCEPTION.SUBJECT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check groups exists
+    const groupCount = await this.groupRepository.countByIds(groupIds);
+    if (groupCount !== groupIds.length) {
+      const { code, status, message } = EXCEPTION.GROUP.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check subjectGroup exists
+    const subjectGroupCount =
+      await this.subjectGroupRepository.countBySubjectIdsAndGroupIds(
+        subjectIds,
+        groupIds,
+      );
+    if (!subjectGroupCount) {
+      const { code, status, message } = EXCEPTION.SUBJECT_GROUP.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }

@@ -9,6 +9,10 @@ export class ElasticsearchLoggerGetInfoDataRO {
 
   @ApiProperty()
   @Expose()
+  actorId: string;
+
+  @ApiProperty()
+  @Expose()
   date: Date;
 }
 

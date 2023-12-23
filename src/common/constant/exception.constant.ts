@@ -275,5 +275,10 @@ export const EXCEPTION = {
       message: 'Subject group already exist',
       code: 'SUBJECT_GROUP_ALREADY_EXIST',
     },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Subject group does not exist',
+      code: 'SUBJECT_GROUP_DOES_NOT_EXIST',
+    },
   },
 };

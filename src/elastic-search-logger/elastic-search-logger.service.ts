@@ -108,6 +108,7 @@ export class ElasticsearchLoggerService {
     const response = body['hits'].hits;
     const data = response.map((item) => ({
       message: item._source.message,
+      actorId: item._source.actorId,
       date: new Date(item._source.date).toLocaleString(),
     }));
 

@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -13,6 +15,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -23,10 +26,13 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { USER_ROLE } from '../user-role/user-role.enum';
 import { SubjectGroupService } from './subject-group.service';
-import { SubjectGroupBulkStoreDTO } from './dto/subject-group.dto';
+import {
+  SubjectGroupBulkDeleteDTO,
+  SubjectGroupBulkStoreDTO,
+} from './dto/subject-group.dto';
 import { ResultRO } from '../common/ro/result.ro';
 
-const { CONTROLLER, TAGS, BULK_STORE } = API.SUBJECT_GROUP;
+const { CONTROLLER, TAGS, BULK_STORE, BULK_DELETE } = API.SUBJECT_GROUP;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -49,5 +55,22 @@ export class SubjectGroupController {
     @JwtPayload() decoded: IJwtPayload,
   ) {
     return this.subjectGroupService.bulkStore(dto, decoded);
+  }
+
+  @ApiOperation({ summary: BULK_DELETE.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Delete(BULK_DELETE.ROUTE)
+  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  bulkDelete(
+    @Query() dto: SubjectGroupBulkDeleteDTO,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
+    console.log(dto);
+    return this.subjectGroupService.bulkDelete(dto, decoded);
   }
 }
