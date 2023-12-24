@@ -38,7 +38,7 @@ export class GradeService extends BaseService {
       gradeData.name = dto.name;
       gradeData.createdBy = actorId;
 
-      const grade = await this.gradeRepository.store(gradeData);
+      const grade = await this.gradeRepository.insert(gradeData);
 
       response.id = grade.id;
       response.name = grade.name;
@@ -109,7 +109,7 @@ export class GradeService extends BaseService {
       const gradeData = new GradeEntity();
       gradeData.deletedAt = new Date();
       gradeData.deletedBy = actorId;
-      await this.gradeRepository.update(id, gradeData);
+      await this.gradeRepository.delete(id, gradeData);
 
       response.id = id;
     } catch (error) {
@@ -143,7 +143,7 @@ export class GradeService extends BaseService {
     // Check exist
     const gradeCount = await this.gradeRepository.countById(id);
     if (!gradeCount) {
-      const { code, status, message } = EXCEPTION.GROUP.DOES_NOT_EXIST;
+      const { code, status, message } = EXCEPTION.GRADE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 

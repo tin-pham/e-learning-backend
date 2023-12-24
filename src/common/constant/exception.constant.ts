@@ -340,4 +340,46 @@ export const EXCEPTION = {
       code: 'GRADE_DELETE_FAILED',
     },
   },
+  CLASSROOM: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Classroom not found',
+      code: 'CLASSROOM_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Classroom does not exist',
+      code: 'CLASSROOM_DOES_NOT_EXIST',
+    },
+    ALREADY_EXISTS: {
+      status: HttpStatus.CONFLICT,
+      message: 'Classroom already exists',
+      code: 'CLASSROOM_ALREADY_EXISTS',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list classroom',
+      code: 'CLASSROOM_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail classroom',
+      code: 'CLASSROOM_GET_DETAIL_FAILED',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store classroom',
+      code: 'CLASSROOM_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update classroom',
+      code: 'CLASSROOM_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete classroom',
+      code: 'CLASSROOM_DELETE_FAILED',
+    },
+  },
 };

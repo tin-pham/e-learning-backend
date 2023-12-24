@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { paginate } from '../common/function/paginate';
-import { GradeEntity } from './grade.entity';
-import { DatabaseService } from '../database/database.service';
-import { GradeGetListDTO } from './dto/grade.dto';
+import { DatabaseService } from '../database';
+import { ClassroomEntity } from './classroom.entity';
+import { ClassroomGetListDTO } from './dto/classroom.dto';
+import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
-export class GradeRepository {
+export class ClassroomRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insert(entity: GradeEntity) {
+  insert(entity: ClassroomEntity) {
     return this.database
-      .insertInto('grade')
+      .insertInto('classroom')
       .values(entity)
-      .returning(['id', 'name'])
+      .returningAll()
       .executeTakeFirstOrThrow();
   }
 
-  find(dto: GradeGetListDTO) {
+  find(dto: ClassroomGetListDTO) {
     const query = this.database
-      .selectFrom('grade')
-      .select(['id', 'name'])
+      .selectFrom('classroom')
+      .select(['id', 'name', 'gradeId'])
       .where('deletedAt', 'is', null);
 
     return paginate(query, {
@@ -28,27 +28,28 @@ export class GradeRepository {
     });
   }
 
-  update(id: string, entity: GradeEntity) {
+  update(id: string, entity: ClassroomEntity) {
     return this.database
-      .updateTable('grade')
+      .updateTable('classroom')
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .returningAll()
-      .executeTakeFirstOrThrow();
+      .executeTakeFirst();
   }
 
-  delete(id: string, entity: GradeEntity) {
+  delete(id: string, entity: ClassroomEntity) {
     return this.database
-      .updateTable('grade')
+      .updateTable('classroom')
       .set(entity)
       .where('id', '=', id)
-      .executeTakeFirstOrThrow();
+      .returningAll()
+      .executeTakeFirst();
   }
 
   async countByName(name: string) {
     const { count } = await this.database
-      .selectFrom('grade')
+      .selectFrom('classroom')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('name', '=', name)
       .where('deletedAt', 'is', null)
@@ -58,7 +59,7 @@ export class GradeRepository {
 
   async countByNameExceptId(name: string, id: string) {
     const { count } = await this.database
-      .selectFrom('grade')
+      .selectFrom('classroom')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('name', '=', name)
       .where('id', '!=', id)
@@ -69,7 +70,7 @@ export class GradeRepository {
 
   async countById(id: string) {
     const { count } = await this.database
-      .selectFrom('grade')
+      .selectFrom('classroom')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('id', '=', id)
       .where('deletedAt', 'is', null)

@@ -16,6 +16,7 @@ import { ElasticsearchLoggerModule } from './elastic-search-logger/elastic-searc
 import { SubjectGroupModule } from './subject-group/subject-group.module';
 import { StudentParentModule } from './student-parent/student-parent.module';
 import { GradeModule } from './grade/grade.module';
+import { ClassroomModule } from './classroom/classroom.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { GradeModule } from './grade/grade.module';
     GroupModule,
     SubjectGroupModule,
     GradeModule,
+    ClassroomModule,
   ],
   providers: [...appProviders],
 })
