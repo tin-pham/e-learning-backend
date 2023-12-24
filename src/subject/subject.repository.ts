@@ -76,4 +76,15 @@ export class SubjectRepository {
       .executeTakeFirst();
     return Number(count);
   }
+
+  async countByNameExceptId(name: string, id: string) {
+    const { count } = await this.database
+      .selectFrom('subject')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('name', '=', name)
+      .where('deletedAt', 'is', null)
+      .where('id', '!=', id)
+      .executeTakeFirst();
+    return Number(count);
+  }
 }

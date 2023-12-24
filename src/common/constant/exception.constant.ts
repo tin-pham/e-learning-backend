@@ -303,4 +303,41 @@ export const EXCEPTION = {
       code: 'SUBJECT_GROUP_DOES_NOT_EXIST',
     },
   },
+  GRADE: {
+    ALREADY_EXISTS: {
+      status: HttpStatus.CONFLICT,
+      message: 'Grade already exists',
+      code: 'GRADE_ALREADY_EXISTS',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Grade does not exist',
+      code: 'GRADE_DOES_NOT_EXIST',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list grade',
+      code: 'GRADE_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail grade',
+      code: 'GRADE_GET_DETAIL_FAILED',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store grade',
+      code: 'GRADE_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update grade',
+      code: 'GRADE_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete grade',
+      code: 'GRADE_DELETE_FAILED',
+    },
+  },
 };

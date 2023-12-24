@@ -195,4 +195,52 @@ export const API = {
       OPERATION: 'Bulk delete subject groups',
     },
   },
+  CLASSROOM: {
+    TAGS: 'Classroom',
+    CONTROLLER: 'classroom',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store classroom',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list classrooms',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get classroom detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update classroom',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete classroom',
+    },
+  },
+  GRADE: {
+    TAGS: 'Grade',
+    CONTROLLER: 'grade',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store grade',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list grades',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get grade detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update grade',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete grade',
+    },
+  },
 };

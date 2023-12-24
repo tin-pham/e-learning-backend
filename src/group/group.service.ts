@@ -75,6 +75,7 @@ export class GroupService extends BaseService {
 
     try {
       const groupData = new GroupEntity();
+      groupData.updatedAt = new Date();
       groupData.updatedBy = payload.userId;
       if (dto.name) {
         groupData.name = dto.name;

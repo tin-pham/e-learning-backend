@@ -96,4 +96,17 @@ export const DATABASE_TABLE = {
       GROUP_ID: 'group_id',
     },
   },
+  GRADE: {
+    NAME: 'grade',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };

@@ -73,6 +73,8 @@ export class SubjectService extends BaseService {
 
     try {
       const subjectData = new SubjectEntity();
+      subjectData.updatedAt = new Date();
+      subjectData.updatedBy = actorId;
       if (dto.name) {
         subjectData.name = dto.name;
       }
@@ -117,8 +119,9 @@ export class SubjectService extends BaseService {
     }
 
     // Check name unique
-    const duplicateNameCount = await this.subjectRepository.countByName(
+    const duplicateNameCount = await this.subjectRepository.countByNameExceptId(
       dto.name,
+      id,
     );
     if (duplicateNameCount) {
       const { code, status, message } = EXCEPTION.SUBJECT.ALREADY_EXIST;
