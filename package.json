@@ -6,11 +6,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "reset": "pnpm run down && sudo rm -rdf data && pnpm run up && pnpm run app-run migration ",
     "up": "docker compose -f ./docker-compose.dev.yml up -d",
     "down": "docker compose -f ./docker-compose.dev.yml down",
     "app": "docker logs school-dev --follow",
     "app-run": "docker exec -it school-dev npm run",
-    "migrations": "ts-node -r tsconfig-paths/register ./src/database/run-migrations.ts",
+    "migration": "ts-node -r tsconfig-paths/register ./src/database/run-migration.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

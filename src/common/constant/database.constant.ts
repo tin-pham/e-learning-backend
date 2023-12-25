@@ -124,4 +124,17 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  SEMESTER: {
+    NAME: 'semester',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };
