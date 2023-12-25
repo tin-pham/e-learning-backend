@@ -26,7 +26,7 @@ import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtPayload } from '../common/decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { SubjectService } from './subject.service';
 import {
   SubjectGetListDTO,
@@ -55,7 +55,7 @@ export class SubjectController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: SubjectStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectService.store(dto, decoded);
@@ -69,10 +69,7 @@ export class SubjectController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @UseGuards(
-    JwtGuard,
-    RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
-  )
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR, ROLE.TEACHER))
   getList(@Query() dto: SubjectGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectService.getList(dto, decoded);
   }
@@ -85,7 +82,7 @@ export class SubjectController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
   update(
     @Param('id') id: string,
     @Body() dto: SubjectUpdateDTO,

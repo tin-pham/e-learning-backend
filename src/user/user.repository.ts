@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { UserEntity } from './user.entity';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { paginate } from '../common/function/paginate';
 import { PaginateDTO } from '../common/dto/paginate.dto';
 
@@ -90,7 +90,7 @@ export class UserRepository {
       .executeTakeFirst();
   }
 
-  findByRole(filter: PaginateDTO, role: USER_ROLE) {
+  findByRole(filter: PaginateDTO, role: ROLE) {
     const query = this.database
       .selectFrom('users')
       .innerJoin('userRole', 'users.id', 'userRole.userId')

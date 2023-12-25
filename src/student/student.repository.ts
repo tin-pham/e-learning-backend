@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { StudentEntity } from './student.entity';
 import { PaginateDTO } from '../common/dto/paginate.dto';
 
@@ -43,7 +43,7 @@ export class StudentRepository {
         'users.displayName',
         'student.id',
       ])
-      .where('role.name', '=', USER_ROLE.STUDENT)
+      .where('role.name', '=', ROLE.STUDENT)
       .where('users.deletedAt', 'is', null);
 
     return paginate(query, {

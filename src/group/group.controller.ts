@@ -25,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtPayload } from '../common/decorator';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { GroupService } from './group.service';
@@ -57,7 +57,7 @@ export class GroupController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: GroupStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.groupService.store(dto, decoded);
@@ -71,10 +71,7 @@ export class GroupController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @UseGuards(
-    JwtGuard,
-    RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR, USER_ROLE.TEACHER),
-  )
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR, ROLE.TEACHER))
   getList(@Query() dto: GroupGetListDTO, @JwtPayload() payload: IJwtPayload) {
     return this.groupService.getList(dto, payload);
   }
@@ -88,7 +85,7 @@ export class GroupController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
   update(
     @Param('id') id: string,
     @Body() dto: GroupUpdateDTO,
@@ -105,7 +102,7 @@ export class GroupController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.groupService.delete(id, decoded);
   }

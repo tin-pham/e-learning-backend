@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 
 @Injectable()
 export class RoleRepository {
@@ -23,7 +23,7 @@ export class RoleRepository {
       .execute();
   }
 
-  getIdByName(name: USER_ROLE): Promise<{ id: string }> {
+  getIdByName(name: ROLE): Promise<{ id: string }> {
     return this.databaseService
       .selectFrom('role')
       .select(['id'])

@@ -6,7 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { difference } from 'moderndash';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { UserEntity } from '../user/user.entity';
 import { UserRepository } from '../user/user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
@@ -52,7 +52,7 @@ export class AuthService extends BaseService {
     await this.refreshTokenService.store(user.id, refreshToken);
 
     // Only log admin and moderator sign in
-    const modder: string[] = [USER_ROLE.ADMIN, USER_ROLE.MODERATOR];
+    const modder: string[] = [ROLE.ADMIN, ROLE.MODERATOR];
     const userRoles = user.roles.map((role) => role.name);
     if (difference(userRoles, modder).length === 0) {
       await this.elasticLogger.info({

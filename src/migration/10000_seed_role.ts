@@ -1,7 +1,7 @@
 import { DatabaseService } from '../database';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 
-const roles = Object.values(USER_ROLE);
+const roles = Object.values(ROLE);
 
 export async function up(database: DatabaseService): Promise<void> {
   const data = roles.map((role) => ({

@@ -243,4 +243,16 @@ export const API = {
       OPERATION: 'Delete grade',
     },
   },
+  YEAR: {
+    TAGS: 'Year',
+    CONTROLLER: 'year',
+    CREATE: {
+      ROUTE: '',
+      OPERATION: 'Create year',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list years',
+    },
+  },
 };

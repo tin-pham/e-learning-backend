@@ -1,7 +1,8 @@
-export enum USER_ROLE {
+export enum ROLE {
   ADMIN = 'admin',
   MODERATOR = 'moderator',
   TEACHER = 'teacher',
   STUDENT = 'student',
   PARENT = 'parent',
+  PRINCIPAL = 'principal',
 }

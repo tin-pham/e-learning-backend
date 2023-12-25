@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { ParentEntity } from './parent.entity';
 import { ParentRepository } from './parent.repository';
 import { UserRepository } from '../user/user.repository';
@@ -55,7 +55,7 @@ export class ParentService extends UserService {
 
         // Get parent role id
         const { id: roleId } = await this.roleRepository.getIdByName(
-          USER_ROLE.PARENT,
+          ROLE.PARENT,
         );
 
         // Store user role

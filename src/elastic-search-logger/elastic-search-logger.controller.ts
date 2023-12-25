@@ -12,7 +12,7 @@ import {
 import { API, HttpExceptionRO } from '../common';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { ElasticsearchLoggerService } from './elastic-search-logger.service';
 import { PaginateDTO } from '../common/dto/paginate.dto';
 import { ElasticsearchLoggerGetInfoDTO } from './dto/elastic-search-logger.dto';
@@ -38,7 +38,7 @@ export class ElasticsearchLoggerController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_ERROR.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
   getError(@Query() dto: PaginateDTO) {
     return this.elasticsearchLoggerService.getError(dto);
   }
@@ -51,7 +51,7 @@ export class ElasticsearchLoggerController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_INFO.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
   getInfo(@Query() dto: ElasticsearchLoggerGetInfoDTO) {
     return this.elasticsearchLoggerService.getInfo(dto);
   }

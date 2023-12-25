@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { StudentEntity } from './student.entity';
 import { StudentRepository } from './student.repository';
 import { UserRepository } from '../user/user.repository';
@@ -50,7 +50,7 @@ export class StudentService extends UserService {
 
         // Get student role id
         const { id: roleId } = await this.roleRepository.getIdByName(
-          USER_ROLE.STUDENT,
+          ROLE.STUDENT,
         );
 
         // Store user role

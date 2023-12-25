@@ -28,7 +28,7 @@ import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtPayload } from '../common/decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 import { ParentService } from './parent.service';
 import { ParentStoreDTO, ParentUpdateDTO } from './dto/parent.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
@@ -57,7 +57,7 @@ export class ParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR))
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: ParentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.parentService.store(dto, decoded);
@@ -71,7 +71,7 @@ export class ParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.TEACHER))
   getList(@Query() dto: UserGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.parentService.getList(dto, decoded);
   }
@@ -84,7 +84,7 @@ export class ParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.TEACHER))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.TEACHER))
   getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.parentService.getDetail(id, decoded);
   }
@@ -98,7 +98,7 @@ export class ParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR))
   update(
     @Param('id') id: string,
     @Body() dto: ParentUpdateDTO,
@@ -115,7 +115,7 @@ export class ParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(USER_ROLE.ADMIN, USER_ROLE.MODERATOR))
+  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR))
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.parentService.delete(id, decoded);
   }

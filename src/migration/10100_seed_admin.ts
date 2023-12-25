@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { DatabaseService } from '../database';
-import { USER_ROLE } from '../user-role/user-role.enum';
+import { ROLE } from '../role/enum/role.enum';
 
 const configService = new ConfigService();
 
@@ -26,7 +26,7 @@ export async function up(database: DatabaseService): Promise<void> {
   const { id: roleId } = await database
     .selectFrom('role')
     .select(['id'])
-    .where('name', '=', USER_ROLE.ADMIN)
+    .where('name', '=', ROLE.ADMIN)
     .executeTakeFirst();
 
   // Add role
