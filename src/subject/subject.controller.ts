@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtPayload } from '../common/decorator';
+import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
@@ -55,7 +56,8 @@ export class SubjectController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: SubjectStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectService.store(dto, decoded);
@@ -69,7 +71,8 @@ export class SubjectController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR, ROLE.TEACHER))
+  @Roles(ROLE.MODERATOR)
+  @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: SubjectGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectService.getList(dto, decoded);
   }
@@ -82,7 +85,8 @@ export class SubjectController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   update(
     @Param('id') id: string,
     @Body() dto: SubjectUpdateDTO,

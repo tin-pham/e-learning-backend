@@ -40,6 +40,7 @@ import {
   GradeStoreRO,
   GradeUpdateRO,
 } from './ro/grade.ro';
+import { Roles } from 'src/auth/role/role.decorator';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE, DELETE } = API.GRADE;
 
@@ -57,7 +58,8 @@ export class GradeController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: GradeStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.gradeService.store(dto, decoded);
@@ -71,7 +73,8 @@ export class GradeController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR, ROLE.TEACHER))
+  @Roles(ROLE.MODERATOR, ROLE.TEACHER)
+  @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: GradeGetListDTO, @JwtPayload() payload: IJwtPayload) {
     return this.gradeService.getList(dto, payload);
   }
@@ -85,7 +88,8 @@ export class GradeController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   update(
     @Param('id') id: string,
     @Body() dto: GradeUpdateDTO,
@@ -102,7 +106,8 @@ export class GradeController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.gradeService.delete(id, decoded);
   }

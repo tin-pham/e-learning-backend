@@ -9,7 +9,6 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConflictResponse,
-  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
@@ -17,6 +16,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO } from '../common';
+import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
@@ -27,7 +27,6 @@ const { TAGS, CONTROLLER, CREATE } = API.YEAR;
 @Controller(CONTROLLER)
 export class YearController {
   @ApiOperation({ summary: CREATE.OPERATION })
-  @ApiCreatedResponse({ type: ResultRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -35,7 +34,8 @@ export class YearController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(CREATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store() {}
 }

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { CacheModule } from '../cache/cache.module';
 import { LocalStrategy } from './local/local.stategy';
-import { JwtStrtegy } from './jwt/jwt.strategy';
+import { JwtStrategy } from './jwt/jwt.strategy';
 import { HeaderApiKeyStrategy } from './api-key/api-key.strategy';
 import { JwtRefreshTokenStrategy } from './jwt/jwt-refresh-token.strategy';
 import { AuthController } from './auth.controller';
@@ -12,6 +12,7 @@ import { UserRoleRepository } from '../user-role/user-role.repository';
 import { AuthService } from './auth.service';
 import { RefreshTokenService } from './jwt/refresh-token.service';
 import { ApiKeyService } from './api-key/api-key.service';
+import { RoleService } from './role/role.service';
 
 const configService = new ConfigService();
 
@@ -28,14 +29,16 @@ const configService = new ConfigService();
   controllers: [AuthController],
   providers: [
     AuthService,
+    RoleService,
     UserRepository,
     LocalStrategy,
-    JwtStrtegy,
+    JwtStrategy,
     JwtRefreshTokenStrategy,
     RefreshTokenService,
     ApiKeyService,
     HeaderApiKeyStrategy,
     UserRoleRepository,
   ],
+  exports: [RoleService],
 })
 export class AuthModule {}

@@ -22,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtPayload } from '../common/decorator';
+import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
@@ -48,7 +49,8 @@ export class StudentParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(BULK_STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR))
+  @Roles(ROLE.STAFF)
+  @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   bulkStore(
     @Body() dto: StudentParentBulkStoreDTO,
@@ -65,7 +67,8 @@ export class StudentParentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(BULK_DELETE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.STAFF)
+  @UseGuards(JwtGuard, RoleGuard)
   bulkDelele(
     @Query() dto: StudentParentBulkDeleteDTO,
     @JwtPayload() decoded: IJwtPayload,

@@ -10,6 +10,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO } from '../common';
+import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
@@ -38,7 +39,8 @@ export class ElasticsearchLoggerController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_ERROR.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   getError(@Query() dto: PaginateDTO) {
     return this.elasticsearchLoggerService.getError(dto);
   }
@@ -51,7 +53,8 @@ export class ElasticsearchLoggerController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_INFO.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
   getInfo(@Query() dto: ElasticsearchLoggerGetInfoDTO) {
     return this.elasticsearchLoggerService.getInfo(dto);
   }

@@ -26,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtPayload } from '../common/decorator';
+import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
@@ -57,7 +58,8 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR))
+  @Roles(ROLE.STAFF)
+  @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: StudentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.store(dto, decoded);
@@ -71,7 +73,8 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR, ROLE.TEACHER))
+  @Roles(ROLE.STAFF, ROLE.TEACHER)
+  @UseGuards(JwtGuard)
   getList(@Query() dto: UserGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.getList(dto, decoded);
   }
@@ -84,7 +87,8 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR, ROLE.TEACHER))
+  @Roles(ROLE.STAFF, ROLE.TEACHER)
+  @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.getDetail(id, decoded);
   }
@@ -98,7 +102,8 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR))
+  @Roles(ROLE.STAFF)
+  @UseGuards(JwtGuard, RoleGuard)
   update(
     @Param('id') id: string,
     @Body() dto: StudentUpdateDTO,
@@ -115,7 +120,8 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @UseGuards(JwtGuard, RoleGuard(ROLE.ADMIN, ROLE.MODERATOR))
+  @Roles(ROLE.STAFF)
+  @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.delete(id, decoded);
   }
