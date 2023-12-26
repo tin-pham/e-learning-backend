@@ -137,4 +137,17 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  YEAR: {
+    NAME: 'year',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      START_DATE: 'start_date',
+      END_DATE: 'end_date',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };

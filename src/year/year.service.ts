@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { YearRepository } from './year.repository';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
+import { YearRepository } from './year.repository';
 import { YearEntity } from './year.entity';
 import { YearStoreRO } from './ro/year.ro';
 
@@ -37,9 +37,10 @@ export class YearService extends BaseService {
     try {
       const yearData = new YearEntity();
       yearData.name = `${thisYear}/${nextYear}`;
-      yearData.startDate = new Date(`01-09-${thisYear}`);
-      yearData.endDate = new Date(`30-05-${nextYear}`);
+      yearData.startDate = new Date(`09-02-${thisYear}`);
+      yearData.endDate = new Date(`05-31-${nextYear}`);
 
+      console.log(yearData);
       const year = await this.yearRepository.insert(yearData);
 
       response.id = year.id;

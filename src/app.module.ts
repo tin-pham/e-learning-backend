@@ -17,6 +17,7 @@ import { SubjectGroupModule } from './subject-group/subject-group.module';
 import { StudentParentModule } from './student-parent/student-parent.module';
 import { GradeModule } from './grade/grade.module';
 import { ClassroomModule } from './classroom/classroom.module';
+import { YearModule } from './year/year.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ClassroomModule } from './classroom/classroom.module';
     SubjectGroupModule,
     GradeModule,
     ClassroomModule,
+    YearModule,
   ],
   providers: [...appProviders],
 })

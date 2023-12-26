@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { PaginateRO } from 'src/common/ro/paginate.ro';
 
 export class YearStoreRO {
   @ApiProperty()
@@ -18,3 +19,7 @@ export class YearStoreRO {
   @Expose()
   endDate: Date;
 }
+
+export 
+
+export class YearGetListRO extends PaginateRO  
