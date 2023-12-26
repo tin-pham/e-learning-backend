@@ -9,6 +9,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
@@ -20,6 +21,7 @@ import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
+import { YearStoreRO } from './ro/year.ro';
 
 const { TAGS, CONTROLLER, CREATE } = API.YEAR;
 
@@ -27,6 +29,7 @@ const { TAGS, CONTROLLER, CREATE } = API.YEAR;
 @Controller(CONTROLLER)
 export class YearController {
   @ApiOperation({ summary: CREATE.OPERATION })
+  @ApiCreatedResponse({ type: YearStoreRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })

@@ -382,4 +382,11 @@ export const EXCEPTION = {
       code: 'CLASSROOM_DELETE_FAILED',
     },
   },
+  YEAR: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store year',
+      code: 'YEAR_STORE_FAILED',
+    },
+  },
 };

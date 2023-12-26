@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { YearRepository } from './year.repository';
 import { BaseService } from '../base';
-import { IJwtPayload } from '../common';
+import { EXCEPTION, IJwtPayload } from '../common';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { YearEntity } from './year.entity';
 import { YearStoreRO } from './ro/year.ro';
 
 @Injectable()
 export class YearService extends BaseService {
+  private readonly logger = new Logger(YearService.name);
+
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly yearRepository: YearRepository,
@@ -16,16 +18,24 @@ export class YearService extends BaseService {
   }
 
   async create(decoded: IJwtPayload) {
+    const actorId = decoded.userId;
     const lastEndDate = await this.yearRepository.getLastEndDate();
 
     const response = new YearStoreRO();
+    let thisYear: number;
+    let nextYear: number;
 
     // Create current year
     if (!lastEndDate) {
-      const yearData = new YearEntity();
-      const thisYear = new Date().getFullYear();
-      const nextYear = thisYear + 1;
+      thisYear = new Date().getFullYear();
+      nextYear = thisYear + 1;
+    } else {
+      thisYear = new Date(lastEndDate.endDate).getFullYear();
+      nextYear = thisYear + 1;
+    }
 
+    try {
+      const yearData = new YearEntity();
       yearData.name = `${thisYear}/${nextYear}`;
       yearData.startDate = new Date(`01-09-${thisYear}`);
       yearData.endDate = new Date(`30-05-${nextYear}`);
@@ -36,17 +46,10 @@ export class YearService extends BaseService {
       response.name = year.name;
       response.startDate = year.startDate;
       response.endDate = year.endDate;
-    } else {
-      const lastYear = new Date(lastEndDate.endDate).getFullYear();
-
-      const yearData = new YearEntity();
-
-      const thisYear = lastYear;
-      const nextYear = thisYear + 1;
-
-      yearData.name = `${thisYear}/${nextYear}`;
-      yearData.startDate = new Date(`01-09-${thisYear}`);
-      yearData.endDate = new Date(`30-05-${nextYear}`);
+    } catch (error) {
+      const { status, code, message } = EXCEPTION.YEAR.STORE_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, code, message, actorId });
     }
 
     return this.success({
