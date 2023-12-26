@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService, KyselyTables } from '../database';
+import { DatabaseService, KyselyTables, Transaction } from '../database';
 import { YearEntity } from './year.entity';
 import { BaseRepository } from '../base/base.repository';
 import { paginate } from '../common/function/paginate';
@@ -10,6 +10,14 @@ export class YearRepository extends BaseRepository<YearEntity> {
   protected override tableName = 'year' as keyof KyselyTables;
   constructor(database: DatabaseService) {
     super(database);
+  }
+
+  insertWithTransaction(transaction: Transaction, entity: YearEntity) {
+    return transaction
+      .insertInto('year')
+      .values(entity)
+      .returningAll()
+      .executeTakeFirstOrThrow();
   }
 
   getLastEndDate() {

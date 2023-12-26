@@ -1,9 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { SEMESTER } from '../semester/enum/semester.enum';
+import { YearEntity } from './year.entity';
+import { SemesterEntity } from '../semester/semester.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { YearRepository } from './year.repository';
-import { YearEntity } from './year.entity';
+import { SemesterRepository } from '../semester/semester.repository';
+import { DatabaseService } from '../database/database.service';
 import { YearGetListDTO } from './dto/year.dto';
 import { YearDeleteRO, YearGetListRO, YearStoreRO } from './ro/year.ro';
 
@@ -13,7 +17,9 @@ export class YearService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly yearRepository: YearRepository,
+    private readonly semesterRepository: SemesterRepository,
   ) {
     super(elasticLogger);
   }
@@ -36,18 +42,40 @@ export class YearService extends BaseService {
     }
 
     try {
-      const yearData = new YearEntity();
-      yearData.name = `${thisYear}/${nextYear}`;
-      yearData.startDate = new Date(`09-02-${thisYear}`);
-      yearData.endDate = new Date(`05-31-${nextYear}`);
+      await this.database.transaction().execute(async (transaction) => {
+        // Create year
+        const yearData = new YearEntity();
+        yearData.name = `${thisYear}/${nextYear}`;
+        yearData.startDate = new Date(`09-02-${thisYear}`);
+        yearData.endDate = new Date(`05-31-${nextYear}`);
+        const year = await this.yearRepository.insertWithTransaction(
+          transaction,
+          yearData,
+        );
 
-      console.log(yearData);
-      const year = await this.yearRepository.insert(yearData);
+        // Create semester
+        const firstSemesterData = new SemesterEntity();
+        firstSemesterData.name = SEMESTER.FIRST_SEMESTER;
+        firstSemesterData.startDate = year.startDate;
+        firstSemesterData.endDate = new Date(`12-22-${thisYear}`);
+        firstSemesterData.yearId = year.id;
 
-      response.id = year.id;
-      response.name = year.name;
-      response.startDate = year.startDate;
-      response.endDate = year.endDate;
+        const secondSemesterData = new SemesterEntity();
+        secondSemesterData.name = SEMESTER.SECOND_SEMESTER;
+        secondSemesterData.startDate = new Date(`12-25-${thisYear}`);
+        secondSemesterData.endDate = year.endDate;
+        secondSemesterData.yearId = year.id;
+
+        await this.semesterRepository.insertMultipleWithTransaction(
+          transaction,
+          [firstSemesterData, secondSemesterData],
+        );
+
+        response.id = year.id;
+        response.name = year.name;
+        response.startDate = year.startDate;
+        response.endDate = year.endDate;
+      });
     } catch (error) {
       const { status, code, message } = EXCEPTION.YEAR.STORE_FAILED;
       this.logger.error(error);

@@ -1,17 +1,9 @@
-export class YearEntity {
-  id: string;
+import { BaseEntity } from '../base/base.entity';
 
+export class YearEntity extends BaseEntity {
   name: string;
 
   startDate: Date;
 
   endDate: Date;
-
-  createdAt: Date;
-
-  createdBy: string;
-
-  deletedAt: Date;
-
-  deletedBy: string;
 }
