@@ -383,10 +383,25 @@ export const EXCEPTION = {
     },
   },
   YEAR: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Year does not exist',
+      code: 'YEAR_DOES_NOT_EXIST',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store year',
       code: 'YEAR_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list year',
+      code: 'YEAR_GET_LIST_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete year',
+      code: 'YEAR_DELETE_FAILED',
     },
   },
 };

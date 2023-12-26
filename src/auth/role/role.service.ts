@@ -32,8 +32,6 @@ export class RoleService {
   }
 
   public isAuthorized({ currentRoles, requiredRole }: IsAuthorizedParams) {
-    console.log(currentRoles);
-    console.log(requiredRole);
     for (const hierarchy of this.hierarchies) {
       for (const currentRole of currentRoles) {
         const priority = hierarchy.get(currentRole);

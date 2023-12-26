@@ -6,4 +6,12 @@ export class YearEntity {
   startDate: Date;
 
   endDate: Date;
+
+  createdAt: Date;
+
+  createdBy: string;
+
+  deletedAt: Date;
+
+  deletedBy: string;
 }

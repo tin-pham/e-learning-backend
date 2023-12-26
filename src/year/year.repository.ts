@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService, KyselyTables } from '../database';
 import { YearEntity } from './year.entity';
 import { BaseRepository } from '../base/base.repository';
+import { paginate } from '../common/function/paginate';
+import { YearGetListDTO } from './dto/year.dto';
 
 @Injectable()
 export class YearRepository extends BaseRepository<YearEntity> {
@@ -14,8 +16,21 @@ export class YearRepository extends BaseRepository<YearEntity> {
     return this.database
       .selectFrom('year')
       .select(['endDate'])
+      .where('deletedAt', 'is', null)
       .orderBy('endDate', 'desc')
       .limit(1)
       .executeTakeFirst();
+  }
+
+  find(dto: YearGetListDTO) {
+    const query = this.database
+      .selectFrom('year')
+      .select(['id', 'name', 'startDate', 'endDate'])
+      .where('deletedAt', 'is', null);
+
+    return paginate(query, {
+      limit: dto.limit,
+      page: dto.page,
+    });
   }
 }

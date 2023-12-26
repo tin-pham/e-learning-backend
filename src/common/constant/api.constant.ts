@@ -254,5 +254,9 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Get list years',
     },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete year',
+    },
   },
 };
