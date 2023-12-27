@@ -77,4 +77,12 @@ export class ClassroomRepository {
       .executeTakeFirst();
     return Number(count);
   }
+
+  getIds() {
+    return this.database
+      .selectFrom('classroom')
+      .select(['id'])
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
 }

@@ -258,5 +258,17 @@ export const API = {
       ROUTE: ':id',
       OPERATION: 'Delete year',
     },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update year',
+    },
+  },
+  CLASSROOM_YEAR: {
+    TAGS: 'ClassroomYear',
+    CONTROLLER: 'classroom-year',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store classroom year',
+    },
   },
 };

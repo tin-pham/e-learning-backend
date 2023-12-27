@@ -403,5 +403,10 @@ export const EXCEPTION = {
       message: 'Failed to delete year',
       code: 'YEAR_DELETE_FAILED',
     },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update year',
+      code: 'YEAR_UPDATE_FAILED',
+    },
   },
 };

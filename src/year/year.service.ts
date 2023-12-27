@@ -4,12 +4,20 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { SEMESTER } from '../semester/enum/semester.enum';
 import { YearEntity } from './year.entity';
 import { SemesterEntity } from '../semester/semester.entity';
+import { ClassroomYearEntity } from '../classroom-year/classroom-year.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { YearRepository } from './year.repository';
 import { SemesterRepository } from '../semester/semester.repository';
+import { ClassroomRepository } from '../classroom/classroom.repository';
+import { ClassroomYearRepository } from '../classroom-year/classroom-year.repository';
 import { DatabaseService } from '../database/database.service';
-import { YearGetListDTO } from './dto/year.dto';
-import { YearDeleteRO, YearGetListRO, YearStoreRO } from './ro/year.ro';
+import { YearGetListDTO, YearUpdateDTO } from './dto/year.dto';
+import {
+  YearDeleteRO,
+  YearGetListRO,
+  YearStoreRO,
+  YearUpdateRO,
+} from './ro/year.ro';
 
 @Injectable()
 export class YearService extends BaseService {
@@ -20,6 +28,8 @@ export class YearService extends BaseService {
     private readonly database: DatabaseService,
     private readonly yearRepository: YearRepository,
     private readonly semesterRepository: SemesterRepository,
+    private readonly classroomRepository: ClassroomRepository,
+    private readonly classroomYearRepository: ClassroomYearRepository,
   ) {
     super(elasticLogger);
   }
@@ -48,6 +58,7 @@ export class YearService extends BaseService {
         yearData.name = `${thisYear}/${nextYear}`;
         yearData.startDate = new Date(`09-02-${thisYear}`);
         yearData.endDate = new Date(`05-31-${nextYear}`);
+        yearData.createdBy = actorId;
         const year = await this.yearRepository.insertWithTransaction(
           transaction,
           yearData,
@@ -59,17 +70,34 @@ export class YearService extends BaseService {
         firstSemesterData.startDate = year.startDate;
         firstSemesterData.endDate = new Date(`12-22-${thisYear}`);
         firstSemesterData.yearId = year.id;
+        firstSemesterData.createdBy = actorId;
 
         const secondSemesterData = new SemesterEntity();
         secondSemesterData.name = SEMESTER.SECOND_SEMESTER;
         secondSemesterData.startDate = new Date(`12-25-${thisYear}`);
         secondSemesterData.endDate = year.endDate;
         secondSemesterData.yearId = year.id;
+        secondSemesterData.createdBy = actorId;
 
         await this.semesterRepository.insertMultipleWithTransaction(
           transaction,
           [firstSemesterData, secondSemesterData],
         );
+
+        // Store classroomYear
+        const classrooms = await this.classroomRepository.getIds();
+        if (classrooms.length) {
+          const classroomIds = classrooms.map((classroom) => classroom.id);
+          const classroomYearsData = classroomIds.map(
+            (classroomId) =>
+              new ClassroomYearEntity({ classroomId, yearId: year.id }),
+          );
+
+          await this.classroomYearRepository.insertMultipleWithTransaction(
+            transaction,
+            classroomYearsData,
+          );
+        }
 
         response.id = year.id;
         response.name = year.name;
@@ -130,7 +158,52 @@ export class YearService extends BaseService {
     });
   }
 
+  async update(id: string, dto: YearUpdateDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateUpdate(id, actorId);
+
+    const response = new YearUpdateRO();
+
+    try {
+      const yearData = new YearEntity();
+      yearData.updatedAt = new Date();
+      yearData.updatedBy = actorId;
+      if (dto.startDate) {
+        yearData.startDate = dto.startDate;
+      }
+      if (dto.endDate) {
+        yearData.endDate = dto.endDate;
+      }
+      const year = await this.yearRepository.update(id, yearData);
+
+      response.id = year.id;
+      response.name = year.name;
+      response.startDate = year.startDate;
+      response.endDate = year.endDate;
+    } catch (error) {
+      const { status, code, message } = EXCEPTION.YEAR.UPDATE_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, code, message, actorId });
+    }
+
+    return this.success({
+      classRO: YearUpdateRO,
+      actorId,
+      message: 'Year updated successfully',
+      response,
+    });
+  }
+
   private async validateDelete(id: string, actorId: string) {
+    // Check exists
+    const yearCount = await this.yearRepository.countById(id);
+    if (!yearCount) {
+      const { status, code, message } = EXCEPTION.YEAR.DOES_NOT_EXIST;
+      this.throwException({ status, code, message, actorId });
+    }
+  }
+
+  private async validateUpdate(id: string, actorId: string) {
     // Check exists
     const yearCount = await this.yearRepository.countById(id);
     if (!yearCount) {

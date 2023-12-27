@@ -1,10 +1,12 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -28,10 +30,15 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { YearService } from './year.service';
-import { YearDeleteRO, YearGetListRO, YearStoreRO } from './ro/year.ro';
-import { YearGetListDTO } from './dto/year.dto';
+import {
+  YearDeleteRO,
+  YearGetListRO,
+  YearStoreRO,
+  YearUpdateRO,
+} from './ro/year.ro';
+import { YearGetListDTO, YearUpdateDTO } from './dto/year.dto';
 
-const { TAGS, CONTROLLER, CREATE, GET_LIST, DELETE } = API.YEAR;
+const { TAGS, CONTROLLER, CREATE, GET_LIST, UPDATE, DELETE } = API.YEAR;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -67,6 +74,25 @@ export class YearController {
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: YearGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.yearService.getList(dto, decoded);
+  }
+
+  @ApiOperation({ summary: UPDATE.OPERATION })
+  @ApiOkResponse({ type: YearUpdateRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiConflictResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Patch(UPDATE.ROUTE)
+  @Roles(ROLE.PRINCIPAL, ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
+  update(
+    @Param('id') id: string,
+    @Body() dto: YearUpdateDTO,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
+    return this.yearService.update(id, dto, decoded);
   }
 
   @ApiOperation({ summary: GET_LIST.OPERATION })
