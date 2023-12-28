@@ -155,4 +155,18 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  CLASSROOM_YEAR: {
+    NAME: 'classroom_year',
+    SCHEMA: {
+      CLASSROOM_ID: 'classroom_id',
+      YEAR_ID: 'year_id',
+    },
+  },
+  YEAR_GRADE: {
+    NAME: 'year_grade',
+    SCHEMA: {
+      YEAR_ID: 'year_id',
+      GRADE_ID: 'grade_id',
+    },
+  },
 };

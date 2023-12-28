@@ -4,12 +4,15 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { SEMESTER } from '../semester/enum/semester.enum';
 import { YearEntity } from './year.entity';
 import { SemesterEntity } from '../semester/semester.entity';
+import { YearGradeEntity } from '../year-grade/year-grade.entity';
 import { ClassroomYearEntity } from '../classroom-year/classroom-year.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { YearRepository } from './year.repository';
 import { SemesterRepository } from '../semester/semester.repository';
 import { ClassroomRepository } from '../classroom/classroom.repository';
 import { ClassroomYearRepository } from '../classroom-year/classroom-year.repository';
+import { GradeRepository } from '../grade/grade.repository';
+import { YearGradeRepository } from '../year-grade/year-grade.repository';
 import { DatabaseService } from '../database/database.service';
 import { YearGetListDTO, YearUpdateDTO } from './dto/year.dto';
 import {
@@ -30,6 +33,8 @@ export class YearService extends BaseService {
     private readonly semesterRepository: SemesterRepository,
     private readonly classroomRepository: ClassroomRepository,
     private readonly classroomYearRepository: ClassroomYearRepository,
+    private readonly gradeRepository: GradeRepository,
+    private readonly yearGradeRepository: YearGradeRepository,
   ) {
     super(elasticLogger);
   }
@@ -99,6 +104,20 @@ export class YearService extends BaseService {
           );
         }
 
+        // Store yearGrade
+        const grades = await this.gradeRepository.getIds();
+        if (grades.length) {
+          const gradeIds = grades.map((grade) => grade.id);
+          const yearGradesData = gradeIds.map(
+            (gradeId) => new YearGradeEntity({ yearId: year.id, gradeId }),
+          );
+
+          await this.yearGradeRepository.insertMultipleWithTransaction(
+            transaction,
+            yearGradesData,
+          );
+        }
+
         response.id = year.id;
         response.name = year.name;
         response.startDate = year.startDate;
@@ -140,10 +159,28 @@ export class YearService extends BaseService {
     await this.validateDelete(id, actorId);
 
     try {
-      const yearData = new YearEntity();
-      yearData.deletedAt = new Date();
-      yearData.deletedBy = actorId;
-      await this.yearRepository.delete(id, yearData);
+      await this.database.transaction().execute(async (transaction) => {
+        // Delete year
+        await this.yearRepository.deleteWithTransaction(
+          transaction,
+          id,
+          actorId,
+        );
+
+        // Delete semester
+        const semesters = await this.semesterRepository.getIdsByYear();
+        if (semesters.length) {
+          const semesterIds = semesters.map((semester) => semester.id);
+          await this.semesterRepository.deleteMultipleWithTransaction(
+            transaction,
+            semesterIds,
+            actorId,
+          );
+        }
+
+        // Delete classroomYear
+        const classroomYears = await this.classroomYearRepository.getIds();
+      });
     } catch (error) {
       const { status, code, message } = EXCEPTION.YEAR.DELETE_FAILED;
       this.logger.error(error);

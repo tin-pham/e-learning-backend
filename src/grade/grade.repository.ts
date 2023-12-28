@@ -76,4 +76,12 @@ export class GradeRepository {
       .executeTakeFirst();
     return Number(count);
   }
+
+  getIds() {
+    return this.database
+      .selectFrom('grade')
+      .select(['id'])
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
 }

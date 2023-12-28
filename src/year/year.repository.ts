@@ -20,6 +20,18 @@ export class YearRepository extends BaseRepository<YearEntity> {
       .executeTakeFirstOrThrow();
   }
 
+  deleteWithTransaction(transaction: Transaction, id: string, actorId: string) {
+    return transaction
+      .updateTable('year')
+      .set({
+        deletedAt: new Date(),
+        deletedBy: actorId,
+      })
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirstOrThrow();
+  }
+
   getLastEndDate() {
     return this.database
       .selectFrom('year')
