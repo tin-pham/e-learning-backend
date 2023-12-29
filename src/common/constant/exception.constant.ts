@@ -351,11 +351,6 @@ export const EXCEPTION = {
       message: 'Classroom does not exist',
       code: 'CLASSROOM_DOES_NOT_EXIST',
     },
-    ALREADY_EXISTS: {
-      status: HttpStatus.CONFLICT,
-      message: 'Classroom already exists',
-      code: 'CLASSROOM_ALREADY_EXISTS',
-    },
     GET_LIST_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get list classroom',
@@ -407,6 +402,13 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to update year',
       code: 'YEAR_UPDATE_FAILED',
+    },
+  },
+  LEVEL: {
+    CHOOSE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to choose level',
+      code: 'LEVEL_CHOOSE_FAILED',
     },
   },
 };

@@ -130,10 +130,12 @@ export class UserService extends BaseService {
   protected async deleteUserRoleWithTransaction(
     transaction: Transaction,
     userId: string,
+    actorId: string,
   ) {
     await this.userRoleRepository.deleteMultipleByUserIdWithTransaction(
       transaction,
       userId,
+      actorId,
     );
   }
 }

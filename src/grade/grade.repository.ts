@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
 import { GradeEntity } from './grade.entity';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService, Transaction } from '../database/database.service';
 import { GradeGetListDTO } from './dto/grade.dto';
 
 @Injectable()
@@ -14,6 +14,17 @@ export class GradeRepository {
       .values(entity)
       .returning(['id', 'name'])
       .executeTakeFirstOrThrow();
+  }
+
+  insertMultipleWithTransaction(
+    transction: Transaction,
+    entities: GradeEntity[],
+  ): Promise<GradeEntity[]> {
+    return transction
+      .insertInto('grade')
+      .values(entities)
+      .returningAll()
+      .execute();
   }
 
   find(dto: GradeGetListDTO) {

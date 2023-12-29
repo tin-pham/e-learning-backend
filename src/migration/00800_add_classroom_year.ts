@@ -1,3 +1,4 @@
+import { sql } from 'kysely';
 import { DatabaseService } from '../database';
 import { DATABASE_TABLE } from '../common';
 
@@ -5,20 +6,34 @@ const { NAME, SCHEMA } = DATABASE_TABLE.CLASSROOM_YEAR;
 const { NAME: CLASSROOM_NAME, SCHEMA: CLASSROOM_SCHEMA } =
   DATABASE_TABLE.CLASSROOM;
 const { NAME: YEAR_NAME, SCHEMA: YEAR_SCHEMA } = DATABASE_TABLE.YEAR;
+const { NAME: USER_NAME, SCHEMA: USER_SCHEMA } = DATABASE_TABLE.USERS;
 
 export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
+    .addColumn(SCHEMA.ID, 'varchar(50)', (column) =>
+      column.primaryKey().defaultTo(sql`uuid_generate_v4()`),
+    )
     .addColumn(SCHEMA.CLASSROOM_ID, 'varchar(50)', (column) =>
       column.references(`${CLASSROOM_NAME}.${CLASSROOM_SCHEMA.ID}`),
     )
     .addColumn(SCHEMA.YEAR_ID, 'varchar(50)', (column) =>
       column.references(`${YEAR_NAME}.${YEAR_SCHEMA.ID}`),
     )
-    .addPrimaryKeyConstraint('pk_classroom_year', [
-      SCHEMA.CLASSROOM_ID,
-      SCHEMA.YEAR_ID,
-    ])
+    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
+      column.defaultTo(sql`now()`),
+    )
+    .addColumn(SCHEMA.CREATED_BY, 'varchar(50)', (column) =>
+      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
+    )
+    .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')
+    .addColumn(SCHEMA.UPDATED_BY, 'varchar(50)', (column) =>
+      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
+    )
+    .addColumn(SCHEMA.DELETED_AT, 'timestamptz')
+    .addColumn(SCHEMA.DELETED_BY, 'varchar(50)', (column) =>
+      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
+    )
     .execute();
 }
 

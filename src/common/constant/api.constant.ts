@@ -271,4 +271,12 @@ export const API = {
       OPERATION: 'Store classroom year',
     },
   },
+  LEVEL: {
+    TAGS: 'Level',
+    CONTROLLER: 'level',
+    CHOOSE: {
+      ROUTE: '',
+      OPERATION: 'Choose level',
+    },
+  },
 };

@@ -24,6 +24,7 @@ export class UserRoleRepository {
       .innerJoin('role', 'role.id', 'userRole.roleId')
       .selectAll('role')
       .where('userRole.userId', '=', userId)
+      .where('userRole.deletedAt', 'is', null)
       .execute();
   }
 
@@ -47,9 +48,14 @@ export class UserRoleRepository {
   deleteMultipleByUserIdWithTransaction(
     transaction: Transaction,
     userId: string,
+    actorId: string,
   ) {
     return transaction
-      .deleteFrom('userRole')
+      .updateTable('userRole')
+      .set({
+        deletedAt: new Date(),
+        deletedBy: actorId,
+      })
       .where('userId', '=', userId)
       .returningAll()
       .executeTakeFirstOrThrow();

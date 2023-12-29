@@ -182,7 +182,7 @@ export class ParentService extends UserService {
         // Delete user
         await super.deleteWithTransaction(transaction, userId, decoded.userId);
         // Delete user role
-        await super.deleteUserRoleWithTransaction(transaction, userId);
+        await super.deleteUserRoleWithTransaction(transaction, userId, actorId);
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.DELETE_FAILED;

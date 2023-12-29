@@ -16,7 +16,7 @@ export class SemesterRepository {
       .executeTakeFirstOrThrow();
   }
 
-  getIdsByYear(yearId: string) {
+  getIdsByYearId(yearId: string) {
     return this.database
       .selectFrom('semester')
       .select(['id'])

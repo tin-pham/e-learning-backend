@@ -33,20 +33,6 @@ export class ClassroomGetListRO extends PaginateRO<ClassroomGetListDataRO> {
   data: ClassroomGetListDataRO[];
 }
 
-export class ClassroomUpdateRO {
-  @ApiProperty()
-  @Expose()
-  id: string;
-
-  @ApiProperty({ example: 'A' })
-  @Expose()
-  name: string;
-
-  @ApiProperty()
-  @Expose()
-  gradeId: string;
-}
-
 export class ClassroomDeleteRO {
   @ApiProperty()
   @Expose()

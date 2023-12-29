@@ -28,10 +28,15 @@ export const DATABASE_TABLE = {
   USER_ROLE: {
     NAME: 'user_role',
     SCHEMA: {
+      ID: 'id',
       USER_ID: 'user_id',
       ROLE_ID: 'role_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
     },
   },
   STUDENT: {
@@ -59,8 +64,15 @@ export const DATABASE_TABLE = {
   STUDENT_PARENT: {
     NAME: 'student_parent',
     SCHEMA: {
+      ID: 'id',
       STUDENT_ID: 'student_id',
       PARENT_ID: 'parent_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
     },
   },
   SUBJECT: {
@@ -92,8 +104,15 @@ export const DATABASE_TABLE = {
   SUBJECT_GROUP: {
     NAME: 'subject_group',
     SCHEMA: {
+      ID: 'id',
       SUBJECT_ID: 'subject_id',
       GROUP_ID: 'group_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
     },
   },
   GRADE: {
@@ -158,15 +177,29 @@ export const DATABASE_TABLE = {
   CLASSROOM_YEAR: {
     NAME: 'classroom_year',
     SCHEMA: {
+      ID: 'id',
       CLASSROOM_ID: 'classroom_id',
       YEAR_ID: 'year_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
     },
   },
   YEAR_GRADE: {
     NAME: 'year_grade',
     SCHEMA: {
+      ID: 'id',
       YEAR_ID: 'year_id',
       GRADE_ID: 'grade_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
     },
   },
 };

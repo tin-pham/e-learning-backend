@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Query,
   UseGuards,
@@ -29,19 +28,11 @@ import { Roles } from '../auth/role/role.decorator';
 import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
-import {
-  ClassroomGetListDTO,
-  ClassroomStoreDTO,
-  ClassroomUpdateDTO,
-} from './dto/classroom.dto';
-import {
-  ClassroomDeleteRO,
-  ClassroomStoreRO,
-  ClassroomUpdateRO,
-} from './ro/classroom.ro';
+import { ClassroomGetListDTO, ClassroomStoreDTO } from './dto/classroom.dto';
+import { ClassroomDeleteRO, ClassroomStoreRO } from './ro/classroom.ro';
 import { ClassroomService } from './classroom.service';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE, DELETE } = API.CLASSROOM;
+const { TAGS, CONTROLLER, STORE, GET_LIST, DELETE } = API.CLASSROOM;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -79,25 +70,6 @@ export class ClassroomController {
     @JwtPayload() payload: IJwtPayload,
   ) {
     return this.classroomService.getList(dto, payload);
-  }
-
-  @ApiOperation({ summary: UPDATE.OPERATION })
-  @ApiOkResponse({ type: ClassroomUpdateRO })
-  @ApiBadRequestResponse({ type: HttpExceptionRO })
-  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
-  @ApiForbiddenResponse({ type: HttpExceptionRO })
-  @ApiConflictResponse({ type: HttpExceptionRO })
-  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
-  @ApiBearerAuth('Authorization')
-  @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.ADMIN)
-  @UseGuards(JwtGuard, RoleGuard)
-  update(
-    @Param('id') id: string,
-    @Body() dto: ClassroomUpdateDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
-    return this.classroomService.update(id, dto, decoded);
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })

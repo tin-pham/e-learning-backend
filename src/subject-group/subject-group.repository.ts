@@ -10,9 +10,13 @@ export class SubjectGroupRepository {
     return this.database.insertInto('subjectGroup').values(entities).execute();
   }
 
-  deleteMultiple(subjectIds: string[], groupIds: string[]) {
+  deleteMultiple(subjectIds: string[], groupIds: string[], actorId: string) {
     return this.database
-      .deleteFrom('subjectGroup')
+      .updateTable('subjectGroup')
+      .set({
+        deletedAt: new Date(),
+        deletedBy: actorId,
+      })
       .where('subjectId', 'in', subjectIds)
       .where('groupId', 'in', groupIds)
       .execute();
@@ -24,6 +28,7 @@ export class SubjectGroupRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('subjectId', 'in', subjectIds)
       .where('groupId', 'in', groupIds)
+      .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
   }

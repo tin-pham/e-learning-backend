@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Transaction } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { YearGradeEntity } from './year-grade.entity';
 
 @Injectable()
 export class YearGradeRepository {
+  constructor(private readonly database: DatabaseService) {}
+
   insertMultipleWithTransaction(
     transaction: Transaction,
     entities: YearGradeEntity[],
@@ -12,5 +14,29 @@ export class YearGradeRepository {
       .insertInto('yearGrade')
       .values(entities)
       .executeTakeFirstOrThrow();
+  }
+
+  deleteMultipleWithTransaction(
+    transaction: Transaction,
+    ids: string[],
+    actorId: string,
+  ) {
+    return transaction
+      .updateTable('yearGrade')
+      .set({
+        deletedAt: new Date(),
+        deletedBy: actorId,
+      })
+      .where('id', 'in', ids)
+      .executeTakeFirstOrThrow();
+  }
+
+  getIdsByYearId(id: string) {
+    return this.database
+      .selectFrom('yearGrade')
+      .select(['id'])
+      .where('yearId', '=', id)
+      .where('deletedAt', 'is', null)
+      .execute();
   }
 }

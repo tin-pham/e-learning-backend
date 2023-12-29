@@ -10,9 +10,13 @@ export class StudentParentRepository {
     return this.database.insertInto('studentParent').values(entities).execute();
   }
 
-  deleteMultiple(studentIds: string[], parentIds: string[]) {
+  deleteMultiple(studentIds: string[], parentIds: string[], actorId: string) {
     return this.database
-      .deleteFrom('studentParent')
+      .updateTable('studentParent')
+      .set({
+        deletedAt: new Date(),
+        deletedBy: actorId,
+      })
       .where('studentId', 'in', studentIds)
       .where('parentId', 'in', parentIds)
       .execute();
@@ -27,6 +31,7 @@ export class StudentParentRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('studentId', 'in', studentIds)
       .where('parentId', 'in', parentIds)
+      .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
   }

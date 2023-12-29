@@ -59,7 +59,11 @@ export class SubjectGroupService extends BaseService {
     await this.validateBulkDelete(dto, actorId);
 
     try {
-      await this.subjectGroupRepository.deleteMultiple(subjectIds, groupIds);
+      await this.subjectGroupRepository.deleteMultiple(
+        subjectIds,
+        groupIds,
+        actorId,
+      );
     } catch (error) {
       const { code, status, message } =
         EXCEPTION.SUBJECT_GROUP.BULK_DELETE_FAILED;

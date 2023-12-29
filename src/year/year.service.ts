@@ -95,7 +95,11 @@ export class YearService extends BaseService {
           const classroomIds = classrooms.map((classroom) => classroom.id);
           const classroomYearsData = classroomIds.map(
             (classroomId) =>
-              new ClassroomYearEntity({ classroomId, yearId: year.id }),
+              new ClassroomYearEntity({
+                classroomId,
+                yearId: year.id,
+                createdBy: actorId,
+              }),
           );
 
           await this.classroomYearRepository.insertMultipleWithTransaction(
@@ -109,7 +113,12 @@ export class YearService extends BaseService {
         if (grades.length) {
           const gradeIds = grades.map((grade) => grade.id);
           const yearGradesData = gradeIds.map(
-            (gradeId) => new YearGradeEntity({ yearId: year.id, gradeId }),
+            (gradeId) =>
+              new YearGradeEntity({
+                yearId: year.id,
+                gradeId,
+                createdBy: actorId,
+              }),
           );
 
           await this.yearGradeRepository.insertMultipleWithTransaction(
@@ -168,7 +177,7 @@ export class YearService extends BaseService {
         );
 
         // Delete semester
-        const semesters = await this.semesterRepository.getIdsByYear();
+        const semesters = await this.semesterRepository.getIdsByYearId(id);
         if (semesters.length) {
           const semesterIds = semesters.map((semester) => semester.id);
           await this.semesterRepository.deleteMultipleWithTransaction(
@@ -179,7 +188,30 @@ export class YearService extends BaseService {
         }
 
         // Delete classroomYear
-        const classroomYears = await this.classroomYearRepository.getIds();
+        const classroomYears =
+          await this.classroomYearRepository.getIdsByYearId(id);
+        if (classroomYears.length) {
+          const classroomYearIds = classroomYears.map(
+            (classroomYear) => classroomYear.id,
+          );
+          await this.classroomYearRepository.deleteMultipleWithTransaction(
+            transaction,
+            classroomYearIds,
+            actorId,
+          );
+        }
+
+        // Delete yearGrade
+        console.log(actorId);
+        const yearGrades = await this.yearGradeRepository.getIdsByYearId(id);
+        if (yearGrades.length) {
+          const yearGradeIds = yearGrades.map((yearGrade) => yearGrade.id);
+          await this.yearGradeRepository.deleteMultipleWithTransaction(
+            transaction,
+            yearGradeIds,
+            actorId,
+          );
+        }
       });
     } catch (error) {
       const { status, code, message } = EXCEPTION.YEAR.DELETE_FAILED;

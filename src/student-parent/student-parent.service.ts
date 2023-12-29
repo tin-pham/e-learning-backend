@@ -57,12 +57,14 @@ export class StudentParentService extends BaseService {
 
   async bulkDelete(dto: StudentParentBulkDeleteDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    const { studentIds, parentIds } = dto;
     await this.validateBulkDelete(dto, actorId);
 
     try {
       await this.studentParentRepository.deleteMultiple(
-        dto.studentIds,
-        dto.parentIds,
+        studentIds,
+        parentIds,
+        actorId,
       );
     } catch (error) {
       const { code, status, message } =

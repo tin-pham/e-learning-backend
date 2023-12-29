@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { ClassroomEntity } from './classroom.entity';
 import { ClassroomGetListDTO } from './dto/classroom.dto';
 import { paginate } from 'src/common/function/paginate';
@@ -12,6 +12,17 @@ export class ClassroomRepository {
     return this.database
       .insertInto('classroom')
       .values(entity)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
+
+  insertMultipleWithTransaction(
+    transaction: Transaction,
+    entities: ClassroomEntity[],
+  ) {
+    return transaction
+      .insertInto('classroom')
+      .values(entities)
       .returningAll()
       .executeTakeFirstOrThrow();
   }
@@ -84,5 +95,14 @@ export class ClassroomRepository {
       .select(['id'])
       .where('deletedAt', 'is', null)
       .execute();
+  }
+
+  getLastInsertedName() {
+    return this.database
+      .selectFrom('classroom')
+      .select(['name'])
+      .orderBy('createdAt', 'desc')
+      .limit(1)
+      .executeTakeFirst();
   }
 }
