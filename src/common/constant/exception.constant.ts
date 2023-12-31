@@ -411,4 +411,18 @@ export const EXCEPTION = {
       code: 'LEVEL_CHOOSE_FAILED',
     },
   },
+  CLASSROOM_YEAR: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Classroom year does not exist',
+      code: 'CLASSROOM_YEAR_DOES_NOT_EXIST',
+    },
+  },
+  CLASSROOM_YEAR_STUDENT: {
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store classroom year student',
+      code: 'CLASSROOM_YEAR_STUDENT_BULK_STORE_FAILED',
+    },
+  },
 };

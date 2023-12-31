@@ -5,7 +5,7 @@ export class ClassroomYearEntity extends BaseEntity {
 
   yearId: string;
 
-  constructor(data: Partial<ClassroomYearEntity>) {
+  constructor(data?: Partial<ClassroomYearEntity>) {
     super();
     Object.assign(this, data);
   }

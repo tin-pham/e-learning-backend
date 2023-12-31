@@ -13,7 +13,7 @@ export class StudentRepository {
     return transaction
       .insertInto('student')
       .values(entity)
-      .returning('id')
+      .returning(['id'])
       .executeTakeFirstOrThrow();
   }
 
@@ -26,7 +26,7 @@ export class StudentRepository {
       .updateTable('student')
       .set(entity)
       .where('id', '=', id)
-      .returning('id')
+      .returning(['id'])
       .executeTakeFirstOrThrow();
   }
 

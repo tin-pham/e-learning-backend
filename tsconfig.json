@@ -26,7 +26,7 @@
     "exactOptionalPropertyTypes": false,
     "noImplicitOverride": true,
     "noImplicitReturns": false,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

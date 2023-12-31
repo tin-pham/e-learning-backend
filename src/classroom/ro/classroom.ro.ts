@@ -16,6 +16,12 @@ export class ClassroomStoreRO {
   gradeId: string;
 }
 
+export class ClassroomGetListDataClassroomYearRO {
+  @ApiProperty({ example: 1 })
+  @Expose()
+  id: number;
+}
+
 export class ClassroomGetListDataRO {
   @ApiProperty({ example: 1 })
   @Expose()
@@ -24,6 +30,15 @@ export class ClassroomGetListDataRO {
   @ApiProperty({ example: 'Grade 6' })
   @Expose()
   name: string;
+
+  @Expose()
+  @ApiProperty()
+  gradeId: string;
+
+  @Expose()
+  @ApiProperty()
+  @Type(() => ClassroomGetListDataClassroomYearRO)
+  classroomYear: ClassroomGetListDataClassroomYearRO;
 }
 
 export class ClassroomGetListRO extends PaginateRO<ClassroomGetListDataRO> {

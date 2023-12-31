@@ -12,4 +12,10 @@ export class BaseEntity {
   deletedAt: Date;
 
   deletedBy: string;
+
+  constructor(data?: Partial<BaseEntity>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
 }

@@ -263,20 +263,20 @@ export const API = {
       OPERATION: 'Update year',
     },
   },
-  CLASSROOM_YEAR: {
-    TAGS: 'ClassroomYear',
-    CONTROLLER: 'classroom-year',
-    STORE: {
-      ROUTE: '',
-      OPERATION: 'Store classroom year',
-    },
-  },
   LEVEL: {
     TAGS: 'Level',
     CONTROLLER: 'level',
     CHOOSE: {
       ROUTE: '',
       OPERATION: 'Choose level',
+    },
+  },
+  CLASSROOM_YEAR_STUDENT: {
+    TAGS: 'ClassroomYearStudent',
+    CONTROLLER: 'classroom-year-student',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store classroom year student',
     },
   },
 };

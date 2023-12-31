@@ -59,13 +59,13 @@ export class StudentService extends UserService {
         // Store student
         const studentData = new StudentEntity();
         studentData.userId = user.id;
-        const { id } = await this.studentRepository.insertWithTransaction(
+        const student = await this.studentRepository.insertWithTransaction(
           transaction,
           studentData,
         );
 
         // Set response
-        response.id = id;
+        response.id = student.id;
         response.username = user.username;
         response.email = user.email;
         response.phone = user.phone;
@@ -143,8 +143,16 @@ export class StudentService extends UserService {
           actorId,
         );
 
+        // Update student
+        const studentData = new StudentEntity();
+        const student = await this.studentRepository.updateWithTransaction(
+          transaction,
+          id,
+          studentData,
+        );
+
         // Set response
-        response.id = id;
+        response.id = student.id;
         response.username = user.username;
         response.email = user.email;
         response.phone = user.phone;

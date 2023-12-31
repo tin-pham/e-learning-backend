@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
+import { paginate } from '../common/function/paginate';
 import { ClassroomEntity } from './classroom.entity';
 import { ClassroomGetListDTO } from './dto/classroom.dto';
-import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class ClassroomRepository {
@@ -27,16 +27,42 @@ export class ClassroomRepository {
       .executeTakeFirstOrThrow();
   }
 
-  find(dto: ClassroomGetListDTO) {
+  async find(dto: ClassroomGetListDTO) {
+    const withGrade = Boolean(dto.gradeId);
+    const withYear = Boolean(dto.yearId);
+
     const query = this.database
       .selectFrom('classroom')
-      .select(['id', 'name', 'gradeId'])
-      .where('deletedAt', 'is', null);
+      .select(['classroom.id', 'classroom.name', 'classroom.gradeId'])
+      .where('classroom.deletedAt', 'is', null)
+      .$if(withGrade, (query) =>
+        query
+          .innerJoin('grade', 'grade.id', 'classroom.gradeId')
+          .where('grade.deletedAt', 'is', null)
+          .where('grade.id', '=', dto.gradeId),
+      )
+      .$if(withYear, (query) =>
+        query
+          .innerJoin(
+            'classroomYear',
+            'classroomYear.classroomId',
+            'classroom.id',
+          )
+          .innerJoin('year', 'year.id', 'classroomYear.yearId')
+          .where('year.deletedAt', 'is', null)
+          .where('year.id', '=', dto.yearId)
+          .select('classroomYear.id as classroomYearId'),
+      );
 
-    return paginate(query, {
+    const response = await paginate(query, {
       limit: dto.limit,
       page: dto.page,
     });
+    response.data = response.data.map(
+      (classroom) => new ClassroomEntity(classroom),
+    );
+
+    return response;
   }
 
   update(id: string, entity: ClassroomEntity) {

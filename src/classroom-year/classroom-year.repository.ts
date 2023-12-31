@@ -39,4 +39,13 @@ export class ClassroomYearRepository {
       .where('deletedAt', 'is', null)
       .execute();
   }
+
+  async countByIds(ids: string[]) {
+    const { count } = await this.database
+      .selectFrom('classroomYear')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', 'in', ids)
+      .executeTakeFirst();
+    return Number(count);
+  }
 }

@@ -19,6 +19,7 @@ import { GradeModule } from './grade/grade.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { YearModule } from './year/year.module';
 import { LevelModule } from './level/level.module';
+import { ClassroomYearStudentModule } from './classroom-year-student/classroom-year-student.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { LevelModule } from './level/level.module';
     ClassroomModule,
     YearModule,
     LevelModule,
+    ClassroomYearStudentModule,
   ],
   providers: [...appProviders],
 })
