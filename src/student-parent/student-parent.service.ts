@@ -133,7 +133,7 @@ export class StudentParentService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
-    // Check studentParent exist
+    // Check duplicate
     const studentParentCount =
       await this.studentParentRepository.countByStudentIdsAndParentIds(
         dto.studentIds,

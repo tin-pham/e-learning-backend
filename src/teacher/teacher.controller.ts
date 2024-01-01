@@ -31,8 +31,11 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { TeacherService } from './teacher.service';
-import { TeacherStoreDTO, TeacherUpdateDTO } from './dto/teacher.dto';
-import { UserGetListDTO } from '../user/dto/user.dto';
+import {
+  TeacherGetListDTO,
+  TeacherStoreDTO,
+  TeacherUpdateDTO,
+} from './dto/teacher.dto';
 import {
   TeacherDeleteRO,
   TeacherGetDetailRO,
@@ -58,7 +61,7 @@ export class TeacherController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: TeacherStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -73,9 +76,9 @@ export class TeacherController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.STAFF, ROLE.PRINCIPAL)
+  @Roles(ROLE.ADMIN, ROLE.STAFF, ROLE.PRINCIPAL)
   @UseGuards(JwtGuard, RoleGuard)
-  getList(@Query() dto: UserGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+  getList(@Query() dto: TeacherGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.teacherService.getList(dto, decoded);
   }
 
@@ -87,7 +90,7 @@ export class TeacherController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.STAFF, ROLE.PRINCIPAL)
+  @Roles(ROLE.ADMIN, ROLE.STAFF, ROLE.PRINCIPAL)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.teacherService.getDetail(id, decoded);
@@ -102,7 +105,7 @@ export class TeacherController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   update(
     @Param('id') id: string,
@@ -120,7 +123,7 @@ export class TeacherController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.teacherService.delete(id, decoded);

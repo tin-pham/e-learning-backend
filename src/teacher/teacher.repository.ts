@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { ROLE } from '../role/enum/role.enum';
 import { TeacherEntity } from './teacher.entity';
-import { PaginateDTO } from '../common/dto/paginate.dto';
+import { TeacherGetListDTO } from './dto/teacher.dto';
 
 @Injectable()
 export class TeacherRepository {
@@ -17,7 +18,10 @@ export class TeacherRepository {
       .executeTakeFirstOrThrow();
   }
 
-  find(filter: PaginateDTO) {
+  find(dto: TeacherGetListDTO) {
+    const { limit, page, subjectId } = dto;
+    const withSubject = Boolean(subjectId);
+
     const query = this.database
       .selectFrom('teacher')
       .innerJoin('users', 'users.id', 'teacher.userId')
@@ -31,11 +35,25 @@ export class TeacherRepository {
         'teacher.id',
       ])
       .where('role.name', '=', ROLE.TEACHER)
-      .where('users.deletedAt', 'is', null);
+      .where('users.deletedAt', 'is', null)
+      .$if(withSubject, (query) =>
+        query.select((eb) => [
+          jsonArrayFrom(
+            eb
+              .selectFrom('teacherSubject')
+              .whereRef('teacherSubject.teacherId', '=', 'teacher.id')
+              .where('teacherSubject.subjectId', '=', subjectId)
+              .where('teacherSubject.deletedAt', 'is', null)
+              .innerJoin('subject', 'subject.id', 'teacherSubject.subjectId')
+              .where('subject.deletedAt', 'is', null)
+              .select(['teacherSubject.id']),
+          ).as('teacherSubjects'),
+        ]),
+      );
 
     return paginate(query, {
-      limit: filter.limit,
-      page: filter.page,
+      limit,
+      page,
     });
   }
 
@@ -65,6 +83,17 @@ export class TeacherRepository {
       .innerJoin('users', 'users.id', 'teacher.userId')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('teacher.id', '=', id)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByIds(ids: string[]) {
+    const { count } = await this.database
+      .selectFrom('teacher')
+      .innerJoin('users', 'users.id', 'teacher.userId')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('teacher.id', 'in', ids)
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);

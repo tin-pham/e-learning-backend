@@ -13,8 +13,11 @@ import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
 import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
-import { TeacherStoreDTO, TeacherUpdateDTO } from './dto/teacher.dto';
-import { UserGetListDTO } from '../user/dto/user.dto';
+import {
+  TeacherGetListDTO,
+  TeacherStoreDTO,
+  TeacherUpdateDTO,
+} from './dto/teacher.dto';
 import {
   TeacherDeleteRO,
   TeacherGetDetailRO,
@@ -89,11 +92,10 @@ export class TeacherService extends UserService {
     });
   }
 
-  async getList(dto: UserGetListDTO, decoded: IJwtPayload) {
+  async getList(dto: TeacherGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     try {
       const teachers = await this.teacherRepository.find(dto);
-
       return this.success({ classRO: TeacherGetListRO, response: teachers });
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.GET_LIST_FAILED;

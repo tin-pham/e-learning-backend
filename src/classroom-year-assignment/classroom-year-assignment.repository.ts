@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
-import { ClassroomYearStudentEntity } from './classroom-year-student.entity';
+import { ClassroomYearAssignmentEntity } from './classroom-year-assignment.entity';
 
 @Injectable()
-export class ClassroomYearStudentRepository {
+export class ClassroomYearAssignmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insertMany(entities: ClassroomYearStudentEntity[]) {
+  insertMany(entities: ClassroomYearAssignmentEntity[]) {
     return this.database
-      .insertInto('classroomYearStudent')
+      .insertInto('classroomYearAssignment')
       .values(entities)
       .execute();
   }
 
-  async countByClassroomYearIdsAndStudentIds(
+  async countByClassroomYearIdsAndTeacherSubjectIds(
     classroomYearIds: string[],
-    studentIds: string[],
+    teacherSubjectIds: string[],
   ) {
     const { count } = await this.database
-      .selectFrom('classroomYearStudent')
+      .selectFrom('classroomYearAssignment')
       .where('classroomYearId', 'in', classroomYearIds)
-      .where('studentId', 'in', studentIds)
+      .where('teacherSubjectId', 'in', teacherSubjectIds)
       .where('deletedAt', 'is', null)
       .select(({ fn }) => fn.countAll().as('count'))
       .executeTakeFirstOrThrow();

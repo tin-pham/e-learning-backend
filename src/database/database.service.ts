@@ -16,6 +16,8 @@ import { YearEntity } from '../year/year.entity';
 import { ClassroomYearEntity } from '../classroom-year/classroom-year.entity';
 import { YearGradeEntity } from '../year-grade/year-grade.entity';
 import { ClassroomYearStudentEntity } from '../classroom-year-student/classroom-year-student.entity';
+import { TeacherSubjectEntity } from '../teacher-subject/teacher-subject.entity';
+import { ClassroomYearAssignmentEntity } from '../classroom-year-assignment/classroom-year-assignment.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -35,6 +37,8 @@ export interface KyselyTables {
   classroomYear: ClassroomYearEntity;
   yearGrade: YearGradeEntity;
   classroomYearStudent: ClassroomYearStudentEntity;
+  teacherSubject: TeacherSubjectEntity;
+  classroomYearAssignment: ClassroomYearAssignmentEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

@@ -76,5 +76,17 @@ export class ClassroomYearStudentService extends BaseService {
       const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+
+    // Check duplicate
+    const classroomYearStudentCount =
+      await this.classroomYearStudentRepository.countByClassroomYearIdsAndStudentIds(
+        dto.classroomYearIds,
+        dto.studentIds,
+      );
+    if (classroomYearStudentCount > 0) {
+      const { code, status, message } =
+        EXCEPTION.CLASSROOM_YEAR_STUDENT.ALREADY_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 }

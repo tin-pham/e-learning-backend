@@ -129,7 +129,7 @@ export class SubjectGroupService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
-    // Check subjectGroup exists
+    // Check duplicate
     const subjectGroupCount =
       await this.subjectGroupRepository.countBySubjectIdsAndGroupIds(
         subjectIds,

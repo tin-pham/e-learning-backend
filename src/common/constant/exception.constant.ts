@@ -419,10 +419,44 @@ export const EXCEPTION = {
     },
   },
   CLASSROOM_YEAR_STUDENT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Classroom year student already exist',
+      code: 'CLASSROOM_YEAR_STUDENT_ALREADY_EXIST',
+    },
     BULK_STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk store classroom year student',
       code: 'CLASSROOM_YEAR_STUDENT_BULK_STORE_FAILED',
+    },
+  },
+  TEACHER_SUBJECT: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Teacher subject does not exist',
+      code: 'TEACHER_SUBJECT_DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Teacher subject already exist',
+      code: 'TEACHER_SUBJECT_ALREADY_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store teacher subject',
+      code: 'TEACHER_SUBJECT_BULK_STORE_FAILED',
+    },
+  },
+  CLASSROOM_YEAR_ASSIGNMENT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Classroom year assignment already exist',
+      code: 'CLASSROOM_YEAR_ASSIGNMENT_ALREADY_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store classroom year assignment',
+      code: 'CLASSROOM_YEAR_ASSIGNMENT_BULK_STORE_FAILED',
     },
   },
 };

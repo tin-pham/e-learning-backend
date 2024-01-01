@@ -279,4 +279,20 @@ export const API = {
       OPERATION: 'Bulk store classroom year student',
     },
   },
+  CLASSROOM_YEAR_ASSIGNMENT: {
+    TAGS: 'ClassroomYearAssignment',
+    CONTROLLER: 'classroom-year-assignment',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store classroom year assignment',
+    },
+  },
+  TEACHER_SUBJECT: {
+    TAGS: 'TeacherSubject',
+    CONTROLLER: 'teacher-subject',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store teacher subject',
+    },
+  },
 };

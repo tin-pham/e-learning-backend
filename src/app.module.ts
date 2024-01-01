@@ -20,6 +20,8 @@ import { ClassroomModule } from './classroom/classroom.module';
 import { YearModule } from './year/year.module';
 import { LevelModule } from './level/level.module';
 import { ClassroomYearStudentModule } from './classroom-year-student/classroom-year-student.module';
+import { TeacherSubjectModule } from './teacher-subject/teacher-subject.module';
+import { ClassroomYearAssignmentModule } from './classroom-year-assignment/classroom-year-assignment.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { ClassroomYearStudentModule } from './classroom-year-student/classroom-y
     YearModule,
     LevelModule,
     ClassroomYearStudentModule,
+    TeacherSubjectModule,
+    ClassroomYearAssignmentModule,
   ],
   providers: [...appProviders],
 })
