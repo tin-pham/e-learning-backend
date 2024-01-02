@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/base/base.entity';
+import { BaseEntity } from '../base/base.entity';
 
 export class YearGradeEntity extends BaseEntity {
   yearId: string;

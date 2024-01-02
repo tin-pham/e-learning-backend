@@ -10,7 +10,7 @@ import {
   StudentParentBulkDeleteDTO,
   StudentParentBulkStoreDTO,
 } from './dto/student-parent.dto';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class StudentParentService extends BaseService {
@@ -36,6 +36,7 @@ export class StudentParentService extends BaseService {
             new StudentParentEntity({
               parentId,
               studentId,
+              createdBy: actorId,
             }),
         ),
       );

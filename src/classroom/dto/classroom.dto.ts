@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { PaginateDTO } from 'src/common/dto/paginate.dto';
+import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class ClassroomStoreDTO {
   @ApiProperty()

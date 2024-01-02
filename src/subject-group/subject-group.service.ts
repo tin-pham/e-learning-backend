@@ -1,16 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { SubjectGroupEntity } from './subject-group.entity';
 import { SubjectGroupRepository } from './subject-group.repository';
 import { SubjectRepository } from '../subject/subject.repository';
 import { GroupRepository } from '../group/group.repository';
-import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import {
   SubjectGroupBulkDeleteDTO,
   SubjectGroupBulkStoreDTO,
 } from './dto/subject-group.dto';
-import { SubjectGroupEntity } from './subject-group.entity';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class SubjectGroupService extends BaseService {
@@ -33,7 +33,8 @@ export class SubjectGroupService extends BaseService {
     try {
       const subjectGroupsData = subjectIds.flatMap((subjectId) =>
         groupIds.map(
-          (groupId) => new SubjectGroupEntity({ subjectId, groupId }),
+          (groupId) =>
+            new SubjectGroupEntity({ subjectId, groupId, createdBy: actorId }),
         ),
       );
       await this.subjectGroupRepository.insertMultiple(subjectGroupsData);

@@ -11,12 +11,12 @@ import {
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { Roles } from '../auth/role/role.decorator';
+import { JwtPayload } from '../common/decorator';
 import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { LevelChooseDTO } from './dto/level.dto';
 import { LevelChooseRO } from './ro/level.ro';
-import { JwtPayload } from 'src/common/decorator';
 import { LevelService } from './level.service';
 
 const { TAGS, CONTROLLER, CHOOSE } = API.LEVEL;

@@ -7,7 +7,7 @@ import { TeacherRepository } from '../teacher/teacher.repository';
 import { SubjectRepository } from '../subject/subject.repository';
 import { TeacherSubjectBulkStoreDTO } from './dto/teacher-subject.dto';
 import { TeacherSubjectEntity } from './teacher-subject.entity';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class TeacherSubjectService extends BaseService {
@@ -29,7 +29,12 @@ export class TeacherSubjectService extends BaseService {
     try {
       const teacherSubjectsData = dto.teacherIds.flatMap((teacherId) =>
         dto.subjectIds.map(
-          (subjectId) => new TeacherSubjectEntity({ teacherId, subjectId }),
+          (subjectId) =>
+            new TeacherSubjectEntity({
+              teacherId,
+              subjectId,
+              createdBy: actorId,
+            }),
         ),
       );
       await this.teacherSubjectRepository.insertMany(teacherSubjectsData);

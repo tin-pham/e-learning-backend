@@ -3,7 +3,8 @@ import { DatabaseService, Transaction } from '../database';
 import { paginate } from '../common/function/paginate';
 import { ClassroomEntity } from './classroom.entity';
 import { ClassroomGetListDTO } from './dto/classroom.dto';
-import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
+import { sql } from 'kysely';
 
 @Injectable()
 export class ClassroomRepository {
@@ -39,17 +40,34 @@ export class ClassroomRepository {
       .select(['classroom.id', 'classroom.name', 'classroom.gradeId'])
       .where('classroom.deletedAt', 'is', null)
       .$if(withYear, (query) =>
-        query.select((eb) => [
-          jsonArrayFrom(
-            eb
-              .selectFrom('classroomYear')
-              .whereRef('classroomYear.classroomId', '=', 'classroom.id')
-              .where('classroomYear.deletedAt', 'is', null)
-              .innerJoin('year', 'year.id', 'classroomYear.yearId')
-              .where('year.id', '=', yearId)
-              .select(['classroomYear.id']),
-          ).as('classroomYears'),
-        ]),
+        query
+          .innerJoin(
+            'classroomYear',
+            'classroomYear.classroomId',
+            'classroom.id',
+          )
+          .where('classroomYear.yearId', '=', yearId)
+          .where('classroomYear.deletedAt', 'is', null)
+          .innerJoin('year', 'year.id', 'classroomYear.yearId')
+          .where('year.id', '=', yearId)
+          .select(({ fn, ref }) => [
+            fn
+              .coalesce(
+                fn.jsonAgg(
+                  jsonBuildObject({
+                    id: ref('classroomYear.id'),
+                  }),
+                ),
+                sql`'[]'`,
+              )
+              .as('classroomYears'),
+          ])
+          .groupBy([
+            'classroom.id',
+            'classroom.name',
+            'classroom.gradeId',
+            'year.id',
+          ]),
       )
       .$if(withGrade, (query) =>
         query

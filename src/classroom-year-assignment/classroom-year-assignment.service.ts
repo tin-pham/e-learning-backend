@@ -2,11 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ClassroomYearAssignmentBulkStoreDTO } from './dto/classroom-year-assignment.dto';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { BaseService } from '../base';
+import { ClassroomYearAssignmentEntity } from './classroom-year-assignment.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ClassroomYearRepository } from '../classroom-year/classroom-year.repository';
 import { ClassroomYearAssignmentRepository } from './classroom-year-assignment.repository';
 import { TeacherSubjectRepository } from '../teacher-subject/teacher-subject.repository';
-import { ClassroomYearAssignmentEntity } from './classroom-year-assignment.entity';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class ClassroomYearAssignmentService extends BaseService {
@@ -36,6 +37,7 @@ export class ClassroomYearAssignmentService extends BaseService {
               new ClassroomYearAssignmentEntity({
                 classroomYearId,
                 teacherSubjectId,
+                createdBy: actorId,
               }),
           ),
       );
@@ -49,6 +51,13 @@ export class ClassroomYearAssignmentService extends BaseService {
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { resul: true },
+      message: 'Bulk store classroom year assignment successfully',
+      actorId,
+    });
   }
 
   private async validateBulkStore(

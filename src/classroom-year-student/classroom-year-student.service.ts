@@ -34,6 +34,7 @@ export class ClassroomYearStudentService extends BaseService {
               new ClassroomYearStudentEntity({
                 classroomYearId,
                 studentId,
+                createdBy: actorId,
               }),
           ),
       );

@@ -12,7 +12,7 @@ import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
-import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import {
   TeacherGetListDTO,
   TeacherStoreDTO,

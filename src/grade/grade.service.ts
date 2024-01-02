@@ -3,7 +3,7 @@ import { GradeRepository } from './grade.repository';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { GradeEntity } from './grade.entity';
-import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import {
   GradeGetListDTO,
   GradeStoreDTO,

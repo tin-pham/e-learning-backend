@@ -7,7 +7,7 @@ import {
   UserDeleteRO,
   UserGetListDataRO,
 } from '../../user/ro/user.ro';
-import { PaginateRO } from 'src/common/ro/paginate.ro';
+import { PaginateRO } from '../../common/ro/paginate.ro';
 
 export class TeacherStoreRO extends UserStoreRO {}
 

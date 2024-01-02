@@ -25,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { JwtPayload } from '../common/decorator';
+import { Roles } from '../auth/role/role.decorator';
 import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
@@ -40,7 +41,6 @@ import {
   GradeStoreRO,
   GradeUpdateRO,
 } from './ro/grade.ro';
-import { Roles } from 'src/auth/role/role.decorator';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE, DELETE } = API.GRADE;
 

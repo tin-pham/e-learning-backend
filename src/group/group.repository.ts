@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
 import { GroupEntity } from './group.entity';
 import { GroupGetListDTO } from './dto/group.dto';
-import { paginate } from 'src/common/function/paginate';
+import { paginate } from '../common/function/paginate';
 
 @Injectable()
 export class GroupRepository {
