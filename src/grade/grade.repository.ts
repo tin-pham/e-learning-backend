@@ -28,14 +28,16 @@ export class GradeRepository {
   }
 
   find(dto: GradeGetListDTO) {
+    const { limit, page } = dto;
+
     const query = this.database
       .selectFrom('grade')
       .select(['id', 'name'])
       .where('deletedAt', 'is', null);
 
     return paginate(query, {
-      limit: dto.limit,
-      page: dto.page,
+      limit,
+      page,
     });
   }
 

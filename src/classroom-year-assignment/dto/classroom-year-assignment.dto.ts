@@ -1,12 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { ArrayMinSize, IsArray, IsString } from 'class-validator';
 
 export class ClassroomYearAssignmentBulkStoreDTO {
   @ApiProperty()
-  @Expose()
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @IsArray()
   classroomYearIds: string[];
 
   @ApiProperty()
-  @Expose()
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @IsArray()
   teacherSubjectIds: string[];
 }

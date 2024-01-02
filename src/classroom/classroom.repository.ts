@@ -3,6 +3,7 @@ import { DatabaseService, Transaction } from '../database';
 import { paginate } from '../common/function/paginate';
 import { ClassroomEntity } from './classroom.entity';
 import { ClassroomGetListDTO } from './dto/classroom.dto';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
 @Injectable()
 export class ClassroomRepository {
@@ -28,41 +29,39 @@ export class ClassroomRepository {
   }
 
   async find(dto: ClassroomGetListDTO) {
-    const withGrade = Boolean(dto.gradeId);
-    const withYear = Boolean(dto.yearId);
+    const { page, limit, yearId, gradeId } = dto;
+
+    const withYear = Boolean(yearId);
+    const withGrade = Boolean(gradeId);
 
     const query = this.database
       .selectFrom('classroom')
       .select(['classroom.id', 'classroom.name', 'classroom.gradeId'])
       .where('classroom.deletedAt', 'is', null)
+      .$if(withYear, (query) =>
+        query.select((eb) => [
+          jsonArrayFrom(
+            eb
+              .selectFrom('classroomYear')
+              .whereRef('classroomYear.classroomId', '=', 'classroom.id')
+              .where('classroomYear.deletedAt', 'is', null)
+              .innerJoin('year', 'year.id', 'classroomYear.yearId')
+              .where('year.id', '=', yearId)
+              .select(['classroomYear.id']),
+          ).as('classroomYears'),
+        ]),
+      )
       .$if(withGrade, (query) =>
         query
           .innerJoin('grade', 'grade.id', 'classroom.gradeId')
-          .where('grade.deletedAt', 'is', null)
-          .where('grade.id', '=', dto.gradeId),
-      )
-      .$if(withYear, (query) =>
-        query
-          .innerJoin(
-            'classroomYear',
-            'classroomYear.classroomId',
-            'classroom.id',
-          )
-          .innerJoin('year', 'year.id', 'classroomYear.yearId')
-          .where('year.deletedAt', 'is', null)
-          .where('year.id', '=', dto.yearId)
-          .select('classroomYear.id as classroomYearId'),
+          .where('grade.id', '=', gradeId)
+          .where('grade.deletedAt', 'is', null),
       );
 
-    const response = await paginate(query, {
-      limit: dto.limit,
-      page: dto.page,
+    return paginate(query, {
+      limit,
+      page,
     });
-    response.data = response.data.map(
-      (classroom) => new ClassroomEntity(classroom),
-    );
-
-    return response;
   }
 
   update(id: string, entity: ClassroomEntity) {

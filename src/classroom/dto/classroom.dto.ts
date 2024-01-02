@@ -13,10 +13,10 @@ export class ClassroomGetListDTO extends PaginateDTO {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  gradeId: string;
+  yearId: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  yearId: string;
+  gradeId: string;
 }

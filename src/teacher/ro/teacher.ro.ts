@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import {
   UserStoreRO,
@@ -18,7 +18,7 @@ export class TeacherGetListTeacherSubjectDataRO {
 }
 
 export class TeacherGetListDataRO extends UserGetListDataRO {
-  @ApiProperty({ type: [TeacherGetListTeacherSubjectDataRO] })
+  @ApiPropertyOptional({ type: [TeacherGetListTeacherSubjectDataRO] })
   @Type(() => TeacherGetListTeacherSubjectDataRO)
   @Expose()
   teacherSubjects: TeacherGetListTeacherSubjectDataRO[];

@@ -45,6 +45,7 @@ export class ClassroomYearRepository {
       .selectFrom('classroomYear')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('id', 'in', ids)
+      .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
   }

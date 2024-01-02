@@ -12,6 +12,12 @@ export class GradeStoreRO {
   name: string;
 }
 
+export class GradeGetListDataYearGradeRO {
+  @ApiProperty({ example: 1 })
+  @Expose()
+  id: number;
+}
+
 export class GradeGetListDataRO {
   @ApiProperty({ example: 1 })
   @Expose()

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
@@ -31,14 +31,14 @@ export class ClassroomGetListDataRO {
   @Expose()
   name: string;
 
-  @Expose()
   @ApiProperty()
+  @Expose()
   gradeId: string;
 
-  @Expose()
-  @ApiProperty()
+  @ApiPropertyOptional({ type: [ClassroomGetListDataClassroomYearRO] })
   @Type(() => ClassroomGetListDataClassroomYearRO)
-  classroomYear: ClassroomGetListDataClassroomYearRO;
+  @Expose()
+  classroomYears: ClassroomGetListDataClassroomYearRO[];
 }
 
 export class ClassroomGetListRO extends PaginateRO<ClassroomGetListDataRO> {
