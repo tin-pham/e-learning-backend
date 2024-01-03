@@ -31,8 +31,11 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { StudentService } from './student.service';
-import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
-import { UserGetListDTO } from '../user/dto/user.dto';
+import {
+  StudentGetListDTO,
+  StudentStoreDTO,
+  StudentUpdateDTO,
+} from './dto/student.dto';
 import {
   StudentDeleteRO,
   StudentGetDetailRO,
@@ -75,7 +78,7 @@ export class StudentController {
   @Get(GET_LIST.ROUTE)
   @Roles(ROLE.STAFF, ROLE.TEACHER)
   @UseGuards(JwtGuard)
-  getList(@Query() dto: UserGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+  getList(@Query() dto: StudentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.getList(dto, decoded);
   }
 

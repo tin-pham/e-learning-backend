@@ -294,5 +294,17 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Bulk store teacher subject',
     },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list teacher subject',
+    },
+  },
+  CLASSROOM_YEAR: {
+    TAGS: 'ClassroomYear',
+    CONTROLLER: 'classroom-year',
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update classroom year',
+    },
   },
 };

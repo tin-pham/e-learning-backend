@@ -40,11 +40,42 @@ export class ClassroomYearRepository {
       .execute();
   }
 
+  update(id: string, entity: ClassroomYearEntity) {
+    return this.database
+      .updateTable('classroomYear')
+      .set(entity)
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .returning(['id', 'formTeacherId'])
+      .executeTakeFirstOrThrow();
+  }
+
   async countByIds(ids: string[]) {
     const { count } = await this.database
       .selectFrom('classroomYear')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('id', 'in', ids)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countById(id: string) {
+    const { count } = await this.database
+      .selectFrom('classroomYear')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByFormTeacherIdExceptId(formTeacherId: string, id: string) {
+    const { count } = await this.database
+      .selectFrom('classroomYear')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('formTeacherId', '=', formTeacherId)
+      .where('id', '!=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);

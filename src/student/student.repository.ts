@@ -3,7 +3,7 @@ import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { ROLE } from '../role/enum/role.enum';
 import { StudentEntity } from './student.entity';
-import { PaginateDTO } from '../common/dto/paginate.dto';
+import { StudentGetListDTO } from './dto/student.dto';
 
 @Injectable()
 export class StudentRepository {
@@ -30,7 +30,11 @@ export class StudentRepository {
       .executeTakeFirstOrThrow();
   }
 
-  find(filter: PaginateDTO) {
+  find(dto: StudentGetListDTO) {
+    const { page, limit, classroomYearId } = dto;
+
+    const withClassroomYear = Boolean(classroomYearId);
+
     const query = this.database
       .selectFrom('student')
       .innerJoin('users', 'users.id', 'student.userId')
@@ -44,11 +48,21 @@ export class StudentRepository {
         'student.id',
       ])
       .where('role.name', '=', ROLE.STUDENT)
-      .where('users.deletedAt', 'is', null);
+      .where('users.deletedAt', 'is', null)
+      .$if(withClassroomYear, (query) =>
+        query
+          .innerJoin(
+            'classroomYearStudent',
+            'student.id',
+            'classroomYearStudent.studentId',
+          )
+          .where('classroomYearStudent.classroomYearId', '=', classroomYearId)
+          .where('classroomYearStudent.deletedAt', 'is', null),
+      );
 
     return paginate(query, {
-      limit: filter.limit,
-      page: filter.page,
+      limit,
+      page,
     });
   }
 

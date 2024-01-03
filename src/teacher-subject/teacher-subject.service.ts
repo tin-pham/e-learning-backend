@@ -5,9 +5,13 @@ import { TeacherSubjectRepository } from './teacher-subject.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { TeacherRepository } from '../teacher/teacher.repository';
 import { SubjectRepository } from '../subject/subject.repository';
-import { TeacherSubjectBulkStoreDTO } from './dto/teacher-subject.dto';
+import {
+  TeacherSubjectBulkStoreDTO,
+  TeacherSubjectGetListDTO,
+} from './dto/teacher-subject.dto';
 import { TeacherSubjectEntity } from './teacher-subject.entity';
 import { ResultRO } from '../common/ro/result.ro';
+import { TeacherSubjectGetListRO } from './ro/teacher-subject.ro';
 
 @Injectable()
 export class TeacherSubjectService extends BaseService {
@@ -51,6 +55,22 @@ export class TeacherSubjectService extends BaseService {
       message: 'Teacher subject stored successfully',
       actorId,
     });
+  }
+
+  async getList(dto: TeacherSubjectGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    try {
+      const response = await this.teacherSubjectRepository.find(dto);
+      return this.success({
+        classRO: TeacherSubjectGetListRO,
+        response,
+      });
+    } catch (error) {
+      const { code, status, message } =
+        EXCEPTION.TEACHER_SUBJECT.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
   }
 
   private async validateBulkStore(

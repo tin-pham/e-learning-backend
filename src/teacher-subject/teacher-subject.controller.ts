@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -24,10 +26,14 @@ import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { TeacherSubjectService } from './teacher-subject.service';
-import { TeacherSubjectBulkStoreDTO } from './dto/teacher-subject.dto';
+import {
+  TeacherSubjectBulkStoreDTO,
+  TeacherSubjectGetListDTO,
+} from './dto/teacher-subject.dto';
 import { ResultRO } from '../common/ro/result.ro';
+import { TeacherSubjectGetListRO } from './ro/teacher-subject.ro';
 
-const { TAGS, CONTROLLER, BULK_STORE } = API.TEACHER_SUBJECT;
+const { TAGS, CONTROLLER, BULK_STORE, GET_LIST } = API.TEACHER_SUBJECT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -51,5 +57,23 @@ export class TeacherSubjectController {
     @JwtPayload() decoded: IJwtPayload,
   ) {
     return this.subjectGroupService.bulkStore(dto, decoded);
+  }
+
+  @ApiOperation({ summary: GET_LIST.OPERATION })
+  @ApiCreatedResponse({ type: TeacherSubjectGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiConflictResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
+  getList(
+    @Query() dto: TeacherSubjectGetListDTO,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
+    return this.subjectGroupService.getList(dto, decoded);
   }
 }
