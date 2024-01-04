@@ -417,6 +417,11 @@ export const EXCEPTION = {
       message: 'Classroom year does not exist',
       code: 'CLASSROOM_YEAR_DOES_NOT_EXIST',
     },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Classroom year not found',
+      code: 'CLASSROOM_YEAR_NOT_FOUND',
+    },
     FORM_TEACHER_ALREADY_ASSIGNED: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Form teacher already assigned',
@@ -426,6 +431,11 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to update classroom year',
       code: 'CLASSROOM_YEAR_UPDATE_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail classroom year',
+      code: 'CLASSROOM_YEAR_GET_DETAIL_FAILED',
     },
   },
   CLASSROOM_YEAR_STUDENT: {

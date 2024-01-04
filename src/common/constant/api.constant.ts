@@ -306,5 +306,9 @@ export const API = {
       ROUTE: ':id',
       OPERATION: 'Update classroom year',
     },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get classroom year detail',
+    },
   },
 };

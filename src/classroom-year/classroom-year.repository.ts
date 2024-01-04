@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { ClassroomYearEntity } from './classroom-year.entity';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 @Injectable()
 export class ClassroomYearRepository {
@@ -48,6 +49,26 @@ export class ClassroomYearRepository {
       .where('deletedAt', 'is', null)
       .returning(['id', 'formTeacherId'])
       .executeTakeFirstOrThrow();
+  }
+
+  findOneById(id: string) {
+    return this.database
+      .selectFrom('classroomYear')
+      .select(['classroomYear.id', 'formTeacherId'])
+      .where('classroomYear.id', '=', id)
+      .where('classroomYear.deletedAt', 'is', null)
+      .leftJoin('teacher', 'teacher.id', 'classroomYear.formTeacherId')
+      .leftJoin('users', 'users.id', 'teacher.userId')
+      .select(({ ref }) => [
+        jsonBuildObject({
+          id: ref('teacher.id'),
+          username: ref('users.username'),
+          email: ref('users.email'),
+          phone: ref('users.phone'),
+          displayName: ref('users.displayName'),
+        }).as('formTeacher'),
+      ])
+      .executeTakeFirst();
   }
 
   async countByIds(ids: string[]) {

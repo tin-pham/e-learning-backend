@@ -180,6 +180,7 @@ export const DATABASE_TABLE = {
       ID: 'id',
       CLASSROOM_ID: 'classroom_id',
       YEAR_ID: 'year_id',
+      FORM_TEACHER_ID: 'form_teacher_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',
       UPDATED_AT: 'updated_at',

@@ -7,6 +7,7 @@ const { NAME: CLASSROOM_NAME, SCHEMA: CLASSROOM_SCHEMA } =
   DATABASE_TABLE.CLASSROOM;
 const { NAME: YEAR_NAME, SCHEMA: YEAR_SCHEMA } = DATABASE_TABLE.YEAR;
 const { NAME: USER_NAME, SCHEMA: USER_SCHEMA } = DATABASE_TABLE.USERS;
+const { NAME: TEACHER_NAME, SCHEMA: TEACHER_SCHEMA } = DATABASE_TABLE.TEACHER;
 
 export async function up(database: DatabaseService): Promise<void> {
   await database.schema
@@ -19,6 +20,9 @@ export async function up(database: DatabaseService): Promise<void> {
     )
     .addColumn(SCHEMA.YEAR_ID, 'varchar(50)', (column) =>
       column.references(`${YEAR_NAME}.${YEAR_SCHEMA.ID}`),
+    )
+    .addColumn(SCHEMA.FORM_TEACHER_ID, 'varchar(50)', (column) =>
+      column.references(`${TEACHER_NAME}.${TEACHER_SCHEMA.ID}`),
     )
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
       column.defaultTo(sql`now()`),

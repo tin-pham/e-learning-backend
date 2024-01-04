@@ -2,9 +2,9 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -27,7 +27,7 @@ export class LevelController {
   constructor(private readonly levelService: LevelService) {}
 
   @ApiOperation({ summary: CHOOSE.OPERATION })
-  @ApiOkResponse({ type: LevelChooseRO })
+  @ApiCreatedResponse({ type: LevelChooseRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
