@@ -25,7 +25,7 @@ export class UserService extends BaseService {
   protected async storeWithTransaction(
     transaction: Transaction,
     dto: UserStoreDTO,
-    creatorId: string,
+    actorId: number,
   ) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(dto.password, salt);
@@ -35,14 +35,14 @@ export class UserService extends BaseService {
     userData.email = dto.email;
     userData.phone = dto.phone;
     userData.displayName = dto.displayName;
-    userData.createdBy = creatorId;
+    userData.createdBy = actorId;
     return this.userRepository.insertWithTransaction(transaction, userData);
   }
 
   protected async storeUserRoleWithTransaction(
     transaction: Transaction,
-    userId: string,
-    roleId: string,
+    userId: number,
+    roleId: number,
   ) {
     const userRoleData = new UserRoleEntity();
     userRoleData.userId = userId;
@@ -53,7 +53,7 @@ export class UserService extends BaseService {
     );
   }
 
-  protected async validateStore(dto: UserStoreDTO, actorId: string) {
+  protected async validateStore(dto: UserStoreDTO, actorId: number) {
     // Check name exists
     const userNameCount = await this.userRepository.countByUserName(
       dto.username,
@@ -84,13 +84,13 @@ export class UserService extends BaseService {
 
   protected async updateWithTransaction(
     transaction: Transaction,
-    id: string,
+    id: number,
     dto: UserUpdateDTO,
-    updaterId: string,
+    actorId: number,
   ) {
     // Set data
     const userData = new UserEntity();
-    userData.updatedBy = updaterId;
+    userData.updatedBy = actorId;
     userData.updatedAt = new Date();
     if (dto.email) {
       userData.email = dto.email;
@@ -118,19 +118,19 @@ export class UserService extends BaseService {
 
   protected async deleteWithTransaction(
     transaction: Transaction,
-    id: string,
-    deleterId: string,
+    id: number,
+    actorId: number,
   ) {
     const userData = new UserEntity();
     userData.deletedAt = new Date();
-    userData.deletedBy = deleterId;
+    userData.deletedBy = actorId;
     await this.userRepository.deleteWithTransaction(transaction, id, userData);
   }
 
   protected async deleteUserRoleWithTransaction(
     transaction: Transaction,
-    userId: string,
-    actorId: string,
+    userId: number,
+    actorId: number,
   ) {
     await this.userRoleRepository.deleteMultipleByUserIdWithTransaction(
       transaction,

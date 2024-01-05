@@ -14,9 +14,12 @@ import { UserGetListDTO } from '../user/dto/user.dto';
 import {
   StudentDeleteRO,
   StudentGetDetailRO,
+  StudentGetDetailUserRO,
   StudentGetListRO,
   StudentStoreRO,
+  StudentStoreUserRO,
   StudentUpdateRO,
+  StudentUpdateUserRO,
 } from './ro/student.ro';
 
 @Injectable()
@@ -66,10 +69,11 @@ export class StudentService extends UserService {
 
         // Set response
         response.id = student.id;
-        response.username = user.username;
-        response.email = user.email;
-        response.phone = user.phone;
-        response.displayName = user.displayName;
+        response.user = new StudentStoreUserRO();
+        response.user.username = user.username;
+        response.user.email = user.email;
+        response.user.phone = user.phone;
+        response.user.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.STORE_FAILED;
@@ -112,11 +116,12 @@ export class StudentService extends UserService {
         this.throwException({ code, status, message, actorId });
       }
 
-      response.id = student.id;
-      response.username = student.username;
-      response.email = student.email;
-      response.phone = student.phone;
-      response.displayName = student.displayName;
+      response.id = id;
+      response.user = new StudentGetDetailUserRO();
+      response.user.username = student.username;
+      response.user.email = student.email;
+      response.user.phone = student.phone;
+      response.user.displayName = student.displayName;
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.GET_DETAIL_FAILED;
       this.logger.error(error);
@@ -153,10 +158,11 @@ export class StudentService extends UserService {
 
         // Set response
         response.id = student.id;
-        response.username = user.username;
-        response.email = user.email;
-        response.phone = user.phone;
-        response.displayName = user.displayName;
+        response.user = new StudentUpdateUserRO();
+        response.user.username = user.username;
+        response.user.email = user.email;
+        response.user.phone = user.phone;
+        response.user.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.UPDATE_FAILED;
@@ -201,7 +207,7 @@ export class StudentService extends UserService {
   private async validateUpdate(
     id: string,
     dto: StudentUpdateDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check id exists
     const student = await this.studentRepository.findOneById(id);
@@ -254,7 +260,7 @@ export class StudentService extends UserService {
     };
   }
 
-  private async validateDelete(id: string, actorId: string) {
+  private async validateDelete(id: string, actorId: number) {
     // Check id exists
     const studentCount = await this.studentRepository.countById(id);
     if (!studentCount) {

@@ -4,7 +4,7 @@ import { Expose, Type } from 'class-transformer';
 export class ClassroomYearUpdateRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty()
   @Expose()
@@ -14,7 +14,7 @@ export class ClassroomYearUpdateRO {
 export class ClassroomYearGetDetailFormTeacherRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty()
   @Expose()
@@ -36,7 +36,7 @@ export class ClassroomYearGetDetailFormTeacherRO {
 export class ClassroomYearGetDetailRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiPropertyOptional({ type: ClassroomYearGetDetailFormTeacherRO })
   @Type(() => ClassroomYearGetDetailFormTeacherRO)

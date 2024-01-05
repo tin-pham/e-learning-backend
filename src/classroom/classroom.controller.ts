@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   UseGuards,
@@ -82,7 +83,10 @@ export class ClassroomController {
   @Delete(DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
     return this.classroomService.delete(id, decoded);
   }
 }

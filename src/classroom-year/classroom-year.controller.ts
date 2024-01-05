@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -42,7 +50,7 @@ export class ClassroomYearController {
   @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: ClassroomYearUpdateDTO,
     @JwtPayload() decoded: IJwtPayload,
   ) {
@@ -59,7 +67,10 @@ export class ClassroomYearController {
   @Get(GET_DETAIL.ROUTE)
   @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+  getDetail(
+    @Param('id', ParseIntPipe) id: number,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
     return this.classroomYearService.getDetail(id, decoded);
   }
 }

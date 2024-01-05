@@ -7,9 +7,7 @@ const { NAME, SCHEMA } = DATABASE_TABLE.ROLE;
 export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
-    .addColumn(SCHEMA.ID, 'varchar(50)', (column) =>
-      column.primaryKey().defaultTo(sql`uuid_generate_v4()`),
-    )
+    .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.NAME, 'varchar(50)', (column) => column.notNull())
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
       column.defaultTo(sql`now()`),

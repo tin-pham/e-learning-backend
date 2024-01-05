@@ -5,7 +5,7 @@ import { PaginateRO } from '../../common/ro/paginate.ro';
 export class SubjectStoreRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'Math' })
   @Expose()
@@ -15,7 +15,7 @@ export class SubjectStoreRO {
 export class SubjectGetListDataGroupRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'A1' })
   @Expose()
@@ -25,7 +25,7 @@ export class SubjectGetListDataGroupRO {
 export class SubjectGetListDataRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'Math' })
   @Expose()
@@ -47,7 +47,7 @@ export class SubjectGetListRO extends PaginateRO<SubjectGetListDataRO> {
 export class SubjectUpdateRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'Math' })
   @Expose()

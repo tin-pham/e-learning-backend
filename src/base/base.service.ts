@@ -6,7 +6,7 @@ interface Exception {
   status: number;
   code: string;
   message: string;
-  actorId: string;
+  actorId: number | string;
   error?: Error;
 }
 
@@ -14,7 +14,7 @@ interface Success {
   classRO: { new (...args: any[]): any };
   response: any;
   message?: string;
-  actorId?: string;
+  actorId?: number;
 }
 
 @Injectable()

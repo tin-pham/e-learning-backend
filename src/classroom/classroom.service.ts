@@ -85,7 +85,7 @@ export class ClassroomService extends BaseService {
     }
   }
 
-  async delete(id: string, decoded: IJwtPayload) {
+  async delete(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateDelete(id, actorId);
 
@@ -112,7 +112,7 @@ export class ClassroomService extends BaseService {
     });
   }
 
-  private async validateStore(dto: ClassroomStoreDTO, actorId: string) {
+  private async validateStore(dto: ClassroomStoreDTO, actorId: number) {
     // Check grade exists
     const gradeCount = await this.gradeRepository.countById(dto.gradeId);
     if (!gradeCount) {
@@ -121,7 +121,7 @@ export class ClassroomService extends BaseService {
     }
   }
 
-  private async validateDelete(id: string, actorId: string) {
+  private async validateDelete(id: number, actorId: number) {
     // Check exist
     const classroom = await this.classroomRepository.countById(id);
     if (!classroom) {

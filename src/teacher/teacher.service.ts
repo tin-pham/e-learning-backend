@@ -21,9 +21,12 @@ import {
 import {
   TeacherDeleteRO,
   TeacherGetDetailRO,
+  TeacherGetDetailUserRO,
   TeacherGetListRO,
   TeacherStoreRO,
+  TeacherStoreUserRO,
   TeacherUpdateRO,
+  TeacherUpdateUserRO,
 } from './ro/teacher.ro';
 
 @Injectable()
@@ -73,10 +76,11 @@ export class TeacherService extends UserService {
 
         // Set response
         response.id = id;
-        response.username = user.username;
-        response.email = user.email;
-        response.phone = user.phone;
-        response.displayName = user.displayName;
+        response.user = new TeacherStoreUserRO();
+        response.user.username = user.username;
+        response.user.email = user.email;
+        response.user.phone = user.phone;
+        response.user.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.STORE_FAILED;
@@ -115,11 +119,12 @@ export class TeacherService extends UserService {
         this.throwException({ code, status, message, actorId });
       }
 
-      response.id = teacher.id;
-      response.username = teacher.username;
-      response.email = teacher.email;
-      response.phone = teacher.phone;
-      response.displayName = teacher.displayName;
+      response.id = id;
+      response.user = new TeacherGetDetailUserRO();
+      response.user.username = teacher.username;
+      response.user.email = teacher.email;
+      response.user.phone = teacher.phone;
+      response.user.displayName = teacher.displayName;
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.GET_DETAIL_FAILED;
       this.logger.error(error);
@@ -153,10 +158,11 @@ export class TeacherService extends UserService {
           throw new InternalServerErrorException();
         }
         response.id = teacherId;
-        response.username = user.username;
-        response.email = user.email;
-        response.phone = user.phone;
-        response.displayName = user.displayName;
+        response.user = new TeacherUpdateUserRO();
+        response.user.username = user.username;
+        response.user.email = user.email;
+        response.user.phone = user.phone;
+        response.user.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.UPDATE_FAILED;
@@ -196,7 +202,7 @@ export class TeacherService extends UserService {
   private async validateUpdate(
     id: string,
     dto: TeacherUpdateDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check id exists
     const teacher = await this.teacherRepository.findOneById(id);
@@ -230,7 +236,7 @@ export class TeacherService extends UserService {
     }
   }
 
-  private async validateDelete(id: string, actorId: string) {
+  private async validateDelete(id: string, actorId: number) {
     // Check id exists
     const teacherCount = await this.teacherRepository.countById(id);
     if (!teacherCount) {

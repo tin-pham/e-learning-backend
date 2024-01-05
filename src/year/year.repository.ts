@@ -20,7 +20,7 @@ export class YearRepository extends BaseRepository<YearEntity> {
       .executeTakeFirstOrThrow();
   }
 
-  deleteWithTransaction(transaction: Transaction, id: string, actorId: string) {
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
     return transaction
       .updateTable('year')
       .set({

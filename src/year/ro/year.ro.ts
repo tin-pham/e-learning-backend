@@ -5,7 +5,7 @@ import { PaginateRO } from '../../common/ro/paginate.ro';
 export class YearStoreRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: '2023-2024' })
   @Expose()
@@ -23,7 +23,7 @@ export class YearStoreRO {
 export class YearGetListDataRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: '2023-2024' })
   @Expose()
@@ -48,13 +48,13 @@ export class YearGetListRO extends PaginateRO<YearGetListDataRO> {
 export class YearDeleteRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 }
 
 export class YearUpdateRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: '2023-2024' })
   @Expose()

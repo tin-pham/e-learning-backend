@@ -72,7 +72,7 @@ export class AuthService extends BaseService {
     if (!user) {
       const { status, code, message } =
         EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
-      this.throwException({ status, code, message, actorId: '' });
+      this.throwException({ status, code, message, actorId: user.id });
     }
 
     // Check password match

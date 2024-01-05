@@ -1,7 +1,7 @@
 export class StudentEntity {
   id: string;
 
-  userId: string;
+  userId: number;
 
   parentId: string;
 }

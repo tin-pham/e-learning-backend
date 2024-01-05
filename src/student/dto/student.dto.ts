@@ -11,6 +11,6 @@ export class StudentGetListDTO extends UserGetListDTO {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  classroomYearId?: string;
+  classroomYearId?: number;
 }
 export class StudentUpdateDTO extends UserUpdateDTO {}

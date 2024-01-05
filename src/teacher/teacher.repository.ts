@@ -114,7 +114,7 @@ export class TeacherRepository {
     return Number(count);
   }
 
-  getIdByUserId(userId: string) {
+  getIdByUserId(userId: number) {
     return this.database
       .selectFrom('teacher')
       .select('teacher.id')

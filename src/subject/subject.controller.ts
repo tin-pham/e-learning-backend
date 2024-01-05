@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -88,7 +89,7 @@ export class SubjectController {
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: SubjectUpdateDTO,
     @JwtPayload() decoded: IJwtPayload,
   ) {

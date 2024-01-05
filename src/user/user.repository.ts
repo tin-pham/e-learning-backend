@@ -50,7 +50,7 @@ export class UserRepository {
     return Number(count);
   }
 
-  async countByEmailExceptId(email: string, id: string): Promise<number> {
+  async countByEmailExceptId(email: string, id: number): Promise<number> {
     const { count } = await this.database
       .selectFrom('users')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -61,7 +61,7 @@ export class UserRepository {
     return Number(count);
   }
 
-  async countByPhoneExceptId(phone: string, id: string): Promise<number> {
+  async countByPhoneExceptId(phone: string, id: number): Promise<number> {
     const { count } = await this.database
       .selectFrom('users')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -81,7 +81,7 @@ export class UserRepository {
       .executeTakeFirst();
   }
 
-  findOneById(id: string): Promise<UserEntity> {
+  findOneById(id: number): Promise<UserEntity> {
     return this.database
       .selectFrom('users')
       .selectAll()
@@ -107,7 +107,7 @@ export class UserRepository {
 
   updateWithTransaction(
     transaction: Transaction,
-    id: string,
+    id: number,
     entity: UserEntity,
   ) {
     return transaction
@@ -121,7 +121,7 @@ export class UserRepository {
 
   deleteWithTransaction(
     transaction: Transaction,
-    id: string,
+    id: number,
     entity: UserEntity,
   ) {
     return transaction

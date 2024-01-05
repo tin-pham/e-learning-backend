@@ -5,7 +5,7 @@ import { PaginateRO } from '../../common/ro/paginate.ro';
 export class GradeStoreRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: '6' })
   @Expose()
@@ -38,7 +38,7 @@ export class GradeGetListRO extends PaginateRO<GradeGetListDataRO> {
 export class GradeUpdateRO {
   @ApiPropertyOptional()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiPropertyOptional({ example: 'Grade 6' })
   @Expose()
@@ -48,5 +48,5 @@ export class GradeUpdateRO {
 export class GradeDeleteRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 }

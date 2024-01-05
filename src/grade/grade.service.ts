@@ -67,7 +67,7 @@ export class GradeService extends BaseService {
     }
   }
 
-  async update(id: string, dto: GradeUpdateDTO, decoded: IJwtPayload) {
+  async update(id: number, dto: GradeUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateUpdate(id, dto, actorId);
 
@@ -99,7 +99,7 @@ export class GradeService extends BaseService {
     });
   }
 
-  async delete(id: string, decoded: IJwtPayload) {
+  async delete(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateDelete(id, actorId);
 
@@ -126,7 +126,7 @@ export class GradeService extends BaseService {
     });
   }
 
-  private async validateStore(dto: GradeStoreDTO, actorId: string) {
+  private async validateStore(dto: GradeStoreDTO, actorId: number) {
     // Check name unique
     const exists = await this.gradeRepository.countByName(dto.name);
     if (exists) {
@@ -136,9 +136,9 @@ export class GradeService extends BaseService {
   }
 
   private async validateUpdate(
-    id: string,
+    id: number,
     dto: GradeUpdateDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check exist
     const gradeCount = await this.gradeRepository.countById(id);
@@ -160,7 +160,7 @@ export class GradeService extends BaseService {
     }
   }
 
-  private async validateDelete(id: string, actorId: string) {
+  private async validateDelete(id: number, actorId: number) {
     // Check exist
     const grade = await this.gradeRepository.countById(id);
     if (!grade) {

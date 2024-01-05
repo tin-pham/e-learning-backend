@@ -19,8 +19,8 @@ export class ClassroomYearRepository {
 
   deleteMultipleWithTransaction(
     transaction: Transaction,
-    ids: string[],
-    actorId: string,
+    ids: number[],
+    actorId: number,
   ) {
     return transaction
       .updateTable('classroomYear')
@@ -32,7 +32,7 @@ export class ClassroomYearRepository {
       .executeTakeFirstOrThrow();
   }
 
-  getIdsByYearId(yearId: string) {
+  getIdsByYearId(yearId: number) {
     return this.database
       .selectFrom('classroomYear')
       .select(['id'])
@@ -41,7 +41,7 @@ export class ClassroomYearRepository {
       .execute();
   }
 
-  update(id: string, entity: ClassroomYearEntity) {
+  update(id: number, entity: ClassroomYearEntity) {
     return this.database
       .updateTable('classroomYear')
       .set(entity)
@@ -51,7 +51,7 @@ export class ClassroomYearRepository {
       .executeTakeFirstOrThrow();
   }
 
-  findOneById(id: string) {
+  findOneById(id: number) {
     return this.database
       .selectFrom('classroomYear')
       .select(['classroomYear.id', 'formTeacherId'])
@@ -71,7 +71,7 @@ export class ClassroomYearRepository {
       .executeTakeFirst();
   }
 
-  async countByIds(ids: string[]) {
+  async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('classroomYear')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -81,7 +81,7 @@ export class ClassroomYearRepository {
     return Number(count);
   }
 
-  async countById(id: string) {
+  async countById(id: number) {
     const { count } = await this.database
       .selectFrom('classroomYear')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -91,7 +91,7 @@ export class ClassroomYearRepository {
     return Number(count);
   }
 
-  async countByFormTeacherIdExceptId(formTeacherId: string, id: string) {
+  async countByFormTeacherIdExceptId(formTeacherId: string, id: number) {
     const { count } = await this.database
       .selectFrom('classroomYear')
       .select(({ fn }) => fn.countAll().as('count'))

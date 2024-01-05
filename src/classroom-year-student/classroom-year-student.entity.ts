@@ -1,7 +1,7 @@
 import { BaseEntity } from '../base/base.entity';
 
 export class ClassroomYearStudentEntity extends BaseEntity {
-  classroomYearId: string;
+  classroomYearId: number;
 
   studentId: string;
 

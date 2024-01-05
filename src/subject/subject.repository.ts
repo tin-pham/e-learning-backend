@@ -37,7 +37,7 @@ export class SubjectRepository {
     });
   }
 
-  update(id: string, entity: SubjectEntity) {
+  update(id: number, entity: SubjectEntity) {
     return this.database
       .updateTable('subject')
       .set(entity)
@@ -47,7 +47,7 @@ export class SubjectRepository {
       .executeTakeFirstOrThrow();
   }
 
-  async countById(id: string) {
+  async countById(id: number) {
     const { count } = await this.database
       .selectFrom('subject')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -57,7 +57,7 @@ export class SubjectRepository {
     return Number(count);
   }
 
-  async countByIds(ids: string[]) {
+  async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('subject')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -77,7 +77,7 @@ export class SubjectRepository {
     return Number(count);
   }
 
-  async countByNameExceptId(name: string, id: string) {
+  async countByNameExceptId(name: string, id: number) {
     const { count } = await this.database
       .selectFrom('subject')
       .select(({ fn }) => fn.countAll().as('count'))

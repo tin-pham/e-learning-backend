@@ -2,13 +2,13 @@ export interface ErrorIndex {
   status: number;
   message: string;
   code?: string;
-  actorId?: string;
+  actorId?: number | string;
   error?: string;
 }
 
 export interface InfoIndex {
   message: string;
-  actorId?: string;
+  actorId?: number | string;
 }
 
 export interface QueryIndex {

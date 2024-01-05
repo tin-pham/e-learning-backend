@@ -41,7 +41,7 @@ export class GradeRepository {
     });
   }
 
-  update(id: string, entity: GradeEntity) {
+  update(id: number, entity: GradeEntity) {
     return this.database
       .updateTable('grade')
       .set(entity)
@@ -51,7 +51,7 @@ export class GradeRepository {
       .executeTakeFirstOrThrow();
   }
 
-  delete(id: string, entity: GradeEntity) {
+  delete(id: number, entity: GradeEntity) {
     return this.database
       .updateTable('grade')
       .set(entity)
@@ -69,7 +69,7 @@ export class GradeRepository {
     return Number(count);
   }
 
-  async countByNameExceptId(name: string, id: string) {
+  async countByNameExceptId(name: string, id: number) {
     const { count } = await this.database
       .selectFrom('grade')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -80,7 +80,7 @@ export class GradeRepository {
     return Number(count);
   }
 
-  async countById(id: string) {
+  async countById(id: number) {
     const { count } = await this.database
       .selectFrom('grade')
       .select(({ fn }) => fn.countAll().as('count'))

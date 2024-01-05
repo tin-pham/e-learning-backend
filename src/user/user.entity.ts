@@ -1,8 +1,7 @@
+import { BaseEntity } from '../base/base.entity';
 import { RoleEntity } from '../role/role.entity';
 
-export class UserEntity {
-  id!: string;
-
+export class UserEntity extends BaseEntity {
   username: string;
 
   password: string;
@@ -12,18 +11,6 @@ export class UserEntity {
   phone?: string;
 
   displayName: string;
-
-  createdAt!: Date;
-
-  createdBy!: string;
-
-  updatedAt?: Date;
-
-  updatedBy?: string;
-
-  deletedAt?: Date;
-
-  deletedBy?: string;
 
   roles: RoleEntity[];
 }

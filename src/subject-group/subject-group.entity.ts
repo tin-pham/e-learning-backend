@@ -1,9 +1,9 @@
 import { BaseEntity } from '../base/base.entity';
 
 export class SubjectGroupEntity extends BaseEntity {
-  subjectId: string;
+  subjectId: number;
 
-  groupId: string;
+  groupId: number;
 
   constructor(data: Partial<SubjectGroupEntity>) {
     super();

@@ -3,14 +3,14 @@ import { BaseEntity } from '../base/base.entity';
 
 export class ClassroomFlatEntity extends BaseEntity {
   name: string;
-  gradeId: string;
-  classroomYearId?: string;
+  gradeId: number;
+  classroomYearId?: number;
 }
 
 export class ClassroomEntity extends BaseEntity {
   name: string;
 
-  gradeId: string;
+  gradeId: number;
 
   classroomYear?: ClassroomYearEntity;
 

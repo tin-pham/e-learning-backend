@@ -11,7 +11,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.ID, 'varchar(50)', (column) =>
       column.primaryKey().defaultTo(sql`generate_parent_id()`),
     )
-    .addColumn(SCHEMA.USER_ID, 'varchar(50)', (column) =>
+    .addColumn(SCHEMA.USER_ID, 'integer', (column) =>
       column.references(`${USERS_TABLE}.${USER_SCHEMA.ID}`).notNull(),
     )
     .execute();

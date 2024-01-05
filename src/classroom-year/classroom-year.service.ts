@@ -23,7 +23,7 @@ export class ClassroomYearService extends BaseService {
     super(elasticLogger);
   }
 
-  async update(id: string, dto: ClassroomYearUpdateDTO, decoded: IJwtPayload) {
+  async update(id: number, dto: ClassroomYearUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateUpdate(id, dto, actorId);
 
@@ -56,7 +56,7 @@ export class ClassroomYearService extends BaseService {
     });
   }
 
-  async getDetail(id: string, decoded: IJwtPayload) {
+  async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
     try {
@@ -82,9 +82,9 @@ export class ClassroomYearService extends BaseService {
   }
 
   private async validateUpdate(
-    id: string,
+    id: number,
     dto: ClassroomYearUpdateDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check exist
     const classroomYearCount = await this.classroomYearRepository.countById(id);

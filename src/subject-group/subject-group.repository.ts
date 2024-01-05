@@ -10,7 +10,7 @@ export class SubjectGroupRepository {
     return this.database.insertInto('subjectGroup').values(entities).execute();
   }
 
-  deleteMultiple(subjectIds: string[], groupIds: string[], actorId: string) {
+  deleteMultiple(subjectIds: number[], groupIds: number[], actorId: number) {
     return this.database
       .updateTable('subjectGroup')
       .set({
@@ -22,7 +22,7 @@ export class SubjectGroupRepository {
       .execute();
   }
 
-  async countBySubjectIdsAndGroupIds(subjectIds: string[], groupIds: string[]) {
+  async countBySubjectIdsAndGroupIds(subjectIds: number[], groupIds: number[]) {
     const { count } = await this.database
       .selectFrom('subjectGroup')
       .select(({ fn }) => fn.countAll().as('count'))

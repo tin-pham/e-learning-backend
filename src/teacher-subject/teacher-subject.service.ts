@@ -75,7 +75,7 @@ export class TeacherSubjectService extends BaseService {
 
   private async validateBulkStore(
     dto: TeacherSubjectBulkStoreDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check teachers exists
     const teacherCount = await this.teacherRepository.countByIds(

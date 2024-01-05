@@ -17,11 +17,11 @@ export class RefreshTokenService extends BaseService {
     super(elasticLogger);
   }
 
-  async store(userId: string, tokenId: string): Promise<void> {
+  async store(userId: number, tokenId: string): Promise<void> {
     await this.cacheService.set(this.getKey(userId), tokenId);
   }
 
-  async clear(userId: string): Promise<void> {
+  async clear(userId: number): Promise<void> {
     await this.cacheService.del(this.getKey(userId));
   }
 
@@ -48,7 +48,7 @@ export class RefreshTokenService extends BaseService {
     }
   }
 
-  private getKey(userId: string): string {
+  private getKey(userId: number): string {
     return `user-${userId}`;
   }
 }

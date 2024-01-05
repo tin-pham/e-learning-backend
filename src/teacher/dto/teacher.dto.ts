@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsNumber } from 'class-validator';
 import {
   UserGetListDTO,
   UserStoreDTO,
@@ -9,8 +9,8 @@ import {
 export class TeacherStoreDTO extends UserStoreDTO {}
 export class TeacherGetListDTO extends UserGetListDTO {
   @ApiPropertyOptional()
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  subjectId: string;
+  subjectId: number;
 }
 export class TeacherUpdateDTO extends UserUpdateDTO {}

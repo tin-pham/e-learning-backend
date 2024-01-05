@@ -5,7 +5,7 @@ import { PaginateRO } from '../../common/ro/paginate.ro';
 export class ClassroomStoreRO {
   @Expose()
   @ApiProperty()
-  id: string;
+  id: number;
 
   @Expose()
   @ApiProperty({ example: 'A' })
@@ -13,7 +13,7 @@ export class ClassroomStoreRO {
 
   @Expose()
   @ApiProperty()
-  gradeId: string;
+  gradeId: number;
 }
 
 export class ClassroomGetListDataClassroomYearRO {
@@ -33,7 +33,7 @@ export class ClassroomGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  gradeId: string;
+  gradeId: number;
 
   @ApiPropertyOptional({ type: [ClassroomGetListDataClassroomYearRO] })
   @Type(() => ClassroomGetListDataClassroomYearRO)
@@ -51,5 +51,5 @@ export class ClassroomGetListRO extends PaginateRO<ClassroomGetListDataRO> {
 export class ClassroomDeleteRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 }

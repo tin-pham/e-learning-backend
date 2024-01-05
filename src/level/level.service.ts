@@ -41,7 +41,7 @@ export class LevelService extends BaseService {
   private async createSchool(
     startGrade: number,
     endGrade: number,
-    actorId: string,
+    actorId: number,
   ) {
     try {
       await this.database.transaction().execute(async (transaction) => {
@@ -71,7 +71,7 @@ export class LevelService extends BaseService {
     transaction: Transaction,
     startGrade: number,
     endGrade: number,
-    actorId: string,
+    actorId: number,
   ) {
     const gradesData = [];
     for (let i = startGrade; i <= endGrade; i++) {
@@ -90,7 +90,7 @@ export class LevelService extends BaseService {
   private async createClassrooms(
     transaction: Transaction,
     grades: GradeEntity[],
-    actorId: string,
+    actorId: number,
   ) {
     const classrooms = [];
     for (const grade of grades) {

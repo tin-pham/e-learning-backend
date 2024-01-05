@@ -1,24 +1,36 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, ArrayMinSize, IsArray, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsString,
+  ArrayMinSize,
+  IsArray,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
+import {
+  ApiArrayProperty,
+  SwaggerQueryParamStyle,
+} from '../../common/decorator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class TeacherSubjectBulkStoreDTO {
-  @ApiProperty()
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
   @IsString({ each: true })
   @ArrayMinSize(1)
   @IsArray()
   teacherIds: string[];
 
-  @ApiProperty()
-  @IsString({ each: true })
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
+    Number.parseInt(value),
+  )
+  @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
-  subjectIds: string[];
+  subjectIds: number[];
 }
 
 export class TeacherSubjectGetListDTO extends PaginateDTO {
   @ApiPropertyOptional()
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  classroomYearId?: string;
+  classroomYearId?: number;
 }

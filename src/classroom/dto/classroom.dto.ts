@@ -1,22 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class ClassroomStoreDTO {
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  gradeId: string;
+  gradeId: number;
 }
 
 export class ClassroomGetListDTO extends PaginateDTO {
   @ApiPropertyOptional()
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  yearId: string;
+  yearId: number;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  gradeId: string;
+  gradeId: number;
 }

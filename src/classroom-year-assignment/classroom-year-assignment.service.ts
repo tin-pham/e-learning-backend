@@ -62,7 +62,7 @@ export class ClassroomYearAssignmentService extends BaseService {
 
   private async validateBulkStore(
     dto: ClassroomYearAssignmentBulkStoreDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Validate classroomYear exist
     const classroomYearCount = await this.classroomYearRepository.countByIds(

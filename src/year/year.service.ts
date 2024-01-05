@@ -163,7 +163,7 @@ export class YearService extends BaseService {
     }
   }
 
-  async delete(id: string, decoded: IJwtPayload) {
+  async delete(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateDelete(id, actorId);
 
@@ -202,7 +202,6 @@ export class YearService extends BaseService {
         }
 
         // Delete yearGrade
-        console.log(actorId);
         const yearGrades = await this.yearGradeRepository.getIdsByYearId(id);
         if (yearGrades.length) {
           const yearGradeIds = yearGrades.map((yearGrade) => yearGrade.id);
@@ -227,7 +226,7 @@ export class YearService extends BaseService {
     });
   }
 
-  async update(id: string, dto: YearUpdateDTO, decoded: IJwtPayload) {
+  async update(id: number, dto: YearUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateUpdate(id, actorId);
 
@@ -263,7 +262,7 @@ export class YearService extends BaseService {
     });
   }
 
-  private async validateDelete(id: string, actorId: string) {
+  private async validateDelete(id: number, actorId: number) {
     // Check exists
     const yearCount = await this.yearRepository.countById(id);
     if (!yearCount) {
@@ -272,7 +271,7 @@ export class YearService extends BaseService {
     }
   }
 
-  private async validateUpdate(id: string, actorId: string) {
+  private async validateUpdate(id: number, actorId: number) {
     // Check exists
     const yearCount = await this.yearRepository.countById(id);
     if (!yearCount) {

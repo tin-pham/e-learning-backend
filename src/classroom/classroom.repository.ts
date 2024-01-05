@@ -82,7 +82,7 @@ export class ClassroomRepository {
     });
   }
 
-  update(id: string, entity: ClassroomEntity) {
+  update(id: number, entity: ClassroomEntity) {
     return this.database
       .updateTable('classroom')
       .set(entity)
@@ -92,7 +92,7 @@ export class ClassroomRepository {
       .executeTakeFirst();
   }
 
-  delete(id: string, entity: ClassroomEntity) {
+  delete(id: number, entity: ClassroomEntity) {
     return this.database
       .updateTable('classroom')
       .set(entity)
@@ -111,7 +111,7 @@ export class ClassroomRepository {
     return Number(count);
   }
 
-  async countByNameExceptId(name: string, id: string) {
+  async countByNameExceptId(name: string, id: number) {
     const { count } = await this.database
       .selectFrom('classroom')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -122,7 +122,7 @@ export class ClassroomRepository {
     return Number(count);
   }
 
-  async countById(id: string) {
+  async countById(id: number) {
     const { count } = await this.database
       .selectFrom('classroom')
       .select(({ fn }) => fn.countAll().as('count'))

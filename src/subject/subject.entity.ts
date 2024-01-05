@@ -1,17 +1,5 @@
-export class SubjectEntity {
-  id: string;
+import { BaseEntity } from '../base/base.entity';
 
+export class SubjectEntity extends BaseEntity {
   name: string;
-
-  createdAt: Date;
-
-  createdBy: string;
-
-  updatedAt: Date;
-
-  updatedBy: string;
-
-  deletedAt: Date;
-
-  deletedBy: string;
 }

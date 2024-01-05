@@ -65,7 +65,7 @@ export class SubjectService extends BaseService {
     }
   }
 
-  async update(id: string, dto: SubjectUpdateDTO, decoded: IJwtPayload) {
+  async update(id: number, dto: SubjectUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateUpdate(id, dto, actorId);
 
@@ -97,7 +97,7 @@ export class SubjectService extends BaseService {
     });
   }
 
-  private async validateStore(dto: SubjectStoreDTO, actorId: string) {
+  private async validateStore(dto: SubjectStoreDTO, actorId: number) {
     // Check name exists
     const nameCount = await this.subjectRepository.countByName(dto.name);
     if (nameCount) {
@@ -107,9 +107,9 @@ export class SubjectService extends BaseService {
   }
 
   private async validateUpdate(
-    id: string,
+    id: number,
     dto: SubjectUpdateDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check id exists
     const subjectCount = await this.subjectRepository.countById(id);

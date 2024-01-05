@@ -67,7 +67,7 @@ export class GroupService extends BaseService {
     }
   }
 
-  async update(id: string, dto: GroupUpdateDTO, payload: IJwtPayload) {
+  async update(id: number, dto: GroupUpdateDTO, payload: IJwtPayload) {
     const actorId = payload.userId;
     await this.validateUpdate(id, dto, actorId);
 
@@ -99,7 +99,7 @@ export class GroupService extends BaseService {
     });
   }
 
-  async delete(id: string, payload: IJwtPayload) {
+  async delete(id: number, payload: IJwtPayload) {
     const actorId = payload.userId;
     const { group } = await this.validateDelete(id, actorId);
 
@@ -123,7 +123,7 @@ export class GroupService extends BaseService {
     });
   }
 
-  private async validateStore(dto: GroupStoreDTO, actorId: string) {
+  private async validateStore(dto: GroupStoreDTO, actorId: number) {
     // Check name exist
     const nameCount = await this.groupRepository.countByName(dto.name);
     if (nameCount) {
@@ -133,9 +133,9 @@ export class GroupService extends BaseService {
   }
 
   private async validateUpdate(
-    id: string,
+    id: number,
     dto: GroupUpdateDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check exist
     const groupCount = await this.groupRepository.countById(id);
@@ -155,7 +155,7 @@ export class GroupService extends BaseService {
     }
   }
 
-  private async validateDelete(id: string, actorId: string) {
+  private async validateDelete(id: number, actorId: number) {
     // Check exist
     const group = await this.groupRepository.findOneById(id);
     if (!group) {

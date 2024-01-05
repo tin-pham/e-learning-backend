@@ -1,9 +1,9 @@
 import { BaseEntity } from '../base/base.entity';
 
 export class YearGradeEntity extends BaseEntity {
-  yearId: string;
+  yearId: number;
 
-  gradeId: string;
+  gradeId: number;
 
   constructor(data: Partial<YearGradeEntity>) {
     super();

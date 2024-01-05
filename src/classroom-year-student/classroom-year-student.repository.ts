@@ -14,7 +14,7 @@ export class ClassroomYearStudentRepository {
   }
 
   async countByClassroomYearIdsAndStudentIds(
-    classroomYearIds: string[],
+    classroomYearIds: number[],
     studentIds: string[],
   ) {
     const { count } = await this.database

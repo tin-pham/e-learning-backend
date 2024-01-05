@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -88,7 +89,7 @@ export class YearController {
   @Roles(ROLE.PRINCIPAL, ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: YearUpdateDTO,
     @JwtPayload() decoded: IJwtPayload,
   ) {
@@ -106,7 +107,10 @@ export class YearController {
   @Delete(DELETE.ROUTE)
   @Roles(ROLE.TEACHER, ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
     return this.yearService.delete(id, decoded);
   }
 }

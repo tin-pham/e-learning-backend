@@ -1,5 +1,9 @@
+import type { UserEntity } from '../user';
+
 export class ParentEntity {
   id: string;
 
-  userId: string;
+  userId: number;
+
+  user?: UserEntity;
 }

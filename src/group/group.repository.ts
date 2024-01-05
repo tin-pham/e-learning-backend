@@ -18,7 +18,7 @@ export class GroupRepository {
     return Number(count);
   }
 
-  async countById(id: string) {
+  async countById(id: number) {
     const { count } = await this.database
       .selectFrom('group')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -28,7 +28,7 @@ export class GroupRepository {
     return Number(count);
   }
 
-  async countByIds(ids: string[]) {
+  async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('group')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -38,7 +38,7 @@ export class GroupRepository {
     return Number(count);
   }
 
-  async countByNameExceptId(name: string, id: string) {
+  async countByNameExceptId(name: string, id: number) {
     const { count } = await this.database
       .selectFrom('group')
       .select(({ fn }) => fn.countAll().as('count'))
@@ -50,7 +50,7 @@ export class GroupRepository {
     return Number(count);
   }
 
-  findOneById(id: string) {
+  findOneById(id: number) {
     return this.database
       .selectFrom('group')
       .selectAll()
@@ -88,7 +88,7 @@ export class GroupRepository {
     });
   }
 
-  update(id: string, entity: GroupEntity) {
+  update(id: number, entity: GroupEntity) {
     return this.database
       .updateTable('group')
       .set(entity)
@@ -98,7 +98,7 @@ export class GroupRepository {
       .executeTakeFirstOrThrow();
   }
 
-  delete(id: string, entity: GroupEntity) {
+  delete(id: number, entity: GroupEntity) {
     return this.database
       .updateTable('group')
       .set(entity)

@@ -18,8 +18,8 @@ export class YearGradeRepository {
 
   deleteMultipleWithTransaction(
     transaction: Transaction,
-    ids: string[],
-    actorId: string,
+    ids: number[],
+    actorId: number,
   ) {
     return transaction
       .updateTable('yearGrade')
@@ -31,7 +31,7 @@ export class YearGradeRepository {
       .executeTakeFirstOrThrow();
   }
 
-  getIdsByYearId(id: string) {
+  getIdsByYearId(id: number) {
     return this.database
       .selectFrom('yearGrade')
       .select(['id'])

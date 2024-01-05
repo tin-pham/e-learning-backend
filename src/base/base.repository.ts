@@ -14,7 +14,7 @@ export abstract class BaseRepository<Entity> {
       .executeTakeFirstOrThrow() as Promise<Entity>;
   }
 
-  update(id: string, entity: Entity): Promise<Entity> {
+  update(id: number, entity: Entity): Promise<Entity> {
     return this.database
       .updateTable(this.tableName)
       .set(entity)
@@ -24,7 +24,7 @@ export abstract class BaseRepository<Entity> {
       .executeTakeFirstOrThrow() as Promise<Entity>;
   }
 
-  delete(id: string, entity: Entity) {
+  delete(id: number, entity: Entity) {
     return this.database
       .updateTable(this.tableName)
       .set(entity)
@@ -32,7 +32,7 @@ export abstract class BaseRepository<Entity> {
       .executeTakeFirstOrThrow();
   }
 
-  async countById(id: string) {
+  async countById(id: number) {
     const { count } = await this.database
       .selectFrom(this.tableName)
       .select(({ fn }) => fn.countAll().as('count'))

@@ -18,7 +18,7 @@ export class UserRoleRepository {
       .executeTakeFirstOrThrow();
   }
 
-  findRolesByUserId(userId: string): Promise<RoleEntity[]> {
+  findRolesByUserId(userId: number): Promise<RoleEntity[]> {
     return this.databaseService
       .selectFrom('userRole')
       .innerJoin('role', 'role.id', 'userRole.roleId')
@@ -47,8 +47,8 @@ export class UserRoleRepository {
 
   deleteMultipleByUserIdWithTransaction(
     transaction: Transaction,
-    userId: string,
-    actorId: string,
+    userId: number,
+    actorId: number,
   ) {
     return transaction
       .updateTable('userRole')

@@ -82,7 +82,7 @@ export class SubjectGroupService extends BaseService {
 
   private async validateBulkStore(
     dto: SubjectGroupBulkStoreDTO,
-    actorId: string,
+    actorId: number,
   ) {
     const { subjectIds, groupIds } = dto;
     // Check subjects exists
@@ -113,7 +113,7 @@ export class SubjectGroupService extends BaseService {
 
   private async validateBulkDelete(
     dto: SubjectGroupBulkDeleteDTO,
-    actorId: string,
+    actorId: number,
   ) {
     const { subjectIds, groupIds } = dto;
     // Check subjects exists

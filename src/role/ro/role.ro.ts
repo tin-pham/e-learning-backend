@@ -4,7 +4,7 @@ import { Expose, Type } from 'class-transformer';
 export class RoleGetListDataRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty()
   @Expose()

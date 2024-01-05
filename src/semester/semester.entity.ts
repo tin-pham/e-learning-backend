@@ -7,5 +7,5 @@ export class SemesterEntity extends BaseEntity {
 
   endDate: Date;
 
-  yearId: string;
+  yearId: number;
 }

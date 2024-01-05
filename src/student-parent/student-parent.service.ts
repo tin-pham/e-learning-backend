@@ -84,7 +84,7 @@ export class StudentParentService extends BaseService {
 
   private async validateBulkStore(
     dto: StudentParentBulkStoreDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check parent exists
     const parent = await this.parentRepository.countByIds(dto.parentIds);
@@ -116,7 +116,7 @@ export class StudentParentService extends BaseService {
 
   private async validateBulkDelete(
     dto: StudentParentBulkDeleteDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check parent exists
     const parent = await this.parentRepository.countByIds(dto.parentIds);

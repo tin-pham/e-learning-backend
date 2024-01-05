@@ -16,7 +16,7 @@ export class SemesterRepository {
       .executeTakeFirstOrThrow();
   }
 
-  getIdsByYearId(yearId: string) {
+  getIdsByYearId(yearId: number) {
     return this.database
       .selectFrom('semester')
       .select(['id'])
@@ -27,8 +27,8 @@ export class SemesterRepository {
 
   deleteMultipleWithTransaction(
     transaction: Transaction,
-    ids: string[],
-    actorId: string,
+    ids: number[],
+    actorId: number,
   ) {
     return transaction
       .updateTable('semester')

@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsString } from 'class-validator';
 import {
   ApiArrayProperty,
@@ -6,13 +5,13 @@ import {
 } from '../../common/decorator';
 
 export class StudentParentBulkStoreDTO {
-  @ApiProperty()
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
   @IsString({ each: true })
   @ArrayMinSize(1)
   @IsArray()
   studentIds: string[];
 
-  @ApiProperty()
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
   @IsString({ each: true })
   @ArrayMinSize(1)
   @IsArray()

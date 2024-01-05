@@ -3,10 +3,6 @@ import { Expose, Type } from 'class-transformer';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
 export class UserStoreRO {
-  @ApiProperty()
-  @Expose()
-  id: string;
-
   @ApiProperty({ example: 'tinpham' })
   @Expose()
   username: string;
@@ -27,7 +23,7 @@ export class UserStoreRO {
 export class UserGetDetailRoleRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty()
   @Expose()
@@ -37,7 +33,7 @@ export class UserGetDetailRoleRO {
 export class UserGetListDataRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'tinpham' })
   @Expose()
@@ -66,7 +62,7 @@ export class UserGetListRO extends PaginateRO<UserGetListDataRO> {
 export class UserGetDetailRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'tinpham' })
   @Expose()
@@ -88,7 +84,7 @@ export class UserGetDetailRO {
 export class UserUpdateRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'tinpham' })
   @Expose()
@@ -110,5 +106,5 @@ export class UserUpdateRO {
 export class UserDeleteRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 }

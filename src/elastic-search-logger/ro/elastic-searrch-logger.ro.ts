@@ -9,7 +9,7 @@ export class ElasticsearchLoggerGetInfoDataRO {
 
   @ApiProperty()
   @Expose()
-  actorId: string;
+  actorId: number;
 
   @ApiProperty()
   @Expose()
@@ -38,7 +38,7 @@ export class ElasticsearchLoggerGetErrorDataRO {
 
   @ApiProperty()
   @Expose()
-  actorId: string;
+  actorId: number;
 
   @ApiProperty()
   @Expose()

@@ -1,27 +1,56 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  UserStoreRO,
-  UserGetDetailRO,
-  UserUpdateRO,
-  UserDeleteRO,
-  UserGetListDataRO,
-} from '../../user/ro/user.ro';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
-export class ParentStoreRO extends PickType(UserStoreRO, [
-  'id',
-  'username',
-  'displayName',
-  'phone',
-] as const) {}
+export class ParentStoreUserRO {
+  @ApiProperty()
+  @Expose()
+  username: string;
 
-export class ParentGetListDataRO extends PickType(UserGetListDataRO, [
-  'id',
-  'username',
-  'displayName',
-  'phone',
-] as const) {}
+  @ApiProperty()
+  @Expose()
+  displayName: string;
+
+  @ApiProperty()
+  @Expose()
+  phone: string;
+}
+
+export class ParentStoreRO {
+  @ApiProperty()
+  @Expose()
+  id: string;
+
+  @ApiProperty({ type: ParentStoreUserRO })
+  @Type(() => ParentStoreUserRO)
+  @Expose()
+  user: ParentStoreUserRO;
+}
+
+export class ParentGetListDataUserRO {
+  @ApiProperty()
+  @Expose()
+  username: string;
+
+  @ApiProperty()
+  @Expose()
+  displayName: string;
+
+  @ApiProperty()
+  @Expose()
+  phone: string;
+}
+
+export class ParentGetListDataRO {
+  @ApiProperty()
+  @Expose()
+  id: string;
+
+  @ApiProperty({ type: ParentGetListDataUserRO })
+  @Type(() => ParentGetListDataUserRO)
+  @Expose()
+  user: ParentGetListDataUserRO;
+}
 
 export class ParentGetListRO extends PaginateRO<ParentGetListDataRO> {
   @ApiProperty({ type: [ParentGetListDataRO] })
@@ -30,18 +59,58 @@ export class ParentGetListRO extends PaginateRO<ParentGetListDataRO> {
   data: ParentGetListDataRO[];
 }
 
-export class ParentGetDetailRO extends PickType(UserGetDetailRO, [
-  'id',
-  'username',
-  'displayName',
-  'phone',
-] as const) {}
+export class ParentGetDetailUserRO {
+  @ApiProperty()
+  @Expose()
+  username: string;
 
-export class ParentUpdateRO extends PickType(UserUpdateRO, [
-  'id',
-  'username',
-  'displayName',
-  'phone',
-] as const) {}
+  @ApiProperty()
+  @Expose()
+  displayName: string;
 
-export class ParentDeleteRO extends UserDeleteRO {}
+  @ApiProperty()
+  @Expose()
+  phone: string;
+}
+
+export class ParentGetDetailRO {
+  @ApiProperty()
+  @Expose()
+  id: string;
+
+  @ApiProperty({ type: ParentGetDetailUserRO })
+  @Type(() => ParentGetDetailUserRO)
+  @Expose()
+  user: ParentGetDetailUserRO;
+}
+
+export class ParentUpdateUserRO {
+  @ApiProperty()
+  @Expose()
+  username: string;
+
+  @ApiProperty()
+  @Expose()
+  displayName: string;
+
+  @ApiProperty()
+  @Expose()
+  phone: string;
+}
+
+export class ParentUpdateRO {
+  @ApiProperty()
+  @Expose()
+  id: string;
+
+  @ApiProperty({ type: ParentUpdateUserRO })
+  @Type(() => ParentUpdateUserRO)
+  @Expose()
+  user: ParentUpdateUserRO;
+}
+
+export class ParentDeleteRO {
+  @ApiProperty()
+  @Expose()
+  id: string;
+}

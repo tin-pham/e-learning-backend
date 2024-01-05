@@ -1,17 +1,17 @@
 export class BaseEntity {
-  id: string;
+  id: number;
 
   createdAt: Date;
 
-  createdBy: string;
+  createdBy: number;
 
   updatedAt: Date;
 
-  updatedBy: string;
+  updatedBy: number;
 
   deletedAt: Date;
 
-  deletedBy: string;
+  deletedBy: number;
 
   constructor(data?: Partial<BaseEntity>) {
     if (data) {

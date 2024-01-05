@@ -10,7 +10,7 @@ export class StudentParentRepository {
     return this.database.insertInto('studentParent').values(entities).execute();
   }
 
-  deleteMultiple(studentIds: string[], parentIds: string[], actorId: string) {
+  deleteMultiple(studentIds: string[], parentIds: string[], actorId: number) {
     return this.database
       .updateTable('studentParent')
       .set({

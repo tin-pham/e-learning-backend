@@ -5,7 +5,7 @@ import { PaginateRO } from '../../common/ro/paginate.ro';
 export class GroupStoreRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'A' })
   @Expose()
@@ -15,7 +15,7 @@ export class GroupStoreRO {
 export class GroupGetListDataSubjectRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'Math' })
   @Expose()
@@ -25,7 +25,7 @@ export class GroupGetListDataSubjectRO {
 export class GroupGetListDataRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'A' })
   @Expose()
@@ -47,7 +47,7 @@ export class GroupGetListRO extends PaginateRO<GroupGetListDataRO> {
 export class GroupUpdateRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty({ example: 'A' })
   @Expose()
@@ -57,5 +57,5 @@ export class GroupUpdateRO {
 export class GroupDeleteRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 }

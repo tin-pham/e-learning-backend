@@ -18,9 +18,12 @@ import { UserGetListDTO } from '../user/dto/user.dto';
 import {
   ParentDeleteRO,
   ParentGetDetailRO,
+  ParentGetDetailUserRO,
   ParentGetListRO,
   ParentStoreRO,
+  ParentStoreUserRO,
   ParentUpdateRO,
+  ParentUpdateUserRO,
 } from './ro/parent.ro';
 
 @Injectable()
@@ -71,9 +74,10 @@ export class ParentService extends UserService {
 
         // Set response
         response.id = id;
-        response.username = user.username;
-        response.phone = user.phone;
-        response.displayName = user.displayName;
+        response.user = new ParentStoreUserRO();
+        response.user.username = user.username;
+        response.user.phone = user.phone;
+        response.user.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.STORE_FAILED;
@@ -115,10 +119,11 @@ export class ParentService extends UserService {
         this.throwException({ code, status, message, actorId });
       }
 
-      response.id = parent.id;
-      response.username = parent.username;
-      response.phone = parent.phone;
-      response.displayName = parent.displayName;
+      response.id = id;
+      response.user = new ParentGetDetailUserRO();
+      response.user.username = parent.username;
+      response.user.phone = parent.phone;
+      response.user.displayName = parent.displayName;
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.GET_DETAIL_FAILED;
       this.logger.error(error);
@@ -154,9 +159,10 @@ export class ParentService extends UserService {
         }
 
         response.id = parentId;
-        response.username = user.username;
-        response.phone = user.phone;
-        response.displayName = user.displayName;
+        response.user = new ParentUpdateUserRO();
+        response.user.username = user.username;
+        response.user.phone = user.phone;
+        response.user.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.PARENT.UPDATE_FAILED;
@@ -203,7 +209,7 @@ export class ParentService extends UserService {
   private async validateUpdate(
     id: string,
     dto: ParentUpdateDTO,
-    actorId: string,
+    actorId: number,
   ) {
     // Check id exists
     const parent = await this.parentRepository.findOneById(id);
@@ -225,7 +231,7 @@ export class ParentService extends UserService {
     }
   }
 
-  private async validateDelete(id: string, actorId: string) {
+  private async validateDelete(id: string, actorId: number) {
     // Check id exists
     const parentCount = await this.parentRepository.countById(id);
     if (!parentCount) {

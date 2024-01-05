@@ -56,7 +56,7 @@ export class TeacherSubjectRepository {
 
   async countByTeacherIdsAndSubjectIds(
     teacherIds: string[],
-    subjectIds: string[],
+    subjectIds: number[],
   ) {
     const { count } = await this.database
       .selectFrom('teacherSubject')
@@ -68,7 +68,7 @@ export class TeacherSubjectRepository {
     return Number(count);
   }
 
-  async countByIds(ids: string[]) {
+  async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('teacherSubject')
       .where('id', 'in', ids)

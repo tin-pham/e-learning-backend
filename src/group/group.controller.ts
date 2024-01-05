@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -91,7 +92,7 @@ export class GroupController {
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: GroupUpdateDTO,
     @JwtPayload() decoded: IJwtPayload,
   ) {
@@ -108,7 +109,10 @@ export class GroupController {
   @Delete(DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @JwtPayload() decoded: IJwtPayload,
+  ) {
     return this.groupService.delete(id, decoded);
   }
 }

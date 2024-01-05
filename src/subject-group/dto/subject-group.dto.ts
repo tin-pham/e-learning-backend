@@ -1,34 +1,41 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber } from 'class-validator';
 import {
   ApiArrayProperty,
   SwaggerQueryParamStyle,
 } from '../../common/decorator';
 
 export class SubjectGroupBulkStoreDTO {
-  @ApiProperty()
-  @IsString({ each: true })
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
+    Number.parseInt(value),
+  )
+  @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
-  subjectIds: string[];
+  subjectIds: number[];
 
-  @ApiProperty()
-  @IsString({ each: true })
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
+    Number.parseInt(value),
+  )
+  @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
-  groupIds: string[];
+  groupIds: number[];
 }
 
 export class SubjectGroupBulkDeleteDTO {
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
+    Number.parseInt(value),
+  )
   @ArrayMinSize(1)
-  @IsString({ each: true })
+  @IsNumber({}, { each: true })
   @IsNotEmpty()
-  subjectIds: string[];
+  subjectIds: number[];
 
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
+    Number.parseInt(value),
+  )
   @ArrayMinSize(1)
-  @IsString({ each: true })
+  @IsNumber({}, { each: true })
   @IsNotEmpty()
-  groupIds: string[];
+  groupIds: number[];
 }

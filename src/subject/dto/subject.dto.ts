@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class SubjectStoreDTO {
@@ -11,10 +11,9 @@ export class SubjectStoreDTO {
 
 export class SubjectGetListDTO extends PaginateDTO {
   @ApiPropertyOptional()
-  @IsString()
-  @IsNotEmpty()
+  @IsNumber()
   @IsOptional()
-  groupId: string;
+  groupId: number;
 }
 
 export class SubjectUpdateDTO {
@@ -25,8 +24,7 @@ export class SubjectUpdateDTO {
   name: string;
 
   @ApiPropertyOptional()
-  @IsString()
-  @IsNotEmpty()
+  @IsNumber()
   @IsOptional()
-  groupId: string;
+  groupId: number;
 }
