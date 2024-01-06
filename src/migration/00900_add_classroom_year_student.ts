@@ -15,7 +15,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.CLASSROOM_YEAR_ID, 'integer', (column) =>
       column.references(`${CLASSROOM_YEAR_NAME}.${CLASSROOM_YEAR_SCHEMA.ID}`),
     )
-    .addColumn(SCHEMA.STUDENT_ID, 'integer', (column) =>
+    .addColumn(SCHEMA.STUDENT_ID, 'varchar(50)', (column) =>
       column.references(`${STUDENT_NAME}.${STUDENT_SCHEMA.ID}`),
     )
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
