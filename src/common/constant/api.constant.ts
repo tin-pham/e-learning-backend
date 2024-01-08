@@ -311,4 +311,16 @@ export const API = {
       OPERATION: 'Get classroom year detail',
     },
   },
+  S3: {
+    TAGS: 'S3',
+    CONTROLLER: 's3',
+    BULK_UPLOAD: {
+      ROUTE: '',
+      OPERATION: 'Bulk upload files to s3',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete files from s3',
+    },
+  },
 };

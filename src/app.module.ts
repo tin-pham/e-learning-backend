@@ -23,6 +23,7 @@ import { ClassroomYearStudentModule } from './classroom-year-student/classroom-y
 import { TeacherSubjectModule } from './teacher-subject/teacher-subject.module';
 import { ClassroomYearAssignmentModule } from './classroom-year-assignment/classroom-year-assignment.module';
 import { ClassroomYearModule } from './classroom-year/classroom-year.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ClassroomYearModule } from './classroom-year/classroom-year.module';
     AuthModule,
     HealthModule,
     ThrottlerModule,
+    S3Module,
     RoleModule,
     StudentModule,
     TeacherModule,

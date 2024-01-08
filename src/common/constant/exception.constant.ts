@@ -484,4 +484,16 @@ export const EXCEPTION = {
       code: 'CLASSROOM_YEAR_ASSIGNMENT_BULK_STORE_FAILED',
     },
   },
+  S3: {
+    UPLOAD_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to upload file',
+      code: 'S3_UPLOAD_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete file',
+      code: 'S3_DELETE_FAILED',
+    },
+  },
 };

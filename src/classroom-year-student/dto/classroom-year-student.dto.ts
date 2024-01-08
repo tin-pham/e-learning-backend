@@ -1,19 +1,14 @@
 import { ArrayMinSize, IsArray, IsNumber, IsString } from 'class-validator';
-import {
-  ApiArrayProperty,
-  SwaggerQueryParamStyle,
-} from '../../common/decorator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ClassroomYearStudentBulkStoreDTO {
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
-    Number.parseInt(value),
-  )
+  @ApiProperty()
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
   classroomYearIds: number[];
 
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
+  @ApiProperty()
   @IsString({ each: true })
   @ArrayMinSize(1)
   @IsArray()

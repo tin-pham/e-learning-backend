@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   ArrayMinSize,
@@ -6,22 +6,16 @@ import {
   IsOptional,
   IsNumber,
 } from 'class-validator';
-import {
-  ApiArrayProperty,
-  SwaggerQueryParamStyle,
-} from '../../common/decorator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class TeacherSubjectBulkStoreDTO {
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
+  @ApiProperty()
   @IsString({ each: true })
   @ArrayMinSize(1)
   @IsArray()
   teacherIds: string[];
 
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
-    Number.parseInt(value),
-  )
+  @ApiProperty()
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
