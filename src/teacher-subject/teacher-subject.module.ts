@@ -7,11 +7,6 @@ import { SubjectRepository } from '../subject/subject.repository';
 
 @Module({
   controllers: [TeacherSubjectController],
-  providers: [
-    TeacherSubjectService,
-    TeacherSubjectRepository,
-    TeacherRepository,
-    SubjectRepository,
-  ],
+  providers: [TeacherSubjectService, TeacherSubjectRepository, TeacherRepository, SubjectRepository],
 })
 export class TeacherSubjectModule {}

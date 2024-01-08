@@ -8,12 +8,6 @@ import { RoleRepository } from '../role/role.repository';
 
 @Module({
   controllers: [ParentController],
-  providers: [
-    ParentService,
-    ParentRepository,
-    UserRepository,
-    UserRoleRepository,
-    RoleRepository,
-  ],
+  providers: [ParentService, ParentRepository, UserRepository, UserRoleRepository, RoleRepository],
 })
 export class ParentModule {}

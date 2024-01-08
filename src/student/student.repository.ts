@@ -10,24 +10,11 @@ export class StudentRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertWithTransaction(transaction: Transaction, entity: StudentEntity) {
-    return transaction
-      .insertInto('student')
-      .values(entity)
-      .returning(['id'])
-      .executeTakeFirstOrThrow();
+    return transaction.insertInto('student').values(entity).returning(['id']).executeTakeFirstOrThrow();
   }
 
-  updateWithTransaction(
-    transaction: Transaction,
-    id: string,
-    entity: StudentEntity,
-  ) {
-    return transaction
-      .updateTable('student')
-      .set(entity)
-      .where('id', '=', id)
-      .returning(['id'])
-      .executeTakeFirstOrThrow();
+  updateWithTransaction(transaction: Transaction, id: string, entity: StudentEntity) {
+    return transaction.updateTable('student').set(entity).where('id', '=', id).returning(['id']).executeTakeFirstOrThrow();
   }
 
   find(dto: StudentGetListDTO) {
@@ -40,22 +27,12 @@ export class StudentRepository {
       .innerJoin('users', 'users.id', 'student.userId')
       .innerJoin('userRole', 'users.id', 'userRole.userId')
       .innerJoin('role', 'userRole.roleId', 'role.id')
-      .select([
-        'users.username',
-        'users.email',
-        'users.phone',
-        'users.displayName',
-        'student.id',
-      ])
+      .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'student.id'])
       .where('role.name', '=', ROLE.STUDENT)
       .where('users.deletedAt', 'is', null)
       .$if(withClassroomYear, (query) =>
         query
-          .innerJoin(
-            'classroomYearStudent',
-            'student.id',
-            'classroomYearStudent.studentId',
-          )
+          .innerJoin('classroomYearStudent', 'student.id', 'classroomYearStudent.studentId')
           .where('classroomYearStudent.classroomYearId', '=', classroomYearId)
           .where('classroomYearStudent.deletedAt', 'is', null),
       );
@@ -109,10 +86,6 @@ export class StudentRepository {
   }
 
   getUserIdByStudentId(id: string) {
-    return this.database
-      .selectFrom('student')
-      .select('student.userId')
-      .where('student.id', '=', id)
-      .executeTakeFirst();
+    return this.database.selectFrom('student').select('student.userId').where('student.id', '=', id).executeTakeFirst();
   }
 }

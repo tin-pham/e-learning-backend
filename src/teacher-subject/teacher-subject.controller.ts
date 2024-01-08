@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -26,10 +17,7 @@ import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { TeacherSubjectService } from './teacher-subject.service';
-import {
-  TeacherSubjectBulkStoreDTO,
-  TeacherSubjectGetListDTO,
-} from './dto/teacher-subject.dto';
+import { TeacherSubjectBulkStoreDTO, TeacherSubjectGetListDTO } from './dto/teacher-subject.dto';
 import { ResultRO } from '../common/ro/result.ro';
 import { TeacherSubjectGetListRO } from './ro/teacher-subject.ro';
 
@@ -52,10 +40,7 @@ export class TeacherSubjectController {
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkStore(
-    @Body() dto: TeacherSubjectBulkStoreDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  bulkStore(@Body() dto: TeacherSubjectBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectGroupService.bulkStore(dto, decoded);
   }
 
@@ -70,10 +55,7 @@ export class TeacherSubjectController {
   @Get(GET_LIST.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  getList(
-    @Query() dto: TeacherSubjectGetListDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  getList(@Query() dto: TeacherSubjectGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectGroupService.getList(dto, decoded);
   }
 }

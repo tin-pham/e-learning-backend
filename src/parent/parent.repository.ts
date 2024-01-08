@@ -10,11 +10,7 @@ export class ParentRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertWithTransaction(transaction: Transaction, entity: ParentEntity) {
-    return transaction
-      .insertInto('parent')
-      .values(entity)
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    return transaction.insertInto('parent').values(entity).returning('id').executeTakeFirstOrThrow();
   }
 
   find(filter: PaginateDTO) {
@@ -23,13 +19,7 @@ export class ParentRepository {
       .innerJoin('users', 'users.id', 'parent.userId')
       .innerJoin('userRole', 'users.id', 'userRole.userId')
       .innerJoin('role', 'userRole.roleId', 'role.id')
-      .select([
-        'users.username',
-        'users.email',
-        'users.phone',
-        'users.displayName',
-        'parent.id',
-      ])
+      .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'parent.id'])
       .where('role.name', '=', ROLE.PARENT)
       .where('users.deletedAt', 'is', null);
 
@@ -82,18 +72,10 @@ export class ParentRepository {
   }
 
   getIdByUserId(userId: number) {
-    return this.database
-      .selectFrom('parent')
-      .select('parent.id')
-      .where('parent.userId', '=', userId)
-      .executeTakeFirst();
+    return this.database.selectFrom('parent').select('parent.id').where('parent.userId', '=', userId).executeTakeFirst();
   }
 
   getUserIdByParentId(id: string) {
-    return this.database
-      .selectFrom('parent')
-      .select('parent.userId')
-      .where('parent.id', '=', id)
-      .executeTakeFirst();
+    return this.database.selectFrom('parent').select('parent.userId').where('parent.id', '=', id).executeTakeFirst();
   }
 }

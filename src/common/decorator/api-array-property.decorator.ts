@@ -25,8 +25,7 @@ export const SwaggerStyleSeparators: Record<SwaggerQueryParamStyle, string> = {
 export const ApiArrayProperty = (
   style: SwaggerQueryParamStyle = SwaggerQueryParamStyle.CSV,
   valuesType: Type<unknown> | Record<string, any> = [String],
-  mapperFn: (value: any, index?: number, array?: any[]) => any = (_) =>
-    _.trim(),
+  mapperFn: (value: any, index?: number, array?: any[]) => any = (_) => _.trim(),
 ) => {
   const swaggerProps = { type: valuesType };
   swaggerProps['style'] = style;

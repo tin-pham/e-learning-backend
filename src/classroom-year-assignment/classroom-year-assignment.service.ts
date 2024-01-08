@@ -22,32 +22,25 @@ export class ClassroomYearAssignmentService extends BaseService {
     super(elasticLogger);
   }
 
-  async bulkStore(
-    dto: ClassroomYearAssignmentBulkStoreDTO,
-    decoded: IJwtPayload,
-  ) {
+  async bulkStore(dto: ClassroomYearAssignmentBulkStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateBulkStore(dto, actorId);
 
     try {
-      const classroomYearTeachersData = dto.classroomYearIds.flatMap(
-        (classroomYearId) =>
-          dto.teacherSubjectIds.map(
-            (teacherSubjectId) =>
-              new ClassroomYearAssignmentEntity({
-                classroomYearId,
-                teacherSubjectId,
-                createdBy: actorId,
-              }),
-          ),
+      const classroomYearTeachersData = dto.classroomYearIds.flatMap((classroomYearId) =>
+        dto.teacherSubjectIds.map(
+          (teacherSubjectId) =>
+            new ClassroomYearAssignmentEntity({
+              classroomYearId,
+              teacherSubjectId,
+              createdBy: actorId,
+            }),
+        ),
       );
 
-      await this.classroomYearAssignmentRepository.insertMany(
-        classroomYearTeachersData,
-      );
+      await this.classroomYearAssignmentRepository.insertMany(classroomYearTeachersData);
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.CLASSROOM_YEAR_STUDENT.BULK_STORE_FAILED;
+      const { code, status, message } = EXCEPTION.CLASSROOM_YEAR_STUDENT.BULK_STORE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
@@ -60,38 +53,28 @@ export class ClassroomYearAssignmentService extends BaseService {
     });
   }
 
-  private async validateBulkStore(
-    dto: ClassroomYearAssignmentBulkStoreDTO,
-    actorId: number,
-  ) {
+  private async validateBulkStore(dto: ClassroomYearAssignmentBulkStoreDTO, actorId: number) {
     // Validate classroomYear exist
-    const classroomYearCount = await this.classroomYearRepository.countByIds(
-      dto.classroomYearIds,
-    );
+    const classroomYearCount = await this.classroomYearRepository.countByIds(dto.classroomYearIds);
     if (classroomYearCount !== dto.classroomYearIds.length) {
       const { code, status, message } = EXCEPTION.CLASSROOM_YEAR.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Validate teacherSubject exist
-    const teacherSubjectCount = await this.teacherSubjectRepository.countByIds(
-      dto.teacherSubjectIds,
-    );
+    const teacherSubjectCount = await this.teacherSubjectRepository.countByIds(dto.teacherSubjectIds);
     if (teacherSubjectCount !== dto.teacherSubjectIds.length) {
-      const { code, status, message } =
-        EXCEPTION.TEACHER_SUBJECT.DOES_NOT_EXIST;
+      const { code, status, message } = EXCEPTION.TEACHER_SUBJECT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Validate duplicate
-    const duplicateCount =
-      await this.classroomYearAssignmentRepository.countByClassroomYearIdsAndTeacherSubjectIds(
-        dto.classroomYearIds,
-        dto.teacherSubjectIds,
-      );
+    const duplicateCount = await this.classroomYearAssignmentRepository.countByClassroomYearIdsAndTeacherSubjectIds(
+      dto.classroomYearIds,
+      dto.teacherSubjectIds,
+    );
     if (duplicateCount > 0) {
-      const { code, status, message } =
-        EXCEPTION.CLASSROOM_YEAR_ASSIGNMENT.ALREADY_EXIST;
+      const { code, status, message } = EXCEPTION.CLASSROOM_YEAR_ASSIGNMENT.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }

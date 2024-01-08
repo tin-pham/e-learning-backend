@@ -7,21 +7,11 @@ import { jsonBuildObject } from 'kysely/helpers/postgres';
 export class ClassroomYearRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insertMultipleWithTransaction(
-    transaction: Transaction,
-    entities: ClassroomYearEntity[],
-  ) {
-    return transaction
-      .insertInto('classroomYear')
-      .values(entities)
-      .executeTakeFirstOrThrow();
+  insertMultipleWithTransaction(transaction: Transaction, entities: ClassroomYearEntity[]) {
+    return transaction.insertInto('classroomYear').values(entities).executeTakeFirstOrThrow();
   }
 
-  deleteMultipleWithTransaction(
-    transaction: Transaction,
-    ids: number[],
-    actorId: number,
-  ) {
+  deleteMultipleWithTransaction(transaction: Transaction, ids: number[], actorId: number) {
     return transaction
       .updateTable('classroomYear')
       .set({
@@ -33,12 +23,7 @@ export class ClassroomYearRepository {
   }
 
   getIdsByYearId(yearId: number) {
-    return this.database
-      .selectFrom('classroomYear')
-      .select(['id'])
-      .where('yearId', '=', yearId)
-      .where('deletedAt', 'is', null)
-      .execute();
+    return this.database.selectFrom('classroomYear').select(['id']).where('yearId', '=', yearId).where('deletedAt', 'is', null).execute();
   }
 
   update(id: number, entity: ClassroomYearEntity) {

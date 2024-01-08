@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -31,21 +19,10 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { TeacherService } from './teacher.service';
-import {
-  TeacherGetListDTO,
-  TeacherStoreDTO,
-  TeacherUpdateDTO,
-} from './dto/teacher.dto';
-import {
-  TeacherDeleteRO,
-  TeacherGetDetailRO,
-  TeacherGetListRO,
-  TeacherStoreRO,
-  TeacherUpdateRO,
-} from './ro/teacher.ro';
+import { TeacherGetListDTO, TeacherStoreDTO, TeacherUpdateDTO } from './dto/teacher.dto';
+import { TeacherDeleteRO, TeacherGetDetailRO, TeacherGetListRO, TeacherStoreRO, TeacherUpdateRO } from './ro/teacher.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } =
-  API.TEACHER;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.TEACHER;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -107,11 +84,7 @@ export class TeacherController {
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  update(
-    @Param('id') id: string,
-    @Body() dto: TeacherUpdateDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  update(@Param('id') id: string, @Body() dto: TeacherUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.teacherService.update(id, dto, decoded);
   }
 

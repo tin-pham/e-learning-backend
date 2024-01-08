@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  HealthCheckError,
-  HealthIndicator,
-  HealthIndicatorResult,
-} from '@nestjs/terminus';
+import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 import { CacheService } from '../../cache/cache.service';
 
 @Injectable()
@@ -18,10 +14,7 @@ export class MemcacheHealthIndicator extends HealthIndicator {
       await this.cacheService.del('health');
       return this.getStatus('memcache', true);
     } catch (error) {
-      throw new HealthCheckError(
-        `${MemcacheHealthIndicator.name} failed`,
-        this.getStatus('memcache', false),
-      );
+      throw new HealthCheckError(`${MemcacheHealthIndicator.name} failed`, this.getStatus('memcache', false));
     }
   }
 }

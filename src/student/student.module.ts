@@ -9,13 +9,6 @@ import { ParentRepository } from '../parent/parent.repository';
 
 @Module({
   controllers: [StudentController],
-  providers: [
-    StudentService,
-    StudentRepository,
-    UserRepository,
-    UserRoleRepository,
-    RoleRepository,
-    ParentRepository,
-  ],
+  providers: [StudentService, StudentRepository, UserRepository, UserRoleRepository, RoleRepository, ParentRepository],
 })
 export class StudentModule {}

@@ -7,11 +7,6 @@ import { ClassroomYearAssignmentRepository } from './classroom-year-assignment.r
 
 @Module({
   controllers: [ClassroomYearAssignmentController],
-  providers: [
-    ClassroomYearAssignmentService,
-    ClassroomYearAssignmentRepository,
-    ClassroomYearRepository,
-    TeacherSubjectRepository,
-  ],
+  providers: [ClassroomYearAssignmentService, ClassroomYearAssignmentRepository, ClassroomYearRepository, TeacherSubjectRepository],
 })
 export class ClassroomYearAssignmentModule {}

@@ -5,10 +5,7 @@ import { TeacherSubjectRepository } from './teacher-subject.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { TeacherRepository } from '../teacher/teacher.repository';
 import { SubjectRepository } from '../subject/subject.repository';
-import {
-  TeacherSubjectBulkStoreDTO,
-  TeacherSubjectGetListDTO,
-} from './dto/teacher-subject.dto';
+import { TeacherSubjectBulkStoreDTO, TeacherSubjectGetListDTO } from './dto/teacher-subject.dto';
 import { TeacherSubjectEntity } from './teacher-subject.entity';
 import { ResultRO } from '../common/ro/result.ro';
 import { TeacherSubjectGetListRO } from './ro/teacher-subject.ro';
@@ -43,8 +40,7 @@ export class TeacherSubjectService extends BaseService {
       );
       await this.teacherSubjectRepository.insertMany(teacherSubjectsData);
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.TEACHER_SUBJECT.BULK_STORE_FAILED;
+      const { code, status, message } = EXCEPTION.TEACHER_SUBJECT.BULK_STORE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
@@ -66,41 +62,29 @@ export class TeacherSubjectService extends BaseService {
         response,
       });
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.TEACHER_SUBJECT.GET_LIST_FAILED;
+      const { code, status, message } = EXCEPTION.TEACHER_SUBJECT.GET_LIST_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
   }
 
-  private async validateBulkStore(
-    dto: TeacherSubjectBulkStoreDTO,
-    actorId: number,
-  ) {
+  private async validateBulkStore(dto: TeacherSubjectBulkStoreDTO, actorId: number) {
     // Check teachers exists
-    const teacherCount = await this.teacherRepository.countByIds(
-      dto.teacherIds,
-    );
+    const teacherCount = await this.teacherRepository.countByIds(dto.teacherIds);
     if (teacherCount !== dto.teacherIds.length) {
       const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Check subjects exists
-    const subjectCount = await this.subjectRepository.countByIds(
-      dto.subjectIds,
-    );
+    const subjectCount = await this.subjectRepository.countByIds(dto.subjectIds);
     if (subjectCount !== dto.subjectIds.length) {
       const { code, status, message } = EXCEPTION.SUBJECT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Check duplicate
-    const teacherSubjectCount =
-      await this.teacherSubjectRepository.countByTeacherIdsAndSubjectIds(
-        dto.teacherIds,
-        dto.subjectIds,
-      );
+    const teacherSubjectCount = await this.teacherSubjectRepository.countByTeacherIdsAndSubjectIds(dto.teacherIds, dto.subjectIds);
     if (teacherSubjectCount > 0) {
       const { code, status, message } = EXCEPTION.TEACHER_SUBJECT.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });

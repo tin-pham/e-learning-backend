@@ -38,19 +38,10 @@ export class LevelService extends BaseService {
     }
   }
 
-  private async createSchool(
-    startGrade: number,
-    endGrade: number,
-    actorId: number,
-  ) {
+  private async createSchool(startGrade: number, endGrade: number, actorId: number) {
     try {
       await this.database.transaction().execute(async (transaction) => {
-        const grades = await this.createGrades(
-          transaction,
-          startGrade,
-          endGrade,
-          actorId,
-        );
+        const grades = await this.createGrades(transaction, startGrade, endGrade, actorId);
         await this.createClassrooms(transaction, grades, actorId);
       });
     } catch (error) {
@@ -67,12 +58,7 @@ export class LevelService extends BaseService {
     });
   }
 
-  private async createGrades(
-    transaction: Transaction,
-    startGrade: number,
-    endGrade: number,
-    actorId: number,
-  ) {
+  private async createGrades(transaction: Transaction, startGrade: number, endGrade: number, actorId: number) {
     const gradesData = [];
     for (let i = startGrade; i <= endGrade; i++) {
       const grade = new GradeEntity();
@@ -80,18 +66,11 @@ export class LevelService extends BaseService {
       grade.createdBy = actorId;
       gradesData.push(grade);
     }
-    const grades = await this.gradeRepository.insertMultipleWithTransaction(
-      transaction,
-      gradesData,
-    );
+    const grades = await this.gradeRepository.insertMultipleWithTransaction(transaction, gradesData);
     return grades;
   }
 
-  private async createClassrooms(
-    transaction: Transaction,
-    grades: GradeEntity[],
-    actorId: number,
-  ) {
+  private async createClassrooms(transaction: Transaction, grades: GradeEntity[], actorId: number) {
     const classrooms = [];
     for (const grade of grades) {
       for (let i = 1; i <= 5; i++) {
@@ -102,10 +81,7 @@ export class LevelService extends BaseService {
         classrooms.push(classroom);
       }
     }
-    await this.classroomRepository.insertMultipleWithTransaction(
-      transaction,
-      classrooms,
-    );
+    await this.classroomRepository.insertMultipleWithTransaction(transaction, classrooms);
     return classrooms;
   }
 }

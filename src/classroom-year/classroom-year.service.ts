@@ -6,10 +6,7 @@ import { ClassroomYearRepository } from './classroom-year.repository';
 import { TeacherRepository } from '../teacher/teacher.repository';
 import { ClassroomYearUpdateDTO } from './dto/classroom-year.dto';
 import { ClassroomYearEntity } from './classroom-year.entity';
-import {
-  ClassroomYearGetDetailRO,
-  ClassroomYearUpdateRO,
-} from './ro/classroom-year.ro';
+import { ClassroomYearGetDetailRO, ClassroomYearUpdateRO } from './ro/classroom-year.ro';
 
 @Injectable()
 export class ClassroomYearService extends BaseService {
@@ -35,10 +32,7 @@ export class ClassroomYearService extends BaseService {
         classroomYearData.formTeacherId = dto.formTeacherId;
       }
 
-      const classroomYear = await this.classroomYearRepository.update(
-        id,
-        classroomYearData,
-      );
+      const classroomYear = await this.classroomYearRepository.update(id, classroomYearData);
 
       response.id = classroomYear.id;
       response.formTeacherId = classroomYear.formTeacherId;
@@ -74,18 +68,13 @@ export class ClassroomYearService extends BaseService {
         actorId,
       });
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.CLASSROOM_YEAR.GET_DETAIL_FAILED;
+      const { code, status, message } = EXCEPTION.CLASSROOM_YEAR.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
   }
 
-  private async validateUpdate(
-    id: number,
-    dto: ClassroomYearUpdateDTO,
-    actorId: number,
-  ) {
+  private async validateUpdate(id: number, dto: ClassroomYearUpdateDTO, actorId: number) {
     // Check exist
     const classroomYearCount = await this.classroomYearRepository.countById(id);
     if (!classroomYearCount) {
@@ -94,9 +83,7 @@ export class ClassroomYearService extends BaseService {
     }
 
     // Check form teacher exist
-    const teacherCount = await this.teacherRepository.countById(
-      dto.formTeacherId,
-    );
+    const teacherCount = await this.teacherRepository.countById(dto.formTeacherId);
     if (!teacherCount) {
       const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
@@ -104,14 +91,9 @@ export class ClassroomYearService extends BaseService {
 
     // Check unique form teacher
     if (dto.formTeacherId) {
-      const formTeacherCount =
-        await this.classroomYearRepository.countByFormTeacherIdExceptId(
-          dto.formTeacherId,
-          id,
-        );
+      const formTeacherCount = await this.classroomYearRepository.countByFormTeacherIdExceptId(dto.formTeacherId, id);
       if (formTeacherCount > 0) {
-        const { code, status, message } =
-          EXCEPTION.CLASSROOM_YEAR.FORM_TEACHER_ALREADY_ASSIGNED;
+        const { code, status, message } = EXCEPTION.CLASSROOM_YEAR.FORM_TEACHER_ALREADY_ASSIGNED;
         this.throwException({ code, status, message, actorId });
       }
     }

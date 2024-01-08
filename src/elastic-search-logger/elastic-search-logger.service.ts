@@ -1,21 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { plainToInstance } from 'class-transformer';
-import {
-  LOG_INDEXES,
-  ROLLING_INDEX_MODE,
-} from './enum/elastic-search-logger.enum';
-import {
-  ErrorIndex,
-  InfoIndex,
-  QueryIndex,
-} from './interface/elastic-search-logger.interface';
+import { LOG_INDEXES, ROLLING_INDEX_MODE } from './enum/elastic-search-logger.enum';
+import { ErrorIndex, InfoIndex, QueryIndex } from './interface/elastic-search-logger.interface';
 import { PaginateDTO } from '../common/dto/paginate.dto';
 import { ElasticsearchLoggerGetInfoDTO } from './dto/elastic-search-logger.dto';
-import {
-  ElasticsearchLoggerGetErrorRO,
-  ElasticsearchLoggerGetInfoRO,
-} from './ro/elastic-searrch-logger.ro';
+import { ElasticsearchLoggerGetErrorRO, ElasticsearchLoggerGetInfoRO } from './ro/elastic-searrch-logger.ro';
 
 @Injectable()
 export class ElasticsearchLoggerService {
@@ -148,9 +138,7 @@ export class ElasticsearchLoggerService {
     });
 
     if (this.stdout) {
-      this.logger.log(
-        `[${ElasticsearchLoggerService.name}] ${JSON.stringify(message)}`,
-      );
+      this.logger.log(`[${ElasticsearchLoggerService.name}] ${JSON.stringify(message)}`);
     }
 
     return result.body['_id'];

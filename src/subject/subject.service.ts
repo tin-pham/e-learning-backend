@@ -4,16 +4,8 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { SubjectEntity } from './subject.entity';
 import { SubjectRepository } from './subject.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import {
-  SubjectGetListDTO,
-  SubjectStoreDTO,
-  SubjectUpdateDTO,
-} from './dto/subject.dto';
-import {
-  SubjectGetListRO,
-  SubjectStoreRO,
-  SubjectUpdateRO,
-} from './ro/subject.ro';
+import { SubjectGetListDTO, SubjectStoreDTO, SubjectUpdateDTO } from './dto/subject.dto';
+import { SubjectGetListRO, SubjectStoreRO, SubjectUpdateRO } from './ro/subject.ro';
 
 @Injectable()
 export class SubjectService extends BaseService {
@@ -106,11 +98,7 @@ export class SubjectService extends BaseService {
     }
   }
 
-  private async validateUpdate(
-    id: number,
-    dto: SubjectUpdateDTO,
-    actorId: number,
-  ) {
+  private async validateUpdate(id: number, dto: SubjectUpdateDTO, actorId: number) {
     // Check id exists
     const subjectCount = await this.subjectRepository.countById(id);
     if (!subjectCount) {
@@ -119,10 +107,7 @@ export class SubjectService extends BaseService {
     }
 
     // Check name unique
-    const duplicateNameCount = await this.subjectRepository.countByNameExceptId(
-      dto.name,
-      id,
-    );
+    const duplicateNameCount = await this.subjectRepository.countByNameExceptId(dto.name, id);
     if (duplicateNameCount) {
       const { code, status, message } = EXCEPTION.SUBJECT.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });

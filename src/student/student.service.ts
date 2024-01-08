@@ -45,16 +45,10 @@ export class StudentService extends UserService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Store user
-        const user = await super.storeWithTransaction(
-          transaction,
-          dto,
-          decoded.userId,
-        );
+        const user = await super.storeWithTransaction(transaction, dto, decoded.userId);
 
         // Get student role id
-        const { id: roleId } = await this.roleRepository.getIdByName(
-          ROLE.STUDENT,
-        );
+        const { id: roleId } = await this.roleRepository.getIdByName(ROLE.STUDENT);
 
         // Store user role
         await super.storeUserRoleWithTransaction(transaction, user.id, roleId);
@@ -62,10 +56,7 @@ export class StudentService extends UserService {
         // Store student
         const studentData = new StudentEntity();
         studentData.userId = user.id;
-        const student = await this.studentRepository.insertWithTransaction(
-          transaction,
-          studentData,
-        );
+        const student = await this.studentRepository.insertWithTransaction(transaction, studentData);
 
         // Set response
         response.id = student.id;
@@ -141,20 +132,11 @@ export class StudentService extends UserService {
       const { userId } = await this.studentRepository.getUserIdByStudentId(id);
       await this.database.transaction().execute(async (transaction) => {
         // Update user
-        const user = await super.updateWithTransaction(
-          transaction,
-          userId,
-          dto,
-          actorId,
-        );
+        const user = await super.updateWithTransaction(transaction, userId, dto, actorId);
 
         // Update student
         const studentData = new StudentEntity();
-        const student = await this.studentRepository.updateWithTransaction(
-          transaction,
-          id,
-          studentData,
-        );
+        const student = await this.studentRepository.updateWithTransaction(transaction, id, studentData);
 
         // Set response
         response.id = student.id;
@@ -204,11 +186,7 @@ export class StudentService extends UserService {
     });
   }
 
-  private async validateUpdate(
-    id: string,
-    dto: StudentUpdateDTO,
-    actorId: number,
-  ) {
+  private async validateUpdate(id: string, dto: StudentUpdateDTO, actorId: number) {
     // Check id exists
     const student = await this.studentRepository.findOneById(id);
     if (!student) {
@@ -223,10 +201,7 @@ export class StudentService extends UserService {
 
     // Check email unique
     if (dto.email) {
-      const emailCount = await this.userRepository.countByEmailExceptId(
-        dto.email,
-        student.userId,
-      );
+      const emailCount = await this.userRepository.countByEmailExceptId(dto.email, student.userId);
       if (emailCount) {
         const { code, status, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
         this.throwException({
@@ -240,10 +215,7 @@ export class StudentService extends UserService {
 
     // Check phone unique
     if (dto.phone) {
-      const phoneCount = await this.userRepository.countByPhoneExceptId(
-        dto.phone,
-        student.userId,
-      );
+      const phoneCount = await this.userRepository.countByPhoneExceptId(dto.phone, student.userId);
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
         this.throwException({

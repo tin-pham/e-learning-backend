@@ -6,10 +6,7 @@ import { ParentRepository } from '../parent/parent.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { StudentRepository } from '../student/student.repository';
 import { StudentParentRepository } from './student-parent.repository';
-import {
-  StudentParentBulkDeleteDTO,
-  StudentParentBulkStoreDTO,
-} from './dto/student-parent.dto';
+import { StudentParentBulkDeleteDTO, StudentParentBulkStoreDTO } from './dto/student-parent.dto';
 import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
@@ -42,8 +39,7 @@ export class StudentParentService extends BaseService {
       );
       await this.studentParentRepository.insertMultiple(studentParentsData);
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.STUDENT_PARENT.BULK_STORE_FAILED;
+      const { code, status, message } = EXCEPTION.STUDENT_PARENT.BULK_STORE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
@@ -62,14 +58,9 @@ export class StudentParentService extends BaseService {
     await this.validateBulkDelete(dto, actorId);
 
     try {
-      await this.studentParentRepository.deleteMultiple(
-        studentIds,
-        parentIds,
-        actorId,
-      );
+      await this.studentParentRepository.deleteMultiple(studentIds, parentIds, actorId);
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.STUDENT_PARENT.BULK_DELETE_FAILED;
+      const { code, status, message } = EXCEPTION.STUDENT_PARENT.BULK_DELETE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
@@ -82,10 +73,7 @@ export class StudentParentService extends BaseService {
     });
   }
 
-  private async validateBulkStore(
-    dto: StudentParentBulkStoreDTO,
-    actorId: number,
-  ) {
+  private async validateBulkStore(dto: StudentParentBulkStoreDTO, actorId: number) {
     // Check parent exists
     const parent = await this.parentRepository.countByIds(dto.parentIds);
     if (!parent) {
@@ -94,30 +82,21 @@ export class StudentParentService extends BaseService {
     }
 
     // Check student exists
-    const studentCount = await this.studentRepository.countByIds(
-      dto.studentIds,
-    );
+    const studentCount = await this.studentRepository.countByIds(dto.studentIds);
     if (!studentCount) {
       const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Check studentParent unique
-    const studentParentCount =
-      await this.studentParentRepository.countByStudentIdsAndParentIds(
-        dto.studentIds,
-        dto.parentIds,
-      );
+    const studentParentCount = await this.studentParentRepository.countByStudentIdsAndParentIds(dto.studentIds, dto.parentIds);
     if (studentParentCount) {
       const { code, status, message } = EXCEPTION.STUDENT_PARENT.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }
 
-  private async validateBulkDelete(
-    dto: StudentParentBulkDeleteDTO,
-    actorId: number,
-  ) {
+  private async validateBulkDelete(dto: StudentParentBulkDeleteDTO, actorId: number) {
     // Check parent exists
     const parent = await this.parentRepository.countByIds(dto.parentIds);
     if (!parent) {
@@ -126,20 +105,14 @@ export class StudentParentService extends BaseService {
     }
 
     // Check student exists
-    const studentCount = await this.studentRepository.countByIds(
-      dto.studentIds,
-    );
+    const studentCount = await this.studentRepository.countByIds(dto.studentIds);
     if (!studentCount) {
       const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Check duplicate
-    const studentParentCount =
-      await this.studentParentRepository.countByStudentIdsAndParentIds(
-        dto.studentIds,
-        dto.parentIds,
-      );
+    const studentParentCount = await this.studentParentRepository.countByStudentIdsAndParentIds(dto.studentIds, dto.parentIds);
     if (!studentParentCount) {
       const { code, status, message } = EXCEPTION.STUDENT_PARENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });

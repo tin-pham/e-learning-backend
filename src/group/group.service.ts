@@ -4,17 +4,8 @@ import { BaseService } from '../base';
 import { GroupEntity } from './group.entity';
 import { GroupRepository } from './group.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import {
-  GroupGetListDTO,
-  GroupStoreDTO,
-  GroupUpdateDTO,
-} from './dto/group.dto';
-import {
-  GroupDeleteRO,
-  GroupGetListRO,
-  GroupStoreRO,
-  GroupUpdateRO,
-} from './ro/group.ro';
+import { GroupGetListDTO, GroupStoreDTO, GroupUpdateDTO } from './dto/group.dto';
+import { GroupDeleteRO, GroupGetListRO, GroupStoreRO, GroupUpdateRO } from './ro/group.ro';
 
 @Injectable()
 export class GroupService extends BaseService {
@@ -132,11 +123,7 @@ export class GroupService extends BaseService {
     }
   }
 
-  private async validateUpdate(
-    id: number,
-    dto: GroupUpdateDTO,
-    actorId: number,
-  ) {
+  private async validateUpdate(id: number, dto: GroupUpdateDTO, actorId: number) {
     // Check exist
     const groupCount = await this.groupRepository.countById(id);
     if (!groupCount) {
@@ -145,10 +132,7 @@ export class GroupService extends BaseService {
     }
 
     // Check name unique
-    const duplicateNameCount = await this.groupRepository.countByNameExceptId(
-      dto.name,
-      id,
-    );
+    const duplicateNameCount = await this.groupRepository.countByNameExceptId(dto.name, id);
     if (duplicateNameCount) {
       const { code, status, message } = EXCEPTION.GROUP.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });

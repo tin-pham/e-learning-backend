@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import {
-  HealthCheckError,
-  HealthIndicator,
-  HealthIndicatorResult,
-} from '@nestjs/terminus';
+import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 
 @Injectable()
 export class ElasticsearchHealthIndicator extends HealthIndicator {
@@ -29,10 +25,7 @@ export class ElasticsearchHealthIndicator extends HealthIndicator {
       });
       return this.getStatus('elasticsearch', true);
     } catch (error) {
-      throw new HealthCheckError(
-        `${ElasticsearchHealthIndicator.name} failed`,
-        this.getStatus('elasticsearch', false),
-      );
+      throw new HealthCheckError(`${ElasticsearchHealthIndicator.name} failed`, this.getStatus('elasticsearch', false));
     }
   }
 }

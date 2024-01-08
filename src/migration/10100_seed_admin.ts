@@ -23,11 +23,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .executeTakeFirst();
 
   // Get admin role
-  const { id: roleId } = await database
-    .selectFrom('role')
-    .select(['id'])
-    .where('name', '=', ROLE.ADMIN)
-    .executeTakeFirst();
+  const { id: roleId } = await database.selectFrom('role').select(['id']).where('name', '=', ROLE.ADMIN).executeTakeFirst();
 
   // Add role
   await database

@@ -7,11 +7,6 @@ import { StudentRepository } from '../student/student.repository';
 
 @Module({
   controllers: [ClassroomYearStudentController],
-  providers: [
-    ClassroomYearStudentService,
-    ClassroomYearStudentRepository,
-    ClassroomYearRepository,
-    StudentRepository,
-  ],
+  providers: [ClassroomYearStudentService, ClassroomYearStudentRepository, ClassroomYearRepository, StudentRepository],
 })
 export class ClassroomYearStudentModule {}

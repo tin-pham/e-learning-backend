@@ -22,10 +22,7 @@ export class StudentParentRepository {
       .execute();
   }
 
-  async countByStudentIdsAndParentIds(
-    studentIds: string[],
-    parentIds: string[],
-  ) {
+  async countByStudentIdsAndParentIds(studentIds: string[], parentIds: string[]) {
     const { count } = await this.database
       .selectFrom('studentParent')
       .select(({ fn }) => fn.countAll().as('count'))

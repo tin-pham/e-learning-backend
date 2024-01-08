@@ -1,17 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -31,17 +18,8 @@ import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { GroupService } from './group.service';
-import {
-  GroupGetListDTO,
-  GroupStoreDTO,
-  GroupUpdateDTO,
-} from './dto/group.dto';
-import {
-  GroupDeleteRO,
-  GroupGetListRO,
-  GroupStoreRO,
-  GroupUpdateRO,
-} from './ro/group.ro';
+import { GroupGetListDTO, GroupStoreDTO, GroupUpdateDTO } from './dto/group.dto';
+import { GroupDeleteRO, GroupGetListRO, GroupStoreRO, GroupUpdateRO } from './ro/group.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE, DELETE } = API.GROUP;
 
@@ -91,11 +69,7 @@ export class GroupController {
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: GroupUpdateDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: GroupUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.groupService.update(id, dto, decoded);
   }
 
@@ -109,10 +83,7 @@ export class GroupController {
   @Delete(DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  delete(
-    @Param('id', ParseIntPipe) id: number,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.groupService.delete(id, decoded);
   }
 }

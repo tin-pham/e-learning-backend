@@ -4,17 +4,8 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { GradeEntity } from './grade.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import {
-  GradeGetListDTO,
-  GradeStoreDTO,
-  GradeUpdateDTO,
-} from './dto/grade.dto';
-import {
-  GradeDeleteRO,
-  GradeGetListRO,
-  GradeStoreRO,
-  GradeUpdateRO,
-} from './ro/grade.ro';
+import { GradeGetListDTO, GradeStoreDTO, GradeUpdateDTO } from './dto/grade.dto';
+import { GradeDeleteRO, GradeGetListRO, GradeStoreRO, GradeUpdateRO } from './ro/grade.ro';
 
 @Injectable()
 export class GradeService extends BaseService {
@@ -135,11 +126,7 @@ export class GradeService extends BaseService {
     }
   }
 
-  private async validateUpdate(
-    id: number,
-    dto: GradeUpdateDTO,
-    actorId: number,
-  ) {
+  private async validateUpdate(id: number, dto: GradeUpdateDTO, actorId: number) {
     // Check exist
     const gradeCount = await this.gradeRepository.countById(id);
     if (!gradeCount) {
@@ -149,10 +136,7 @@ export class GradeService extends BaseService {
 
     // Check name unique
     if (dto.name) {
-      const duplicateNameCount = await this.gradeRepository.countByNameExceptId(
-        dto.name,
-        id,
-      );
+      const duplicateNameCount = await this.gradeRepository.countByNameExceptId(dto.name, id);
       if (duplicateNameCount) {
         const { code, status, message } = EXCEPTION.GRADE.ALREADY_EXISTS;
         this.throwException({ code, status, message, actorId });

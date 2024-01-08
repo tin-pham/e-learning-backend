@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  HealthIndicator,
-  HealthIndicatorResult,
-  HealthCheckError,
-} from '@nestjs/terminus';
+import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
 import { DatabaseService } from '../../database';
 import { sql } from 'kysely';
 
@@ -15,15 +11,10 @@ export class DatabaseHealthIndicator extends HealthIndicator {
 
   async isHealthy(): Promise<HealthIndicatorResult> {
     try {
-      await this.databaseService.executeQuery(
-        sql`SELECT 1`.compile(this.databaseService),
-      );
+      await this.databaseService.executeQuery(sql`SELECT 1`.compile(this.databaseService));
       return this.getStatus('database', true);
     } catch (error) {
-      throw new HealthCheckError(
-        `${DatabaseHealthIndicator.name}  failed`,
-        this.getStatus('database', false),
-      );
+      throw new HealthCheckError(`${DatabaseHealthIndicator.name}  failed`, this.getStatus('database', false));
     }
   }
 }

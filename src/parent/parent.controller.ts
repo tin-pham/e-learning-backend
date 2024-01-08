@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -33,16 +21,9 @@ import { ROLE } from '../role/enum/role.enum';
 import { ParentService } from './parent.service';
 import { ParentStoreDTO, ParentUpdateDTO } from './dto/parent.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
-import {
-  ParentDeleteRO,
-  ParentGetDetailRO,
-  ParentGetListRO,
-  ParentStoreRO,
-  ParentUpdateRO,
-} from './ro/parent.ro';
+import { ParentDeleteRO, ParentGetDetailRO, ParentGetListRO, ParentStoreRO, ParentUpdateRO } from './ro/parent.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } =
-  API.PARENT;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.PARENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -104,11 +85,7 @@ export class ParentController {
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  update(
-    @Param('id') id: string,
-    @Body() dto: ParentUpdateDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  update(@Param('id') id: string, @Body() dto: ParentUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.parentService.update(id, dto, decoded);
   }
 

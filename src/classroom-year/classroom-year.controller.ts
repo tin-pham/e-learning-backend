@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -25,10 +17,7 @@ import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ClassroomYearService } from './classroom-year.service';
-import {
-  ClassroomYearGetDetailRO,
-  ClassroomYearUpdateRO,
-} from './ro/classroom-year.ro';
+import { ClassroomYearGetDetailRO, ClassroomYearUpdateRO } from './ro/classroom-year.ro';
 import { ClassroomYearUpdateDTO } from './dto/classroom-year.dto';
 
 const { TAGS, CONTROLLER, UPDATE, GET_DETAIL } = API.CLASSROOM_YEAR;
@@ -49,11 +38,7 @@ export class ClassroomYearController {
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: ClassroomYearUpdateDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: ClassroomYearUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.classroomYearService.update(id, dto, decoded);
   }
 
@@ -67,10 +52,7 @@ export class ClassroomYearController {
   @Get(GET_DETAIL.ROUTE)
   @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  getDetail(
-    @Param('id', ParseIntPipe) id: number,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.classroomYearService.getDetail(id, decoded);
   }
 }

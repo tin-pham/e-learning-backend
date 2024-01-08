@@ -11,26 +11,14 @@ export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
-    .addColumn(SCHEMA.STUDENT_ID, 'varchar(50)', (column) =>
-      column.references(`${STUDENT_NAME}.${STUDENT_SCHEMA.ID}`),
-    )
-    .addColumn(SCHEMA.PARENT_ID, 'varchar(50)', (column) =>
-      column.references(`${PARENT_NAME}.${PARENT_SCHEMA.ID}`),
-    )
-    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
-      column.defaultTo(sql`now()`),
-    )
-    .addColumn(SCHEMA.CREATED_BY, 'integer', (column) =>
-      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
-    )
+    .addColumn(SCHEMA.STUDENT_ID, 'varchar(50)', (column) => column.references(`${STUDENT_NAME}.${STUDENT_SCHEMA.ID}`))
+    .addColumn(SCHEMA.PARENT_ID, 'varchar(50)', (column) => column.references(`${PARENT_NAME}.${PARENT_SCHEMA.ID}`))
+    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
+    .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')
-    .addColumn(SCHEMA.UPDATED_BY, 'integer', (column) =>
-      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
-    )
+    .addColumn(SCHEMA.UPDATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.DELETED_AT, 'timestamptz')
-    .addColumn(SCHEMA.DELETED_BY, 'integer', (column) =>
-      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
-    )
+    .addColumn(SCHEMA.DELETED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .execute();
 }
 

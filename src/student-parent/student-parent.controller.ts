@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -27,10 +18,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { StudentParentService } from './student-parent.service';
-import {
-  StudentParentBulkDeleteDTO,
-  StudentParentBulkStoreDTO,
-} from './dto/student-parent.dto';
+import { StudentParentBulkDeleteDTO, StudentParentBulkStoreDTO } from './dto/student-parent.dto';
 import { ResultRO } from '../common/ro/result.ro';
 
 const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.STUDENT_PARENT;
@@ -52,10 +40,7 @@ export class StudentParentController {
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkStore(
-    @Body() dto: StudentParentBulkStoreDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  bulkStore(@Body() dto: StudentParentBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentParentService.bulkStore(dto, decoded);
   }
 
@@ -69,10 +54,7 @@ export class StudentParentController {
   @Delete(BULK_DELETE.ROUTE)
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  bulkDelele(
-    @Query() dto: StudentParentBulkDeleteDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  bulkDelele(@Query() dto: StudentParentBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentParentService.bulkDelete(dto, decoded);
   }
 }

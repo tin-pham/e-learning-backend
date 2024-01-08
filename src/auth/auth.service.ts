@@ -70,19 +70,14 @@ export class AuthService extends BaseService {
     // Check username exists
     const user = await this.userRepository.findOneByUsername(username);
     if (!user) {
-      const { status, code, message } =
-        EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
+      const { status, code, message } = EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
       this.throwException({ status, code, message, actorId: user.id });
     }
 
     // Check password match
-    const isValidPassword = await this.validatePassword(
-      password,
-      user.password,
-    );
+    const isValidPassword = await this.validatePassword(password, user.password);
     if (!isValidPassword) {
-      const { status, code, message } =
-        EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
+      const { status, code, message } = EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
       this.throwException({ status, code, message, actorId: user.id });
     }
 
@@ -134,10 +129,7 @@ export class AuthService extends BaseService {
     }
   }
 
-  private async validatePassword(
-    password: string,
-    hashed: string,
-  ): Promise<boolean> {
+  private async validatePassword(password: string, hashed: string): Promise<boolean> {
     return bcrypt.compare(password, hashed);
   }
 }

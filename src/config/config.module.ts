@@ -1,10 +1,6 @@
 import * as Joi from 'joi';
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import {
-  ConfigFactory,
-  ConfigModuleOptions,
-  ConfigModule as NestConfigModule,
-} from '@nestjs/config';
+import { ConfigFactory, ConfigModuleOptions, ConfigModule as NestConfigModule } from '@nestjs/config';
 import { configSchema } from './config.schema';
 
 @Global()

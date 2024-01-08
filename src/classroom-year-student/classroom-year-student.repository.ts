@@ -7,16 +7,10 @@ export class ClassroomYearStudentRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertMany(entities: ClassroomYearStudentEntity[]) {
-    return this.database
-      .insertInto('classroomYearStudent')
-      .values(entities)
-      .execute();
+    return this.database.insertInto('classroomYearStudent').values(entities).execute();
   }
 
-  async countByClassroomYearIdsAndStudentIds(
-    classroomYearIds: number[],
-    studentIds: string[],
-  ) {
+  async countByClassroomYearIdsAndStudentIds(classroomYearIds: number[], studentIds: string[]) {
     const { count } = await this.database
       .selectFrom('classroomYearStudent')
       .where('classroomYearId', 'in', classroomYearIds)

@@ -7,15 +7,8 @@ import { RoleEntity } from '../role/role.entity';
 export class UserRoleRepository {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  insertMultipleWithTransaction(
-    transaction: Transaction,
-    entities: UserRoleEntity[],
-  ) {
-    return transaction
-      .insertInto('userRole')
-      .values(entities)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+  insertMultipleWithTransaction(transaction: Transaction, entities: UserRoleEntity[]) {
+    return transaction.insertInto('userRole').values(entities).returningAll().executeTakeFirstOrThrow();
   }
 
   findRolesByUserId(userId: number): Promise<RoleEntity[]> {
@@ -29,11 +22,7 @@ export class UserRoleRepository {
   }
 
   insertWithTransaction(transaction: Transaction, entity: UserRoleEntity) {
-    return transaction
-      .insertInto('userRole')
-      .values(entity)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    return transaction.insertInto('userRole').values(entity).returningAll().executeTakeFirstOrThrow();
   }
 
   deleteWithTransaction(transaction: Transaction, entity: UserRoleEntity) {
@@ -45,11 +34,7 @@ export class UserRoleRepository {
       .executeTakeFirstOrThrow();
   }
 
-  deleteMultipleByUserIdWithTransaction(
-    transaction: Transaction,
-    userId: number,
-    actorId: number,
-  ) {
+  deleteMultipleByUserIdWithTransaction(transaction: Transaction, userId: number, actorId: number) {
     return transaction
       .updateTable('userRole')
       .set({

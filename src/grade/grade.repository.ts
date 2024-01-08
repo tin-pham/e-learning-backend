@@ -9,31 +9,17 @@ export class GradeRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insert(entity: GradeEntity) {
-    return this.database
-      .insertInto('grade')
-      .values(entity)
-      .returning(['id', 'name'])
-      .executeTakeFirstOrThrow();
+    return this.database.insertInto('grade').values(entity).returning(['id', 'name']).executeTakeFirstOrThrow();
   }
 
-  insertMultipleWithTransaction(
-    transction: Transaction,
-    entities: GradeEntity[],
-  ): Promise<GradeEntity[]> {
-    return transction
-      .insertInto('grade')
-      .values(entities)
-      .returningAll()
-      .execute();
+  insertMultipleWithTransaction(transction: Transaction, entities: GradeEntity[]): Promise<GradeEntity[]> {
+    return transction.insertInto('grade').values(entities).returningAll().execute();
   }
 
   find(dto: GradeGetListDTO) {
     const { limit, page } = dto;
 
-    const query = this.database
-      .selectFrom('grade')
-      .select(['id', 'name'])
-      .where('deletedAt', 'is', null);
+    const query = this.database.selectFrom('grade').select(['id', 'name']).where('deletedAt', 'is', null);
 
     return paginate(query, {
       limit,
@@ -52,11 +38,7 @@ export class GradeRepository {
   }
 
   delete(id: number, entity: GradeEntity) {
-    return this.database
-      .updateTable('grade')
-      .set(entity)
-      .where('id', '=', id)
-      .executeTakeFirstOrThrow();
+    return this.database.updateTable('grade').set(entity).where('id', '=', id).executeTakeFirstOrThrow();
   }
 
   async countByName(name: string) {
@@ -91,10 +73,6 @@ export class GradeRepository {
   }
 
   getIds() {
-    return this.database
-      .selectFrom('grade')
-      .select(['id'])
-      .where('deletedAt', 'is', null)
-      .execute();
+    return this.database.selectFrom('grade').select(['id']).where('deletedAt', 'is', null).execute();
   }
 }

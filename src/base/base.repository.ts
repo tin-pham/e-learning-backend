@@ -7,11 +7,7 @@ export abstract class BaseRepository<Entity> {
   constructor(protected readonly database: DatabaseService) {}
 
   insert(entity: Entity): Promise<Entity> {
-    return this.database
-      .insertInto(this.tableName)
-      .values(entity)
-      .returningAll()
-      .executeTakeFirstOrThrow() as Promise<Entity>;
+    return this.database.insertInto(this.tableName).values(entity).returningAll().executeTakeFirstOrThrow() as Promise<Entity>;
   }
 
   update(id: number, entity: Entity): Promise<Entity> {
@@ -25,11 +21,7 @@ export abstract class BaseRepository<Entity> {
   }
 
   delete(id: number, entity: Entity) {
-    return this.database
-      .updateTable(this.tableName)
-      .set(entity)
-      .where('id', '=', id)
-      .executeTakeFirstOrThrow();
+    return this.database.updateTable(this.tableName).set(entity).where('id', '=', id).executeTakeFirstOrThrow();
   }
 
   async countById(id: number) {

@@ -51,20 +51,11 @@ export class GroupRepository {
   }
 
   findOneById(id: number) {
-    return this.database
-      .selectFrom('group')
-      .selectAll()
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
-      .executeTakeFirst();
+    return this.database.selectFrom('group').selectAll().where('id', '=', id).where('deletedAt', 'is', null).executeTakeFirst();
   }
 
   insert(entity: GroupEntity) {
-    return this.database
-      .insertInto('group')
-      .values(entity)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    return this.database.insertInto('group').values(entity).returningAll().executeTakeFirstOrThrow();
   }
 
   find(dto: GroupGetListDTO) {
@@ -99,11 +90,6 @@ export class GroupRepository {
   }
 
   delete(id: number, entity: GroupEntity) {
-    return this.database
-      .updateTable('group')
-      .set(entity)
-      .where('id', '=', id)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    return this.database.updateTable('group').set(entity).where('id', '=', id).returningAll().executeTakeFirstOrThrow();
   }
 }

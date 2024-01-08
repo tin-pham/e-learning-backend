@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import {
   ApiBadRequestResponse,
@@ -32,9 +25,7 @@ const { TAGS, CONTROLLER, BULK_STORE } = API.CLASSROOM_YEAR_STUDENT;
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
 export class ClassroomYearStudentController {
-  constructor(
-    private readonly classroomYearStudentService: ClassroomYearStudentService,
-  ) {}
+  constructor(private readonly classroomYearStudentService: ClassroomYearStudentService) {}
 
   @ApiOperation({ summary: BULK_STORE.OPERATION })
   @ApiCreatedResponse({ type: ResultRO })
@@ -48,10 +39,7 @@ export class ClassroomYearStudentController {
   @Roles(ROLE.ADMIN, ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkStore(
-    @Body() dto: ClassroomYearStudentBulkStoreDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  bulkStore(@Body() dto: ClassroomYearStudentBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.classroomYearStudentService.bulkStore(dto, decoded);
   }
 }

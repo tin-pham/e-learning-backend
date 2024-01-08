@@ -9,9 +9,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.NAME, 'varchar(50)', (column) => column.notNull())
-    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
-      column.defaultTo(sql`now()`),
-    )
+    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .execute();
 }
 

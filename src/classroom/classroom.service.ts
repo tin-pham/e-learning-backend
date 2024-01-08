@@ -6,11 +6,7 @@ import { ClassroomRepository } from './classroom.repository';
 import { GradeRepository } from '../grade/grade.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ClassroomGetListDTO, ClassroomStoreDTO } from './dto/classroom.dto';
-import {
-  ClassroomDeleteRO,
-  ClassroomGetListRO,
-  ClassroomStoreRO,
-} from './ro/classroom.ro';
+import { ClassroomDeleteRO, ClassroomGetListRO, ClassroomStoreRO } from './ro/classroom.ro';
 
 @Injectable()
 export class ClassroomService extends BaseService {
@@ -48,10 +44,7 @@ export class ClassroomService extends BaseService {
         const nextNumber = number + 1;
 
         // If number reaches 10, increment letter and reset number
-        classroomData.name =
-          nextNumber > 10
-            ? String.fromCharCode(letter.charCodeAt(0) + 1) + '1'
-            : letter + nextNumber;
+        classroomData.name = nextNumber > 10 ? String.fromCharCode(letter.charCodeAt(0) + 1) + '1' : letter + nextNumber;
       }
 
       const classroom = await this.classroomRepository.insert(classroomData);

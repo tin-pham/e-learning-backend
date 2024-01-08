@@ -1,9 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  HealthCheckResult,
-  HealthCheckStatus,
-  HealthIndicatorResult,
-} from '@nestjs/terminus';
+import { HealthCheckResult, HealthCheckStatus, HealthIndicatorResult } from '@nestjs/terminus';
 
 export class HealthCheckRO implements HealthCheckResult {
   @ApiProperty()

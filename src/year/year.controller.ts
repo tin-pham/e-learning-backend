@@ -1,17 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -31,12 +18,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { YearService } from './year.service';
-import {
-  YearDeleteRO,
-  YearGetListRO,
-  YearStoreRO,
-  YearUpdateRO,
-} from './ro/year.ro';
+import { YearDeleteRO, YearGetListRO, YearStoreRO, YearUpdateRO } from './ro/year.ro';
 import { YearGetListDTO, YearUpdateDTO } from './dto/year.dto';
 
 const { TAGS, CONTROLLER, CREATE, GET_LIST, UPDATE, DELETE } = API.YEAR;
@@ -88,11 +70,7 @@ export class YearController {
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.PRINCIPAL, ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: YearUpdateDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: YearUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.yearService.update(id, dto, decoded);
   }
 
@@ -107,10 +85,7 @@ export class YearController {
   @Delete(DELETE.ROUTE)
   @Roles(ROLE.TEACHER, ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  delete(
-    @Param('id', ParseIntPipe) id: number,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.yearService.delete(id, decoded);
   }
 }

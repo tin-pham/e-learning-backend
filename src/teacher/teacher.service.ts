@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { ROLE } from '../role/enum/role.enum';
@@ -13,11 +9,7 @@ import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import {
-  TeacherGetListDTO,
-  TeacherStoreDTO,
-  TeacherUpdateDTO,
-} from './dto/teacher.dto';
+import { TeacherGetListDTO, TeacherStoreDTO, TeacherUpdateDTO } from './dto/teacher.dto';
 import {
   TeacherDeleteRO,
   TeacherGetDetailRO,
@@ -52,16 +44,10 @@ export class TeacherService extends UserService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Store user
-        const user = await super.storeWithTransaction(
-          transaction,
-          dto,
-          actorId,
-        );
+        const user = await super.storeWithTransaction(transaction, dto, actorId);
 
         // Get teacher role id
-        const { id: roleId } = await this.roleRepository.getIdByName(
-          ROLE.TEACHER,
-        );
+        const { id: roleId } = await this.roleRepository.getIdByName(ROLE.TEACHER);
 
         // Store user role
         await super.storeUserRoleWithTransaction(transaction, user.id, roleId);
@@ -69,10 +55,7 @@ export class TeacherService extends UserService {
         // Store teacher
         const teacherData = new TeacherEntity();
         teacherData.userId = user.id;
-        const { id } = await this.teacherRepository.insertWithTransaction(
-          transaction,
-          teacherData,
-        );
+        const { id } = await this.teacherRepository.insertWithTransaction(transaction, teacherData);
 
         // Set response
         response.id = id;
@@ -143,17 +126,10 @@ export class TeacherService extends UserService {
       const { userId } = await this.teacherRepository.getUserIdByTeacherId(id);
       await this.database.transaction().execute(async (transaction) => {
         // Update user
-        const user = await super.updateWithTransaction(
-          transaction,
-          userId,
-          dto,
-          decoded.userId,
-        );
+        const user = await super.updateWithTransaction(transaction, userId, dto, decoded.userId);
 
         // Set response
-        const { id: teacherId } = await this.teacherRepository.getIdByUserId(
-          user.id,
-        );
+        const { id: teacherId } = await this.teacherRepository.getIdByUserId(user.id);
         if (!teacherId) {
           throw new InternalServerErrorException();
         }
@@ -199,11 +175,7 @@ export class TeacherService extends UserService {
     return this.success({ classRO: TeacherDeleteRO, response: { id } });
   }
 
-  private async validateUpdate(
-    id: string,
-    dto: TeacherUpdateDTO,
-    actorId: number,
-  ) {
+  private async validateUpdate(id: string, dto: TeacherUpdateDTO, actorId: number) {
     // Check id exists
     const teacher = await this.teacherRepository.findOneById(id);
     if (!teacher) {
@@ -213,10 +185,7 @@ export class TeacherService extends UserService {
 
     // Check email unique
     if (dto.email) {
-      const emailCount = await this.userRepository.countByEmailExceptId(
-        dto.email,
-        teacher.userId,
-      );
+      const emailCount = await this.userRepository.countByEmailExceptId(dto.email, teacher.userId);
       if (emailCount) {
         const { code, status, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
         this.throwException({ code, status, message, actorId });
@@ -225,10 +194,7 @@ export class TeacherService extends UserService {
 
     // Check phone unique
     if (dto.phone) {
-      const phoneCount = await this.userRepository.countByPhoneExceptId(
-        dto.phone,
-        teacher.userId,
-      );
+      const phoneCount = await this.userRepository.countByPhoneExceptId(dto.phone, teacher.userId);
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
         this.throwException({ code, status, message, actorId });

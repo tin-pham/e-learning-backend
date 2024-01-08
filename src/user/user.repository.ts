@@ -9,15 +9,8 @@ import { PaginateDTO } from '../common/dto/paginate.dto';
 export class UserRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insertWithTransaction(
-    transaction: Transaction,
-    entity: UserEntity,
-  ): Promise<UserEntity> {
-    return transaction
-      .insertInto('users')
-      .values(entity)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+  insertWithTransaction(transaction: Transaction, entity: UserEntity): Promise<UserEntity> {
+    return transaction.insertInto('users').values(entity).returningAll().executeTakeFirstOrThrow();
   }
 
   async countByUserName(username: string): Promise<number> {
@@ -82,12 +75,7 @@ export class UserRepository {
   }
 
   findOneById(id: number): Promise<UserEntity> {
-    return this.database
-      .selectFrom('users')
-      .selectAll()
-      .where('users.id', '=', id)
-      .where('users.deletedAt', 'is', null)
-      .executeTakeFirst();
+    return this.database.selectFrom('users').selectAll().where('users.id', '=', id).where('users.deletedAt', 'is', null).executeTakeFirst();
   }
 
   findByRole(filter: PaginateDTO, role: ROLE) {
@@ -105,11 +93,7 @@ export class UserRepository {
     });
   }
 
-  updateWithTransaction(
-    transaction: Transaction,
-    id: number,
-    entity: UserEntity,
-  ) {
+  updateWithTransaction(transaction: Transaction, id: number, entity: UserEntity) {
     return transaction
       .updateTable('users')
       .set(entity)
@@ -119,11 +103,7 @@ export class UserRepository {
       .executeTakeFirstOrThrow();
   }
 
-  deleteWithTransaction(
-    transaction: Transaction,
-    id: number,
-    entity: UserEntity,
-  ) {
+  deleteWithTransaction(transaction: Transaction, id: number, entity: UserEntity) {
     return transaction
       .updateTable('users')
       .set(entity)

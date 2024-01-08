@@ -15,12 +15,7 @@ import { GradeRepository } from '../grade/grade.repository';
 import { YearGradeRepository } from '../year-grade/year-grade.repository';
 import { DatabaseService } from '../database/database.service';
 import { YearGetListDTO, YearUpdateDTO } from './dto/year.dto';
-import {
-  YearDeleteRO,
-  YearGetListRO,
-  YearStoreRO,
-  YearUpdateRO,
-} from './ro/year.ro';
+import { YearDeleteRO, YearGetListRO, YearStoreRO, YearUpdateRO } from './ro/year.ro';
 
 @Injectable()
 export class YearService extends BaseService {
@@ -64,10 +59,7 @@ export class YearService extends BaseService {
         yearData.startDate = new Date(`09-02-${thisYear}`);
         yearData.endDate = new Date(`05-31-${nextYear}`);
         yearData.createdBy = actorId;
-        const year = await this.yearRepository.insertWithTransaction(
-          transaction,
-          yearData,
-        );
+        const year = await this.yearRepository.insertWithTransaction(transaction, yearData);
 
         // Create semester
         const firstSemesterData = new SemesterEntity();
@@ -84,10 +76,7 @@ export class YearService extends BaseService {
         secondSemesterData.yearId = year.id;
         secondSemesterData.createdBy = actorId;
 
-        await this.semesterRepository.insertMultipleWithTransaction(
-          transaction,
-          [firstSemesterData, secondSemesterData],
-        );
+        await this.semesterRepository.insertMultipleWithTransaction(transaction, [firstSemesterData, secondSemesterData]);
 
         // Store classroomYear
         const classrooms = await this.classroomRepository.getIds();
@@ -102,10 +91,7 @@ export class YearService extends BaseService {
               }),
           );
 
-          await this.classroomYearRepository.insertMultipleWithTransaction(
-            transaction,
-            classroomYearsData,
-          );
+          await this.classroomYearRepository.insertMultipleWithTransaction(transaction, classroomYearsData);
         }
 
         // Store yearGrade
@@ -121,10 +107,7 @@ export class YearService extends BaseService {
               }),
           );
 
-          await this.yearGradeRepository.insertMultipleWithTransaction(
-            transaction,
-            yearGradesData,
-          );
+          await this.yearGradeRepository.insertMultipleWithTransaction(transaction, yearGradesData);
         }
 
         response.id = year.id;
@@ -170,46 +153,27 @@ export class YearService extends BaseService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Delete year
-        await this.yearRepository.deleteWithTransaction(
-          transaction,
-          id,
-          actorId,
-        );
+        await this.yearRepository.deleteWithTransaction(transaction, id, actorId);
 
         // Delete semester
         const semesters = await this.semesterRepository.getIdsByYearId(id);
         if (semesters.length) {
           const semesterIds = semesters.map((semester) => semester.id);
-          await this.semesterRepository.deleteMultipleWithTransaction(
-            transaction,
-            semesterIds,
-            actorId,
-          );
+          await this.semesterRepository.deleteMultipleWithTransaction(transaction, semesterIds, actorId);
         }
 
         // Delete classroomYear
-        const classroomYears =
-          await this.classroomYearRepository.getIdsByYearId(id);
+        const classroomYears = await this.classroomYearRepository.getIdsByYearId(id);
         if (classroomYears.length) {
-          const classroomYearIds = classroomYears.map(
-            (classroomYear) => classroomYear.id,
-          );
-          await this.classroomYearRepository.deleteMultipleWithTransaction(
-            transaction,
-            classroomYearIds,
-            actorId,
-          );
+          const classroomYearIds = classroomYears.map((classroomYear) => classroomYear.id);
+          await this.classroomYearRepository.deleteMultipleWithTransaction(transaction, classroomYearIds, actorId);
         }
 
         // Delete yearGrade
         const yearGrades = await this.yearGradeRepository.getIdsByYearId(id);
         if (yearGrades.length) {
           const yearGradeIds = yearGrades.map((yearGrade) => yearGrade.id);
-          await this.yearGradeRepository.deleteMultipleWithTransaction(
-            transaction,
-            yearGradeIds,
-            actorId,
-          );
+          await this.yearGradeRepository.deleteMultipleWithTransaction(transaction, yearGradeIds, actorId);
         }
       });
     } catch (error) {

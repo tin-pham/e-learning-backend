@@ -245,4 +245,19 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  MENU: {
+    NAME: 'menu',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      ROUTE: 'route',
+      PARENT_ID: 'parent_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };

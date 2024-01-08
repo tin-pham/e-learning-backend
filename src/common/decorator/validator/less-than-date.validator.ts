@@ -1,13 +1,6 @@
-import {
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
-} from 'class-validator';
+import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
-export function LessThanDate(
-  property: string,
-  validationOptions?: ValidationOptions,
-) {
+export function LessThanDate(property: string, validationOptions?: ValidationOptions) {
   return (object: object, propertyName: string) =>
     registerDecorator({
       name: 'LessThanDate',
@@ -18,15 +11,9 @@ export function LessThanDate(
       validator: {
         validate(value: any, args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
-          const relatedPropertyValue = new Date(
-            args.object[relatedPropertyName],
-          );
+          const relatedPropertyValue = new Date(args.object[relatedPropertyName]);
           value = new Date(value);
-          return (
-            value instanceof Date &&
-            relatedPropertyValue instanceof Date &&
-            value.getTime() < relatedPropertyValue.getTime()
-          );
+          return value instanceof Date && relatedPropertyValue instanceof Date && value.getTime() < relatedPropertyValue.getTime();
         },
         defaultMessage(args?: ValidationArguments): string {
           const { property } = args;

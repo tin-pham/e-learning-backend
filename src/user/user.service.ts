@@ -22,11 +22,7 @@ export class UserService extends BaseService {
     super(elasticLogger);
   }
 
-  protected async storeWithTransaction(
-    transaction: Transaction,
-    dto: UserStoreDTO,
-    actorId: number,
-  ) {
+  protected async storeWithTransaction(transaction: Transaction, dto: UserStoreDTO, actorId: number) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(dto.password, salt);
     const userData = new UserEntity();
@@ -39,25 +35,16 @@ export class UserService extends BaseService {
     return this.userRepository.insertWithTransaction(transaction, userData);
   }
 
-  protected async storeUserRoleWithTransaction(
-    transaction: Transaction,
-    userId: number,
-    roleId: number,
-  ) {
+  protected async storeUserRoleWithTransaction(transaction: Transaction, userId: number, roleId: number) {
     const userRoleData = new UserRoleEntity();
     userRoleData.userId = userId;
     userRoleData.roleId = roleId;
-    await this.userRoleRepository.insertWithTransaction(
-      transaction,
-      userRoleData,
-    );
+    await this.userRoleRepository.insertWithTransaction(transaction, userRoleData);
   }
 
   protected async validateStore(dto: UserStoreDTO, actorId: number) {
     // Check name exists
-    const userNameCount = await this.userRepository.countByUserName(
-      dto.username,
-    );
+    const userNameCount = await this.userRepository.countByUserName(dto.username);
     if (userNameCount) {
       const { status, code, message } = EXCEPTION.USER.USERNAME_ALREADY_EXISTS;
       this.throwException({ status, code, message, actorId });
@@ -82,12 +69,7 @@ export class UserService extends BaseService {
     }
   }
 
-  protected async updateWithTransaction(
-    transaction: Transaction,
-    id: number,
-    dto: UserUpdateDTO,
-    actorId: number,
-  ) {
+  protected async updateWithTransaction(transaction: Transaction, id: number, dto: UserUpdateDTO, actorId: number) {
     // Set data
     const userData = new UserEntity();
     userData.updatedBy = actorId;
@@ -108,34 +90,18 @@ export class UserService extends BaseService {
     }
 
     // Update user
-    const user = await this.userRepository.updateWithTransaction(
-      transaction,
-      id,
-      userData,
-    );
+    const user = await this.userRepository.updateWithTransaction(transaction, id, userData);
     return user;
   }
 
-  protected async deleteWithTransaction(
-    transaction: Transaction,
-    id: number,
-    actorId: number,
-  ) {
+  protected async deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
     const userData = new UserEntity();
     userData.deletedAt = new Date();
     userData.deletedBy = actorId;
     await this.userRepository.deleteWithTransaction(transaction, id, userData);
   }
 
-  protected async deleteUserRoleWithTransaction(
-    transaction: Transaction,
-    userId: number,
-    actorId: number,
-  ) {
-    await this.userRoleRepository.deleteMultipleByUserIdWithTransaction(
-      transaction,
-      userId,
-      actorId,
-    );
+  protected async deleteUserRoleWithTransaction(transaction: Transaction, userId: number, actorId: number) {
+    await this.userRoleRepository.deleteMultipleByUserIdWithTransaction(transaction, userId, actorId);
   }
 }

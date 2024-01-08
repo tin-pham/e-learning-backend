@@ -5,10 +5,7 @@ import { Request } from 'express';
 import { ApiKeyService } from './api-key.service';
 
 @Injectable()
-export class HeaderApiKeyStrategy extends PassportStrategy(
-  Strategy,
-  'api-key',
-) {
+export class HeaderApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
   constructor(private readonly apiKeyService: ApiKeyService) {
     super({
       passReqToCallback: true,

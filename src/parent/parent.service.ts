@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { ROLE } from '../role/enum/role.enum';
@@ -50,16 +46,10 @@ export class ParentService extends UserService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Store user
-        const user = await super.storeWithTransaction(
-          transaction,
-          dto,
-          decoded.userId,
-        );
+        const user = await super.storeWithTransaction(transaction, dto, decoded.userId);
 
         // Get parent role id
-        const { id: roleId } = await this.roleRepository.getIdByName(
-          ROLE.PARENT,
-        );
+        const { id: roleId } = await this.roleRepository.getIdByName(ROLE.PARENT);
 
         // Store user role
         await super.storeUserRoleWithTransaction(transaction, user.id, roleId);
@@ -67,10 +57,7 @@ export class ParentService extends UserService {
         // Store parent
         const parentData = new ParentEntity();
         parentData.userId = user.id;
-        const { id } = await this.parentRepository.insertWithTransaction(
-          transaction,
-          parentData,
-        );
+        const { id } = await this.parentRepository.insertWithTransaction(transaction, parentData);
 
         // Set response
         response.id = id;
@@ -143,17 +130,10 @@ export class ParentService extends UserService {
       const { userId } = await this.parentRepository.getUserIdByParentId(id);
       await this.database.transaction().execute(async (transaction) => {
         // Update user
-        const user = await super.updateWithTransaction(
-          transaction,
-          userId,
-          dto,
-          decoded.userId,
-        );
+        const user = await super.updateWithTransaction(transaction, userId, dto, decoded.userId);
 
         // Set response
-        const { id: parentId } = await this.parentRepository.getIdByUserId(
-          user.id,
-        );
+        const { id: parentId } = await this.parentRepository.getIdByUserId(user.id);
         if (!parentId) {
           throw new InternalServerErrorException();
         }
@@ -206,11 +186,7 @@ export class ParentService extends UserService {
     });
   }
 
-  private async validateUpdate(
-    id: string,
-    dto: ParentUpdateDTO,
-    actorId: number,
-  ) {
+  private async validateUpdate(id: string, dto: ParentUpdateDTO, actorId: number) {
     // Check id exists
     const parent = await this.parentRepository.findOneById(id);
     if (!parent) {
@@ -220,10 +196,7 @@ export class ParentService extends UserService {
 
     // Check phone unique
     if (dto.phone) {
-      const phoneCount = await this.userRepository.countByPhoneExceptId(
-        dto.phone,
-        parent.userId,
-      );
+      const phoneCount = await this.userRepository.countByPhoneExceptId(dto.phone, parent.userId);
       if (phoneCount) {
         const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
         this.throwException({ code, status, message, actorId });

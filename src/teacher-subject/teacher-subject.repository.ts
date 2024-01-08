@@ -10,10 +10,7 @@ export class TeacherSubjectRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertMany(entities: TeacherSubjectEntity[]) {
-    return this.database
-      .insertInto('teacherSubject')
-      .values(entities)
-      .execute();
+    return this.database.insertInto('teacherSubject').values(entities).execute();
   }
 
   find(dto: TeacherSubjectGetListDTO) {
@@ -26,11 +23,7 @@ export class TeacherSubjectRepository {
       .where('users.deletedAt', 'is', null)
       .innerJoin('subject', 'subject.id', 'teacherSubject.subjectId')
       .where('subject.deletedAt', 'is', null)
-      .innerJoin(
-        'classroomYearAssignment',
-        'classroomYearAssignment.teacherSubjectId',
-        'teacherSubject.id',
-      )
+      .innerJoin('classroomYearAssignment', 'classroomYearAssignment.teacherSubjectId', 'teacherSubject.id')
       .where('classroomYearAssignment.classroomYearId', '=', classroomYearId)
       .where('classroomYearAssignment.deletedAt', 'is', null)
       .select(({ ref }) => [
@@ -54,10 +47,7 @@ export class TeacherSubjectRepository {
     });
   }
 
-  async countByTeacherIdsAndSubjectIds(
-    teacherIds: string[],
-    subjectIds: number[],
-  ) {
+  async countByTeacherIdsAndSubjectIds(teacherIds: string[], subjectIds: number[]) {
     const { count } = await this.database
       .selectFrom('teacherSubject')
       .where('teacherId', 'in', teacherIds)

@@ -9,10 +9,7 @@ import { RefreshTokenService } from './refresh-token.service';
 const configService = new ConfigService();
 
 @Injectable()
-export class JwtRefreshTokenStrategy extends PassportStrategy(
-  Strategy,
-  'jwt-refresh-token',
-) {
+export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
   constructor(private readonly refreshTokenService: RefreshTokenService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -24,10 +21,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 
   async validate(req: Request, payload: IJwtPayload): Promise<any> {
     const token = req.headers.authorization.replace('Bearer ', '');
-    await this.refreshTokenService.validatePayloadAndRefreshToken(
-      payload,
-      token,
-    );
+    await this.refreshTokenService.validatePayloadAndRefreshToken(payload, token);
     return payload;
   }
 }

@@ -12,20 +12,12 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.NAME, 'varchar(255)', (column) => column.notNull())
     .addColumn(SCHEMA.START_DATE, 'date', (column) => column.notNull())
     .addColumn(SCHEMA.END_DATE, 'date', (column) => column.notNull())
-    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) =>
-      column.defaultTo(sql`now()`),
-    )
-    .addColumn(SCHEMA.CREATED_BY, 'integer', (column) =>
-      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
-    )
+    .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
+    .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')
-    .addColumn(SCHEMA.UPDATED_BY, 'integer', (column) =>
-      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
-    )
+    .addColumn(SCHEMA.UPDATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.DELETED_AT, 'timestamptz')
-    .addColumn(SCHEMA.DELETED_BY, 'integer', (column) =>
-      column.references(`${USER_NAME}.${USER_SCHEMA.ID}`),
-    )
+    .addColumn(SCHEMA.DELETED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .execute();
 }
 

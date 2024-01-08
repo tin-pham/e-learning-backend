@@ -1,10 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  DeleteObjectCommand,
-  PutObjectCommand,
-  PutObjectCommandOutput,
-  S3Client,
-} from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, PutObjectCommand, PutObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 import { BaseService } from '../base';
@@ -50,9 +45,7 @@ export class S3Service extends BaseService {
       try {
         const response = await this.s3Client.send(command);
         if (response.$metadata.httpStatusCode === 200) {
-          const url = `https://${bucket}.s3.${this.configService.getOrThrow(
-            'AWS_S3_REGION',
-          )}.amazonaws.com/${key}`;
+          const url = `https://${bucket}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${key}`;
           return url;
         }
         throw new Error('File not saved to s3');
@@ -84,9 +77,7 @@ export class S3Service extends BaseService {
       };
 
       try {
-        const response: PutObjectCommandOutput = await this.s3Client.send(
-          new DeleteObjectCommand(deleteParams),
-        );
+        const response: PutObjectCommandOutput = await this.s3Client.send(new DeleteObjectCommand(deleteParams));
         if (response.$metadata.httpStatusCode === 204) {
           return url;
         }

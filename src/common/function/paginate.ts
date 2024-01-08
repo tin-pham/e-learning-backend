@@ -1,10 +1,7 @@
 import { SelectQueryBuilder } from 'kysely';
 import { PaginateDTO } from '../dto/paginate.dto';
 
-export async function paginate(
-  query: SelectQueryBuilder<any, any, any>,
-  dto: PaginateDTO,
-) {
+export async function paginate(query: SelectQueryBuilder<any, any, any>, dto: PaginateDTO) {
   const { limit, page } = dto;
 
   const response = await query.execute();

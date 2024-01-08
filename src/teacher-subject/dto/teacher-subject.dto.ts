@@ -1,11 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsString,
-  ArrayMinSize,
-  IsArray,
-  IsOptional,
-  IsNumber,
-} from 'class-validator';
+import { IsString, ArrayMinSize, IsArray, IsOptional, IsNumber } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class TeacherSubjectBulkStoreDTO {

@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -30,16 +18,8 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { SubjectService } from './subject.service';
-import {
-  SubjectGetListDTO,
-  SubjectStoreDTO,
-  SubjectUpdateDTO,
-} from './dto/subject.dto';
-import {
-  SubjectGetListRO,
-  SubjectStoreRO,
-  SubjectUpdateRO,
-} from './ro/subject.ro';
+import { SubjectGetListDTO, SubjectStoreDTO, SubjectUpdateDTO } from './dto/subject.dto';
+import { SubjectGetListRO, SubjectStoreRO, SubjectUpdateRO } from './ro/subject.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE } = API.SUBJECT;
 
@@ -88,11 +68,7 @@ export class SubjectController {
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: SubjectUpdateDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: SubjectUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectService.update(id, dto, decoded);
   }
 }

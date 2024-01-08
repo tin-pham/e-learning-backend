@@ -7,11 +7,6 @@ import { SubjectGroupService } from './subject-group.service';
 
 @Module({
   controllers: [SubjectGroupController],
-  providers: [
-    SubjectGroupService,
-    SubjectGroupRepository,
-    SubjectRepository,
-    GroupRepository,
-  ],
+  providers: [SubjectGroupService, SubjectGroupRepository, SubjectRepository, GroupRepository],
 })
 export class SubjectGroupModule {}

@@ -10,10 +10,6 @@ export class RoleService {
   async getList() {
     const roles = await this.roleRepository.getAll();
 
-    return plainToInstance(
-      RoleGetListRO,
-      { data: roles },
-      { excludeExtraneousValues: true },
-    );
+    return plainToInstance(RoleGetListRO, { data: roles }, { excludeExtraneousValues: true });
   }
 }

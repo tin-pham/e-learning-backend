@@ -1,18 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
-import {
-  HasMimeType,
-  IsFiles,
-  MaxFileSize,
-  MemoryStoredFile,
-} from 'nestjs-form-data';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+import { HasMimeType, IsFiles, MaxFileSize, MemoryStoredFile } from 'nestjs-form-data';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from 'src/common/decorator';
 
 export class S3UploadDTO {
@@ -31,9 +19,7 @@ export class S3UploadDTO {
 }
 
 export class S3DeleteDTO {
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) =>
-    Number.parseInt(value),
-  )
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) => Number.parseInt(value))
   @IsUrl({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()

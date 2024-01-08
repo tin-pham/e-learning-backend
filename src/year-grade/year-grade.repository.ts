@@ -6,21 +6,11 @@ import { YearGradeEntity } from './year-grade.entity';
 export class YearGradeRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insertMultipleWithTransaction(
-    transaction: Transaction,
-    entities: YearGradeEntity[],
-  ) {
-    return transaction
-      .insertInto('yearGrade')
-      .values(entities)
-      .executeTakeFirstOrThrow();
+  insertMultipleWithTransaction(transaction: Transaction, entities: YearGradeEntity[]) {
+    return transaction.insertInto('yearGrade').values(entities).executeTakeFirstOrThrow();
   }
 
-  deleteMultipleWithTransaction(
-    transaction: Transaction,
-    ids: number[],
-    actorId: number,
-  ) {
+  deleteMultipleWithTransaction(transaction: Transaction, ids: number[], actorId: number) {
     return transaction
       .updateTable('yearGrade')
       .set({
@@ -32,11 +22,6 @@ export class YearGradeRepository {
   }
 
   getIdsByYearId(id: number) {
-    return this.database
-      .selectFrom('yearGrade')
-      .select(['id'])
-      .where('yearId', '=', id)
-      .where('deletedAt', 'is', null)
-      .execute();
+    return this.database.selectFrom('yearGrade').select(['id']).where('yearId', '=', id).where('deletedAt', 'is', null).execute();
   }
 }

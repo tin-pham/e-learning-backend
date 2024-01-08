@@ -1,13 +1,7 @@
 import * as path from 'path';
 import { Pool } from 'pg';
 import { promises as fs } from 'fs';
-import {
-  Kysely,
-  Migrator,
-  PostgresDialect,
-  FileMigrationProvider,
-  CamelCasePlugin,
-} from 'kysely';
+import { Kysely, Migrator, PostgresDialect, FileMigrationProvider, CamelCasePlugin } from 'kysely';
 import { config } from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 
@@ -42,13 +36,9 @@ async function migrateToLatest() {
 
   results?.forEach((migrationResult) => {
     if (migrationResult.status === 'Success') {
-      console.log(
-        `migration "${migrationResult.migrationName}" was executed successfully`,
-      );
+      console.log(`migration "${migrationResult.migrationName}" was executed successfully`);
     } else if (migrationResult.status === 'Error') {
-      console.error(
-        `failed to execute migration "${migrationResult.migrationName}"`,
-      );
+      console.error(`failed to execute migration "${migrationResult.migrationName}"`);
     }
   });
 

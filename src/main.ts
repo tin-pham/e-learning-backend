@@ -67,9 +67,7 @@ async function bootstrap() {
     }),
   );
 
-  const elasticLogger = app.get<ElasticsearchLoggerService>(
-    ElasticsearchLoggerService,
-  );
+  const elasticLogger = app.get<ElasticsearchLoggerService>(ElasticsearchLoggerService);
   app.useGlobalFilters(new HttpExceptionFilter(elasticLogger));
 
   await app.listen(3000);

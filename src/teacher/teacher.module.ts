@@ -8,12 +8,6 @@ import { RoleRepository } from '../role/role.repository';
 
 @Module({
   controllers: [TeacherController],
-  providers: [
-    TeacherService,
-    TeacherRepository,
-    UserRepository,
-    UserRoleRepository,
-    RoleRepository,
-  ],
+  providers: [TeacherService, TeacherRepository, UserRepository, UserRoleRepository, RoleRepository],
 })
 export class TeacherModule {}

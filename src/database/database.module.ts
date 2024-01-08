@@ -1,8 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import {
-  ConfigurableDatabaseModule,
-  DATABASE_OPTIONS,
-} from './database.module-definition';
+import { ConfigurableDatabaseModule, DATABASE_OPTIONS } from './database.module-definition';
 import { DatabaseOptions } from './database.options';
 import { Pool } from 'pg';
 import { PostgresDialect, CamelCasePlugin } from 'kysely';
@@ -18,10 +15,7 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
     {
       provide: DatabaseService,
       inject: [DATABASE_OPTIONS, ElasticsearchLoggerService],
-      useFactory: (
-        databaseOptions: DatabaseOptions,
-        elasticLogger: ElasticsearchLoggerService,
-      ) => {
+      useFactory: (databaseOptions: DatabaseOptions, elasticLogger: ElasticsearchLoggerService) => {
         const dialect = new PostgresDialect({
           pool: new Pool({
             host: databaseOptions.host,

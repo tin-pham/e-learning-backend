@@ -17,19 +17,14 @@ import { ROLE } from '../role/enum/role.enum';
 import { ElasticsearchLoggerService } from './elastic-search-logger.service';
 import { PaginateDTO } from '../common/dto/paginate.dto';
 import { ElasticsearchLoggerGetInfoDTO } from './dto/elastic-search-logger.dto';
-import {
-  ElasticsearchLoggerGetErrorRO,
-  ElasticsearchLoggerGetInfoRO,
-} from './ro/elastic-searrch-logger.ro';
+import { ElasticsearchLoggerGetErrorRO, ElasticsearchLoggerGetInfoRO } from './ro/elastic-searrch-logger.ro';
 
 const { TAGS, CONTROLLER, GET_ERROR, GET_INFO } = API.LOG;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
 export class ElasticsearchLoggerController {
-  constructor(
-    private readonly elasticsearchLoggerService: ElasticsearchLoggerService,
-  ) {}
+  constructor(private readonly elasticsearchLoggerService: ElasticsearchLoggerService) {}
 
   @ApiOperation({ summary: GET_ERROR.OPERATION })
   @ApiOkResponse({ type: ElasticsearchLoggerGetErrorRO })

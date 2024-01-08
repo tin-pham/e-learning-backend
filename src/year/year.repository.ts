@@ -13,11 +13,7 @@ export class YearRepository extends BaseRepository<YearEntity> {
   }
 
   insertWithTransaction(transaction: Transaction, entity: YearEntity) {
-    return transaction
-      .insertInto('year')
-      .values(entity)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    return transaction.insertInto('year').values(entity).returningAll().executeTakeFirstOrThrow();
   }
 
   deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
@@ -43,10 +39,7 @@ export class YearRepository extends BaseRepository<YearEntity> {
   }
 
   find(dto: YearGetListDTO) {
-    const query = this.database
-      .selectFrom('year')
-      .select(['id', 'name', 'startDate', 'endDate'])
-      .where('deletedAt', 'is', null);
+    const query = this.database.selectFrom('year').select(['id', 'name', 'startDate', 'endDate']).where('deletedAt', 'is', null);
 
     return paginate(query, {
       limit: dto.limit,

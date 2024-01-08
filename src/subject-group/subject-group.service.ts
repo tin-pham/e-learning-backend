@@ -6,10 +6,7 @@ import { SubjectGroupRepository } from './subject-group.repository';
 import { SubjectRepository } from '../subject/subject.repository';
 import { GroupRepository } from '../group/group.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import {
-  SubjectGroupBulkDeleteDTO,
-  SubjectGroupBulkStoreDTO,
-} from './dto/subject-group.dto';
+import { SubjectGroupBulkDeleteDTO, SubjectGroupBulkStoreDTO } from './dto/subject-group.dto';
 import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
@@ -32,15 +29,11 @@ export class SubjectGroupService extends BaseService {
 
     try {
       const subjectGroupsData = subjectIds.flatMap((subjectId) =>
-        groupIds.map(
-          (groupId) =>
-            new SubjectGroupEntity({ subjectId, groupId, createdBy: actorId }),
-        ),
+        groupIds.map((groupId) => new SubjectGroupEntity({ subjectId, groupId, createdBy: actorId })),
       );
       await this.subjectGroupRepository.insertMultiple(subjectGroupsData);
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.SUBJECT_GROUP.BULK_STORE_FAILED;
+      const { code, status, message } = EXCEPTION.SUBJECT_GROUP.BULK_STORE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
@@ -60,14 +53,9 @@ export class SubjectGroupService extends BaseService {
     await this.validateBulkDelete(dto, actorId);
 
     try {
-      await this.subjectGroupRepository.deleteMultiple(
-        subjectIds,
-        groupIds,
-        actorId,
-      );
+      await this.subjectGroupRepository.deleteMultiple(subjectIds, groupIds, actorId);
     } catch (error) {
-      const { code, status, message } =
-        EXCEPTION.SUBJECT_GROUP.BULK_DELETE_FAILED;
+      const { code, status, message } = EXCEPTION.SUBJECT_GROUP.BULK_DELETE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
@@ -80,10 +68,7 @@ export class SubjectGroupService extends BaseService {
     });
   }
 
-  private async validateBulkStore(
-    dto: SubjectGroupBulkStoreDTO,
-    actorId: number,
-  ) {
+  private async validateBulkStore(dto: SubjectGroupBulkStoreDTO, actorId: number) {
     const { subjectIds, groupIds } = dto;
     // Check subjects exists
     const subjectCount = await this.subjectRepository.countByIds(subjectIds);
@@ -100,21 +85,14 @@ export class SubjectGroupService extends BaseService {
     }
 
     // Check subjectGroup unique
-    const subjectGroupCount =
-      await this.subjectGroupRepository.countBySubjectIdsAndGroupIds(
-        subjectIds,
-        groupIds,
-      );
+    const subjectGroupCount = await this.subjectGroupRepository.countBySubjectIdsAndGroupIds(subjectIds, groupIds);
     if (subjectGroupCount) {
       const { code, status, message } = EXCEPTION.SUBJECT_GROUP.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }
 
-  private async validateBulkDelete(
-    dto: SubjectGroupBulkDeleteDTO,
-    actorId: number,
-  ) {
+  private async validateBulkDelete(dto: SubjectGroupBulkDeleteDTO, actorId: number) {
     const { subjectIds, groupIds } = dto;
     // Check subjects exists
     const subjectCount = await this.subjectRepository.countByIds(subjectIds);
@@ -131,11 +109,7 @@ export class SubjectGroupService extends BaseService {
     }
 
     // Check duplicate
-    const subjectGroupCount =
-      await this.subjectGroupRepository.countBySubjectIdsAndGroupIds(
-        subjectIds,
-        groupIds,
-      );
+    const subjectGroupCount = await this.subjectGroupRepository.countBySubjectIdsAndGroupIds(subjectIds, groupIds);
     if (!subjectGroupCount) {
       const { code, status, message } = EXCEPTION.SUBJECT_GROUP.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });

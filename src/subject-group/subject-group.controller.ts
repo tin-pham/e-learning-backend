@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -27,10 +18,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { SubjectGroupService } from './subject-group.service';
-import {
-  SubjectGroupBulkDeleteDTO,
-  SubjectGroupBulkStoreDTO,
-} from './dto/subject-group.dto';
+import { SubjectGroupBulkDeleteDTO, SubjectGroupBulkStoreDTO } from './dto/subject-group.dto';
 import { ResultRO } from '../common/ro/result.ro';
 
 const { CONTROLLER, TAGS, BULK_STORE, BULK_DELETE } = API.SUBJECT_GROUP;
@@ -52,10 +40,7 @@ export class SubjectGroupController {
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkStore(
-    @Body() dto: SubjectGroupBulkStoreDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  bulkStore(@Body() dto: SubjectGroupBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.subjectGroupService.bulkStore(dto, decoded);
   }
 
@@ -69,10 +54,7 @@ export class SubjectGroupController {
   @Delete(BULK_DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  bulkDelete(
-    @Query() dto: SubjectGroupBulkDeleteDTO,
-    @JwtPayload() decoded: IJwtPayload,
-  ) {
+  bulkDelete(@Query() dto: SubjectGroupBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     console.log(dto);
     return this.subjectGroupService.bulkDelete(dto, decoded);
   }

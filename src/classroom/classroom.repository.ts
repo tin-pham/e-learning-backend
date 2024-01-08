@@ -11,22 +11,11 @@ export class ClassroomRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insert(entity: ClassroomEntity) {
-    return this.database
-      .insertInto('classroom')
-      .values(entity)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    return this.database.insertInto('classroom').values(entity).returningAll().executeTakeFirstOrThrow();
   }
 
-  insertMultipleWithTransaction(
-    transaction: Transaction,
-    entities: ClassroomEntity[],
-  ) {
-    return transaction
-      .insertInto('classroom')
-      .values(entities)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+  insertMultipleWithTransaction(transaction: Transaction, entities: ClassroomEntity[]) {
+    return transaction.insertInto('classroom').values(entities).returningAll().executeTakeFirstOrThrow();
   }
 
   async find(dto: ClassroomGetListDTO) {
@@ -41,11 +30,7 @@ export class ClassroomRepository {
       .where('classroom.deletedAt', 'is', null)
       .$if(withYear, (query) =>
         query
-          .innerJoin(
-            'classroomYear',
-            'classroomYear.classroomId',
-            'classroom.id',
-          )
+          .innerJoin('classroomYear', 'classroomYear.classroomId', 'classroom.id')
           .where('classroomYear.yearId', '=', yearId)
           .where('classroomYear.deletedAt', 'is', null)
           .innerJoin('year', 'year.id', 'classroomYear.yearId')
@@ -62,18 +47,10 @@ export class ClassroomRepository {
               )
               .as('classroomYears'),
           ])
-          .groupBy([
-            'classroom.id',
-            'classroom.name',
-            'classroom.gradeId',
-            'year.id',
-          ]),
+          .groupBy(['classroom.id', 'classroom.name', 'classroom.gradeId', 'year.id']),
       )
       .$if(withGrade, (query) =>
-        query
-          .innerJoin('grade', 'grade.id', 'classroom.gradeId')
-          .where('grade.id', '=', gradeId)
-          .where('grade.deletedAt', 'is', null),
+        query.innerJoin('grade', 'grade.id', 'classroom.gradeId').where('grade.id', '=', gradeId).where('grade.deletedAt', 'is', null),
       );
 
     return paginate(query, {
@@ -93,12 +70,7 @@ export class ClassroomRepository {
   }
 
   delete(id: number, entity: ClassroomEntity) {
-    return this.database
-      .updateTable('classroom')
-      .set(entity)
-      .where('id', '=', id)
-      .returningAll()
-      .executeTakeFirst();
+    return this.database.updateTable('classroom').set(entity).where('id', '=', id).returningAll().executeTakeFirst();
   }
 
   async countByName(name: string) {
@@ -133,19 +105,10 @@ export class ClassroomRepository {
   }
 
   getIds() {
-    return this.database
-      .selectFrom('classroom')
-      .select(['id'])
-      .where('deletedAt', 'is', null)
-      .execute();
+    return this.database.selectFrom('classroom').select(['id']).where('deletedAt', 'is', null).execute();
   }
 
   getLastInsertedName() {
-    return this.database
-      .selectFrom('classroom')
-      .select(['name'])
-      .orderBy('createdAt', 'desc')
-      .limit(1)
-      .executeTakeFirst();
+    return this.database.selectFrom('classroom').select(['name']).orderBy('createdAt', 'desc').limit(1).executeTakeFirst();
   }
 }

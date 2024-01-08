@@ -10,10 +10,6 @@ import { ElasticsearchHealthIndicator } from './indicators/elasticsearch-health.
 @Module({
   imports: [TerminusModule, CacheModule, ElasticsearchModule],
   controllers: [HealthController],
-  providers: [
-    DatabaseHealthIndicator,
-    MemcacheHealthIndicator,
-    ElasticsearchHealthIndicator,
-  ],
+  providers: [DatabaseHealthIndicator, MemcacheHealthIndicator, ElasticsearchHealthIndicator],
 })
 export class HealthModule {}

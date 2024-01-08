@@ -9,11 +9,7 @@ export class SubjectRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insert(entity: SubjectEntity) {
-    return this.database
-      .insertInto('subject')
-      .values(entity)
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    return this.database.insertInto('subject').values(entity).returningAll().executeTakeFirstOrThrow();
   }
 
   find(dto: SubjectGetListDTO) {

@@ -323,4 +323,12 @@ export const API = {
       OPERATION: 'Bulk delete files from s3',
     },
   },
+  MENU: {
+    TAGS: 'Menu',
+    CONTROLLER: 'menu',
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list menus',
+    },
+  },
 };
