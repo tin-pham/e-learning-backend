@@ -5,6 +5,10 @@ import { PaginateRO } from '../../common/ro/paginate.ro';
 export class MenuGetListDataRO {
   @ApiProperty()
   @Expose()
+  id: string;
+
+  @ApiProperty()
+  @Expose()
   name: string;
 
   @ApiProperty()

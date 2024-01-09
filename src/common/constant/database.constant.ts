@@ -260,4 +260,18 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  ROLE_MENU: {
+    NAME: 'role_menu',
+    SCHEMA: {
+      ID: 'id',
+      ROLE_ID: 'role_id',
+      MENU_ID: 'menu_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };
