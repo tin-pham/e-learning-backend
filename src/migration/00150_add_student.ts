@@ -1,6 +1,6 @@
 import { sql } from 'kysely';
-import { DatabaseService } from '../database';
 import { DATABASE_TABLE } from '../common';
+import { DatabaseService } from '../database';
 
 const { NAME, SCHEMA } = DATABASE_TABLE.STUDENT;
 const { NAME: USERS_TABLE, SCHEMA: USER_SCHEMA } = DATABASE_TABLE.USERS;

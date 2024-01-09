@@ -1,6 +1,6 @@
 import { sql } from 'kysely';
-import { DatabaseService } from '../database';
 import { DATABASE_TABLE } from '../common';
+import { DatabaseService } from '../database';
 
 const { NAME, SCHEMA } = DATABASE_TABLE.CLASSROOM;
 const { NAME: GRADE_NAME, SCHEMA: GRADE_SCHEMA } = DATABASE_TABLE.GRADE;

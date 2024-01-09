@@ -331,4 +331,12 @@ export const API = {
       OPERATION: 'Get list menus',
     },
   },
+  ROLE_MENU: {
+    TAGS: 'RoleMenu',
+    CONTROLLER: 'role-menu',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store role menu',
+    },
+  },
 };

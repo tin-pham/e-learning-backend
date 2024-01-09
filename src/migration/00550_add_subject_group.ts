@@ -1,6 +1,6 @@
 import { sql } from 'kysely';
-import { DatabaseService } from '../database';
 import { DATABASE_TABLE } from '../common';
+import { DatabaseService } from '../database';
 
 const { NAME, SCHEMA } = DATABASE_TABLE.SUBJECT_GROUP;
 const { NAME: SUBJECT_NAME, SCHEMA: SUBJECT_SCHEMA } = DATABASE_TABLE.SUBJECT;

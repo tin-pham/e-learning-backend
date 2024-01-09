@@ -1,5 +1,5 @@
-import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../database';
 import { ROLE } from '../role/enum/role.enum';
 

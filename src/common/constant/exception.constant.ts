@@ -496,4 +496,28 @@ export const EXCEPTION = {
       code: 'S3_DELETE_FAILED',
     },
   },
+  MENU: {
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list menu',
+      code: 'MENU_GET_LIST_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Menu does not exist',
+      code: 'MENU_DOES_NOT_EXIST',
+    },
+  },
+  ROLE_MENU: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Role menu already exist',
+      code: 'ROLE_MENU_ALREADY_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store role menu',
+      code: 'ROLE_MENU_BULK_STORE_FAILED',
+    },
+  },
 };

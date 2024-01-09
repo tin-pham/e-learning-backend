@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+import { ArrayMinSize, IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
 import { HasMimeType, IsFiles, MaxFileSize, MemoryStoredFile } from 'nestjs-form-data';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from 'src/common/decorator';
 

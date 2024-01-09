@@ -18,6 +18,8 @@ import { YearGradeEntity } from '../year-grade/year-grade.entity';
 import { ClassroomYearStudentEntity } from '../classroom-year-student/classroom-year-student.entity';
 import { TeacherSubjectEntity } from '../teacher-subject/teacher-subject.entity';
 import { ClassroomYearAssignmentEntity } from '../classroom-year-assignment/classroom-year-assignment.entity';
+import { MenuEntity } from '../menu/menu.entity';
+import { RoleMenuEntity } from '../role-menu/role-menu.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -39,6 +41,8 @@ export interface KyselyTables {
   classroomYearStudent: ClassroomYearStudentEntity;
   teacherSubject: TeacherSubjectEntity;
   classroomYearAssignment: ClassroomYearAssignmentEntity;
+  menu: MenuEntity;
+  roleMenu: RoleMenuEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

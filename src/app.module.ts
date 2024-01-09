@@ -24,6 +24,8 @@ import { TeacherSubjectModule } from './teacher-subject/teacher-subject.module';
 import { ClassroomYearAssignmentModule } from './classroom-year-assignment/classroom-year-assignment.module';
 import { ClassroomYearModule } from './classroom-year/classroom-year.module';
 import { S3Module } from './s3/s3.module';
+import { MenuModule } from './menu/menu.module';
+import { RoleMenuModule } from './role-menu/role-menu.module';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { S3Module } from './s3/s3.module';
     TeacherSubjectModule,
     ClassroomYearAssignmentModule,
     ClassroomYearModule,
+    MenuModule,
+    RoleMenuModule,
   ],
   providers: [...appProviders],
 })

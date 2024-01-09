@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CacheModule as NestCacheModule } from '@nestjs/cache-manager';
-import * as memcachedStore from 'cache-manager-memcached-store';
+import memcachedStore from 'cache-manager-memcached-store';
 import { CacheService } from './cache.service';
-import * as Memcache from 'memcache-pp';
+import Memcache from 'memcache-pp';
 
 @Module({
   imports: [
