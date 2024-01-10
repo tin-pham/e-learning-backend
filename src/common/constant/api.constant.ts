@@ -339,4 +339,12 @@ export const API = {
       OPERATION: 'Bulk store role menu',
     },
   },
+  COURSE: {
+    TAGS: 'Course',
+    CONTROLLER: 'course',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store course',
+    },
+  },
 };
