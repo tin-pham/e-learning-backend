@@ -18,19 +18,19 @@ import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
-import { CourseService } from './course.service';
-import { CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
-import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
+import { SectionService } from './section.service';
+import { SectionGetListDTO, SectionStoreDTO, SectionUpdateDTO } from './dto/section.dto';
+import { SectionDeleteRO, SectionGetDetailRO, SectionGetListRO, SectionStoreRO, SectionUpdateRO } from './ro/section.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.COURSE;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.SECTION;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
-export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+export class SectionController {
+  constructor(private readonly sectionService: SectionService) {}
 
   @ApiOperation({ summary: STORE.OPERATION })
-  @ApiCreatedResponse({ type: CourseStoreRO })
+  @ApiCreatedResponse({ type: SectionStoreRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -41,12 +41,12 @@ export class CourseController {
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  store(@Body() dto: CourseStoreDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.courseService.store(dto, decoded);
+  store(@Body() dto: SectionStoreDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.sectionService.store(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_LIST.OPERATION })
-  @ApiOkResponse({ type: CourseGetListRO })
+  @ApiOkResponse({ type: SectionGetListRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -55,12 +55,12 @@ export class CourseController {
   @Get(GET_LIST.ROUTE)
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  getList(@Query() dto: CourseGetListDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.courseService.getList(dto, decoded);
+  getList(@Query() dto: SectionGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.sectionService.getList(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_DETAIL.OPERATION })
-  @ApiOkResponse({ type: CourseGetDetailRO })
+  @ApiOkResponse({ type: SectionGetDetailRO })
   @ApiNotFoundResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -70,11 +70,11 @@ export class CourseController {
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
-    return this.courseService.getDetail(id, decoded);
+    return this.sectionService.getDetail(id, decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })
-  @ApiOkResponse({ type: CourseUpdateRO })
+  @ApiOkResponse({ type: SectionUpdateRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -84,12 +84,12 @@ export class CourseController {
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: CourseUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.courseService.update(id, dto, decoded);
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: SectionUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.sectionService.update(id, dto, decoded);
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })
-  @ApiOkResponse({ type: CourseDeleteRO })
+  @ApiOkResponse({ type: SectionDeleteRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -99,6 +99,6 @@ export class CourseController {
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
-    return this.courseService.delete(id, decoded);
+    return this.sectionService.delete(id, decoded);
   }
 }

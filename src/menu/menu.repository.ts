@@ -1,5 +1,5 @@
-import { paginate } from 'src/common/function/paginate';
-import { DatabaseService } from 'src/database';
+import { paginate } from '../common/function/paginate';
+import { DatabaseService } from '../database';
 import { Injectable } from '@nestjs/common';
 import { MenuGetListDTO } from './dto/menu.dto';
 

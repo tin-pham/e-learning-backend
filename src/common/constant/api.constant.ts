@@ -346,5 +346,45 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Store course',
     },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list courses',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get course detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update course',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete course',
+    },
+  },
+  SECTION: {
+    TAGS: 'Section',
+    CONTROLLER: 'section',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store section',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list sections',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get section detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update section',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete section',
+    },
   },
 };

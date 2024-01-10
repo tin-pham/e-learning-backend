@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { paginate } from '../common/function/paginate';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
 import { DatabaseService } from '../database/database.service';
 import { TeacherSubjectEntity } from './teacher-subject.entity';
 import { TeacherSubjectGetListDTO } from './dto/teacher-subject.dto';
-import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class TeacherSubjectRepository {

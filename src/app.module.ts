@@ -26,6 +26,8 @@ import { ClassroomYearModule } from './classroom-year/classroom-year.module';
 import { S3Module } from './s3/s3.module';
 import { MenuModule } from './menu/menu.module';
 import { RoleMenuModule } from './role-menu/role-menu.module';
+import { CourseModule } from './course/course.module';
+import { SectionModule } from './section/section.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { RoleMenuModule } from './role-menu/role-menu.module';
     ClassroomYearModule,
     MenuModule,
     RoleMenuModule,
+    CourseModule,
+    SectionModule,
   ],
   providers: [...appProviders],
 })

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
-export class CourseStoreRO {
+export class SectionStoreRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -13,14 +13,10 @@ export class CourseStoreRO {
 
   @ApiProperty()
   @Expose()
-  description?: string;
-
-  @ApiProperty()
-  @Expose()
-  imageUrl?: string;
+  courseId: number;
 }
 
-export class CourseGetListDataRO {
+export class SectionGetListDataRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -31,21 +27,17 @@ export class CourseGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  description?: string;
-
-  @ApiProperty()
-  @Expose()
-  imageUrl?: string;
+  courseId: number;
 }
 
-export class CourseGetListRO extends PaginateRO<CourseGetListDataRO> {
-  @ApiProperty({ type: [CourseGetListDataRO] })
-  @Type(() => CourseGetListDataRO)
+export class SectionGetListRO extends PaginateRO<SectionGetListDataRO> {
+  @ApiProperty({ type: [SectionGetListDataRO] })
+  @Type(() => SectionGetListDataRO)
   @Expose()
-  data: CourseGetListDataRO[];
+  data: SectionGetListDataRO[];
 }
 
-export class CourseGetDetailRO {
+export class SectionGetDetailRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -56,14 +48,10 @@ export class CourseGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  description?: string;
-
-  @ApiProperty()
-  @Expose()
-  imageUrl?: string;
+  courseId: number;
 }
 
-export class CourseUpdateRO {
+export class SectionUpdateRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -74,14 +62,10 @@ export class CourseUpdateRO {
 
   @ApiProperty()
   @Expose()
-  description?: string;
-
-  @ApiProperty()
-  @Expose()
-  imageUrl?: string;
+  courseId: number;
 }
 
-export class CourseDeleteRO {
+export class SectionDeleteRO {
   @ApiProperty()
   @Expose()
   id: number;

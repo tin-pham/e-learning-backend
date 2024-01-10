@@ -520,4 +520,88 @@ export const EXCEPTION = {
       code: 'ROLE_MENU_BULK_STORE_FAILED',
     },
   },
+  COURSE: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Course already exist',
+      code: 'COURSE_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Course does not exist',
+      code: 'COURSE_DOES_NOT_EXIST',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Course not found',
+      code: 'COURSE_NOT_FOUND',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list course',
+      code: 'COURSE_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail course',
+      code: 'COURSE_GET_DETAIL_FAILED',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store course',
+      code: 'COURSE_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update course',
+      code: 'COURSE_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete course',
+      code: 'COURSE_DELETE_FAILED',
+    },
+  },
+  SECTION: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Section already exist',
+      code: 'SECTION_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Section does not exist',
+      code: 'SECTION_DOES_NOT_EXIST',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Section not found',
+      code: 'SECTION_NOT_FOUND',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list section',
+      code: 'SECTION_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail section',
+      code: 'SECTION_GET_DETAIL_FAILED',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store section',
+      code: 'SECTION_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update section',
+      code: 'SECTION_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete section',
+      code: 'SECTION_DELETE_FAILED',
+    },
+  },
 };

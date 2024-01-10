@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
 import { HasMimeType, IsFiles, MaxFileSize, MemoryStoredFile } from 'nestjs-form-data';
-import { ApiArrayProperty, SwaggerQueryParamStyle } from 'src/common/decorator';
+import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 
 export class S3UploadDTO {
   @ApiProperty({ type: [String], format: 'binary' })
