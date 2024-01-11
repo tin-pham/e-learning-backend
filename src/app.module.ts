@@ -29,6 +29,8 @@ import { RoleMenuModule } from './role-menu/role-menu.module';
 import { CourseModule } from './course/course.module';
 import { SectionModule } from './section/section.module';
 import { AnswerModule } from './answer/answer.module';
+import { QuestionModule } from './question/question.module';
+import { QuestionOptionModule } from './question-option/question-option.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { AnswerModule } from './answer/answer.module';
     CourseModule,
     SectionModule,
     AnswerModule,
+    QuestionModule,
+    QuestionOptionModule,
   ],
   providers: [...appProviders],
 })

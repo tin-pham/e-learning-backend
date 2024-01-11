@@ -642,6 +642,36 @@ export const EXCEPTION = {
       message: 'Question does not exist',
       code: 'QUESTION_DOES_NOT_EXIST',
     },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Question not found',
+      code: 'QUESTION_NOT_FOUND',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store question',
+      code: 'QUESTION_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list question',
+      code: 'QUESTION_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail question',
+      code: 'QUESTION_GET_DETAIL_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update question',
+      code: 'QUESTION_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete question',
+      code: 'QUESTION_DELETE_FAILED',
+    },
   },
   QUESTION_OPTION: {
     DOES_NOT_EXIST: {
@@ -653,6 +683,43 @@ export const EXCEPTION = {
       status: HttpStatus.BAD_REQUEST,
       message: 'Question option does not belong to question',
       code: 'QUESTION_OPTION_DOES_NOT_BELONG_TO_QUESTION',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Question option not found',
+      code: 'QUESTION_OPTION_NOT_FOUND',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store question option',
+      code: 'QUESTION_OPTION_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list question option',
+      code: 'QUESTION_OPTION_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail question option',
+      code: 'QUESTION_OPTION_GET_DETAIL_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update question option',
+      code: 'QUESTION_OPTION_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete question option',
+      code: 'QUESTION_OPTION_DELETE_FAILED',
+    },
+  },
+  DIFFICULTY: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Difficulty does not exist',
+      code: 'DIFFICULTY_DOES_NOT_EXIST',
     },
   },
 };

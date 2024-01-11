@@ -32,6 +32,7 @@ export class AnswerService extends BaseService {
       const answerData = new AnswerEntity();
       answerData.questionId = dto.questionId;
       answerData.questionOptionId = dto.questionOptionId;
+      answerData.creatorId = actorId;
 
       const answer = await this.answerRepository.insert(answerData);
 
@@ -89,6 +90,8 @@ export class AnswerService extends BaseService {
 
     try {
       const answerData = new AnswerEntity();
+      answerData.updatedBy = actorId;
+      answerData.updatedAt = new Date();
       if (dto.questionOptionId) {
         answerData.questionOptionId = dto.questionOptionId;
       }

@@ -411,4 +411,28 @@ export const API = {
       OPERATION: 'Delete answer',
     },
   },
+  QUESTION: {
+    TAGS: 'Question',
+    CONTROLLER: 'question',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store question',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list questions',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get question detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update question',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete question',
+    },
+  },
 };

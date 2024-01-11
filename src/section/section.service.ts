@@ -30,6 +30,7 @@ export class SectionService extends BaseService {
       const sectionData = new SectionEntity();
       sectionData.name = dto.name;
       sectionData.courseId = dto.courseId;
+      sectionData.createdBy = actorId;
 
       const section = await this.sectionRepository.insert(sectionData);
 
@@ -105,6 +106,8 @@ export class SectionService extends BaseService {
 
     try {
       const sectionData = new SectionEntity();
+      sectionData.updatedBy = actorId;
+      sectionData.updatedAt = new Date();
       if (dto.name) {
         sectionData.name = dto.name;
       }

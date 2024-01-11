@@ -29,6 +29,7 @@ export class CourseService extends BaseService {
       courseData.name = dto.name;
       courseData.description = dto.description;
       courseData.imageUrl = dto.imageUrl;
+      courseData.createdBy = actorId;
 
       const course = await this.courseRepository.insert(courseData);
 
@@ -107,6 +108,8 @@ export class CourseService extends BaseService {
 
     try {
       const courseData = new CourseEntity();
+      courseData.updatedBy = actorId;
+      courseData.updatedAt = new Date();
       if (dto.name) {
         courseData.name = dto.name;
       }
