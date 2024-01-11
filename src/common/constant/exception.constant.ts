@@ -604,4 +604,55 @@ export const EXCEPTION = {
       code: 'SECTION_DELETE_FAILED',
     },
   },
+  ANSWER: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store answer',
+      code: 'ANSWER_STORE_FAILED',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Answer not found',
+      code: 'ANSWER_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Answer does not exist',
+      code: 'ANSWER_DOES_NOT_EXIST',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail answer',
+      code: 'ANSWER_GET_DETAIL_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update answer',
+      code: 'ANSWER_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete answer',
+      code: 'ANSWER_DELETE_FAILED',
+    },
+  },
+  QUESTION: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Question does not exist',
+      code: 'QUESTION_DOES_NOT_EXIST',
+    },
+  },
+  QUESTION_OPTION: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Question option does not exist',
+      code: 'QUESTION_OPTION_DOES_NOT_EXIST',
+    },
+    DOES_NOT_BELONG_TO_QUESTION: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Question option does not belong to question',
+      code: 'QUESTION_OPTION_DOES_NOT_BELONG_TO_QUESTION',
+    },
+  },
 };

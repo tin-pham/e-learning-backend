@@ -23,6 +23,9 @@ import { RoleMenuEntity } from '../role-menu/role-menu.entity';
 import { CourseEntity } from '../course/course.entity';
 import { SectionEntity } from '../section/section.entity';
 import { DifficultyEntity } from '../difficulty/difficulty.entity';
+import { AnswerEntity } from '../answer/answer.entity';
+import { QuestionEntity } from '../question/question.entity';
+import { QuestionOptionEntity } from '../question-option/question-option.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -49,6 +52,9 @@ export interface KyselyTables {
   course: CourseEntity;
   section: SectionEntity;
   difficulty: DifficultyEntity;
+  question: QuestionEntity;
+  questionOption: QuestionOptionEntity;
+  answer: AnswerEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

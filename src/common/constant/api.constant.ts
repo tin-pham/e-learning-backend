@@ -387,4 +387,28 @@ export const API = {
       OPERATION: 'Delete section',
     },
   },
+  ANSWER: {
+    TAGS: 'Answer',
+    CONTROLLER: 'answer',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store answer',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list answers',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get answer detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update answer',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete answer',
+    },
+  },
 };
