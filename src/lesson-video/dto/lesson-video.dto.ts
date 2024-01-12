@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsNumber } from 'class-validator';
 
-export class LessonFileBulkStoreDTO {
+export class LessonVideoBulkStoreDTO {
   @ApiProperty()
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
@@ -12,10 +12,10 @@ export class LessonFileBulkStoreDTO {
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
-  fileIds: number[];
+  videoIds: number[];
 }
 
-export class LessonFileBulkDeleteDTO {
+export class LessonVideoBulkDeleteDTO {
   @ApiProperty()
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
@@ -26,5 +26,5 @@ export class LessonFileBulkDeleteDTO {
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
-  fileIds: number[];
+  videoIds: number[];
 }

@@ -17,16 +17,16 @@ import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { JwtPayload } from '../common/decorator';
-import { LessonFileBulkDeleteDTO, LessonFileBulkStoreDTO } from './dto/lesson-file.dto';
+import { LessonVideoService } from './lesson-video.service';
+import { LessonVideoBulkDeleteDTO, LessonVideoBulkStoreDTO } from './dto/lesson-video.dto';
 import { ResultRO } from '../common/ro/result.ro';
-import { LessonFileService } from './lesson-file.service';
 
-const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.LESSON_FILE;
+const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.LESSON_VIDEO;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
-export class LessonFileController {
-  constructor(private readonly lessonFileService: LessonFileService) {}
+export class LessonVideoController {
+  constructor(private readonly lessonVideoService: LessonVideoService) {}
 
   @ApiOperation({ summary: BULK_STORE.OPERATION })
   @ApiCreatedResponse({ type: ResultRO })
@@ -40,8 +40,8 @@ export class LessonFileController {
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkStore(@Body() dto: LessonFileBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.lessonFileService.bulkStore(dto, decoded);
+  bulkStore(@Body() dto: LessonVideoBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonVideoService.bulkStore(dto, decoded);
   }
 
   @ApiOperation({ summary: BULK_DELETE.OPERATION })
@@ -54,7 +54,7 @@ export class LessonFileController {
   @Delete(BULK_DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  bulkDelete(@Query() dto: LessonFileBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.lessonFileService.bulkDelete(dto, decoded);
+  bulkDelete(@Query() dto: LessonVideoBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonVideoService.bulkDelete(dto, decoded);
   }
 }

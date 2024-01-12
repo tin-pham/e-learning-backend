@@ -29,6 +29,8 @@ import { QuestionOptionEntity } from '../question-option/question-option.entity'
 import { FileEntity } from '../file/file.entity';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { LessonFileEntity } from '../lesson-file/lesson-file.entity';
+import { VideoEntity } from '../video/video.entity';
+import { LessonVideoEntity } from '../lesson-video/lesson-video.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -61,6 +63,8 @@ export interface KyselyTables {
   file: FileEntity;
   lesson: LessonEntity;
   lessonFile: LessonFileEntity;
+  video: VideoEntity;
+  lessonVideo: LessonVideoEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

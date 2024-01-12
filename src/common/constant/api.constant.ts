@@ -454,5 +454,33 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Bulk store lesson file',
     },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete lesson file',
+    },
+  },
+  VIDEO: {
+    TAGS: 'Video',
+    CONTROLLER: 'video',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store video',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete video',
+    },
+  },
+  LESSON_VIDEO: {
+    TAGS: 'LessonVideo',
+    CONTROLLER: 'lesson-video',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store lesson video',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete lesson video',
+    },
   },
 };

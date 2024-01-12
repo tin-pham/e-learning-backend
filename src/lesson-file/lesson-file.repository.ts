@@ -6,8 +6,18 @@ import { LessonFileEntity } from './lesson-file.entity';
 export class LessonFileRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insertMany(entities: LessonFileEntity[]) {
+  insertMultiple(entities: LessonFileEntity[]) {
     return this.database.insertInto('lessonFile').values(entities).execute();
+  }
+
+  deleteMultipleByLessonIdsAndFileIds(lessonIds: number[], fileIds: number[], actorId: number) {
+    return this.database
+      .updateTable('lessonFile')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('lessonFile.lessonId', 'in', lessonIds)
+      .where('lessonFile.fileId', 'in', fileIds)
+      .where('lessonFile.createdBy', '=', actorId)
+      .execute();
   }
 
   async countByLessonIdsAndFileIds(lessonIds: number[], fileIds: number[]) {

@@ -752,10 +752,49 @@ export const EXCEPTION = {
       message: 'Lesson file already exist',
       code: 'LESSON_FILE_ALREADY_EXIST',
     },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store lesson file',
+      code: 'LESSON_FILE_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete lesson file',
+      code: 'LESSON_FILE_BULK_DELETE_FAILED',
+    },
+  },
+  VIDEO: {
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to store lesson file',
-      code: 'LESSON_FILE_STORE_FAILED',
+      message: 'Failed to store video',
+      code: 'VIDEO_STORE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete video',
+      code: 'VIDEO_DELETE_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Video does not exist',
+      code: 'VIDEO_DOES_NOT_EXIST',
+    },
+  },
+  LESSON_VIDEO: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Lesson video already exist',
+      code: 'LESSON_VIDEO_ALREADY_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store lesson video',
+      code: 'LESSON_VIDEO_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete lesson video',
+      code: 'LESSON_VIDEO_BULK_DELETE_FAILED',
     },
   },
 };

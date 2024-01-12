@@ -33,6 +33,8 @@ import { QuestionModule } from './question/question.module';
 import { QuestionOptionModule } from './question-option/question-option.module';
 import { FileModule } from './file/file.module';
 import { LessonFileModule } from './lesson-file/lesson-file.module';
+import { VideoModule } from './video/video.module';
+import { LessonVideoModule } from './lesson-video/lesson-video.module';
 
 @Module({
   imports: [
@@ -68,6 +70,8 @@ import { LessonFileModule } from './lesson-file/lesson-file.module';
     QuestionOptionModule,
     FileModule,
     LessonFileModule,
+    VideoModule,
+    LessonVideoModule,
   ],
   providers: [...appProviders],
 })

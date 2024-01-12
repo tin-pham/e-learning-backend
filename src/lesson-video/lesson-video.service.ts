@@ -1,39 +1,39 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
-import { LessonFileRepository } from './lesson-file.repository';
+import { LessonVideoEntity } from './lesson-video.entity';
 import { LessonRepository } from '../lesson/lesson.repository';
+import { VideoRepository } from '../video/video.repository';
+import { LessonVideoRepository } from './lesson-video.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { LessonFileBulkDeleteDTO, LessonFileBulkStoreDTO } from './dto/lesson-file.dto';
-import { FileRepository } from '../file/file.repository';
-import { LessonFileEntity } from './lesson-file.entity';
+import { LessonVideoBulkDeleteDTO, LessonVideoBulkStoreDTO } from './dto/lesson-video.dto';
 import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
-export class LessonFileService extends BaseService {
-  private readonly logger = new Logger(LessonFileService.name);
+export class LessonVideoService extends BaseService {
+  private readonly logger = new Logger(LessonVideoService.name);
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly lessonRepository: LessonRepository,
-    private readonly fileRepository: FileRepository,
-    private readonly lessonFileRepository: LessonFileRepository,
+    private readonly videoRepository: VideoRepository,
+    private readonly lessonVideoRepository: LessonVideoRepository,
   ) {
     super(elasticLogger);
   }
 
-  async bulkStore(dto: LessonFileBulkStoreDTO, decoded: IJwtPayload) {
+  async bulkStore(dto: LessonVideoBulkStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateBulkStore(dto, actorId);
 
     try {
-      const lessonFileData = dto.lessonIds.flatMap((lessonId) =>
-        dto.fileIds.map((fileId) => new LessonFileEntity({ lessonId, fileId, createdBy: actorId })),
+      const lessonVideoData = dto.lessonIds.flatMap((lessonId) =>
+        dto.videoIds.map((videoId) => new LessonVideoEntity({ lessonId, videoId, createdBy: actorId })),
       );
 
-      await this.lessonFileRepository.insertMultiple(lessonFileData);
+      await this.lessonVideoRepository.insertMultiple(lessonVideoData);
     } catch (error) {
-      const { code, status, message } = EXCEPTION.LESSON_FILE.BULK_STORE_FAILED;
+      const { code, status, message } = EXCEPTION.LESSON_VIDEO.BULK_STORE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
@@ -46,15 +46,15 @@ export class LessonFileService extends BaseService {
     });
   }
 
-  async bulkDelete(dto: LessonFileBulkDeleteDTO, decoded: IJwtPayload) {
+  async bulkDelete(dto: LessonVideoBulkDeleteDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const { lessonIds, fileIds } = dto;
+    const { lessonIds, videoIds } = dto;
     await this.validateBulkDelete(dto, actorId);
 
     try {
-      await this.lessonFileRepository.deleteMultipleByLessonIdsAndFileIds(lessonIds, fileIds, actorId);
+      await this.lessonVideoRepository.deleteMultipleByLessonIdsAndVideoIds(lessonIds, videoIds, actorId);
     } catch (error) {
-      const { code, status, message } = EXCEPTION.LESSON_FILE.BULK_DELETE_FAILED;
+      const { code, status, message } = EXCEPTION.LESSON_VIDEO.BULK_DELETE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
@@ -67,7 +67,7 @@ export class LessonFileService extends BaseService {
     });
   }
 
-  private async validateBulkStore(dto: LessonFileBulkStoreDTO, actorId: number) {
+  private async validateBulkStore(dto: LessonVideoBulkStoreDTO, actorId: number) {
     // check lesson exists
     const lessonCount = await this.lessonRepository.countByIds(dto.lessonIds);
     if (lessonCount !== dto.lessonIds.length) {
@@ -75,22 +75,22 @@ export class LessonFileService extends BaseService {
       this.throwException({ status, message, code, actorId });
     }
 
-    // check file exists
-    const fileCount = await this.fileRepository.countByIds(dto.fileIds);
-    if (fileCount !== dto.fileIds.length) {
+    // check video exists
+    const videoCount = await this.videoRepository.countByIds(dto.videoIds);
+    if (videoCount !== dto.videoIds.length) {
       const { status, message, code } = EXCEPTION.FILE.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
 
-    // check lesson file exist
-    const lessonFileCount = await this.lessonFileRepository.countByLessonIdsAndFileIds(dto.lessonIds, dto.fileIds);
-    if (lessonFileCount > 0) {
-      const { status, message, code } = EXCEPTION.LESSON_FILE.ALREADY_EXIST;
+    // check lesson video exist
+    const lessonVideoCount = await this.lessonVideoRepository.countByLessonIdsAndVideoIds(dto.lessonIds, dto.videoIds);
+    if (lessonVideoCount > 0) {
+      const { status, message, code } = EXCEPTION.LESSON_VIDEO.ALREADY_EXIST;
       this.throwException({ status, message, code, actorId });
     }
   }
 
-  private async validateBulkDelete(dto: LessonFileBulkDeleteDTO, actorId: number) {
+  private async validateBulkDelete(dto: LessonVideoBulkDeleteDTO, actorId: number) {
     // check lesson exists
     const lessonCount = await this.lessonRepository.countByIds(dto.lessonIds);
     if (lessonCount !== dto.lessonIds.length) {
@@ -98,10 +98,10 @@ export class LessonFileService extends BaseService {
       this.throwException({ status, message, code, actorId });
     }
 
-    // check file exists
-    const fileCount = await this.fileRepository.countByIds(dto.fileIds);
-    if (fileCount !== dto.fileIds.length) {
-      const { status, message, code } = EXCEPTION.FILE.DOES_NOT_EXIST;
+    // check video exists
+    const videoCount = await this.videoRepository.countByIds(dto.videoIds);
+    if (videoCount !== dto.videoIds.length) {
+      const { status, message, code } = EXCEPTION.VIDEO.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
   }

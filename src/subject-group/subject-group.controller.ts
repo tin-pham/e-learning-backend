@@ -55,7 +55,6 @@ export class SubjectGroupController {
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   bulkDelete(@Query() dto: SubjectGroupBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
-    console.log(dto);
     return this.subjectGroupService.bulkDelete(dto, decoded);
   }
 }
