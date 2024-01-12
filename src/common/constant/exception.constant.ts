@@ -722,4 +722,40 @@ export const EXCEPTION = {
       code: 'DIFFICULTY_DOES_NOT_EXIST',
     },
   },
+  FILE: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store file',
+      code: 'FILE_STORE_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'File does not exist',
+      code: 'FILE_DOES_NOT_EXIST',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete file',
+      code: 'FILE_DELETE_FAILED',
+    },
+  },
+  LESSON: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Lesson does not exist',
+      code: 'LESSON_DOES_NOT_EXIST',
+    },
+  },
+  LESSON_FILE: {
+    ALREADY_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Lesson file already exist',
+      code: 'LESSON_FILE_ALREADY_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store lesson file',
+      code: 'LESSON_FILE_STORE_FAILED',
+    },
+  },
 };

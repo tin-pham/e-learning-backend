@@ -435,4 +435,24 @@ export const API = {
       OPERATION: 'Delete question',
     },
   },
+  FILE: {
+    TAGS: 'File',
+    CONTROLLER: 'file',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store file',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete file',
+    },
+  },
+  LESSON_FILE: {
+    TAGS: 'LessonFile',
+    CONTROLLER: 'lesson-file',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store lesson file',
+    },
+  },
 };

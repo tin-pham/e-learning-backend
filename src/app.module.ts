@@ -31,6 +31,8 @@ import { SectionModule } from './section/section.module';
 import { AnswerModule } from './answer/answer.module';
 import { QuestionModule } from './question/question.module';
 import { QuestionOptionModule } from './question-option/question-option.module';
+import { FileModule } from './file/file.module';
+import { LessonFileModule } from './lesson-file/lesson-file.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { QuestionOptionModule } from './question-option/question-option.module';
     AnswerModule,
     QuestionModule,
     QuestionOptionModule,
+    FileModule,
+    LessonFileModule,
   ],
   providers: [...appProviders],
 })

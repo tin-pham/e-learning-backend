@@ -3,7 +3,7 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { QuestionOptionEntity } from './question-option.entity';
 import { QuestionOptionRepository } from './question-option.repository';
-import { QuestionRepository } from 'src/question/question.repository';
+import { QuestionRepository } from '../question/question.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { QuestionOptionGetListDTO, QuestionOptionStoreDTO, QuestionOptionUpdateDTO } from './dto/question-option.dto';
 import { QuestionOptionDeleteRO, QuestionOptionGetDetailRO, QuestionOptionStoreRO, QuestionOptionUpdateRO } from './ro/question-option.ro';
