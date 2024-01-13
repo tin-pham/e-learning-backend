@@ -684,6 +684,11 @@ export const EXCEPTION = {
       message: 'Question option does not belong to question',
       code: 'QUESTION_OPTION_DOES_NOT_BELONG_TO_QUESTION',
     },
+    IS_CORRECT_ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Question option is correct already exist',
+      code: 'QUESTION_OPTION_IS_CORRECT_ALREADY_EXIST',
+    },
     NOT_FOUND: {
       status: HttpStatus.NOT_FOUND,
       message: 'Question option not found',
@@ -720,6 +725,11 @@ export const EXCEPTION = {
       status: HttpStatus.BAD_REQUEST,
       message: 'Difficulty does not exist',
       code: 'DIFFICULTY_DOES_NOT_EXIST',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list difficulty',
+      code: 'DIFFICULTY_GET_LIST_FAILED',
     },
   },
   FILE: {

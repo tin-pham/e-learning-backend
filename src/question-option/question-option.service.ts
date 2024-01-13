@@ -6,7 +6,13 @@ import { QuestionOptionRepository } from './question-option.repository';
 import { QuestionRepository } from '../question/question.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { QuestionOptionGetListDTO, QuestionOptionStoreDTO, QuestionOptionUpdateDTO } from './dto/question-option.dto';
-import { QuestionOptionDeleteRO, QuestionOptionGetDetailRO, QuestionOptionStoreRO, QuestionOptionUpdateRO } from './ro/question-option.ro';
+import {
+  QuestionOptionDeleteRO,
+  QuestionOptionGetDetailRO,
+  QuestionOptionGetListRO,
+  QuestionOptionStoreRO,
+  QuestionOptionUpdateRO,
+} from './ro/question-option.ro';
 
 @Injectable()
 export class QuestionOptionService extends BaseService {
@@ -30,12 +36,14 @@ export class QuestionOptionService extends BaseService {
       const questionOptionData = new QuestionOptionEntity();
       questionOptionData.text = dto.text;
       questionOptionData.questionId = dto.questionId;
+      questionOptionData.isCorrect = dto.isCorrect;
       questionOptionData.createdBy = actorId;
 
       const questionOption = await this.questionOptionRepository.insert(questionOptionData);
 
       response.id = questionOption.id;
       response.text = questionOption.text;
+      response.isCorrect = questionOption.isCorrect;
       response.questionId = questionOption.questionId;
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.STORE_FAILED;
@@ -58,7 +66,7 @@ export class QuestionOptionService extends BaseService {
       const response = await this.questionOptionRepository.find(dto);
 
       return this.success({
-        classRO: QuestionOptionGetListDTO,
+        classRO: QuestionOptionGetListRO,
         response,
         message: 'Get list question option successfully',
         actorId,
@@ -73,23 +81,26 @@ export class QuestionOptionService extends BaseService {
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    const response = new QuestionOptionGetDetailRO();
+    let questionOption: QuestionOptionEntity;
 
     try {
-      const questionOption = await this.questionOptionRepository.findOneById(id);
-      if (!questionOption) {
-        const { code, status, message } = EXCEPTION.QUESTION_OPTION.NOT_FOUND;
-        this.throwException({ code, status, message, actorId });
-      }
-
-      response.id = questionOption.id;
-      response.text = questionOption.text;
-      response.questionId = questionOption.questionId;
+      questionOption = await this.questionOptionRepository.findOneById(id);
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
+
+    if (!questionOption) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.NOT_FOUND;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    const response = new QuestionOptionGetDetailRO();
+    response.id = questionOption.id;
+    response.text = questionOption.text;
+    response.isCorrect = questionOption.isCorrect;
+    response.questionId = questionOption.questionId;
 
     return this.success({
       classRO: QuestionOptionGetDetailRO,
@@ -104,7 +115,6 @@ export class QuestionOptionService extends BaseService {
     await this.validateUpdate(id, actorId);
 
     const response = new QuestionOptionUpdateRO();
-
     try {
       const questionOptionData = new QuestionOptionEntity();
       questionOptionData.updatedBy = actorId;
@@ -162,6 +172,15 @@ export class QuestionOptionService extends BaseService {
     if (!questionCount) {
       const { code, status, message } = EXCEPTION.QUESTION.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
+    }
+
+    // Check duplicate isCorrect 
+    if (dto.isCorrect) {
+      const questionOptionCount = await this.questionOptionRepository.countByQuestionIdAndCorrect(dto.questionId);
+      if (questionOptionCount) {
+        const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_ALREADY_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
   }
 

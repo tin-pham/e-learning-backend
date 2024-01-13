@@ -5,18 +5,14 @@ import { PaginateDTO } from '../../common/dto/paginate.dto';
 export class CourseStoreDTO {
   @ApiProperty()
   @IsString()
-  id: string;
-
-  @ApiProperty()
-  @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   imageUrl?: string;

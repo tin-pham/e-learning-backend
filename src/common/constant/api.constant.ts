@@ -435,6 +435,38 @@ export const API = {
       OPERATION: 'Delete question',
     },
   },
+  QUESTION_OPTION: {
+    TAGS: 'QuestionOption',
+    CONTROLLER: 'question-option',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store question option',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list question options',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get question option detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update question option',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete question option',
+    },
+  },
+  DIFFICULTY: {
+    TAGS: 'Difficulty',
+    CONTROLLER: 'difficulty',
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list difficulties',
+    },
+  },
   FILE: {
     TAGS: 'File',
     CONTROLLER: 'file',

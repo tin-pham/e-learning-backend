@@ -1,12 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class SectionStoreDTO {
-  @ApiProperty()
-  @IsNumber()
-  id: number;
-
   @ApiProperty()
   @IsString()
   name: string;
@@ -19,6 +16,7 @@ export class SectionStoreDTO {
 export class SectionGetListDTO extends PaginateDTO {
   @ApiProperty()
   @IsNumber()
+  @Type(() => Number)
   courseId: number;
 }
 

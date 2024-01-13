@@ -3,7 +3,9 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { CourseEntity } from './course.entity';
 import { CourseRepository } from './course.repository';
+import { SectionRepository } from '../section/section.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
+import { DatabaseService } from '../database/database.service';
 import { CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
 import { CourseDeleteRO, CourseGetDetailRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
 
@@ -14,6 +16,8 @@ export class CourseService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly courseRepository: CourseRepository,
+    private readonly sectionRepository: SectionRepository,
+    private readonly database: DatabaseService,
   ) {
     super(elasticLogger);
   }
@@ -73,25 +77,25 @@ export class CourseService extends BaseService {
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    const response = new CourseGetDetailRO();
-
+    let course: CourseEntity;
     try {
-      const course = await this.courseRepository.findOneById(id);
-      if (!course) {
-        const { code, status, message } = EXCEPTION.COURSE.NOT_FOUND;
-        this.throwException({ code, status, message, actorId });
-      }
-
-      response.id = course.id;
-      response.name = course.name;
-      response.description = course.description;
-      response.imageUrl = course.imageUrl;
+      course = await this.courseRepository.findOneById(id);
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
 
+    if (!course) {
+      const { code, status, message } = EXCEPTION.COURSE.NOT_FOUND;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    const response = new CourseGetDetailRO();
+    response.id = course.id;
+    response.name = course.name;
+    response.description = course.description;
+    response.imageUrl = course.imageUrl;
     return this.success({
       classRO: CourseGetDetailRO,
       response,
@@ -149,9 +153,16 @@ export class CourseService extends BaseService {
     const response = new CourseDeleteRO();
 
     try {
-      const course = await this.courseRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        // Delete course
+        const course = await this.courseRepository.deleteWithTransaction(transaction, id, actorId);
 
-      response.id = course.id;
+        // Delete section
+        await this.sectionRepository.deleteMultipleByCourseIdWithTransaction(transaction, id, actorId);
+
+        // Set response
+        response.id = course.id;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.DELETE_FAILED;
       this.logger.error(error);

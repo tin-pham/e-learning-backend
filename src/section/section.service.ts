@@ -6,7 +6,7 @@ import { SectionRepository } from './section.repository';
 import { CourseRepository } from '../course/course.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { SectionGetListDTO, SectionStoreDTO, SectionUpdateDTO } from './dto/section.dto';
-import { SectionDeleteRO, SectionGetDetailRO, SectionStoreRO, SectionUpdateRO } from './ro/section.ro';
+import { SectionDeleteRO, SectionGetDetailRO, SectionGetListRO, SectionStoreRO, SectionUpdateRO } from './ro/section.ro';
 
 @Injectable()
 export class SectionService extends BaseService {
@@ -58,7 +58,7 @@ export class SectionService extends BaseService {
       const response = await this.sectionRepository.find(dto);
 
       return this.success({
-        classRO: SectionGetListDTO,
+        classRO: SectionGetListRO,
         response,
         message: 'Get list section successfully',
         actorId,
@@ -73,22 +73,23 @@ export class SectionService extends BaseService {
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    const response = new SectionGetDetailRO();
-
+    let section: SectionEntity;
     try {
-      const section = await this.sectionRepository.findOneById(id);
-      if (!section) {
-        const { code, status, message } = EXCEPTION.SECTION.NOT_FOUND;
-        this.throwException({ code, status, message, actorId });
-      }
-
-      response.id = section.id;
-      response.name = section.name;
+      section = await this.sectionRepository.findOneById(id);
     } catch (error) {
       const { code, status, message } = EXCEPTION.SECTION.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
+
+    if (!section) {
+      const { code, status, message } = EXCEPTION.SECTION.NOT_FOUND;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    const response = new SectionGetDetailRO();
+    response.id = section.id;
+    response.name = section.name;
 
     return this.success({
       classRO: SectionGetDetailRO,

@@ -6,7 +6,7 @@ import { QuestionRepository } from './question.repository';
 import { DifficultyRepository } from '../difficulty/difficulty.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
-import { QuestionDeleteRO, QuestionGetDetailRO, QuestionStoreRO, QuestionUpdateRO } from './ro/question.ro';
+import { QuestionDeleteRO, QuestionGetDetailRO, QuestionGetListRO, QuestionStoreRO, QuestionUpdateRO } from './ro/question.ro';
 
 @Injectable()
 export class QuestionService extends BaseService {
@@ -29,12 +29,16 @@ export class QuestionService extends BaseService {
     try {
       const questionData = new QuestionEntity();
       questionData.text = dto.text;
+      questionData.difficultyId = dto.difficultyId;
+      questionData.isMultipleChoice = dto.isMultipleChoice;
       questionData.createdBy = actorId;
 
       const question = await this.questionRepository.insert(questionData);
 
       response.id = question.id;
       response.text = question.text;
+      response.difficultyId = question.difficultyId;
+      response.isMultipleChoice = question.isMultipleChoice;
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION.STORE_FAILED;
       this.logger.error(error);
@@ -56,7 +60,7 @@ export class QuestionService extends BaseService {
       const response = await this.questionRepository.find(dto);
 
       return this.success({
-        classRO: QuestionGetListDTO,
+        classRO: QuestionGetListRO,
         response,
         message: 'Get list question successfully',
         actorId,
@@ -71,23 +75,26 @@ export class QuestionService extends BaseService {
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    const response = new QuestionGetDetailRO();
+    let question: QuestionEntity;
 
     try {
-      const question = await this.questionRepository.findOneById(id);
-      if (!question) {
-        const { code, status, message } = EXCEPTION.QUESTION.NOT_FOUND;
-        this.throwException({ code, status, message, actorId });
-      }
-
-      response.id = question.id;
-      response.text = question.text;
-      response.difficultyId = question.difficultyId;
+      question = await this.questionRepository.findOneById(id);
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
+
+    if (!question) {
+      const { code, status, message } = EXCEPTION.QUESTION.NOT_FOUND;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    const response = new QuestionGetDetailRO();
+    response.id = question.id;
+    response.text = question.text;
+    response.difficultyId = question.difficultyId;
+    response.isMultipleChoice = question.isMultipleChoice;
 
     return this.success({
       classRO: QuestionGetDetailRO,
@@ -115,11 +122,16 @@ export class QuestionService extends BaseService {
         questionData.difficultyId = dto.difficultyId;
       }
 
+      if (dto.isMultipleChoice) {
+        questionData.isMultipleChoice = dto.isMultipleChoice;
+      }
+
       const question = await this.questionRepository.update(id, questionData);
 
       response.id = question.id;
       response.text = question.text;
       response.difficultyId = question.difficultyId;
+      response.isMultipleChoice = question.isMultipleChoice;
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION.UPDATE_FAILED;
       this.logger.error(error);

@@ -53,7 +53,7 @@ export class AnswerController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   getDetailByQuestionId(@Param('questionId', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.answerService.getDetailByQuestionId(id, decoded);
@@ -68,7 +68,7 @@ export class AnswerController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: AnswerUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.answerService.update(id, dto, decoded);
@@ -82,7 +82,7 @@ export class AnswerController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.answerService.delete(id, decoded);

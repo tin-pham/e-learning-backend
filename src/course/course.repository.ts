@@ -1,8 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { CourseEntity } from './course.entity';
 import { CourseGetListDTO } from './dto/course.dto';
 
+@Injectable()
 export class CourseRepository {
   constructor(private readonly database: DatabaseService) {}
 
@@ -40,8 +42,8 @@ export class CourseRepository {
       .executeTakeFirst();
   }
 
-  delete(id: number, actorId: number) {
-    return this.database
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction
       .updateTable('course')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)

@@ -28,7 +28,7 @@ import {
   QuestionOptionUpdateRO,
 } from './ro/question-option.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.QUESTION;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.QUESTION_OPTION;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -44,7 +44,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: QuestionOptionStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -59,7 +59,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: QuestionOptionGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.getList(dto, decoded);
@@ -73,7 +73,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.getDetail(id, decoded);
@@ -88,7 +88,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: QuestionOptionUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.update(id, dto, decoded);
@@ -102,7 +102,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.delete(id, decoded);

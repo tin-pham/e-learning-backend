@@ -53,7 +53,7 @@ export class SectionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: SectionGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.sectionService.getList(dto, decoded);
@@ -67,7 +67,7 @@ export class SectionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.sectionService.getDetail(id, decoded);
@@ -82,7 +82,7 @@ export class SectionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: SectionUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.sectionService.update(id, dto, decoded);
@@ -96,7 +96,7 @@ export class SectionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.sectionService.delete(id, decoded);

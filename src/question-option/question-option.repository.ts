@@ -9,13 +9,16 @@ export class QuestionOptionRepository {
   constructor(private readonly database: DatabaseService) {}
 
   find(dto: QuestionOptionGetListDTO) {
-    const { page, limit } = dto;
+    const { page, limit, questionId } = dto;
+
+    const withQuestion = Boolean(questionId);
 
     const query = this.database
       .selectFrom('questionOption')
-      .select(['id', 'text', 'questionId'])
+      .select(['id', 'text', 'questionId', 'isCorrect'])
       .where('deletedAt', 'is', null)
-      .orderBy('id', 'asc');
+      .orderBy('id', 'asc')
+      .$if(withQuestion, (qb) => qb.where('questionId', '=', questionId));
 
     return paginate(query, {
       page,
@@ -26,14 +29,18 @@ export class QuestionOptionRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('questionOption')
-      .select(['id', 'text', 'questionId'])
+      .select(['id', 'text', 'questionId', 'isCorrect'])
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
   }
 
   insert(entity: QuestionOptionEntity) {
-    return this.database.insertInto('questionOption').values(entity).returning(['id', 'text', 'questionId']).executeTakeFirst();
+    return this.database
+      .insertInto('questionOption')
+      .values(entity)
+      .returning(['id', 'text', 'questionId', 'isCorrect'])
+      .executeTakeFirst();
   }
 
   update(id: number, entity: QuestionOptionEntity) {
@@ -42,7 +49,7 @@ export class QuestionOptionRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'text', 'questionId'])
+      .returning(['id', 'text', 'questionId', 'isCorrect'])
       .executeTakeFirst();
   }
 
@@ -52,7 +59,7 @@ export class QuestionOptionRepository {
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'text', 'questionId'])
+      .returning(['id', 'text', 'questionId', 'isCorrect'])
       .executeTakeFirst();
   }
 
@@ -62,6 +69,20 @@ export class QuestionOptionRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByQuestionIdAndCorrect(questionId: number) {
+    const { count } = await this.database
+      .selectFrom('questionOption')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .innerJoin('question', 'question.id', 'questionOption.questionId')
+      .where('questionOption.questionId', '=', questionId)
+      .where('questionOption.isCorrect', '=', true)
+      .where('questionOption.deletedAt', 'is', null)
+      .where('question.deletedAt', 'is', null)
+      .where('question.isMultipleChoice', '=', false)
       .executeTakeFirst();
     return Number(count);
   }

@@ -13,7 +13,7 @@ export class QuestionRepository {
 
     const query = this.database
       .selectFrom('question')
-      .select(['id', 'text', 'difficultyId'])
+      .select(['id', 'text', 'difficultyId', 'isMultipleChoice'])
       .where('deletedAt', 'is', null)
       .orderBy('id', 'asc');
 
@@ -26,14 +26,18 @@ export class QuestionRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('question')
-      .select(['id', 'text', 'difficultyId'])
+      .select(['id', 'text', 'difficultyId', 'isMultipleChoice'])
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
   }
 
   insert(entity: QuestionEntity) {
-    return this.database.insertInto('question').values(entity).returning(['id', 'text', 'difficultyId']).executeTakeFirst();
+    return this.database
+      .insertInto('question')
+      .values(entity)
+      .returning(['id', 'text', 'difficultyId', 'isMultipleChoice'])
+      .executeTakeFirst();
   }
 
   update(id: number, entity: QuestionEntity) {
@@ -42,7 +46,7 @@ export class QuestionRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'text', 'difficultyId'])
+      .returning(['id', 'text', 'difficultyId', 'isMultipleChoice'])
       .executeTakeFirst();
   }
 
@@ -52,7 +56,7 @@ export class QuestionRepository {
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'text', 'difficultyId'])
+      .returning(['id', 'text', 'difficultyId', 'isMultipleChoice'])
       .executeTakeFirst();
   }
 

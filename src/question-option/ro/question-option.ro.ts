@@ -13,6 +13,10 @@ export class QuestionOptionStoreRO {
 
   @ApiProperty()
   @Expose()
+  isCorrect: boolean;
+
+  @ApiProperty()
+  @Expose()
   questionId: number;
 }
 
@@ -45,6 +49,10 @@ export class QuestionOptionGetDetailRO {
   @ApiProperty()
   @Expose()
   text: string;
+
+  @ApiProperty()
+  @Expose()
+  isCorrect: boolean;
 
   @ApiProperty()
   @Expose()

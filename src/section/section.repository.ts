@@ -1,8 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { SectionEntity } from './section.entity';
 import { SectionGetListDTO } from './dto/section.dto';
 
+@Injectable()
 export class SectionRepository {
   constructor(private readonly database: DatabaseService) {}
 
@@ -17,12 +19,12 @@ export class SectionRepository {
 
     const query = this.database
       .selectFrom('section')
-      .select(['id', 'name'])
-      .where('deletedAt', 'is', null)
-      .orderBy('createdAt', 'desc')
+      .select(['section.id', 'section.name'])
+      .where('section.deletedAt', 'is', null)
+      .orderBy('section.createdAt', 'desc')
       .$if(withCourse, (qb) =>
         qb
-          .innerJoin('course', 'section.id', 'section.courseId')
+          .innerJoin('course', 'course.id', 'section.courseId')
           .where('section.courseId', '=', courseId)
           .where('course.deletedAt', 'is', null),
       );
@@ -54,8 +56,15 @@ export class SectionRepository {
       .updateTable('section')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)
-      .where('deletedAt', 'is', null)
       .returning(['id'])
+      .executeTakeFirst();
+  }
+
+  deleteMultipleByCourseIdWithTransaction(transaction: Transaction, courseId: number, actorId: number) {
+    return transaction
+      .updateTable('section')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('courseId', '=', courseId)
       .executeTakeFirst();
   }
 

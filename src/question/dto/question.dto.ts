@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class QuestionStoreDTO {
@@ -8,8 +8,12 @@ export class QuestionStoreDTO {
   text: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   difficultyId: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  isMultipleChoice: boolean = false;
 }
 
 export class QuestionGetListDTO extends PaginateDTO {}
@@ -24,4 +28,8 @@ export class QuestionUpdateDTO {
   @IsNumber()
   @IsOptional()
   difficultyId?: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  isMultipleChoice: boolean;
 }

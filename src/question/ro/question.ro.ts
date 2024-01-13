@@ -14,6 +14,10 @@ export class QuestionStoreRO {
   @ApiProperty()
   @Expose()
   difficultyId: number;
+
+  @ApiProperty()
+  @Expose()
+  isMultipleChoice: boolean;
 }
 
 export class QuestionGetListDataRO {
@@ -28,6 +32,10 @@ export class QuestionGetListDataRO {
   @ApiProperty()
   @Expose()
   difficultyId: number;
+
+  @ApiProperty()
+  @Expose()
+  isMultipleChoice: boolean;
 }
 
 export class QuestionGetListRO extends PaginateRO<QuestionGetListDataRO> {
@@ -49,6 +57,10 @@ export class QuestionGetDetailRO {
   @ApiProperty()
   @Expose()
   difficultyId: number;
+
+  @ApiProperty()
+  @Expose()
+  isMultipleChoice: boolean;
 }
 
 export class QuestionUpdateRO {
@@ -63,6 +75,10 @@ export class QuestionUpdateRO {
   @ApiProperty()
   @Expose()
   difficultyId: number;
+
+  @ApiProperty()
+  @Expose()
+  isMultipleChoice: boolean;
 }
 
 export class QuestionDeleteRO {
