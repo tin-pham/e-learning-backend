@@ -31,6 +31,8 @@ import { LessonEntity } from '../lesson/lesson.entity';
 import { LessonFileEntity } from '../lesson-file/lesson-file.entity';
 import { VideoEntity } from '../video/video.entity';
 import { LessonVideoEntity } from '../lesson-video/lesson-video.entity';
+import { ExerciseEntity } from '../exercise/exercise.entity';
+import { ExerciseQuestionEntity } from '../exercise-question/exercise-question.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -59,6 +61,8 @@ export interface KyselyTables {
   difficulty: DifficultyEntity;
   question: QuestionEntity;
   questionOption: QuestionOptionEntity;
+  exercise: ExerciseEntity;
+  exerciseQuestion: ExerciseQuestionEntity;
   answer: AnswerEntity;
   file: FileEntity;
   lesson: LessonEntity;

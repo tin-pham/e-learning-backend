@@ -174,7 +174,7 @@ export class QuestionOptionService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
-    // Check duplicate isCorrect 
+    // Check duplicate isCorrect
     if (dto.isCorrect) {
       const questionOptionCount = await this.questionOptionRepository.countByQuestionIdAndCorrect(dto.questionId);
       if (questionOptionCount) {

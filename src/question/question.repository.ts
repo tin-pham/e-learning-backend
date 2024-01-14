@@ -69,4 +69,14 @@ export class QuestionRepository {
       .executeTakeFirst();
     return Number(count);
   }
+
+  async countByIds(ids: number[]) {
+    const { count } = await this.database
+      .selectFrom('question')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', 'in', ids)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
 }

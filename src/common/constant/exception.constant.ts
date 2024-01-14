@@ -807,4 +807,58 @@ export const EXCEPTION = {
       code: 'LESSON_VIDEO_BULK_DELETE_FAILED',
     },
   },
+  EXERCISE: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store exercise',
+      code: 'EXERCISE_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list exercise',
+      code: 'EXERCISE_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail exercise',
+      code: 'EXERCISE_GET_DETAIL_FAILED',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Exercise not found',
+      code: 'EXERCISE_NOT_FOUND',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update exercise',
+      code: 'EXERCISE_UPDATE_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Exercise does not exist',
+      code: 'EXERCISE_DOES_NOT_EXIST',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete exercise',
+      code: 'EXERCISE_DELETE_FAILED',
+    },
+  },
+  EXERCISE_QUESTION: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Exercise question already exist',
+      code: 'EXERCISE_QUESTION_ALREADY_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store exercise question',
+      code: 'EXERCISE_QUESTION_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete exercise question',
+      code: 'EXERCISE_QUESTION_BULK_DELETE_FAILED',
+    },
+  },
 };

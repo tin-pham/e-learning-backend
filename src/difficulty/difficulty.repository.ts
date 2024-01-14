@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { paginate } from '../common/function/paginate';
 import { DatabaseService } from '../database';
 import { DifficultyGetListDTO } from './dto/difficulty.dto';
-import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class DifficultyRepository {

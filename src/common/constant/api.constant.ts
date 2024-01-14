@@ -515,4 +515,40 @@ export const API = {
       OPERATION: 'Bulk delete lesson video',
     },
   },
+  EXERCISE: {
+    TAGS: 'Exercise',
+    CONTROLLER: 'exercise',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store exercise',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list exercises',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get exercise detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update exercise',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete exercise',
+    },
+  },
+  EXERCISE_QUESTION: {
+    TAGS: 'ExerciseQuestion',
+    CONTROLLER: 'exercise-question',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store exercise question',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete exercise question',
+    },
+  },
 };

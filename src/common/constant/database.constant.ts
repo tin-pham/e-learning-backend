@@ -359,4 +359,31 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  EXERCISE: {
+    NAME: 'exercise',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
+  EXERCISE_QUESTION: {
+    NAME: 'exercise_question',
+    SCHEMA: {
+      ID: 'id',
+      EXERCISE_ID: 'exercise_id',
+      QUESTION_ID: 'question_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };
