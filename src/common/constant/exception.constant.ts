@@ -760,6 +760,36 @@ export const EXCEPTION = {
       message: 'Lesson does not exist',
       code: 'LESSON_DOES_NOT_EXIST',
     },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Lesson not found',
+      code: 'LESSON_NOT_FOUND',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store lesson',
+      code: 'LESSON_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list lesson',
+      code: 'LESSON_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail lesson',
+      code: 'LESSON_GET_DETAIL_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update lesson',
+      code: 'LESSON_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete lesson',
+      code: 'LESSON_DELETE_FAILED',
+    },
   },
   LESSON_FILE: {
     ALREADY_EXIST: {
@@ -783,6 +813,11 @@ export const EXCEPTION = {
       status: HttpStatus.BAD_REQUEST,
       message: 'Video does not exist',
       code: 'VIDEO_DOES_NOT_EXIST',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Video not found',
+      code: 'VIDEO_NOT_FOUND',
     },
     UPLOAD_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -869,6 +904,33 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk delete exercise question',
       code: 'EXERCISE_QUESTION_BULK_DELETE_FAILED',
+    },
+  },
+  LESSON_COMMENT: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Lesson comment does not exist',
+      code: 'LESSON_COMMENT_DOES_NOT_EXIST',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Lesson comment not found',
+      code: 'LESSON_COMMENT_NOT_FOUND',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store lesson comment',
+      code: 'LESSON_COMMENT_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list lesson comment',
+      code: 'LESSON_COMMENT_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail lesson comment',
+      code: 'LESSON_COMMENT_GET_DETAIL_FAILED',
     },
   },
 };

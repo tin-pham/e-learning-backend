@@ -33,6 +33,7 @@ import { VideoEntity } from '../video/video.entity';
 import { LessonVideoEntity } from '../lesson-video/lesson-video.entity';
 import { ExerciseEntity } from '../exercise/exercise.entity';
 import { ExerciseQuestionEntity } from '../exercise-question/exercise-question.entity';
+import { LessonCommentEntity } from '../lesson-comment/lesson-comment.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -69,6 +70,7 @@ export interface KyselyTables {
   lessonFile: LessonFileEntity;
   video: VideoEntity;
   lessonVideo: LessonVideoEntity;
+  lessonComment: LessonCommentEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

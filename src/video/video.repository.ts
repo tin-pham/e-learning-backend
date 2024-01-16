@@ -23,6 +23,15 @@ export class VideoRepository {
     return this.database.deleteFrom('video').where('id', 'in', ids).execute();
   }
 
+  findOneById(id: number) {
+    return this.database
+      .selectFrom('video')
+      .select(['id', 'name', 'path', 'mimeType'])
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
   async countById(id: number) {
     const { count } = await this.database
       .selectFrom('video')

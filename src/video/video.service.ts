@@ -1,4 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, StreamableFile } from '@nestjs/common';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { VideoRepository } from './video.repository';
@@ -28,7 +30,7 @@ export class VideoService extends BaseService {
       const videoData = new VideoEntity({
         name: dto.video.originalName,
         path: dto.video.path,
-        mimeType: dto.video['busBoyMimeType']
+        mimeType: dto.video['busBoyMimeType'],
       });
 
       const video = await this.videoRepository.insert(videoData);
@@ -87,6 +89,18 @@ export class VideoService extends BaseService {
     }
   }
 
+  async getDetail(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const { video } = await this.validateGetDetail(id, actorId);
+
+    const stream = createReadStream(join(process.cwd(), video.path));
+
+    return new StreamableFile(stream, {
+      disposition: `inline; filename="${video.name}"`,
+      type: video.mimeType,
+    });
+  }
+
   private async validateDelete(dto: VideoBulkDeleteDTO, actorId: number) {
     // Check exist
     const videoCount = await this.videoRepository.countByIds(dto.ids);
@@ -94,5 +108,16 @@ export class VideoService extends BaseService {
       const { status, message, code } = EXCEPTION.VIDEO.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
+  }
+
+  private async validateGetDetail(id: number, actorId: number) {
+    // Check exist
+    const video = await this.videoRepository.findOneById(id);
+    if (!video) {
+      const { status, message, code } = EXCEPTION.VIDEO.NOT_FOUND;
+      this.throwException({ status, message, code, actorId });
+    }
+
+    return { video };
   }
 }

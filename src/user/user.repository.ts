@@ -65,6 +65,16 @@ export class UserRepository {
     return Number(count);
   }
 
+  async countById(id: number) {
+    const { count } = await this.database
+      .selectFrom('users')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('users.id', '=', id)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   findOneByUsername(username: string): Promise<UserEntity> {
     return this.database
       .selectFrom('users')

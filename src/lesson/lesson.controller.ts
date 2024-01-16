@@ -1,8 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
@@ -18,36 +17,34 @@ import { Roles } from '../auth/role/role.decorator';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
-import { ParentService } from './parent.service';
-import { ParentStoreDTO, ParentUpdateDTO } from './dto/parent.dto';
-import { UserGetListDTO } from '../user/dto/user.dto';
-import { ParentDeleteRO, ParentGetDetailRO, ParentGetListRO, ParentStoreRO, ParentUpdateRO } from './ro/parent.ro';
+import { LessonService } from './lesson.service';
+import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
+import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.PARENT;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.LESSON;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
-export class ParentController {
-  constructor(private readonly parentService: ParentService) {}
+export class LessonController {
+  constructor(private readonly lessonService: LessonService) {}
 
   @ApiOperation({ summary: STORE.OPERATION })
-  @ApiCreatedResponse({ type: ParentStoreRO })
+  @ApiCreatedResponse({ type: LessonStoreRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
-  @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  store(@Body() dto: ParentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.parentService.store(dto, decoded);
+  store(@Body() dto: LessonStoreDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonService.store(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_LIST.OPERATION })
-  @ApiOkResponse({ type: ParentGetListRO })
+  @ApiOkResponse({ type: LessonGetListRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -56,12 +53,13 @@ export class ParentController {
   @Get(GET_LIST.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  getList(@Query() dto: UserGetListDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.parentService.getList(dto, decoded);
+  getList(@Query() dto: LessonGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonService.getList(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_DETAIL.OPERATION })
-  @ApiOkResponse({ type: ParentGetDetailRO })
+  @ApiOkResponse({ type: LessonGetDetailRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiNotFoundResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -70,27 +68,26 @@ export class ParentController {
   @Get(GET_DETAIL.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
-    return this.parentService.getDetail(id, decoded);
+  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonService.getDetail(id, decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })
-  @ApiOkResponse({ type: ParentUpdateRO })
+  @ApiOkResponse({ type: LessonUpdateRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
-  @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  update(@Param('id') id: string, @Body() dto: ParentUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.parentService.update(id, dto, decoded);
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: LessonUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonService.update(id, dto, decoded);
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })
-  @ApiOkResponse({ type: ParentDeleteRO })
+  @ApiOkResponse({ type: LessonDeleteRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
@@ -99,7 +96,7 @@ export class ParentController {
   @Delete(DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
-    return this.parentService.delete(id, decoded);
+  delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonService.delete(id, decoded);
   }
 }

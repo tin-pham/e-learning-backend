@@ -510,6 +510,10 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Upload video',
     },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get video detail',
+    },
   },
   LESSON_VIDEO: {
     TAGS: 'LessonVideo',
@@ -561,6 +565,54 @@ export const API = {
     GET_LIST: {
       ROUTE: '',
       OPERATION: 'Get list exercise questions',
+    },
+  },
+  LESSON: {
+    TAGS: 'Lesson',
+    CONTROLLER: 'lesson',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store lesson',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list lessons',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get lesson detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update lesson',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete lesson',
+    },
+  },
+  LESSON_COMMENT: {
+    TAGS: 'LessonComment',
+    CONTROLLER: 'lesson-comment',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store lesson comment',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list lesson comments',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get lesson comment detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update lesson comment',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete lesson comment',
     },
   },
 };

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, StreamableFile, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -6,6 +6,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -19,11 +20,11 @@ import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { VideoService } from './video.service';
-import { ResultRO } from '../common/ro/result.ro';
 import { VideoBulkDeleteDTO, VideoGetListDTO, VideoUploadDTO } from './dto/video.dto';
 import { VideoGetListRO, VideoUploadRO } from './ro/video.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, UPLOAD, BULK_DELETE, GET_LIST } = API.VIDEO;
+const { TAGS, CONTROLLER, UPLOAD, BULK_DELETE, GET_LIST, GET_DETAIL } = API.VIDEO;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -44,6 +45,21 @@ export class VideoController {
   @UseGuards(JwtGuard, RoleGuard)
   upload(@Body() dto: VideoUploadDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.videoService.upload(dto, decoded);
+  }
+
+  @ApiOperation({ summary: GET_DETAIL.OPERATION })
+  @ApiOkResponse({ type: StreamableFile })
+  @ApiNotFoundResponse({ type: HttpExceptionRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
+  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.videoService.getDetail(id, decoded);
   }
 
   @ApiOperation({ summary: BULK_DELETE.OPERATION })

@@ -19,4 +19,8 @@ export class FileBulkDeleteDTO {
   ids: number[];
 }
 
-export class FileGetListDTO extends PaginateDTO {}
+export class FileGetListDTO extends PaginateDTO {
+  @ApiProperty()
+  @IsNumber()
+  lessonId: number;
+}

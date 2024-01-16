@@ -9,9 +9,16 @@ export class FileRepository {
   constructor(private readonly database: DatabaseService) {}
 
   find(dto: FileGetListDTO) {
-    const { limit, page } = dto;
+    const { limit, page, lessonId } = dto;
 
-    const query = this.database.selectFrom('file').select(['id', 'url']).where('deletedAt', 'is', null).orderBy('id');
+    const withLesson = Boolean(lessonId);
+
+    const query = this.database
+      .selectFrom('file')
+      .select(['file.id', 'file.url'])
+      .where('file.deletedAt', 'is', null)
+      .orderBy('file.id')
+      .$if(withLesson, (qb) => qb.innerJoin('lessonFile', 'lessonFile.fileId', 'file.id').where('lessonFile.deletedAt', 'is', null));
 
     return paginate(query, { limit, page });
   }

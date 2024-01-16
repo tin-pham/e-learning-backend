@@ -19,6 +19,7 @@ import { LessonVideoModule } from './lesson-video/lesson-video.module';
 import { DifficultyModule } from './difficulty/difficulty.module';
 import { ExerciseModule } from './exercise/exercise.module';
 import { ExerciseQuestionModule } from './exercise-question/exercise-question.module';
+import { LessonModule } from './lesson/lesson.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ExerciseQuestionModule } from './exercise-question/exercise-question.mo
     ExerciseModule,
     ExerciseQuestionModule,
     FileModule,
+    LessonModule,
     LessonFileModule,
     VideoModule,
     LessonVideoModule,
