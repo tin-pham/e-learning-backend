@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { PaginateRO } from '../../common/ro/paginate.ro';
+import { Expose, Type } from 'class-transformer';
 
-export class FileStoreRO {
+export class FileGetListDataRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -11,8 +12,9 @@ export class FileStoreRO {
   url: string;
 }
 
-export class FileDeleteRO {
-  @ApiProperty()
+export class FileGetListRO extends PaginateRO<FileGetListDataRO> {
+  @ApiProperty({ type: [FileGetListDataRO] })
+  @Type(() => FileGetListDataRO)
   @Expose()
-  id: number;
+  data: FileGetListDataRO[];
 }

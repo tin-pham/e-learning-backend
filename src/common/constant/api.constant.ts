@@ -470,13 +470,17 @@ export const API = {
   FILE: {
     TAGS: 'File',
     CONTROLLER: 'file',
-    STORE: {
+    BULK_STORE: {
       ROUTE: '',
-      OPERATION: 'Store file',
+      OPERATION: 'Bulk store file',
     },
-    DELETE: {
+    BULK_DELETE: {
       ROUTE: ':id',
-      OPERATION: 'Delete file',
+      OPERATION: 'Bulk delete file',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list files',
     },
   },
   LESSON_FILE: {
@@ -494,13 +498,17 @@ export const API = {
   VIDEO: {
     TAGS: 'Video',
     CONTROLLER: 'video',
-    STORE: {
+    BULK_DELETE: {
       ROUTE: '',
-      OPERATION: 'Store video',
+      OPERATION: 'Bulk delete video',
     },
-    DELETE: {
-      ROUTE: ':id',
-      OPERATION: 'Delete video',
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list videos',
+    },
+    UPLOAD: {
+      ROUTE: '',
+      OPERATION: 'Upload video',
     },
   },
   LESSON_VIDEO: {
@@ -549,6 +557,10 @@ export const API = {
     BULK_DELETE: {
       ROUTE: '',
       OPERATION: 'Bulk delete exercise question',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list exercise questions',
     },
   },
 };

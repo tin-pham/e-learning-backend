@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
-import { VideoEntity } from './video.entity';
 import { VideoRepository } from './video.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { VideoStoreDTO } from './dto/video.dto';
-import { VideoDeleteRO, VideoStoreRO } from './ro/video.ro';
+import { VideoBulkDeleteDTO, VideoGetListDTO, VideoUploadDTO } from './dto/video.dto';
+import { ResultRO } from '../common/ro/result.ro';
+import { VideoGetListRO, VideoUploadRO } from './ro/video.ro';
+import { VideoEntity } from './video.entity';
 
 @Injectable()
 export class VideoService extends BaseService {
@@ -18,62 +19,80 @@ export class VideoService extends BaseService {
     super(elasticLogger);
   }
 
-  async store(dto: VideoStoreDTO, decoded: IJwtPayload) {
+  async upload(dto: VideoUploadDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    const response = new VideoStoreRO();
+    const response = new VideoUploadRO();
 
     try {
-      const videoData = new VideoEntity();
-      videoData.url = dto.url;
-      videoData.createdBy = actorId;
+      const videoData = new VideoEntity({
+        name: dto.video.originalName,
+        path: dto.video.path,
+        mimeType: dto.video['busBoyMimeType']
+      });
 
       const video = await this.videoRepository.insert(videoData);
 
       response.id = video.id;
-      response.url = video.url;
+      response.name = video.name;
+      response.path = video.path;
+      response.mimeType = video.mimeType;
     } catch (error) {
-      const { code, status, message } = EXCEPTION.VIDEO.STORE_FAILED;
+      const { status, message, code } = EXCEPTION.VIDEO.UPLOAD_FAILED;
       this.logger.error(error);
-      this.throwException({ code, status, message, actorId });
+      this.throwException({ status, message, code, actorId });
     }
 
     return this.success({
-      classRO: VideoStoreRO,
+      classRO: VideoUploadRO,
       response,
-      message: 'Video stored successfully',
+      message: 'Video has been uploaded successfully',
       actorId,
     });
   }
 
-  async delete(id: number, decoded: IJwtPayload) {
+  async bulkDelete(dto: VideoBulkDeleteDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateDelete(id, actorId);
-
-    const response = new VideoDeleteRO();
+    await this.validateDelete(dto, actorId);
 
     try {
-      const video = await this.videoRepository.delete(id, actorId);
-      response.id = video.id;
+      await this.videoRepository.deleteMultipleByIds(dto.ids);
     } catch (error) {
-      const { code, status, message } = EXCEPTION.VIDEO.DELETE_FAILED;
+      const { status, message, code } = EXCEPTION.VIDEO.BULK_DELETE_FAILED;
       this.logger.error(error);
-      this.throwException({ code, status, message, actorId });
+      this.throwException({ status, message, code, actorId });
     }
+
     return this.success({
-      classRO: VideoDeleteRO,
-      response,
-      message: 'Video deleted successfully',
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Videos has been deleted successfully',
       actorId,
     });
   }
 
-  private async validateDelete(id: number, actorId: number) {
-    // check exist
-    const videoCount = await this.videoRepository.countById(id);
-    if (!videoCount) {
-      const { code, status, message } = EXCEPTION.VIDEO.DELETE_FAILED;
-      this.throwException({ code, status, message, actorId });
+  async getList(dto: VideoGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    try {
+      const response = await this.videoRepository.find(dto);
+
+      return this.success({
+        classRO: VideoGetListRO,
+        response,
+      });
+    } catch (error) {
+      const { status, message, code } = EXCEPTION.VIDEO.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, message, code, actorId });
+    }
+  }
+
+  private async validateDelete(dto: VideoBulkDeleteDTO, actorId: number) {
+    // Check exist
+    const videoCount = await this.videoRepository.countByIds(dto.ids);
+    if (videoCount !== dto.ids.length) {
+      const { status, message, code } = EXCEPTION.VIDEO.DOES_NOT_EXIST;
+      this.throwException({ status, message, code, actorId });
     }
   }
 }

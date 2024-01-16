@@ -748,6 +748,11 @@ export const EXCEPTION = {
       message: 'Failed to delete file',
       code: 'FILE_DELETE_FAILED',
     },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list file',
+      code: 'FILE_GET_LIST_FAILED',
+    },
   },
   LESSON: {
     DOES_NOT_EXIST: {
@@ -774,20 +779,25 @@ export const EXCEPTION = {
     },
   },
   VIDEO: {
-    STORE_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to store video',
-      code: 'VIDEO_STORE_FAILED',
-    },
-    DELETE_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to delete video',
-      code: 'VIDEO_DELETE_FAILED',
-    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Video does not exist',
       code: 'VIDEO_DOES_NOT_EXIST',
+    },
+    UPLOAD_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to upload video',
+      code: 'VIDEO_UPLOAD_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete video',
+      code: 'VIDEO_BULK_DELETE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list video',
+      code: 'VIDEO_GET_LIST_FAILED',
     },
   },
   LESSON_VIDEO: {

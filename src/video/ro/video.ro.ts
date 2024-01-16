@@ -1,7 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { PaginateRO } from '../../common/ro/paginate.ro';
 
-export class VideoStoreRO {
+export class VideoUploadRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+
+  @ApiProperty()
+  @Expose()
+  path: string;
+
+  @ApiProperty()
+  @Expose()
+  mimeType: string;
+}
+
+export class VideoGetListDataRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -11,12 +30,9 @@ export class VideoStoreRO {
   url: string;
 }
 
-export class VideoDeleteRO {
-  @ApiProperty()
+export class VideoGetListRO extends PaginateRO<VideoGetListDataRO> {
+  @ApiProperty({ type: [VideoGetListDataRO] })
+  @Type(() => VideoGetListDataRO)
   @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  url: string;
+  data: VideoGetListDataRO[];
 }

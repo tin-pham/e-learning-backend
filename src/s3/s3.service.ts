@@ -32,7 +32,10 @@ export class S3Service extends BaseService {
       return filename.replace(/[^\w.-]/g, '_');
     };
 
-    const promises = dto.files.map(async (file) => {
+    const response = new S3UploadRO();
+    response.urls = [];
+
+    for (const file of dto.files) {
       const sanitizedFilename = sanitizeFilename(file.originalName);
       const key = `${dto.directoryPath}/${nanoid()}-${sanitizedFilename}`;
       const command = new PutObjectCommand({
@@ -43,24 +46,24 @@ export class S3Service extends BaseService {
       });
 
       try {
-        const response = await this.s3Client.send(command);
-        if (response.$metadata.httpStatusCode === 200) {
+        const s3Response = await this.s3Client.send(command);
+        if (s3Response.$metadata.httpStatusCode === 200) {
           const url = `https://${bucket}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${key}`;
-          return url;
+          response.urls.push(url);
+        } else {
+          throw new Error('File not saved to s3');
         }
-        throw new Error('File not saved to s3');
       } catch (error) {
         const { code, status, message } = EXCEPTION.S3.UPLOAD_FAILED;
         this.logger.error('Cannot save file to s3', error);
         this.throwException({ code, status, message, actorId });
       }
-    });
+    }
 
-    const data = await Promise.all(promises);
     return this.success({
       classRO: S3UploadRO,
-      response: { urls: data },
-      message: 'File saved to s3',
+      response,
+      message: 'Files saved to s3',
       actorId,
     });
   }
@@ -68,7 +71,7 @@ export class S3Service extends BaseService {
   async bulkDelete(dto: S3DeleteDTO, decoded: IJwtPayload): Promise<void> {
     const actorId = decoded.userId;
 
-    dto.urls.map(async (url) => {
+    for (const url of dto.urls) {
       const key = url.split('.amazonaws.com/')[1];
 
       const deleteParams = {
@@ -78,15 +81,14 @@ export class S3Service extends BaseService {
 
       try {
         const response: PutObjectCommandOutput = await this.s3Client.send(new DeleteObjectCommand(deleteParams));
-        if (response.$metadata.httpStatusCode === 204) {
-          return url;
+        if (response.$metadata.httpStatusCode !== 204) {
+          throw new Error('File not delete from s3');
         }
-        throw new Error('File not delete from s3');
       } catch (err) {
         const { code, status, message } = EXCEPTION.S3.DELETE_FAILED;
         this.logger.error('Cannot delete file from s3', err);
         this.throwException({ code, status, message, actorId });
       }
-    });
+    }
   }
 }

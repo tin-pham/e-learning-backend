@@ -1,10 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { FileEntity } from './file.entity';
 import { FileRepository } from './file.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { FileStoreDTO } from './dto/file.dto';
-import { FileDeleteRO, FileStoreRO } from './ro/file.ro';
+import { FileBulkDeleteDTO, FileBulkStoreDTO, FileGetListDTO } from './dto/file.dto';
+import { FileGetListRO } from './ro/file.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class FileService extends BaseService {
@@ -17,16 +19,12 @@ export class FileService extends BaseService {
     super(elasticLogger);
   }
 
-  async store(dto: FileStoreDTO, decoded: IJwtPayload) {
+  async bulkStore(dto: FileBulkStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    const response = new FileStoreRO();
-
     try {
-      const file = await this.fileRepository.insert(dto);
-
-      response.id = file.id;
-      response.url = file.url;
+      const fileData = dto.urls.map((url) => new FileEntity({ url, createdBy: actorId }));
+      await this.fileRepository.insertMultiple(fileData);
     } catch (error) {
       const { status, message, code } = EXCEPTION.FILE.STORE_FAILED;
       this.logger.error(error);
@@ -34,23 +32,19 @@ export class FileService extends BaseService {
     }
 
     return this.success({
-      classRO: FileStoreRO,
-      response,
-      message: 'File has been stored successfully',
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Files has been stored successfully',
       actorId,
     });
   }
 
-  async delete(id: number, decoded: IJwtPayload) {
+  async bulkDelete(dto: FileBulkDeleteDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateDelete(id, actorId);
-
-    const response = new FileDeleteRO();
+    await this.validateDelete(dto, actorId);
 
     try {
-      const file = await this.fileRepository.delete(id, actorId);
-
-      response.id = file.id;
+      await this.fileRepository.deleteMultipleByIds(dto.ids, actorId);
     } catch (error) {
       const { status, message, code } = EXCEPTION.FILE.DELETE_FAILED;
       this.logger.error(error);
@@ -58,17 +52,33 @@ export class FileService extends BaseService {
     }
 
     return this.success({
-      classRO: FileDeleteRO,
-      response,
-      message: 'File has been deleted successfully',
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Files has been deleted successfully',
       actorId,
     });
   }
 
-  private async validateDelete(id: number, actorId: number) {
+  async getList(dto: FileGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    try {
+      const response = await this.fileRepository.find(dto);
+
+      return this.success({
+        classRO: FileGetListRO,
+        response,
+      });
+    } catch (error) {
+      const { status, message, code } = EXCEPTION.FILE.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, message, code, actorId });
+    }
+  }
+
+  private async validateDelete(dto: FileBulkDeleteDTO, actorId: number) {
     // Check exist
-    const fileCount = await this.fileRepository.countById(id);
-    if (!fileCount) {
+    const fileCount = await this.fileRepository.countByIds(dto.ids);
+    if (fileCount !== dto.ids.length) {
       const { status, message, code } = EXCEPTION.FILE.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }

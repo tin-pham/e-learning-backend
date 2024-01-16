@@ -1,23 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import { paginate } from '../common/function/paginate';
 import { DatabaseService } from '../database';
 import { FileEntity } from './file.entity';
+import { FileGetListDTO } from './dto/file.dto';
 
 @Injectable()
 export class FileRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insert(entity: FileEntity) {
-    return this.database.insertInto('file').values(entity).returning(['id', 'url']).executeTakeFirst();
+  find(dto: FileGetListDTO) {
+    const { limit, page } = dto;
+
+    const query = this.database.selectFrom('file').select(['id', 'url']).where('deletedAt', 'is', null).orderBy('id');
+
+    return paginate(query, { limit, page });
   }
 
-  delete(id: number, actorId: number) {
+  insertMultiple(entities: FileEntity[]) {
+    return this.database.insertInto('file').values(entities).execute();
+  }
+
+  deleteMultipleByIds(ids: number[], actorId: number) {
     return this.database
       .updateTable('file')
       .set({ deletedAt: new Date(), deletedBy: actorId })
-      .where('id', '=', id)
+      .where('id', 'in', ids)
       .where('deletedAt', 'is', null)
-      .returning(['id'])
-      .executeTakeFirst();
+      .execute();
   }
 
   async countById(id: number) {

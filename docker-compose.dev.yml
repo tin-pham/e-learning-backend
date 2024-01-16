@@ -10,6 +10,7 @@ services:
       target: development
     volumes:
       - .:/usr/src/app
+      - ./data/video:/usr/src/app/data/video
     depends_on:
       - postgres
       - memcached

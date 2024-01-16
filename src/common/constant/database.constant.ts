@@ -386,4 +386,19 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  VIDEO: {
+    NAME: 'video',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      PATH: 'path',
+      MIME_TYPE: 'mime_type',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };

@@ -1,13 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
 import { VideoEntity } from './video.entity';
+import { VideoGetListDTO } from './dto/video.dto';
+import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class VideoRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  find(dto: VideoGetListDTO) {
+    const { page, limit } = dto;
+    const query = this.database.selectFrom('video').select(['id', 'name', 'path', 'mimeType']).where('deletedAt', 'is', null).orderBy('id');
+
+    return paginate(query, { page, limit });
+  }
+
   insert(entity: VideoEntity) {
-    return this.database.insertInto('video').values(entity).returning(['id', 'url']).executeTakeFirst();
+    return this.database.insertInto('video').values(entity).returning(['id', 'name', 'path', 'mimeType']).executeTakeFirst();
+  }
+
+  deleteMultipleByIds(ids: number[]) {
+    return this.database.deleteFrom('video').where('id', 'in', ids).execute();
   }
 
   async countById(id: number) {
@@ -28,17 +41,5 @@ export class VideoRepository {
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
-  }
-
-  delete(id: number, actorId: number) {
-    return this.database
-      .updateTable('video')
-      .set({
-        deletedAt: new Date(),
-        deletedBy: actorId,
-      })
-      .where('id', '=', id)
-      .returning(['id'])
-      .executeTakeFirst();
   }
 }

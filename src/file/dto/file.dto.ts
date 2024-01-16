@@ -1,8 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUrl } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNumber, IsUrl } from 'class-validator';
+import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
+import { PaginateDTO } from '../../common/dto/paginate.dto';
 
-export class FileStoreDTO {
+export class FileBulkStoreDTO {
   @ApiProperty()
-  @IsUrl()
-  url: string;
+  @IsUrl({}, { each: true })
+  @ArrayMinSize(1)
+  @IsArray()
+  urls: string[];
 }
+
+export class FileBulkDeleteDTO {
+  @ApiArrayProperty(SwaggerQueryParamStyle.CSV)
+  @IsNumber({}, { each: true })
+  @ArrayMinSize(1)
+  @IsArray()
+  ids: number[];
+}
+
+export class FileGetListDTO extends PaginateDTO {}
