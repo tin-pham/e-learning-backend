@@ -623,8 +623,12 @@ export const API = {
       OPERATION: 'Store video',
     },
     GET_DETAIL: {
-      ROUTE: ':id',
+      ROUTE: ':lessonId',
       OPERATION: 'Get video detail',
+    },
+    GET_DETAIL_BY_LESSON_ID: {
+      ROUTE: ':lessonId',
+      OPERATION: 'Get video detail by lesson id',
     },
     DELETE: {
       ROUTE: ':id',

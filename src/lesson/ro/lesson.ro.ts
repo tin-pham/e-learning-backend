@@ -13,6 +13,14 @@ export class LessonStoreRO {
   @ApiProperty()
   @Expose()
   body: string;
+
+  @ApiProperty()
+  @Expose()
+  sectionId: number;
+
+  @ApiProperty()
+  @Expose()
+  videoUrl: string;
 }
 
 export class LessonGetListDataRO {
@@ -48,6 +56,14 @@ export class LessonGetDetailRO {
   @ApiProperty()
   @Expose()
   body: string;
+
+  @ApiProperty()
+  @Expose()
+  sectionId: number;
+
+  @ApiProperty()
+  @Expose()
+  videoUrl: string;
 }
 
 export class LessonUpdateRO {
@@ -62,6 +78,14 @@ export class LessonUpdateRO {
   @ApiProperty()
   @Expose()
   body: string;
+
+  @ApiProperty()
+  @Expose()
+  sectionId: number;
+
+  @ApiProperty()
+  @Expose()
+  videoUrl: string;
 }
 
 export class LessonDeleteRO {

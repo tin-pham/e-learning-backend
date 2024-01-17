@@ -9,12 +9,16 @@ export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
   find(dto: AttachmentGetListDTO) {
-    const { page, limit } = dto;
+    const { page, limit, lessonId } = dto;
+
+    const withLesson = Boolean(lessonId);
+
     const query = this.database
       .selectFrom('attachment')
       .select(['id', 'name', 'path', 'mimeType'])
       .where('deletedAt', 'is', null)
-      .orderBy('id');
+      .orderBy('id')
+      .$if(withLesson, (qb) => qb.innerJoin('lessonAttachment', 'lessonAttachment.attachmentId', 'attachment.id'));
 
     return paginate(query, { page, limit });
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { VideoEntity } from './video.entity';
 
 @Injectable()
@@ -14,6 +14,15 @@ export class VideoRepository {
     return this.database
       .selectFrom('video')
       .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .select(['id', 'url', 'lessonId'])
+      .executeTakeFirst();
+  }
+
+  findOneByLessonId(lessonId: number) {
+    return this.database
+      .selectFrom('video')
+      .where('lessonId', '=', lessonId)
       .where('deletedAt', 'is', null)
       .select(['id', 'url', 'lessonId'])
       .executeTakeFirst();

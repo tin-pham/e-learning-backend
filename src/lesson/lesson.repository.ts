@@ -9,16 +9,25 @@ export class LessonRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insert(entity: LessonEntity) {
-    return this.database.insertInto('lesson').values(entity).returningAll().executeTakeFirst();
+    return this.database.insertInto('lesson').values(entity).returning(['id', 'body', 'title', 'sectionId', 'videoUrl']).executeTakeFirst();
   }
 
   find(dto: LessonGetListDTO) {
-    const { limit, page } = dto;
+    const { limit, page, sectionId } = dto;
+
+    const withSection = Boolean(sectionId);
+
     const query = this.database
       .selectFrom('lesson')
-      .select(['id', 'title', 'body'])
+      .select(['lesson.id', 'lesson.title', 'lesson.body'])
       .where('lesson.deletedAt', 'is', null)
-      .orderBy('lesson.id', 'asc');
+      .orderBy('lesson.id', 'asc')
+      .$if(withSection, (qb) =>
+        qb
+          .innerJoin('section', 'section.id', 'lesson.sectionId')
+          .where('section.id', '=', sectionId)
+          .where('section.deletedAt', 'is', null),
+      );
 
     return paginate(query, { limit, page });
   }
@@ -26,7 +35,7 @@ export class LessonRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('lesson')
-      .select(['id', 'title', 'body'])
+      .select(['id', 'title', 'body', 'sectionId'])
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
@@ -38,7 +47,7 @@ export class LessonRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'title', 'body'])
+      .returning(['id', 'title', 'body', 'videoUrl'])
       .executeTakeFirst();
   }
 

@@ -6,6 +6,7 @@ import { VideoRepository } from './video.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { VideoStoreDTO } from './dto/video.dto';
 import { VideoDeleteRO, VideoGetDetailRO, VideoStoreRO } from './ro/video.ro';
+import { LessonRepository } from '../lesson/lesson.repository';
 
 @Injectable()
 export class VideoService extends BaseService {
@@ -14,12 +15,15 @@ export class VideoService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly videoRepository: VideoRepository,
+    private readonly lessonRepository: LessonRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: VideoStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    await this.validateStore(dto, actorId);
+
     let response: VideoStoreRO;
     try {
       const videoData = new VideoEntity({ url: dto.url, lessonId: dto.lessonId, createdBy: actorId });
@@ -73,6 +77,35 @@ export class VideoService extends BaseService {
     });
   }
 
+  async getDetailByLessonId(lessonId: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    let video: VideoEntity;
+
+    try {
+      video = await this.videoRepository.findOneByLessonId(lessonId);
+    } catch (error) {
+      const { status, message, code } = EXCEPTION.VIDEO.GET_DETAIL_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, message, code, actorId });
+    }
+
+    if (!video) {
+      const { status, message, code } = EXCEPTION.VIDEO.NOT_FOUND;
+      this.throwException({ status, message, code, actorId });
+    }
+
+    const response = new VideoGetDetailRO({
+      id: video.id,
+      url: video.url,
+      lessonId: video.lessonId,
+    });
+
+    return this.success({
+      classRO: VideoGetDetailRO,
+      response,
+    });
+  }
+
   async delete(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateDelete(id, actorId);
@@ -97,6 +130,15 @@ export class VideoService extends BaseService {
       message: 'Successfully delete video',
       actorId,
     });
+  }
+
+  private async validateStore(dto: VideoStoreDTO, actorId: number) {
+    // Check lesson exist
+    const lessonCount = await this.lessonRepository.countById(dto.lessonId);
+    if (!lessonCount) {
+      const { status, message, code } = EXCEPTION.LESSON.DOES_NOT_EXIST;
+      this.throwException({ status, message, code, actorId });
+    }
   }
 
   private async validateDelete(id: number, actorId: number) {

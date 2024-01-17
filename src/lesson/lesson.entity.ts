@@ -5,6 +5,10 @@ export class LessonEntity extends BaseEntity {
 
   body?: string;
 
+  sectionId: number;
+
+  videoUrl?: string;
+
   constructor(data?: Partial<LessonEntity>) {
     super(data);
     Object.assign(this, data);

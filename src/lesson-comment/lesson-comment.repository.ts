@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { LessonCommentEntity } from './lesson-comment.entity';
 import { LessonCommentGetListDTO } from './dto/lesson-comment.dto';
 

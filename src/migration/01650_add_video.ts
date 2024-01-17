@@ -3,6 +3,7 @@ import { DATABASE_TABLE } from '../common';
 import { DatabaseService } from '../database';
 
 const { NAME, SCHEMA } = DATABASE_TABLE.VIDEO;
+const { NAME: LESSON_NAME, SCHEMA: LESSON_SCHEMA } = DATABASE_TABLE.LESSON;
 const { NAME: USER_NAME, SCHEMA: USER_SCHEMA } = DATABASE_TABLE.USERS;
 
 export async function up(database: DatabaseService): Promise<void> {
@@ -10,6 +11,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.URL, 'varchar(255)', (column) => column.notNull())
+    .addColumn(SCHEMA.LESSON_ID, 'integer', (column) => column.notNull().references(`${LESSON_NAME}.${LESSON_SCHEMA.ID}`))
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')

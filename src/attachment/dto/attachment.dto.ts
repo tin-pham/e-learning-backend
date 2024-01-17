@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsNumber } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ArrayMinSize, IsArray, IsNumber, IsOptional } from 'class-validator';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { FileSystemStoredFile, IsFile } from 'nestjs-form-data';
@@ -18,4 +18,9 @@ export class AttachmentBulkDeleteDTO {
   ids: number[];
 }
 
-export class AttachmentGetListDTO extends PaginateDTO {}
+export class AttachmentGetListDTO extends PaginateDTO {
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  lessonId?: number;
+}

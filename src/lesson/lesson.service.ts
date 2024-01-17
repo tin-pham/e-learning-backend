@@ -5,6 +5,7 @@ import { LessonEntity } from './lesson.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonRepository } from './lesson.repository';
+import { SectionRepository } from '../section/section.repository';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
 
 @Injectable()
@@ -14,18 +15,22 @@ export class LessonService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly lessonRepository: LessonRepository,
+    private readonly sectionRepository: SectionRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: LessonStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    await this.validateStore(dto, actorId);
     const response = new LessonStoreRO();
 
     try {
       const lessonData = new LessonEntity({
         title: dto.title,
         body: dto.body,
+        sectionId: dto.sectionId,
+        videoUrl: dto.videoUrl,
         createdBy: actorId,
       });
 
@@ -34,6 +39,8 @@ export class LessonService extends BaseService {
       response.id = lesson.id;
       response.title = lesson.title;
       response.body = lesson.body;
+      response.sectionId = lesson.sectionId;
+      response.videoUrl = lesson.videoUrl;
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.STORE_FAILED;
       this.logger.error(error);
@@ -89,6 +96,8 @@ export class LessonService extends BaseService {
     response.id = lesson.id;
     response.body = lesson.body;
     response.title = lesson.title;
+    response.sectionId = lesson.sectionId;
+    response.videoUrl = lesson.videoUrl;
 
     return this.success({
       classRO: LessonGetDetailRO,
@@ -115,11 +124,16 @@ export class LessonService extends BaseService {
         lessonData.body = dto.body;
       }
 
+      if (dto.videoUrl) {
+        lessonData.videoUrl = dto.videoUrl;
+      }
+
       const lesson = await this.lessonRepository.update(id, lessonData);
 
       response.id = lesson.id;
       response.title = lesson.title;
       response.body = lesson.body;
+      response.videoUrl = lesson.videoUrl;
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.UPDATE_FAILED;
       this.logger.error(error);
@@ -142,7 +156,6 @@ export class LessonService extends BaseService {
 
     try {
       const lesson = await this.lessonRepository.delete(id, actorId);
-
       response.id = lesson.id;
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.DELETE_FAILED;
@@ -156,6 +169,15 @@ export class LessonService extends BaseService {
       message: 'Lesson has been deleted successfully',
       actorId,
     });
+  }
+
+  private async validateStore(dto: LessonStoreDTO, actorId: number) {
+    // Check section exist
+    const sectionCount = await this.sectionRepository.countById(dto.sectionId);
+    if (!sectionCount) {
+      const { status, message, code } = EXCEPTION.SECTION.DOES_NOT_EXIST;
+      this.throwException({ status, message, code, actorId });
+    }
   }
 
   private async validateUpdate(id: number, actorId: number) {
