@@ -1,11 +1,10 @@
 import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { createReadStream } from 'fs';
-import { join } from 'path';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { VideoRepository } from './video.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { VideoBulkDeleteDTO, VideoGetListDTO, VideoUploadDTO } from './dto/video.dto';
+import { VideoBulkDeleteDTO, VideoGetListDTO } from './dto/video.dto';
 import { ResultRO } from '../common/ro/result.ro';
 import { VideoGetListRO, VideoUploadRO } from './ro/video.ro';
 import { VideoEntity } from './video.entity';
@@ -21,16 +20,16 @@ export class VideoService extends BaseService {
     super(elasticLogger);
   }
 
-  async upload(dto: VideoUploadDTO, decoded: IJwtPayload) {
+  async upload(file: Express.Multer.File, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
     const response = new VideoUploadRO();
 
     try {
       const videoData = new VideoEntity({
-        name: dto.video.originalName,
-        path: dto.video.path,
-        mimeType: dto.video['busBoyMimeType'],
+        name: file.originalname,
+        path: file.path,
+        mimeType: file.mimetype,
       });
 
       const video = await this.videoRepository.insert(videoData);
@@ -89,11 +88,15 @@ export class VideoService extends BaseService {
     }
   }
 
-  async getDetail(id: number, decoded: IJwtPayload) {
-    const actorId = decoded.userId;
-    const { video } = await this.validateGetDetail(id, actorId);
+  async getDetail(id: number) {
+    //const actorId = decoded.userId;
+    //const { video } = await this.validateGetDetail(id );
 
-    const stream = createReadStream(join(process.cwd(), video.path));
+    const video = await this.videoRepository.findOneById(id);
+
+    const startIndex = video.path.indexOf('/data');
+    const adjustedPath = video.path.slice(startIndex);
+    const stream = createReadStream(adjustedPath);
 
     return new StreamableFile(stream, {
       disposition: `inline; filename="${video.name}"`,
@@ -108,16 +111,5 @@ export class VideoService extends BaseService {
       const { status, message, code } = EXCEPTION.VIDEO.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
-  }
-
-  private async validateGetDetail(id: number, actorId: number) {
-    // Check exist
-    const video = await this.videoRepository.findOneById(id);
-    if (!video) {
-      const { status, message, code } = EXCEPTION.VIDEO.NOT_FOUND;
-      this.throwException({ status, message, code, actorId });
-    }
-
-    return { video };
   }
 }

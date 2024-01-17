@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, StreamableFile, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  StreamableFile,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -12,15 +26,16 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { FormDataRequest } from 'nestjs-form-data';
+import { Express } from 'express';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { Roles } from '../auth/role/role.decorator';
 import { JwtPayload } from '../common/decorator';
+import { LocalFilesInterceptor } from '../common/interceptor/local-file.interceptor';
 import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { VideoService } from './video.service';
-import { VideoBulkDeleteDTO, VideoGetListDTO, VideoUploadDTO } from './dto/video.dto';
+import { VideoBulkDeleteDTO, VideoGetListDTO } from './dto/video.dto';
 import { VideoGetListRO, VideoUploadRO } from './ro/video.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
@@ -39,12 +54,23 @@ export class VideoController {
   @ApiForbiddenResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
-  @FormDataRequest()
+  @UseInterceptors(
+    LocalFilesInterceptor({
+      fieldName: 'video',
+      path: '/videos',
+      fileFilter: (_, file, callback) => {
+        if (!file.mimetype.includes('video')) {
+          return callback(new BadRequestException('Provide a valid video'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
   @Post(UPLOAD.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  upload(@Body() dto: VideoUploadDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.videoService.upload(dto, decoded);
+  upload(@UploadedFile() file: Express.Multer.File, @JwtPayload() decoded: IJwtPayload) {
+    return this.videoService.upload(file, decoded);
   }
 
   @ApiOperation({ summary: GET_DETAIL.OPERATION })
@@ -55,11 +81,9 @@ export class VideoController {
   @ApiForbiddenResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
-  @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
-  @UseGuards(JwtGuard, RoleGuard)
-  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
-    return this.videoService.getDetail(id, decoded);
+  @Get(GET_DETAIL.ROUTE)
+  getDetail(@Param('id', ParseIntPipe) id: number) {
+    return this.videoService.getDetail(id);
   }
 
   @ApiOperation({ summary: BULK_DELETE.OPERATION })

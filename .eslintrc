@@ -5,19 +5,13 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint"],
-  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "plugin:import/recommended", "plugin:import/typescript"],
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
   "root": true,
   "env": {
     "node": true,
     "jest": true
   },
   "ignorePatterns": ["**/node_modules/**", "**/dist/**", "./data/", "./postgres-data/"],
-  "settings": {
-    "import/resolver": {
-      "typescript": {},
-      "node": {}
-    }
-  },
   "rules": {
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",

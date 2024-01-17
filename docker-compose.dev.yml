@@ -4,13 +4,14 @@ services:
   school-dev:
     container_name: school-dev
     restart: always
+    user: root
     build:
       dockerfile: Dockerfile
       context: .
       target: development
     volumes:
       - .:/usr/src/app
-      - ./data/video:/usr/src/app/data/video
+      - ./data/video:/usr/src/app/data/video:rw
     depends_on:
       - postgres
       - memcached

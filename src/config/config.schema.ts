@@ -1,4 +1,4 @@
-import * as Joi from 'joi';
+import Joi from 'joi';
 
 export const configSchema = {
   POSTGRES_HOST: Joi.string().required(),
@@ -14,4 +14,5 @@ export const configSchema = {
   ELASTICSEARCH_NODE: Joi.string().required(),
   ELASTICSEARCH_USERNAME: Joi.string().required(),
   ELASTICSEARCH_PASSWORD: Joi.string().required(),
+  UPLOADED_FILES_DESTINATION: Joi.string().required(),
 };

@@ -27,7 +27,15 @@ export class VideoGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  url: string;
+  name: string;
+
+  @ApiProperty()
+  @Expose()
+  path: string;
+
+  @ApiProperty()
+  @Expose()
+  mimeType: string;
 }
 
 export class VideoGetListRO extends PaginateRO<VideoGetListDataRO> {
