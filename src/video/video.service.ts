@@ -1,13 +1,11 @@
-import { Injectable, Logger, StreamableFile } from '@nestjs/common';
-import { createReadStream } from 'fs';
+import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { VideoEntity } from './video.entity';
 import { VideoRepository } from './video.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { VideoBulkDeleteDTO, VideoGetListDTO } from './dto/video.dto';
-import { ResultRO } from '../common/ro/result.ro';
-import { VideoGetListRO, VideoUploadRO } from './ro/video.ro';
-import { VideoEntity } from './video.entity';
+import { VideoStoreDTO } from './dto/video.dto';
+import { VideoDeleteRO, VideoGetDetailRO, VideoStoreRO } from './ro/video.ro';
 
 @Injectable()
 export class VideoService extends BaseService {
@@ -20,94 +18,91 @@ export class VideoService extends BaseService {
     super(elasticLogger);
   }
 
-  async upload(file: Express.Multer.File, decoded: IJwtPayload) {
+  async store(dto: VideoStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-
-    const response = new VideoUploadRO();
-
+    let response: VideoStoreRO;
     try {
-      const videoData = new VideoEntity({
-        name: file.originalname,
-        path: file.path,
-        mimeType: file.mimetype,
-      });
-
+      const videoData = new VideoEntity({ url: dto.url, lessonId: dto.lessonId, createdBy: actorId });
       const video = await this.videoRepository.insert(videoData);
 
-      response.id = video.id;
-      response.name = video.name;
-      response.path = video.path;
-      response.mimeType = video.mimeType;
-    } catch (error) {
-      const { status, message, code } = EXCEPTION.VIDEO.UPLOAD_FAILED;
-      this.logger.error(error);
-      this.throwException({ status, message, code, actorId });
-    }
-
-    return this.success({
-      classRO: VideoUploadRO,
-      response,
-      message: 'Video has been uploaded successfully',
-      actorId,
-    });
-  }
-
-  async bulkDelete(dto: VideoBulkDeleteDTO, decoded: IJwtPayload) {
-    const actorId = decoded.userId;
-    await this.validateDelete(dto, actorId);
-
-    try {
-      await this.videoRepository.deleteMultipleByIds(dto.ids);
-    } catch (error) {
-      const { status, message, code } = EXCEPTION.VIDEO.BULK_DELETE_FAILED;
-      this.logger.error(error);
-      this.throwException({ status, message, code, actorId });
-    }
-
-    return this.success({
-      classRO: ResultRO,
-      response: { result: true },
-      message: 'Videos has been deleted successfully',
-      actorId,
-    });
-  }
-
-  async getList(dto: VideoGetListDTO, decoded: IJwtPayload) {
-    const actorId = decoded.userId;
-    try {
-      const response = await this.videoRepository.find(dto);
-
-      return this.success({
-        classRO: VideoGetListRO,
-        response,
+      response = new VideoStoreRO({
+        id: video.id,
+        url: video.url,
+        lessonId: video.lessonId,
       });
     } catch (error) {
-      const { status, message, code } = EXCEPTION.VIDEO.GET_LIST_FAILED;
+      const { status, message, code } = EXCEPTION.VIDEO.STORE_FAILED;
       this.logger.error(error);
       this.throwException({ status, message, code, actorId });
     }
-  }
 
-  async getDetail(id: number) {
-    //const actorId = decoded.userId;
-    //const { video } = await this.validateGetDetail(id );
-
-    const video = await this.videoRepository.findOneById(id);
-
-    const startIndex = video.path.indexOf('/data');
-    const adjustedPath = video.path.slice(startIndex);
-    const stream = createReadStream(adjustedPath);
-
-    return new StreamableFile(stream, {
-      disposition: `inline; filename="${video.name}"`,
-      type: video.mimeType,
+    return this.success({
+      classRO: VideoStoreRO,
+      response,
+      message: 'Successfully store video',
+      actorId,
     });
   }
 
-  private async validateDelete(dto: VideoBulkDeleteDTO, actorId: number) {
+  async getDetail(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    let video: VideoEntity;
+
+    try {
+      video = await this.videoRepository.findOneById(id);
+    } catch (error) {
+      const { status, message, code } = EXCEPTION.VIDEO.GET_DETAIL_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, message, code, actorId });
+    }
+
+    if (!video) {
+      const { status, message, code } = EXCEPTION.VIDEO.NOT_FOUND;
+      this.throwException({ status, message, code, actorId });
+    }
+
+    const response = new VideoGetDetailRO({
+      id: video.id,
+      url: video.url,
+      lessonId: video.lessonId,
+    });
+
+    return this.success({
+      classRO: VideoGetDetailRO,
+      response,
+    });
+  }
+
+  async delete(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateDelete(id, actorId);
+
+    let response: VideoDeleteRO;
+
+    try {
+      const video = await this.videoRepository.delete(id, actorId);
+
+      response = new VideoDeleteRO({
+        id: video.id,
+      });
+    } catch (error) {
+      const { status, message, code } = EXCEPTION.VIDEO.DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, message, code, actorId });
+    }
+
+    return this.success({
+      classRO: VideoDeleteRO,
+      response,
+      message: 'Successfully delete video',
+      actorId,
+    });
+  }
+
+  private async validateDelete(id: number, actorId: number) {
     // Check exist
-    const videoCount = await this.videoRepository.countByIds(dto.ids);
-    if (videoCount !== dto.ids.length) {
+    const videoCount = await this.videoRepository.countById(id);
+    if (!videoCount) {
       const { status, message, code } = EXCEPTION.VIDEO.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }

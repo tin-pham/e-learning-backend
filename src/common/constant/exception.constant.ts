@@ -808,48 +808,48 @@ export const EXCEPTION = {
       code: 'LESSON_FILE_BULK_DELETE_FAILED',
     },
   },
-  VIDEO: {
+  ATTACHMENT: {
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Video does not exist',
-      code: 'VIDEO_DOES_NOT_EXIST',
+      code: 'ATTACHMENT_DOES_NOT_EXIST',
     },
     NOT_FOUND: {
       status: HttpStatus.NOT_FOUND,
       message: 'Video not found',
-      code: 'VIDEO_NOT_FOUND',
+      code: 'ATTACHMENT_NOT_FOUND',
     },
     UPLOAD_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to upload video',
-      code: 'VIDEO_UPLOAD_FAILED',
+      code: 'ATTACHMENT_UPLOAD_FAILED',
     },
     BULK_DELETE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk delete video',
-      code: 'VIDEO_BULK_DELETE_FAILED',
+      code: 'ATTACHMENT_BULK_DELETE_FAILED',
     },
     GET_LIST_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get list video',
-      code: 'VIDEO_GET_LIST_FAILED',
+      code: 'ATTACHMENT_GET_LIST_FAILED',
     },
   },
-  LESSON_VIDEO: {
+  LESSON_ATTACHMENT: {
     ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
-      message: 'Lesson video already exist',
-      code: 'LESSON_VIDEO_ALREADY_EXIST',
+      message: 'Lesson attachment already exist',
+      code: 'LESSON_ATTACHMENT_ALREADY_EXIST',
     },
     BULK_STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to bulk store lesson video',
-      code: 'LESSON_VIDEO_BULK_STORE_FAILED',
+      message: 'Failed to bulk store lesson attachment',
+      code: 'LESSON_ATTACHMENT_BULK_STORE_FAILED',
     },
     BULK_DELETE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to bulk delete lesson video',
-      code: 'LESSON_VIDEO_BULK_DELETE_FAILED',
+      message: 'Failed to bulk delete lesson attachment',
+      code: 'LESSON_ATTACHMENT_BULK_DELETE_FAILED',
     },
   },
   EXERCISE: {
@@ -931,6 +931,33 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get detail lesson comment',
       code: 'LESSON_COMMENT_GET_DETAIL_FAILED',
+    },
+  },
+  VIDEO: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Video not found',
+      code: 'VIDEO_NOT_FOUND',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Video does not exist',
+      code: 'VIDEO_DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store video',
+      code: 'VIDEO_STORE_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail video',
+      code: 'VIDEO_GET_DETAIL_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete video',
+      code: 'VIDEO_DELETE_FAILED',
     },
   },
 };

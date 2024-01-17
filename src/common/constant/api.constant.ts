@@ -495,36 +495,36 @@ export const API = {
       OPERATION: 'Bulk delete lesson file',
     },
   },
-  VIDEO: {
-    TAGS: 'Video',
-    CONTROLLER: 'video',
+  ATTACHMENT: {
+    TAGS: 'Attachment',
+    CONTROLLER: 'attachment',
     BULK_DELETE: {
       ROUTE: '',
-      OPERATION: 'Bulk delete video',
+      OPERATION: 'Bulk delete attachment',
     },
     GET_LIST: {
       ROUTE: '',
-      OPERATION: 'Get list videos',
+      OPERATION: 'Get list attachments',
     },
     UPLOAD: {
       ROUTE: '',
-      OPERATION: 'Upload video',
+      OPERATION: 'Upload attachment',
     },
     GET_DETAIL: {
       ROUTE: ':id',
-      OPERATION: 'Get video detail',
+      OPERATION: 'Get attachment detail',
     },
   },
-  LESSON_VIDEO: {
-    TAGS: 'LessonVideo',
-    CONTROLLER: 'lesson-video',
+  LESSON_ATTACHMENT: {
+    TAGS: 'LessonAttachment',
+    CONTROLLER: 'lesson-attachment',
     BULK_STORE: {
       ROUTE: '',
-      OPERATION: 'Bulk store lesson video',
+      OPERATION: 'Bulk store lesson attachment',
     },
     BULK_DELETE: {
       ROUTE: '',
-      OPERATION: 'Bulk delete lesson video',
+      OPERATION: 'Bulk delete lesson attachment',
     },
   },
   EXERCISE: {
@@ -613,6 +613,22 @@ export const API = {
     DELETE: {
       ROUTE: ':id',
       OPERATION: 'Delete lesson comment',
+    },
+  },
+  VIDEO: {
+    TAGS: 'Video',
+    CONTROLLER: 'video',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store video',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get video detail',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete video',
     },
   },
 };

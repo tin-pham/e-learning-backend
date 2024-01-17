@@ -1,46 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
-import { PaginateRO } from '../../common/ro/paginate.ro';
+import { Expose } from 'class-transformer';
 
-export class VideoUploadRO {
+export class VideoStoreRO {
   @ApiProperty()
   @Expose()
   id: number;
 
   @ApiProperty()
   @Expose()
-  name: string;
+  url: string;
 
   @ApiProperty()
   @Expose()
-  path: string;
+  lessonId: number;
 
-  @ApiProperty()
-  @Expose()
-  mimeType: string;
+  constructor(data?: Partial<VideoStoreRO>) {
+    Object.assign(this, data);
+  }
 }
 
-export class VideoGetListDataRO {
+export class VideoGetDetailRO {
   @ApiProperty()
   @Expose()
   id: number;
 
   @ApiProperty()
   @Expose()
-  name: string;
+  url: string;
 
   @ApiProperty()
   @Expose()
-  path: string;
+  lessonId: number;
 
-  @ApiProperty()
-  @Expose()
-  mimeType: string;
+  constructor(data?: Partial<VideoGetDetailRO>) {
+    Object.assign(this, data);
+  }
 }
 
-export class VideoGetListRO extends PaginateRO<VideoGetListDataRO> {
-  @ApiProperty({ type: [VideoGetListDataRO] })
-  @Type(() => VideoGetListDataRO)
+export class VideoDeleteRO {
+  @ApiProperty()
   @Expose()
-  data: VideoGetListDataRO[];
+  id: number;
+
+  constructor(data?: Partial<VideoDeleteRO>) {
+    Object.assign(this, data);
+  }
 }

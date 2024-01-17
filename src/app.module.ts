@@ -14,12 +14,13 @@ import { QuestionModule } from './question/question.module';
 import { QuestionOptionModule } from './question-option/question-option.module';
 import { FileModule } from './file/file.module';
 import { LessonFileModule } from './lesson-file/lesson-file.module';
-import { VideoModule } from './video/video.module';
-import { LessonVideoModule } from './lesson-video/lesson-video.module';
 import { DifficultyModule } from './difficulty/difficulty.module';
 import { ExerciseModule } from './exercise/exercise.module';
 import { ExerciseQuestionModule } from './exercise-question/exercise-question.module';
 import { LessonModule } from './lesson/lesson.module';
+import { AttachmentModule } from './attachment/attachment.module';
+import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.module';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
@@ -58,8 +59,9 @@ import { LessonModule } from './lesson/lesson.module';
     FileModule,
     LessonModule,
     LessonFileModule,
+    AttachmentModule,
+    LessonAttachmentModule,
     VideoModule,
-    LessonVideoModule,
   ],
   providers: [...appProviders],
 })

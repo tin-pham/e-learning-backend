@@ -29,11 +29,12 @@ import { QuestionOptionEntity } from '../question-option/question-option.entity'
 import { FileEntity } from '../file/file.entity';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { LessonFileEntity } from '../lesson-file/lesson-file.entity';
-import { VideoEntity } from '../video/video.entity';
-import { LessonVideoEntity } from '../lesson-video/lesson-video.entity';
-import { ExerciseEntity } from '../exercise/exercise.entity';
 import { ExerciseQuestionEntity } from '../exercise-question/exercise-question.entity';
 import { LessonCommentEntity } from '../lesson-comment/lesson-comment.entity';
+import { AttachmentEntity } from '../attachment/attachment.entity';
+import { LessonAttachmentEntity } from '../lesson-attachment/lesson-attachment.entity';
+import { ExerciseEntity } from '../exercise/exercise.entity';
+import { VideoEntity } from '../video/video.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -68,9 +69,10 @@ export interface KyselyTables {
   file: FileEntity;
   lesson: LessonEntity;
   lessonFile: LessonFileEntity;
-  video: VideoEntity;
-  lessonVideo: LessonVideoEntity;
+  attachment: AttachmentEntity;
+  lessonAttachment: LessonAttachmentEntity;
   lessonComment: LessonCommentEntity;
+  video: VideoEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

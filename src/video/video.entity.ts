@@ -1,11 +1,9 @@
 import { BaseEntity } from '../base/base.entity';
 
 export class VideoEntity extends BaseEntity {
-  name: string;
+  url: string;
 
-  path: string;
-
-  mimeType: string;
+  lessonId: number;
 
   constructor(data?: Partial<VideoEntity>) {
     super(data);

@@ -17,16 +17,16 @@ import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { JwtPayload } from '../common/decorator';
-import { LessonVideoService } from './lesson-video.service';
-import { LessonVideoBulkDeleteDTO, LessonVideoBulkStoreDTO } from './dto/lesson-video.dto';
 import { ResultRO } from '../common/ro/result.ro';
+import { LessonAttachmentService } from './lesson-attachment.service';
+import { LessonAttachmentBulkDeleteDTO, LessonAttachmentBulkStoreDTO } from './dto/lesson-attachment.dto';
 
-const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.LESSON_VIDEO;
+const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.LESSON_ATTACHMENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
-export class LessonVideoController {
-  constructor(private readonly lessonVideoService: LessonVideoService) {}
+export class LessonAttachmentController {
+  constructor(private readonly lessonAttachmentService: LessonAttachmentService) {}
 
   @ApiOperation({ summary: BULK_STORE.OPERATION })
   @ApiCreatedResponse({ type: ResultRO })
@@ -40,8 +40,8 @@ export class LessonVideoController {
   @Roles(ROLE.STAFF)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkStore(@Body() dto: LessonVideoBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.lessonVideoService.bulkStore(dto, decoded);
+  bulkStore(@Body() dto: LessonAttachmentBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonAttachmentService.bulkStore(dto, decoded);
   }
 
   @ApiOperation({ summary: BULK_DELETE.OPERATION })
@@ -54,7 +54,7 @@ export class LessonVideoController {
   @Delete(BULK_DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  bulkDelete(@Query() dto: LessonVideoBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.lessonVideoService.bulkDelete(dto, decoded);
+  bulkDelete(@Query() dto: LessonAttachmentBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonAttachmentService.bulkDelete(dto, decoded);
   }
 }

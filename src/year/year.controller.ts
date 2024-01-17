@@ -74,7 +74,7 @@ export class YearController {
     return this.yearService.update(id, dto, decoded);
   }
 
-  @ApiOperation({ summary: GET_LIST.OPERATION })
+  @ApiOperation({ summary: DELETE.OPERATION })
   @ApiOkResponse({ type: YearDeleteRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })

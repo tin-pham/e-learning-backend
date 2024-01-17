@@ -386,7 +386,7 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
-  VIDEO: {
+  ATTACHMENT: {
     NAME: 'video',
     SCHEMA: {
       ID: 'id',
