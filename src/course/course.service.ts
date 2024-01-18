@@ -7,7 +7,7 @@ import { SectionRepository } from '../section/section.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
 import { CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
-import { CourseDeleteRO, CourseGetDetailRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
+import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
 
 @Injectable()
 export class CourseService extends BaseService {
@@ -62,7 +62,7 @@ export class CourseService extends BaseService {
       const response = await this.courseRepository.find(dto);
 
       return this.success({
-        classRO: CourseGetListDTO,
+        classRO: CourseGetListRO,
         response,
         message: 'Get list course successfully',
         actorId,

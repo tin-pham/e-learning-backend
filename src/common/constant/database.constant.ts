@@ -401,26 +401,13 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
-  VIDEO: {
-    NAME: 'video',
-    SCHEMA: {
-      ID: 'id',
-      URL: 'url',
-      LESSON_ID: 'lesson_id',
-      CREATED_AT: 'created_at',
-      CREATED_BY: 'created_by',
-      UPDATED_AT: 'updated_at',
-      UPDATED_BY: 'updated_by',
-      DELETED_AT: 'deleted_at',
-      DELETED_BY: 'deleted_by',
-    },
-  },
   LESSON: {
     NAME: 'lesson',
     SCHEMA: {
       ID: 'id',
       TITLE: 'title',
       BODY: 'body',
+      VIDEO_URL: 'video_url',
       SECTION_ID: 'section_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',

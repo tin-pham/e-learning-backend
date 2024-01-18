@@ -15,9 +15,10 @@ export class LessonStoreDTO {
   @IsNumber()
   sectionId: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsUrl()
-  videoUrl: string;
+  @IsOptional()
+  videoUrl?: string;
 }
 
 export class LessonGetListDTO extends PaginateDTO {

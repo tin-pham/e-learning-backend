@@ -18,7 +18,14 @@ export class AttachmentRepository {
       .select(['id', 'name', 'path', 'mimeType'])
       .where('deletedAt', 'is', null)
       .orderBy('id')
-      .$if(withLesson, (qb) => qb.innerJoin('lessonAttachment', 'lessonAttachment.attachmentId', 'attachment.id'));
+      .$if(withLesson, (qb) =>
+        qb
+          .innerJoin('lessonAttachment', 'lessonAttachment.attachmentId', 'attachment.id')
+          .where('lessonAttachment.deletedAt', 'is', null)
+          .innerJoin('lesson', 'lesson.id', 'lessonAttachment.lessonId')
+          .where('lesson.deletedAt', 'is', null)
+          .where('lesson.id', '=', lessonId),
+      );
 
     return paginate(query, { page, limit });
   }

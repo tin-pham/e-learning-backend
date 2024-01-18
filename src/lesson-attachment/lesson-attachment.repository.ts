@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService, Transaction } from '../database';
+import { DatabaseService } from '../database';
 import { LessonAttachmentEntity } from './lesson-attachment.entity';
 
 @Injectable()

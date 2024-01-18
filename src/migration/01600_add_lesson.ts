@@ -12,6 +12,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.TITLE, 'varchar(255)', (column) => column.notNull())
     .addColumn(SCHEMA.BODY, 'varchar(255)', (column) => column.notNull())
+    .addColumn(SCHEMA.VIDEO_URL, 'varchar(255)')
     .addColumn(SCHEMA.SECTION_ID, 'integer', (column) => column.notNull().references(`${SECTION_NAME}.${SECTION_SCHEMA.ID}`))
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))

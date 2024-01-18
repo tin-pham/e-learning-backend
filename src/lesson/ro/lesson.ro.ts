@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
+import { PaginateRO } from 'src/common/ro/paginate.ro';
 
 export class LessonStoreRO {
   @ApiProperty()
@@ -37,7 +38,7 @@ export class LessonGetListDataRO {
   body: string;
 }
 
-export class LessonGetListRO {
+export class LessonGetListRO extends PaginateRO<LessonGetListDataRO> {
   @ApiProperty({ type: [LessonGetListDataRO] })
   @Type(() => LessonGetListDataRO)
   @Expose()

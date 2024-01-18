@@ -20,7 +20,6 @@ import { ExerciseQuestionModule } from './exercise-question/exercise-question.mo
 import { LessonModule } from './lesson/lesson.module';
 import { AttachmentModule } from './attachment/attachment.module';
 import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.module';
-import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
@@ -61,7 +60,6 @@ import { VideoModule } from './video/video.module';
     LessonFileModule,
     AttachmentModule,
     LessonAttachmentModule,
-    VideoModule,
   ],
   providers: [...appProviders],
 })
