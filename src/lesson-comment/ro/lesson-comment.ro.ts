@@ -17,13 +17,13 @@ export class LessonCommentStoreRO {
 
   @ApiProperty()
   @Expose()
-  userId: number;
+  createdBy: number;
 
   @ApiPropertyOptional()
   @Expose()
   parentId?: number;
 
-  constructor(data?: Partial<LessonCommentStoreRO>) {
+  constructor(data?: LessonCommentStoreRO) {
     Object.assign(this, data);
   }
 }
@@ -43,7 +43,7 @@ export class LessonCommentGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  userId: number;
+  createdBy: number;
 
   @ApiPropertyOptional()
   @Expose()
@@ -72,13 +72,37 @@ export class LessonCommentGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  userId: number;
+  createdBy: number;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @Expose()
-  parentId?: number;
+  parentId: number;
 
-  constructor(data?: Partial<LessonCommentGetDetailRO>) {
+  constructor(data?: LessonCommentGetDetailRO) {
+    Object.assign(this, data);
+  }
+}
+
+export class LessonCommentUpdateRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  body: string;
+
+  constructor(data?: Partial<LessonCommentUpdateRO>) {
+    Object.assign(this, data);
+  }
+}
+
+export class LessonCommentDeleteRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  constructor(data?: Partial<LessonCommentDeleteRO>) {
     Object.assign(this, data);
   }
 }

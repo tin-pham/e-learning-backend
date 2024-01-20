@@ -104,5 +104,12 @@ export class LessonAttachmentService extends BaseService {
       const { status, message, code } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
+
+    // check lesson attachhment exist
+    const lessonAttachmentCount = await this.lessonAttachmentRepository.countByLessonIdsAndAttachmentIds(dto.lessonIds, dto.attachmentIds);
+    if (!lessonAttachmentCount) {
+      const { status, message, code } = EXCEPTION.LESSON_ATTACHMENT.DOES_NOT_EXIST;
+      this.throwException({ status, message, code, actorId });
+    }
   }
 }

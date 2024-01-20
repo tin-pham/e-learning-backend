@@ -1,4 +1,4 @@
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Injectable, mixin, NestInterceptor, Type } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
@@ -15,7 +15,7 @@ export function LocalFilesInterceptor(options: LocalFilesInterceptorOptions): Ty
   class Interceptor implements NestInterceptor {
     fileInterceptor: NestInterceptor;
     constructor(configService: ConfigService) {
-      const filesDestination = configService.get('UPLOADED_FILES_DESTINATION');
+      const filesDestination = configService.get('UPLOAD_FILES_PATH');
 
       const destination = `${filesDestination}${options.path}`;
 
@@ -26,7 +26,7 @@ export function LocalFilesInterceptor(options: LocalFilesInterceptorOptions): Ty
         fileFilter: options.fileFilter,
       };
 
-      this.fileInterceptor = new (FileInterceptor(options.fieldName, multerOptions))();
+      this.fileInterceptor = new (FilesInterceptor(options.fieldName, undefined, multerOptions))();
     }
 
     intercept(...args: Parameters<NestInterceptor['intercept']>) {

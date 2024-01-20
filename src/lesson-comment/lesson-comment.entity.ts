@@ -3,8 +3,6 @@ import { BaseEntity } from '../base/base.entity';
 export class LessonCommentEntity extends BaseEntity {
   lessonId: number;
 
-  userId: number;
-
   body: string;
 
   parentId?: number;

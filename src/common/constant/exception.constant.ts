@@ -841,6 +841,11 @@ export const EXCEPTION = {
       message: 'Lesson attachment already exist',
       code: 'LESSON_ATTACHMENT_ALREADY_EXIST',
     },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Lesson attachment does not exist',
+      code: 'LESSON_ATTACHMENT_DOES_NOT_EXIST',
+    },
     BULK_STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk store lesson attachment',
@@ -931,6 +936,16 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get detail lesson comment',
       code: 'LESSON_COMMENT_GET_DETAIL_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update lesson comment',
+      code: 'LESSON_COMMENT_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete lesson comment',
+      code: 'LESSON_COMMENT_DELETE_FAILED',
     },
   },
   VIDEO: {

@@ -29,6 +29,35 @@ export class ExerciseGetListRO extends PaginateRO<ExerciseGetListDataRO> {
   data: ExerciseGetListDataRO[];
 }
 
+export class ExerciseGetDetailQuestionOptionRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  text: string;
+
+  @ApiProperty()
+  @Expose()
+  isCorrect: boolean;
+}
+
+export class ExerciseGetDetailQuestionRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  text: string;
+
+  @ApiProperty({ type: [ExerciseGetDetailQuestionOptionRO] })
+  @Type(() => ExerciseGetDetailQuestionOptionRO)
+  @Expose()
+  options: ExerciseGetDetailQuestionOptionRO[];
+}
+
 export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
@@ -37,6 +66,11 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty({ type: [ExerciseGetDetailQuestionRO] })
+  @Type(() => ExerciseGetDetailQuestionRO)
+  @Expose()
+  questions: ExerciseGetDetailQuestionRO[];
 }
 
 export class ExerciseUpdateRO {

@@ -14,5 +14,5 @@ export const configSchema = {
   ELASTICSEARCH_NODE: Joi.string().required(),
   ELASTICSEARCH_USERNAME: Joi.string().required(),
   ELASTICSEARCH_PASSWORD: Joi.string().required(),
-  UPLOADED_FILES_DESTINATION: Joi.string().required(),
+  UPLOAD_FILES_PATH: Joi.string().required(),
 };

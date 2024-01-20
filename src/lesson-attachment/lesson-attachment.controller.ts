@@ -37,7 +37,7 @@ export class LessonAttachmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(BULK_STORE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   bulkStore(@Body() dto: LessonAttachmentBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {

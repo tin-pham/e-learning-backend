@@ -6,7 +6,7 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
 import { AttachmentRepository } from './attachment.repository';
 import { AttachmentEntity } from './attachment.entity';
 import { AttachmentBulkDeleteDTO, AttachmentGetListDTO } from './dto/attachment.dto';
-import { AttachmentGetListRO, AttachmentUploadRO } from './ro/attachment.ro';
+import { AttachmentGetListRO } from './ro/attachment.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
@@ -20,24 +20,19 @@ export class AttachmentService extends BaseService {
     super(elasticLogger);
   }
 
-  async upload(file: Express.Multer.File, decoded: IJwtPayload) {
+  async upload(files: Array<Express.Multer.File>, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    const response = new AttachmentUploadRO();
-
     try {
-      const attachmentData = new AttachmentEntity({
-        name: file.originalname,
-        path: file.path,
-        mimeType: file.mimetype,
-      });
+      for (const file of files) {
+        const attachmentData = new AttachmentEntity({
+          name: file.originalname,
+          path: file.path,
+          mimeType: file.mimetype,
+        });
 
-      const attachment = await this.attachmentRepository.insert(attachmentData);
-
-      response.id = attachment.id;
-      response.name = attachment.name;
-      response.path = attachment.path;
-      response.mimeType = attachment.mimeType;
+        await this.attachmentRepository.insert(attachmentData);
+      }
     } catch (error) {
       const { status, message, code } = EXCEPTION.ATTACHMENT.UPLOAD_FAILED;
       this.logger.error(error);
@@ -45,8 +40,8 @@ export class AttachmentService extends BaseService {
     }
 
     return this.success({
-      classRO: AttachmentUploadRO,
-      response,
+      classRO: ResultRO,
+      response: { result: true },
       message: 'Attachment has been uploaded successfully',
       actorId,
     });
@@ -92,7 +87,7 @@ export class AttachmentService extends BaseService {
     const actorId = decoded.userId;
     const { attachment } = await this.validateGetDetail(id, actorId);
 
-    const startIndex = attachment.path.indexOf('/data');
+    const startIndex = attachment.path.indexOf('/data/attachments');
     const adjustedPath = attachment.path.slice(startIndex);
     const stream = createReadStream(adjustedPath);
 

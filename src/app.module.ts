@@ -12,14 +12,14 @@ import { CourseModule } from './course/course.module';
 import { SectionModule } from './section/section.module';
 import { QuestionModule } from './question/question.module';
 import { QuestionOptionModule } from './question-option/question-option.module';
-import { FileModule } from './file/file.module';
-import { LessonFileModule } from './lesson-file/lesson-file.module';
 import { DifficultyModule } from './difficulty/difficulty.module';
 import { ExerciseModule } from './exercise/exercise.module';
 import { ExerciseQuestionModule } from './exercise-question/exercise-question.module';
 import { LessonModule } from './lesson/lesson.module';
 import { AttachmentModule } from './attachment/attachment.module';
 import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.module';
+import { RoleModule } from './role/role.module';
+import { LessonCommentModule } from './lesson-comment/lesson-comment.module';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.mo
     HealthModule,
     ThrottlerModule,
     S3Module,
-    // RoleModule,
+    RoleModule,
     // StudentModule,
     // TeacherModule,
     // ParentModule,
@@ -50,16 +50,15 @@ import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.mo
     // RoleMenuModule,
     CourseModule,
     SectionModule,
+    LessonModule,
+    AttachmentModule,
+    LessonAttachmentModule,
+    LessonCommentModule,
     DifficultyModule,
     QuestionModule,
     QuestionOptionModule,
     ExerciseModule,
     ExerciseQuestionModule,
-    FileModule,
-    LessonModule,
-    LessonFileModule,
-    AttachmentModule,
-    LessonAttachmentModule,
   ],
   providers: [...appProviders],
 })

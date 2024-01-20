@@ -62,24 +62,21 @@ export class ExerciseService extends BaseService {
 
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    let exercise: ExerciseEntity;
+
+    let response: any;
 
     try {
-      exercise = await this.exerciseRepository.findOneById(id);
+      response = await this.exerciseRepository.findOneById(id);
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
 
-    if (!exercise) {
+    if (!response) {
       const { code, status, message } = EXCEPTION.EXERCISE.NOT_FOUND;
       this.throwException({ code, status, message, actorId });
     }
-
-    const response = new ExerciseGetDetailRO();
-    response.id = exercise.id;
-    response.name = exercise.name;
 
     return this.success({
       classRO: ExerciseGetDetailRO,

@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class LessonCommentStoreDTO {
@@ -11,9 +12,21 @@ export class LessonCommentStoreDTO {
   @IsString()
   body: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsNumber()
+  @IsOptional()
   parentId?: number;
 }
 
-export class LessonCommentGetListDTO extends PaginateDTO {}
+export class LessonCommentGetListDTO extends PaginateDTO {
+  @ApiProperty()
+  @IsNumber()
+  @Type(() => Number)
+  lessonId: number;
+}
+
+export class LessonCommentUpdateDTO {
+  @ApiProperty()
+  @IsString()
+  body: string;
+}

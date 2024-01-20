@@ -1,14 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsNumber, IsOptional } from 'class-validator';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
-import { FileSystemStoredFile, IsFile } from 'nestjs-form-data';
-
-export class AttachmentUploadDTO {
-  @ApiProperty({ type: 'string', format: 'binary' })
-  @IsFile()
-  video: FileSystemStoredFile;
-}
 
 export class AttachmentBulkDeleteDTO {
   @ApiArrayProperty(SwaggerQueryParamStyle.CSV)

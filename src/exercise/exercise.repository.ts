@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { sql } from 'kysely';
 import { DatabaseService } from '../database';
 import { ExerciseEntity } from './exercise.entity';
 import { ExerciseGetListDTO } from './dto/exercise.dto';
 import { paginate } from '../common/function/paginate';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 @Injectable()
 export class ExerciseRepository {
@@ -29,12 +31,69 @@ export class ExerciseRepository {
       .executeTakeFirst();
   }
 
-  findOneById(id: number) {
+  async findOneById(id: number) {
     return this.database
-      .selectFrom('exercise')
-      .select(['id', 'name'])
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
+      .with('exercise_data', (qb) =>
+        qb
+          .selectFrom('exercise')
+          .leftJoin('exerciseQuestion', (join) =>
+            join.onRef('exerciseQuestion.exerciseId', '=', 'exercise.id').on('exerciseQuestion.deletedAt', 'is', null),
+          )
+          .leftJoin('question', (join) =>
+            join.onRef('question.id', '=', 'exerciseQuestion.questionId').on('question.deletedAt', 'is', null),
+          )
+          .where('exercise.deletedAt', 'is', null)
+          .select(['exercise.id', 'exercise.name', 'question.id as question_id']),
+      )
+      .with('question_data', (qb) =>
+        qb
+          .selectFrom('question')
+          .leftJoin('questionOption', (join) =>
+            join.onRef('questionOption.questionId', '=', 'question.id').on('questionOption.deletedAt', 'is', null),
+          )
+          .where('question.deletedAt', 'is', null)
+          .groupBy(['question.id', 'question.text'])
+          .select(({ fn, ref }) => [
+            'question.id',
+            'question.text',
+            fn
+              .coalesce(
+                fn
+                  .jsonAgg(
+                    jsonBuildObject({
+                      id: ref('questionOption.id'),
+                      text: ref('questionOption.text'),
+                      isCorrect: ref('questionOption.isCorrect'),
+                    }),
+                  )
+                  .filterWhere('questionOption.id', 'is not', null),
+                sql`'[]'`,
+              )
+              .as('options'),
+          ]),
+      )
+      .selectFrom('exercise_data')
+      .leftJoin('question_data', 'question_data.id', 'exercise_data.question_id')
+      .where('exercise_data.id', '=', id)
+      .groupBy(['exercise_data.id', 'exercise_data.name'])
+      .select(({ fn, ref }) => [
+        'exercise_data.id',
+        'exercise_data.name',
+        fn
+          .coalesce(
+            fn
+              .jsonAgg(
+                jsonBuildObject({
+                  id: ref('question_data.id'),
+                  text: ref('question_data.text'),
+                  options: ref('question_data.options'),
+                }),
+              )
+              .filterWhere('question_data.id', 'is not', null),
+            sql`'[]'`,
+          )
+          .as('questions'),
+      ])
       .executeTakeFirst();
   }
 
