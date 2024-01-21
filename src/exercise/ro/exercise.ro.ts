@@ -15,6 +15,10 @@ export class ExerciseStoreRO {
   @Expose()
   difficultyId: number;
 
+  @ApiProperty()
+  @Expose()
+  lessonId: number;
+
   constructor(data?: ExerciseStoreRO) {
     Object.assign(this, data);
   }

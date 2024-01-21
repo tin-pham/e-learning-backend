@@ -365,6 +365,7 @@ export const DATABASE_TABLE = {
       ID: 'id',
       NAME: 'name',
       DIFFICULTY_ID: 'difficulty_id',
+      LESSON_ID: 'lesson_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',
       UPDATED_AT: 'updated_at',

@@ -1,22 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from 'kysely';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
 import { DatabaseService } from '../database';
 import { ExerciseEntity } from './exercise.entity';
 import { ExerciseGetListDTO } from './dto/exercise.dto';
 import { paginate } from '../common/function/paginate';
-import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 @Injectable()
 export class ExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insert(entity: ExerciseEntity) {
-    return this.database.insertInto('exercise').values(entity).returning(['id', 'name', 'difficultyId']).executeTakeFirst();
+    return this.database.insertInto('exercise').values(entity).returning(['id', 'name', 'difficultyId', 'lessonId']).executeTakeFirst();
   }
 
   find(dto: ExerciseGetListDTO) {
-    const { limit, page } = dto;
-    const query = this.database.selectFrom('exercise').select(['id', 'name', 'difficultyId']).where('deletedAt', 'is', null);
+    const { limit, page, lessonId } = dto;
+    const query = this.database
+      .selectFrom('exercise')
+      .select(['id', 'name', 'difficultyId', 'lessonId'])
+      .where('deletedAt', 'is', null)
+      .where('lessonId', '=', lessonId);
 
     return paginate(query, { limit, page });
   }

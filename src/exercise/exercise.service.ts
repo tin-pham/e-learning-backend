@@ -20,20 +20,23 @@ export class ExerciseService extends BaseService {
 
   async store(dto: ExerciseStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+
     let response: ExerciseStoreRO;
 
     try {
+      // Store exercise
       const exerciseData = new ExerciseEntity({
         name: dto.name,
         difficultyId: dto.difficultyId,
+        lessonId: dto.lessonId,
       });
-
       const exercise = await this.exerciseRepository.insert(exerciseData);
 
       response = new ExerciseStoreRO({
         id: exercise.id,
         name: exercise.name,
         difficultyId: exercise.difficultyId,
+        lessonId: dto.lessonId,
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.STORE_FAILED;
