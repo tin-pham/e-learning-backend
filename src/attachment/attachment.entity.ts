@@ -7,7 +7,9 @@ export class AttachmentEntity extends BaseEntity {
 
   mimeType: string;
 
-  constructor(data?: Partial<AttachmentEntity>) {
+  directoryId: number;
+
+  constructor(data?: AttachmentEntity) {
     super(data);
     Object.assign(this, data);
   }

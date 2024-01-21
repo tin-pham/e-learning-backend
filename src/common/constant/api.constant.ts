@@ -635,4 +635,28 @@ export const API = {
       OPERATION: 'Delete video',
     },
   },
+  DIRECTORY: {
+    TAGS: 'Directory',
+    CONTROLLER: 'directory',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store directory',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list directories',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get directory detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update directory',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete directory',
+    },
+  },
 };

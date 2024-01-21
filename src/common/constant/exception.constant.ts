@@ -975,4 +975,36 @@ export const EXCEPTION = {
       code: 'VIDEO_DELETE_FAILED',
     },
   },
+  DIRECTORY: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Directory already exist',
+      code: 'DIRECTORY_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Directory does not exist',
+      code: 'DIRECTORY_DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store directory',
+      code: 'DIRECTORY_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list directory',
+      code: 'DIRECTORY_GET_LIST_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update directory',
+      code: 'DIRECTORY_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete directory',
+      code: 'DIRECTORY_DELETE_FAILED',
+    },
+  },
 };

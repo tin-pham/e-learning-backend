@@ -2,10 +2,11 @@ import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { createReadStream } from 'fs';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { ROOT_DIRECTORY_ID } from '../directory/enum/directory.enum';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AttachmentRepository } from './attachment.repository';
 import { AttachmentEntity } from './attachment.entity';
-import { AttachmentBulkDeleteDTO, AttachmentGetListDTO } from './dto/attachment.dto';
+import { AttachmentBulkDeleteDTO, AttachmentGetListDTO, AttachmentStoreDTO } from './dto/attachment.dto';
 import { AttachmentGetListRO } from './ro/attachment.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
@@ -20,7 +21,7 @@ export class AttachmentService extends BaseService {
     super(elasticLogger);
   }
 
-  async upload(files: Array<Express.Multer.File>, decoded: IJwtPayload) {
+  async upload(files: Array<Express.Multer.File>, dto: AttachmentStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
     try {
@@ -29,6 +30,7 @@ export class AttachmentService extends BaseService {
           name: file.originalname,
           path: file.path,
           mimeType: file.mimetype,
+          directoryId: dto.directoryId || ROOT_DIRECTORY_ID,
         });
 
         await this.attachmentRepository.insert(attachmentData);

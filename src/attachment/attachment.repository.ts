@@ -9,9 +9,10 @@ export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
   find(dto: AttachmentGetListDTO) {
-    const { page, limit, lessonId } = dto;
+    const { page, limit, lessonId, directoryId } = dto;
 
     const withLesson = Boolean(lessonId);
+    const withDirectory = Boolean(directoryId);
 
     const query = this.database
       .selectFrom('attachment')
@@ -25,6 +26,12 @@ export class AttachmentRepository {
           .innerJoin('lesson', 'lesson.id', 'lessonAttachment.lessonId')
           .where('lesson.deletedAt', 'is', null)
           .where('lesson.id', '=', lessonId),
+      )
+      .$if(withDirectory, (qb) =>
+        qb
+          .innerJoin('directory', 'directory.id', 'attachment.directoryId')
+          .where('directory.deletedAt', 'is', null)
+          .where('directory.id', '=', directoryId),
       );
 
     return paginate(query, { page, limit });

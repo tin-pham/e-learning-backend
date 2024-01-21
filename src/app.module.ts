@@ -20,6 +20,7 @@ import { AttachmentModule } from './attachment/attachment.module';
 import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.module';
 import { RoleModule } from './role/role.module';
 import { LessonCommentModule } from './lesson-comment/lesson-comment.module';
+import { DirectoryModule } from './directory/directory.module';
 
 @Module({
   imports: [
@@ -59,6 +60,8 @@ import { LessonCommentModule } from './lesson-comment/lesson-comment.module';
     QuestionOptionModule,
     ExerciseModule,
     ExerciseQuestionModule,
+    // Not test
+    DirectoryModule,
   ],
   providers: [...appProviders],
 })
