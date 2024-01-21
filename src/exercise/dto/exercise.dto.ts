@@ -1,11 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class ExerciseStoreDTO {
   @ApiProperty()
   @IsString()
   name: string;
+
+  @ApiProperty()
+  @IsNumber()
+  difficultyId: number;
 }
 
 export class ExerciseGetListDTO extends PaginateDTO {}

@@ -20,15 +20,21 @@ export class ExerciseService extends BaseService {
 
   async store(dto: ExerciseStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const response = new ExerciseStoreRO();
+    let response: ExerciseStoreRO;
+
     try {
-      const exerciseData = new ExerciseEntity();
-      exerciseData.name = dto.name;
+      const exerciseData = new ExerciseEntity({
+        name: dto.name,
+        difficultyId: dto.difficultyId,
+      });
 
       const exercise = await this.exerciseRepository.insert(exerciseData);
 
-      response.id = exercise.id;
-      response.name = exercise.name;
+      response = new ExerciseStoreRO({
+        id: exercise.id,
+        name: exercise.name,
+        difficultyId: exercise.difficultyId,
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.STORE_FAILED;
       this.logger.error(error);
@@ -98,7 +104,7 @@ export class ExerciseService extends BaseService {
         exerciseData.name = dto.name;
       }
 
-      const exercise = await this.exerciseRepository.update(id, dto);
+      const exercise = await this.exerciseRepository.update(id, exerciseData);
 
       response.id = exercise.id;
       response.name = exercise.name;

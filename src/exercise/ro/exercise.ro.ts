@@ -10,6 +10,14 @@ export class ExerciseStoreRO {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty()
+  @Expose()
+  difficultyId: number;
+
+  constructor(data?: ExerciseStoreRO) {
+    Object.assign(this, data);
+  }
 }
 
 export class ExerciseGetListDataRO {
@@ -58,6 +66,16 @@ export class ExerciseGetDetailQuestionRO {
   options: ExerciseGetDetailQuestionOptionRO[];
 }
 
+export class ExerciseGetDetailDifficultyRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+}
+
 export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
@@ -66,6 +84,11 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty({ type: ExerciseGetDetailDifficultyRO })
+  @Type(() => ExerciseGetDetailDifficultyRO)
+  @Expose()
+  difficulty: ExerciseGetDetailDifficultyRO;
 
   @ApiProperty({ type: [ExerciseGetDetailQuestionRO] })
   @Type(() => ExerciseGetDetailQuestionRO)

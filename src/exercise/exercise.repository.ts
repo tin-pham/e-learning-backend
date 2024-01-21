@@ -11,12 +11,12 @@ export class ExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insert(entity: ExerciseEntity) {
-    return this.database.insertInto('exercise').values(entity).returning(['id', 'name']).executeTakeFirst();
+    return this.database.insertInto('exercise').values(entity).returning(['id', 'name', 'difficultyId']).executeTakeFirst();
   }
 
   find(dto: ExerciseGetListDTO) {
     const { limit, page } = dto;
-    const query = this.database.selectFrom('exercise').select(['id', 'name']).where('deletedAt', 'is', null);
+    const query = this.database.selectFrom('exercise').select(['id', 'name', 'difficultyId']).where('deletedAt', 'is', null);
 
     return paginate(query, { limit, page });
   }
@@ -43,7 +43,7 @@ export class ExerciseRepository {
             join.onRef('question.id', '=', 'exerciseQuestion.questionId').on('question.deletedAt', 'is', null),
           )
           .where('exercise.deletedAt', 'is', null)
-          .select(['exercise.id', 'exercise.name', 'question.id as question_id']),
+          .select(['exercise.id', 'exercise.name', 'exercise.difficultyId', 'question.id as question_id']),
       )
       .with('question_data', (qb) =>
         qb
@@ -73,12 +73,14 @@ export class ExerciseRepository {
           ]),
       )
       .selectFrom('exercise_data')
+      .innerJoin('difficulty', 'difficulty.id', 'exercise_data.difficultyId')
       .leftJoin('question_data', 'question_data.id', 'exercise_data.question_id')
       .where('exercise_data.id', '=', id)
-      .groupBy(['exercise_data.id', 'exercise_data.name'])
+      .groupBy(['exercise_data.id', 'exercise_data.name', 'difficulty.id'])
       .select(({ fn, ref }) => [
         'exercise_data.id',
         'exercise_data.name',
+        jsonBuildObject({ id: ref('difficulty.id'), name: ref('difficulty.name') }).as('difficulty'),
         fn
           .coalesce(
             fn
