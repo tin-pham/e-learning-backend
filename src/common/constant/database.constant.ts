@@ -477,4 +477,33 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  ASSIGNMENT: {
+    NAME: 'assignment',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      DESCRIPTION: 'description',
+      DUE_DATE: 'due_date',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
+  COURSE_ASSIGNMENT: {
+    NAME: 'course_assignment',
+    SCHEMA: {
+      ID: 'id',
+      COURSE_ID: 'course_id',
+      ASSIGNMENT_ID: 'assignment_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };

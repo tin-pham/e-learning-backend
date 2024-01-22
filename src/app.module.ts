@@ -24,6 +24,8 @@ import { DirectoryModule } from './directory/directory.module';
 import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { CourseStudentModule } from './course-student/course-student.module';
+import { AssignmentModule } from './assignment/assignment.module';
+import { CourseAssignmentModule } from './course-assignment/course-assignment.module';
 
 @Module({
   imports: [
@@ -65,6 +67,8 @@ import { CourseStudentModule } from './course-student/course-student.module';
     StudentModule,
     TeacherModule,
     CourseStudentModule,
+    AssignmentModule,
+    CourseAssignmentModule,
   ],
   providers: [...appProviders],
 })

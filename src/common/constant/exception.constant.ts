@@ -1029,4 +1029,63 @@ export const EXCEPTION = {
       code: 'COURSE_STUDENT_BULK_DELETE_FAILED',
     },
   },
+  ASSIGNMENT: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Assignment does not exist',
+      code: 'ASSIGNMENT_DOES_NOT_EXIST',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Assignment not found',
+      code: 'ASSIGNMENT_NOT_FOUND',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store assignment',
+      code: 'ASSIGNMENT_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list assignment',
+      code: 'ASSIGNMENT_GET_LIST_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update assignment',
+      code: 'ASSIGNMENT_UPDATE_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail assignment',
+      code: 'ASSIGNMENT_GET_DETAIL_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete assignment',
+      code: 'ASSIGNMENT_DELETE_FAILED',
+    },
+  },
+  COURSE_ASSIGNMENT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Course assignment already exist',
+      code: 'COURSE_ASSIGNMENT_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Course assignment does not exist',
+      code: 'COURSE_ASSIGNMENT_DOES_NOT_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store course assignment',
+      code: 'COURSE_ASSIGNMENT_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete course assignment',
+      code: 'COURSE_ASSIGNMENT_BULK_DELETE_FAILED',
+    },
+  },
 };

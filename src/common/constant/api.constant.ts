@@ -671,4 +671,40 @@ export const API = {
       OPERATION: 'Bulk delete course student',
     },
   },
+  ASSIGNMENT: {
+    TAGS: 'Assignment',
+    CONTROLLER: 'assignment',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store assignment',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list assignments',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get assignment detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update assignment',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete assignment',
+    },
+  },
+  COURSE_ASSIGNMENT: {
+    TAGS: 'CourseAssignment',
+    CONTROLLER: 'course-assignment',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store course assignment',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete course assignment',
+    },
+  },
 };
