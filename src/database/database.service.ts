@@ -35,6 +35,7 @@ import { AttachmentEntity } from '../attachment/attachment.entity';
 import { LessonAttachmentEntity } from '../lesson-attachment/lesson-attachment.entity';
 import { ExerciseEntity } from '../exercise/exercise.entity';
 import { DirectoryEntity } from '../directory/directory.entity';
+import { CourseStudentEntity } from '../course-student/course-student.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -73,6 +74,7 @@ export interface KyselyTables {
   lessonAttachment: LessonAttachmentEntity;
   lessonComment: LessonCommentEntity;
   directory: DirectoryEntity;
+  courseStudent: CourseStudentEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

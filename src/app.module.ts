@@ -21,6 +21,9 @@ import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.mo
 import { RoleModule } from './role/role.module';
 import { LessonCommentModule } from './lesson-comment/lesson-comment.module';
 import { DirectoryModule } from './directory/directory.module';
+import { StudentModule } from './student/student.module';
+import { TeacherModule } from './teacher/teacher.module';
+import { CourseStudentModule } from './course-student/course-student.module';
 
 @Module({
   imports: [
@@ -32,8 +35,6 @@ import { DirectoryModule } from './directory/directory.module';
     ThrottlerModule,
     S3Module,
     RoleModule,
-    // StudentModule,
-    // TeacherModule,
     // ParentModule,
     // StudentParentModule,
     // SubjectModule,
@@ -60,8 +61,10 @@ import { DirectoryModule } from './directory/directory.module';
     QuestionOptionModule,
     ExerciseModule,
     ExerciseQuestionModule,
-    // Not test
     DirectoryModule,
+    StudentModule,
+    TeacherModule,
+    CourseStudentModule,
   ],
   providers: [...appProviders],
 })

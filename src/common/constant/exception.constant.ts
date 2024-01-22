@@ -1007,4 +1007,26 @@ export const EXCEPTION = {
       code: 'DIRECTORY_DELETE_FAILED',
     },
   },
+  COURSE_STUDENT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Course student already exist',
+      code: 'COURSE_STUDENT_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Course student does not exist',
+      code: 'COURSE_STUDENT_DOES_NOT_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store course student',
+      code: 'COURSE_STUDENT_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete course student',
+      code: 'COURSE_STUDENT_BULK_DELETE_FAILED',
+    },
+  },
 };

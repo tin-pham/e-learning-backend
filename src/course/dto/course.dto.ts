@@ -18,7 +18,12 @@ export class CourseStoreDTO {
   imageUrl?: string;
 }
 
-export class CourseGetListDTO extends PaginateDTO {}
+export class CourseGetListDTO extends PaginateDTO {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  studentId?: string;
+}
 
 export class CourseUpdateDTO {
   @ApiPropertyOptional()

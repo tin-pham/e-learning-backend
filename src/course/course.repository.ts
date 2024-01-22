@@ -13,12 +13,21 @@ export class CourseRepository {
   }
 
   find(dto: CourseGetListDTO) {
-    const { limit, page } = dto;
+    const { limit, page, studentId } = dto;
+
+    const withStudent = Boolean(studentId);
+
     const query = this.database
       .selectFrom('course')
-      .select(['id', 'name', 'description', 'imageUrl'])
-      .where('deletedAt', 'is', null)
-      .orderBy('createdAt', 'desc');
+      .select(['course.id', 'course.name', 'course.description', 'course.imageUrl'])
+      .where('course.deletedAt', 'is', null)
+      .orderBy('course.createdAt', 'desc')
+      .$if(withStudent, (qb) =>
+        qb
+          .innerJoin('courseStudent', 'courseStudent.courseId', 'course.id')
+          .where('courseStudent.studentId', '=', studentId)
+          .where('courseStudent.deletedAt', 'is', null),
+      );
 
     return paginate(query, { limit, page });
   }
@@ -78,6 +87,16 @@ export class CourseRepository {
       .selectFrom('course')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('course.id', '=', id)
+      .where('course.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByIds(ids: number[]) {
+    const { count } = await this.database
+      .selectFrom('course')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('course.id', 'in', ids)
       .where('course.deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);

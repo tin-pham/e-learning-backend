@@ -659,4 +659,16 @@ export const API = {
       OPERATION: 'Delete directory',
     },
   },
+  COURSE_STUDENT: {
+    TAGS: 'CourseStudent',
+    CONTROLLER: 'course-student',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store course student',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete course student',
+    },
+  },
 };
