@@ -1,5 +1,6 @@
 import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { createReadStream } from 'fs';
+import { unlink } from 'fs/promises';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { ROOT_DIRECTORY_ID } from '../directory/enum/directory.enum';
@@ -54,6 +55,15 @@ export class AttachmentService extends BaseService {
     await this.validateDelete(dto, actorId);
 
     try {
+      // Get paths
+      const attachments = await this.attachmentRepository.getPaths();
+
+      // Delete attachments
+      for (const attachment of attachments) {
+        await unlink(attachment.path);
+      }
+
+      // Delete metadata
       await this.attachmentRepository.deleteMultipleByIds(dto.ids);
     } catch (error) {
       const { status, message, code } = EXCEPTION.ATTACHMENT.BULK_DELETE_FAILED;

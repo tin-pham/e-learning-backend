@@ -90,7 +90,7 @@ export class AttachmentController {
   @Delete(BULK_DELETE.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  bulkDelete(@Body() dto: AttachmentBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
+  bulkDelete(@Query() dto: AttachmentBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.attachmentService.bulkDelete(dto, decoded);
   }
 

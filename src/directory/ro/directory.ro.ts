@@ -39,7 +39,7 @@ export class DirectoryGetListRO {
   @Expose()
   data: DirectoryGetListDataRO[];
 
-  constructor(data?: DirectoryStoreRO) {
+  constructor(data?: DirectoryGetListRO) {
     Object.assign(this, data);
   }
 }

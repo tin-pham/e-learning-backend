@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { unlink } from 'fs/promises';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { DirectoryRepository } from './directory.repository';
+import { AttachmentRepository } from '../attachment/attachment.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DirectoryGetListDTO, DirectoryStoreDTO, DirectoryUpdateDTO } from './dto/directory.dto';
 import { DirectoryEntity } from './directory.entity';
@@ -13,7 +16,9 @@ export class DirectoryService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly directoryRepository: DirectoryRepository,
+    private readonly attachmentRepository: AttachmentRepository,
   ) {
     super(elasticLogger);
   }
@@ -55,7 +60,11 @@ export class DirectoryService extends BaseService {
     const actorId = decoded.userId;
 
     try {
-      const response = await this.directoryRepository.find(dto);
+      const directories = await this.directoryRepository.find(dto);
+
+      const response = new DirectoryGetListRO({
+        data: directories,
+      });
 
       return this.success({
         classRO: DirectoryGetListRO,
@@ -104,10 +113,22 @@ export class DirectoryService extends BaseService {
     await this.validateDelete(id, actorId);
     let response: DirectoryDeleteRO;
     try {
-      const directory = await this.directoryRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        const directoryIds = await this.directoryRepository.getRecursiveIds(id);
+        const ids = directoryIds.map((directory) => directory.id);
 
-      response = new DirectoryDeleteRO({
-        id: directory.id,
+        // Delete directory
+        await this.directoryRepository.deleteMultipleByIdsByTransaction(transaction, ids, actorId);
+
+        // Delete attachment metadata
+        await this.attachmentRepository.deleteMultipleByDirectoryIdsByTransaction(transaction, ids);
+
+        // Delete attachment
+        const attachments = await this.attachmentRepository.getPathsByDirectoryIds(ids);
+        const paths = attachments.map((attachment) => attachment.path);
+        for (const path of paths) {
+          await unlink(path);
+        }
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.DIRECTORY.DELETE_FAILED;
@@ -124,8 +145,8 @@ export class DirectoryService extends BaseService {
   }
 
   private async validateStore(dto: DirectoryStoreDTO, actorId: number) {
-    // Check name unique
-    const directoryCount = await this.directoryRepository.countByName(dto.name);
+    // Check name unique same parent
+    const directoryCount = await this.directoryRepository.countByNameAndParentId(dto.name, dto.parentId);
     if (directoryCount) {
       const { code, status, message } = EXCEPTION.DIRECTORY.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
@@ -134,14 +155,14 @@ export class DirectoryService extends BaseService {
 
   private async validateUpdate(id: number, dto: DirectoryUpdateDTO, actorId: number) {
     // Check exist
-    const directoryCount = await this.directoryRepository.countById(id);
-    if (!directoryCount) {
+    const directory = await this.directoryRepository.getParentIdById(id);
+    if (!directory) {
       const { code, status, message } = EXCEPTION.DIRECTORY.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
-    // Check name exist except id
-    const directoryCountExceptId = await this.directoryRepository.countByNameExceptId(dto.name, id);
+    // Check name unique same parent except id
+    const directoryCountExceptId = await this.directoryRepository.countByNameAndParentIdExceptId(dto.name, directory.parentId, id);
     if (directoryCountExceptId) {
       const { code, status, message } = EXCEPTION.DIRECTORY.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });

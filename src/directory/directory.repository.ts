@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { DirectoryEntity } from './directory.entity';
 import { DirectoryGetListDTO } from './dto/directory.dto';
 
@@ -39,20 +39,42 @@ export class DirectoryRepository {
       .executeTakeFirst();
   }
 
-  delete(id: number, actorId: number) {
+  getRecursiveIds(id: number) {
     return this.database
-      .updateTable('directory')
-      .set({ deletedBy: actorId, deletedAt: new Date() })
+      .withRecursive('directoryTree', (eb) =>
+        eb
+          .selectFrom('directory')
+          .select(['id'])
+          .where('deletedAt', 'is', null)
+          .where('id', '=', id)
+          .unionAll((eb) =>
+            eb.selectFrom('directory').select(['directory.id']).innerJoin('directoryTree', 'directoryTree.id', 'directory.parentId'),
+          ),
+      )
+      .selectFrom('directoryTree')
+      .select('id')
+      .execute();
+  }
+
+  deleteMultipleByIdsByTransaction(transaction: Transaction, ids: number[], actorId: number) {
+    return transaction.updateTable('directory').set({ deletedAt: new Date(), deletedBy: actorId }).where('id', 'in', ids).execute();
+  }
+
+  getParentIdById(id: number) {
+    return this.database
+      .selectFrom('directory')
+      .select(['parentId'])
       .where('id', '=', id)
-      .returning(['id'])
+      .where('deletedAt', 'is', null)
       .executeTakeFirst();
   }
 
-  async countByName(name: string) {
+  async countByNameAndParentId(name: string, parentId: number) {
     const { count } = await this.database
       .selectFrom('directory')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('name', '=', name)
+      .where('parentId', '=', parentId)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
@@ -68,11 +90,12 @@ export class DirectoryRepository {
     return Number(count);
   }
 
-  async countByNameExceptId(name: string, id: number) {
+  async countByNameAndParentIdExceptId(name: string, parentId: number, id: number) {
     const { count } = await this.database
       .selectFrom('directory')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('name', '=', name)
+      .where('parentId', '=', parentId)
       .where('id', '!=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();

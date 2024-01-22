@@ -17,7 +17,7 @@ export function LocalFilesInterceptor(options: LocalFilesInterceptorOptions): Ty
     constructor(configService: ConfigService) {
       const filesDestination = configService.get('UPLOAD_FILES_PATH');
 
-      const destination = `${filesDestination}${options.path}`;
+      const destination = `${filesDestination}/${options.path}`;
 
       const multerOptions: MulterOptions = {
         storage: diskStorage({

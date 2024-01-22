@@ -8,6 +8,19 @@ import { AttachmentGetListDTO } from './dto/attachment.dto';
 export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getPaths() {
+    return this.database.selectFrom('attachment').select(['path']).where('deletedAt', 'is', null).execute();
+  }
+
+  getPathsByDirectoryIds(directoryIds: number[]) {
+    return this.database
+      .selectFrom('attachment')
+      .select(['path'])
+      .where('deletedAt', 'is', null)
+      .where('directoryId', 'in', directoryIds)
+      .execute();
+  }
+
   find(dto: AttachmentGetListDTO) {
     const { page, limit, lessonId, directoryId } = dto;
 
@@ -16,9 +29,9 @@ export class AttachmentRepository {
 
     const query = this.database
       .selectFrom('attachment')
-      .select(['id', 'name', 'path', 'mimeType'])
-      .where('deletedAt', 'is', null)
-      .orderBy('id')
+      .select(['attachment.id', 'attachment.name', 'attachment.path', 'attachment.mimeType'])
+      .where('attachment.deletedAt', 'is', null)
+      .orderBy('attachment.id')
       .$if(withLesson, (qb) =>
         qb
           .innerJoin('lessonAttachment', 'lessonAttachment.attachmentId', 'attachment.id')
@@ -43,6 +56,10 @@ export class AttachmentRepository {
 
   deleteMultipleByIds(ids: number[]) {
     return this.database.deleteFrom('attachment').where('id', 'in', ids).execute();
+  }
+
+  deleteMultipleByDirectoryIdsByTransaction(transaction: any, directoryIds: number[]) {
+    return transaction.deleteFrom('attachment').where('directoryId', 'in', directoryIds).execute();
   }
 
   findOneById(id: number) {

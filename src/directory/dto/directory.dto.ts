@@ -1,20 +1,25 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ROOT_DIRECTORY_ID } from '../enum/directory.enum';
 
 export class DirectoryStoreDTO {
   @ApiProperty()
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsNumber()
-  parentId: number;
+  @IsOptional()
+  parentId?: number = ROOT_DIRECTORY_ID;
 }
 
 export class DirectoryGetListDTO {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsNumber()
-  directoryId: number;
+  @Type(() => Number)
+  @IsOptional()
+  directoryId?: number = ROOT_DIRECTORY_ID;
 }
 
 export class DirectoryGetDetailDTO {}
