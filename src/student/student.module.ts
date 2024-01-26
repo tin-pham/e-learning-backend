@@ -5,10 +5,9 @@ import { StudentRepository } from './student.repository';
 import { UserRepository } from '../user/user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { RoleRepository } from '../role/role.repository';
-import { ParentRepository } from '../parent/parent.repository';
 
 @Module({
   controllers: [StudentController],
-  providers: [StudentService, StudentRepository, UserRepository, UserRoleRepository, RoleRepository, ParentRepository],
+  providers: [StudentService, StudentRepository, UserRepository, UserRoleRepository, RoleRepository],
 })
 export class StudentModule {}

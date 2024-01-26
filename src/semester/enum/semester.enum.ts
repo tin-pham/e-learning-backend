@@ -1,5 +1,0 @@
-export enum SEMESTER {
-  FIRST_SEMESTER = 'I',
-  SECOND_SEMESTER = 'II',
-  THIRD_SEMESTER = 'III',
-}

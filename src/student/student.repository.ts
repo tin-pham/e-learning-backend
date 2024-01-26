@@ -18,9 +18,7 @@ export class StudentRepository {
   }
 
   find(dto: StudentGetListDTO) {
-    const { page, limit, classroomYearId } = dto;
-
-    const withClassroomYear = Boolean(classroomYearId);
+    const { page, limit } = dto;
 
     const query = this.database
       .selectFrom('student')
@@ -29,13 +27,7 @@ export class StudentRepository {
       .innerJoin('role', 'userRole.roleId', 'role.id')
       .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'student.id'])
       .where('role.name', '=', ROLE.STUDENT)
-      .where('users.deletedAt', 'is', null)
-      .$if(withClassroomYear, (query) =>
-        query
-          .innerJoin('classroomYearStudent', 'student.id', 'classroomYearStudent.studentId')
-          .where('classroomYearStudent.classroomYearId', '=', classroomYearId)
-          .where('classroomYearStudent.deletedAt', 'is', null),
-      );
+      .where('users.deletedAt', 'is', null);
 
     return paginate(query, {
       limit,

@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { sql } from 'kysely';
-import { jsonBuildObject } from 'kysely/helpers/postgres';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { ROLE } from '../role/enum/role.enum';
@@ -16,8 +14,7 @@ export class TeacherRepository {
   }
 
   find(dto: TeacherGetListDTO) {
-    const { limit, page, subjectId } = dto;
-    const withSubject = Boolean(subjectId);
+    const { limit, page } = dto;
 
     const query = this.database
       .selectFrom('teacher')
@@ -26,28 +23,7 @@ export class TeacherRepository {
       .innerJoin('role', 'userRole.roleId', 'role.id')
       .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'teacher.id'])
       .where('role.name', '=', ROLE.TEACHER)
-      .where('users.deletedAt', 'is', null)
-      .$if(withSubject, (query) =>
-        query
-          .innerJoin('teacherSubject', 'teacherSubject.teacherId', 'teacher.id')
-          .where('teacherSubject.subjectId', '=', subjectId)
-          .where('teacherSubject.deletedAt', 'is', null)
-          .innerJoin('subject', 'subject.id', 'teacherSubject.subjectId')
-          .where('subject.deletedAt', 'is', null)
-          .select(({ fn, ref }) => [
-            fn
-              .coalesce(
-                fn.jsonAgg(
-                  jsonBuildObject({
-                    id: ref('teacherSubject.id'),
-                  }),
-                ),
-                sql`'[]'`,
-              )
-              .as('teacherSubjects'),
-          ])
-          .groupBy(['users.username', 'users.email', 'users.phone', 'users.displayName', 'teacher.id', 'teacherSubject.id']),
-      );
+      .where('users.deletedAt', 'is', null);
 
     return paginate(query, {
       limit,

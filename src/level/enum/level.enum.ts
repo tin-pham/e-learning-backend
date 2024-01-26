@@ -1,5 +1,0 @@
-export enum LEVEL {
-  ELEMENTARY = 'ELEMENTARY',
-  MIDDLE = 'MIDDLE',
-  HIGH = 'HIGH',
-}
