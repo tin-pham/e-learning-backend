@@ -38,7 +38,7 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: StudentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -53,7 +53,7 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.STAFF, ROLE.TEACHER)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard)
   getList(@Query() dto: StudentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.getList(dto, decoded);
@@ -67,7 +67,7 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.STAFF, ROLE.TEACHER)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.getDetail(id, decoded);
@@ -82,7 +82,7 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id') id: string, @Body() dto: StudentUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.update(id, dto, decoded);
@@ -96,7 +96,7 @@ export class StudentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.STAFF)
+  @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id') id: string, @JwtPayload() decoded: IJwtPayload) {
     return this.studentService.delete(id, decoded);

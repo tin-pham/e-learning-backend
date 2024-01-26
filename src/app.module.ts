@@ -25,6 +25,7 @@ import { CourseStudentModule } from './course-student/course-student.module';
 import { AssignmentModule } from './assignment/assignment.module';
 import { CourseAssignmentModule } from './course-assignment/course-assignment.module';
 import { AssignmentAttachmentModule } from './assignment-attachment/assignment-attachment.module';
+import { ExerciseSubmitModule } from './exercise-submit/exercise-submit.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { AssignmentAttachmentModule } from './assignment-attachment/assignment-a
     AssignmentModule,
     CourseAssignmentModule,
     AssignmentAttachmentModule,
+    ExerciseSubmitModule,
   ],
   providers: [...appProviders],
 })

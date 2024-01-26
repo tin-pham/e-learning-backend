@@ -15,6 +15,7 @@ export class RoleService {
     this.buildRoles([ROLE.MODERATOR, ROLE.ADMIN]);
     this.buildRoles([ROLE.TEACHER, ROLE.FORM_TEACHER, ROLE.PRINCIPAL]);
     this.buildRoles([ROLE.STAFF]);
+    this.buildRoles([ROLE.STUDENT]);
   }
 
   /**

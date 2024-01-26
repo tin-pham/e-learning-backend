@@ -1135,18 +1135,6 @@ export const EXCEPTION = {
       code: 'QUESTION_CATEGORY_DELETE_FAILED',
     },
   },
-  SUBMIT: {
-    STORE_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to store submit',
-      code: 'SUBMIT_STORE_FAILED',
-    },
-    GET_LIST_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to get list submit',
-      code: 'SUBMIT_GET_LIST_FAILED',
-    },
-  },
   SUBMIT_OPTION: {
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
@@ -1184,10 +1172,20 @@ export const EXCEPTION = {
     },
   },
   EXERCISE_SUBMIT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Exercise submit already exist',
+      code: 'EXERCISE_SUBMIT_ALREADY_EXIST',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store exercise submit',
       code: 'EXERCISE_SUBMIT_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list exercise submit',
+      code: 'EXERCISE_SUBMIT_GET_LIST_FAILED',
     },
   },
 };

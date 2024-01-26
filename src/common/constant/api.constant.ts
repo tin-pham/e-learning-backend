@@ -447,4 +447,16 @@ export const API = {
       OPERATION: 'Bulk delete assignment attachment',
     },
   },
+  EXERCISE_SUBMIT: {
+    TAGS: 'ExerciseSubmit',
+    CONTROLLER: 'exercise-submit',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store exercise submit',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list exercise submits',
+    },
+  },
 };

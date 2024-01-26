@@ -20,7 +20,6 @@ import { CourseStudentEntity } from '../course-student/course-student.entity';
 import { AssignmentEntity } from '../assignment/assignment.entity';
 import { CourseAssignmentEntity } from '../course-assignment/course-assignment.entity';
 import { QuestionCategoryEntity } from '../question-category/question-category.entity';
-import { SubmitEntity } from '../submit/submit.entity';
 import { SubmitOptionEntity } from '../submit-option/submit-option.entity';
 import { AssignmentAttachmentEntity } from '../assignment-attachment/assignment-attachment.entity';
 import { SectionExerciseEntity } from '../section-exercise/section-exercise.entity';
@@ -48,7 +47,6 @@ export interface KyselyTables {
   assignment: AssignmentEntity;
   courseAssignment: CourseAssignmentEntity;
   questionCategory: QuestionCategoryEntity;
-  submit: SubmitEntity;
   submitOption: SubmitOptionEntity;
   assignmentAttachment: AssignmentAttachmentEntity;
   sectionExercise: SectionExerciseEntity;

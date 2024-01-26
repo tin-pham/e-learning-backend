@@ -316,4 +316,19 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  EXERCISE_SUBMIT: {
+    NAME: 'exercise_submit',
+    SCHEMA: {
+      ID: 'id',
+      IS_SUBMIT: 'is_submit',
+      EXERCISE_ID: 'exercise_id',
+      STUDENT_ID: 'student_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };
