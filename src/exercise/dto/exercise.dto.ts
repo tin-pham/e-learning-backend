@@ -19,7 +19,7 @@ export class ExerciseStoreDTO {
 }
 
 export class ExerciseGetListDTO extends PaginateDTO {
-  @ApiPropertyOptional({ example: 1 })
+  @ApiPropertyOptional()
   @IsNumber()
   @Type(() => Number)
   @IsOptional()

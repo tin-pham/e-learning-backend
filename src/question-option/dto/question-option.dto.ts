@@ -8,17 +8,17 @@ export class QuestionOptionStoreDTO {
   @IsString()
   text: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: false })
   @IsBoolean()
   isCorrect: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   questionId: number;
 }
 
 export class QuestionOptionGetListDTO extends PaginateDTO {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @Type(() => Number)
   questionId: number;

@@ -3,13 +3,13 @@ import { ArrayMinSize, IsArray, IsNumber } from 'class-validator';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 
 export class CourseAssignmentBulkStoreDTO {
-  @ApiProperty({ type: [Number] })
+  @ApiProperty({ type: [Number], example: [1] })
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
   courseIds: number[];
 
-  @ApiProperty({ type: [Number] })
+  @ApiProperty({ type: [Number], example: [1] })
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()

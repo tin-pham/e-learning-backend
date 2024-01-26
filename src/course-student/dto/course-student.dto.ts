@@ -3,13 +3,13 @@ import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CourseStudentBulkStoreDTO {
-  @ApiProperty({ type: [Number] })
+  @ApiProperty({ type: [Number], example: [1] })
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
   courseIds: number[];
 
-  @ApiProperty()
+  @ApiProperty({ example: ['STU-001'] })
   @IsString({ each: true })
   @ArrayMinSize(1)
   @IsArray()

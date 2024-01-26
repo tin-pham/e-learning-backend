@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class LessonCommentStoreDTO {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   lessonId: number;
 
@@ -19,7 +19,7 @@ export class LessonCommentStoreDTO {
 }
 
 export class LessonCommentGetListDTO extends PaginateDTO {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @Type(() => Number)
   lessonId: number;
