@@ -5,8 +5,6 @@ export class ExerciseEntity extends BaseEntity {
 
   difficultyId: number;
 
-  lessonId: number;
-
   constructor(data?: ExerciseEntity) {
     super(data);
     Object.assign(this, data);

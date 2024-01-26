@@ -674,6 +674,11 @@ export const EXCEPTION = {
     },
   },
   QUESTION_OPTION: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Question option already exist',
+      code: 'QUESTION_OPTION_ALREADY_EXIST',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Question option does not exist',
@@ -1086,6 +1091,103 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk delete course assignment',
       code: 'COURSE_ASSIGNMENT_BULK_DELETE_FAILED',
+    },
+  },
+  QUESTION_CATEGORY: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Question category already exist',
+      code: 'QUESTION_CATEGORY_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Question category does not exist',
+      code: 'QUESTION_CATEGORY_DOES_NOT_EXIST',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Question category not found',
+      code: 'QUESTION_CATEGORY_NOT_FOUND',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store question category',
+      code: 'QUESTION_CATEGORY_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list question category',
+      code: 'QUESTION_CATEGORY_GET_LIST_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail question category',
+      code: 'QUESTION_CATEGORY_GET_DETAIL_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update question category',
+      code: 'QUESTION_CATEGORY_UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete question category',
+      code: 'QUESTION_CATEGORY_DELETE_FAILED',
+    },
+  },
+  SUBMIT: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store submit',
+      code: 'SUBMIT_STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list submit',
+      code: 'SUBMIT_GET_LIST_FAILED',
+    },
+  },
+  SUBMIT_OPTION: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Submit option does not exist',
+      code: 'SUBMIT_OPTION_DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store submit option',
+      code: 'SUBMIT_OPTION_STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update submit option',
+      code: 'SUBMIT_OPTION_UPDATE_FAILED',
+    },
+  },
+  MARK: {
+    CALCULATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to calculate mark',
+      code: 'MARK_CALCULATE_FAILED',
+    },
+  },
+  ASSIGNMENT_ATTACHMENT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Assignment attachment already exist',
+      code: 'ASSIGNMENT_ATTACHMENT_ALREADY_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store assignment attachment',
+      code: 'ASSIGNMENT_ATTACHMENT_BULK_STORE_FAILED',
+    },
+  },
+  EXERCISE_SUBMIT: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store exercise submit',
+      code: 'EXERCISE_SUBMIT_STORE_FAILED',
     },
   },
 };

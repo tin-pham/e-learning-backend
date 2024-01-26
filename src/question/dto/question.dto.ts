@@ -7,7 +7,7 @@ export class QuestionStoreDTO {
   @IsString()
   text: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   difficultyId: number;
 
@@ -24,12 +24,13 @@ export class QuestionUpdateDTO {
   @IsOptional()
   text?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 1 })
   @IsNumber()
   @IsOptional()
   difficultyId?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsBoolean()
-  isMultipleChoice: boolean;
+  @IsOptional()
+  isMultipleChoice?: boolean;
 }

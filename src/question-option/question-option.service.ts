@@ -112,7 +112,7 @@ export class QuestionOptionService extends BaseService {
 
   async update(id: number, dto: QuestionOptionUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateUpdate(id, actorId);
+    await this.validateUpdate(id, dto, actorId);
 
     const response = new QuestionOptionUpdateRO();
     try {
@@ -182,13 +182,31 @@ export class QuestionOptionService extends BaseService {
         this.throwException({ code, status, message, actorId });
       }
     }
+
+    // Check text unique in same question
+    const questionOptionCount = await this.questionOptionRepository.countByQuestionIdAndText(dto.questionId, dto.text);
+    if (questionOptionCount) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.ALREADY_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 
-  private async validateUpdate(id: number, actorId: number) {
+  private async validateUpdate(id: number, dto: QuestionOptionUpdateDTO, actorId: number) {
     // Check exist
-    const questionCount = await this.questionOptionRepository.countById(id);
-    if (!questionCount) {
+    const questionOption = await this.questionOptionRepository.findOneById(id);
+    if (!questionOption) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check text unique in same question except current id
+    const questionOptionCount = await this.questionOptionRepository.countByQuestionIdAndTextExceptId(
+      questionOption.questionId,
+      dto.text,
+      id,
+    );
+    if (questionOptionCount) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }

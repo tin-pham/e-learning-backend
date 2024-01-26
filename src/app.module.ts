@@ -16,16 +16,15 @@ import { DifficultyModule } from './difficulty/difficulty.module';
 import { ExerciseModule } from './exercise/exercise.module';
 import { ExerciseQuestionModule } from './exercise-question/exercise-question.module';
 import { LessonModule } from './lesson/lesson.module';
-import { AttachmentModule } from './attachment/attachment.module';
 import { LessonAttachmentModule } from './lesson-attachment/lesson-attachment.module';
 import { RoleModule } from './role/role.module';
 import { LessonCommentModule } from './lesson-comment/lesson-comment.module';
-import { DirectoryModule } from './directory/directory.module';
 import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { CourseStudentModule } from './course-student/course-student.module';
 import { AssignmentModule } from './assignment/assignment.module';
 import { CourseAssignmentModule } from './course-assignment/course-assignment.module';
+import { AssignmentAttachmentModule } from './assignment-attachment/assignment-attachment.module';
 
 @Module({
   imports: [
@@ -55,7 +54,6 @@ import { CourseAssignmentModule } from './course-assignment/course-assignment.mo
     CourseModule,
     SectionModule,
     LessonModule,
-    AttachmentModule,
     LessonAttachmentModule,
     LessonCommentModule,
     DifficultyModule,
@@ -63,12 +61,14 @@ import { CourseAssignmentModule } from './course-assignment/course-assignment.mo
     QuestionOptionModule,
     ExerciseModule,
     ExerciseQuestionModule,
-    DirectoryModule,
+    //DirectoryModule,
     StudentModule,
     TeacherModule,
     CourseStudentModule,
     AssignmentModule,
+    // not test
     CourseAssignmentModule,
+    AssignmentAttachmentModule,
   ],
   providers: [...appProviders],
 })

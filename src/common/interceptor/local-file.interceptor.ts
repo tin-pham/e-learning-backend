@@ -22,6 +22,12 @@ export function LocalFilesInterceptor(options: LocalFilesInterceptorOptions): Ty
       const multerOptions: MulterOptions = {
         storage: diskStorage({
           destination,
+          filename: (_, file, cb) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const ext = file.originalname.split('.').pop();
+            const filename = `${uniqueSuffix}.${ext}`;
+            cb(null, filename);
+          },
         }),
         fileFilter: options.fileFilter,
       };

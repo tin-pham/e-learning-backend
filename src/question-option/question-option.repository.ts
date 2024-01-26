@@ -73,6 +73,16 @@ export class QuestionOptionRepository {
     return Number(count);
   }
 
+  async countByIds(ids: number[]) {
+    const { count } = await this.database
+      .selectFrom('questionOption')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', 'in', ids)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   async countByQuestionIdAndCorrect(questionId: number) {
     const { count } = await this.database
       .selectFrom('questionOption')
@@ -83,6 +93,29 @@ export class QuestionOptionRepository {
       .where('questionOption.deletedAt', 'is', null)
       .where('question.deletedAt', 'is', null)
       .where('question.isMultipleChoice', '=', false)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByQuestionIdAndText(questionId: number, text: string) {
+    const { count } = await this.database
+      .selectFrom('questionOption')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('questionId', '=', questionId)
+      .where('text', '=', text)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByQuestionIdAndTextExceptId(questionId: number, text: string, id: number) {
+    const { count } = await this.database
+      .selectFrom('questionOption')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('questionId', '=', questionId)
+      .where('text', '=', text)
+      .where('id', '!=', id)
+      .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
   }

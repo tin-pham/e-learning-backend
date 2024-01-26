@@ -3,13 +3,13 @@ import { ArrayMinSize, IsArray, IsNumber } from 'class-validator';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from 'src/common/decorator';
 
 export class ExerciseQuestionBulkStoreDTO {
-  @ApiProperty({ type: [Number] })
+  @ApiProperty({ type: [Number], example: [1] })
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
   exerciseIds: number[];
 
-  @ApiProperty({ type: [Number] })
+  @ApiProperty({ type: [Number], example: [1] })
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()

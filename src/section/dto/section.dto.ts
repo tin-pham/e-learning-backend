@@ -8,13 +8,13 @@ export class SectionStoreDTO {
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   courseId: number;
 }
 
 export class SectionGetListDTO extends PaginateDTO {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @Type(() => Number)
   courseId: number;

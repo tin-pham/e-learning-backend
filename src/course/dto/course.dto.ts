@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsUrl } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class CourseStoreDTO {
@@ -13,13 +13,13 @@ export class CourseStoreDTO {
   description?: string;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsUrl()
   @IsOptional()
   imageUrl?: string;
 }
 
 export class CourseGetListDTO extends PaginateDTO {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 'STU-001' })
   @IsString()
   @IsOptional()
   studentId?: string;

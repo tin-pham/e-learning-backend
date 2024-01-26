@@ -707,4 +707,52 @@ export const API = {
       OPERATION: 'Bulk delete course assignment',
     },
   },
+  QUESTION_CATEGORY: {
+    TAGS: 'QuestionCategory',
+    CONTROLLER: 'question-category',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store question category',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list question categories',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get question category detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update question category',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete question category',
+    },
+  },
+  SUBMIT_OPTION: {
+    TAGS: 'SubmitOption',
+    CONTROLLER: 'submit-option',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store submit option',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update submit option',
+    },
+  },
+  ASSIGNMENT_ATTACHMENT: {
+    TAGS: 'AssignmentAttachment',
+    CONTROLLER: 'assignment-attachment',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store assignment attachment',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete assignment attachment',
+    },
+  },
 };

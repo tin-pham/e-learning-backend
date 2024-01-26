@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { Type } from 'class-transformer';
 
 export class LessonStoreDTO {
   @ApiProperty()
@@ -11,7 +12,7 @@ export class LessonStoreDTO {
   @IsString()
   body: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   sectionId: number;
 
@@ -22,9 +23,9 @@ export class LessonStoreDTO {
 }
 
 export class LessonGetListDTO extends PaginateDTO {
-  @ApiPropertyOptional()
+  @ApiProperty({ example: 1 })
   @IsNumber()
-  @IsOptional()
+  @Type(() => Number)
   sectionId?: number;
 }
 

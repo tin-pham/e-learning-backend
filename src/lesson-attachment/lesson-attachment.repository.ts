@@ -1,32 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
-import { LessonAttachmentEntity } from './lesson-attachment.entity';
+import { sql } from 'kysely';
+import { LessonAttachmentBulkStoreDTO } from './dto/lesson-attachment.dto';
 
 @Injectable()
 export class LessonAttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  async countByLessonIdsAndAttachmentIds(lessonIds: number[], attachmentIds: number[]) {
+  async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('lessonAttachment')
       .select(({ fn }) => fn.countAll().as('count'))
-      .where('lessonId', 'in', lessonIds)
-      .where('attachmentId', 'in', attachmentIds)
+      .where('id', 'in', ids)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
   }
 
-  insertMultiple(entities: LessonAttachmentEntity[]) {
-    return this.database.insertInto('lessonAttachment').values(entities).execute();
+  insertMultiple(dto: LessonAttachmentBulkStoreDTO, actorId: number) {
+    return this.database
+      .insertInto('lessonAttachment')
+      .columns(['url', 'lessonId', 'createdBy'])
+      .expression(() =>
+        this.database.selectNoFrom(() => [
+          sql`unnest(${dto.urls}::text[])`.as('url'),
+          sql`${dto.lessonId}`.as('lessonId'),
+          sql`${actorId}`.as('createdBy'),
+        ]),
+      )
+      .execute();
   }
 
-  deleteMultipleByLessonIdsAndAttachmentIds(lessonIds: number[], attachmentIds: number[], actorId: number) {
+  deleteMultipleByIds(ids: number[], actorId: number) {
     return this.database
       .updateTable('lessonAttachment')
       .set({ deletedAt: new Date(), deletedBy: actorId })
-      .where('lessonId', 'in', lessonIds)
-      .where('attachmentId', 'in', attachmentIds)
+      .where('id', 'in', ids)
       .execute();
   }
 }

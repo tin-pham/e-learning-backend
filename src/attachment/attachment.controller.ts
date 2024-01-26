@@ -34,7 +34,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ResultRO } from '../common/ro/result.ro';
 import { AttachmentService } from './attachment.service';
-import { AttachmentBulkDeleteDTO, AttachmentGetListDTO, AttachmentStoreDTO } from './dto/attachment.dto';
+import { AttachmentBulkDeleteDTO, AttachmentGetListDTO, AttachmentUploadDTO } from './dto/attachment.dto';
 import { AttachmentGetListRO } from './ro/attachment.ro';
 
 const { TAGS, CONTROLLER, UPLOAD, BULK_DELETE, GET_LIST, GET_DETAIL } = API.ATTACHMENT;
@@ -61,7 +61,7 @@ export class AttachmentController {
   @Post(UPLOAD.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  upload(@UploadedFiles() files: Array<Express.Multer.File>, @Body() dto: AttachmentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
+  upload(@UploadedFiles() files: Array<Express.Multer.File>, @Body() dto: AttachmentUploadDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.attachmentService.upload(files, dto, decoded);
   }
 

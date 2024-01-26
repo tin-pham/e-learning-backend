@@ -6,8 +6,9 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { ROOT_DIRECTORY_ID } from '../directory/enum/directory.enum';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AttachmentRepository } from './attachment.repository';
+import { DirectoryRepository } from '../directory/directory.repository';
 import { AttachmentEntity } from './attachment.entity';
-import { AttachmentBulkDeleteDTO, AttachmentGetListDTO, AttachmentStoreDTO } from './dto/attachment.dto';
+import { AttachmentBulkDeleteDTO, AttachmentGetListDTO, AttachmentUploadDTO } from './dto/attachment.dto';
 import { AttachmentGetListRO } from './ro/attachment.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
@@ -17,13 +18,15 @@ export class AttachmentService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly directoryRepository: DirectoryRepository,
     private readonly attachmentRepository: AttachmentRepository,
   ) {
     super(elasticLogger);
   }
 
-  async upload(files: Array<Express.Multer.File>, dto: AttachmentStoreDTO, decoded: IJwtPayload) {
+  async upload(files: Array<Express.Multer.File>, dto: AttachmentUploadDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    await this.validateUpload(dto, actorId);
 
     try {
       for (const file of files) {
@@ -107,6 +110,17 @@ export class AttachmentService extends BaseService {
       disposition: `inline; filename="${attachment.name}"`,
       type: attachment.mimeType,
     });
+  }
+
+  private async validateUpload(dto: AttachmentUploadDTO, actorId: number) {
+    // Check directory exist
+    if (dto.directoryId) {
+      const directoryCount = await this.directoryRepository.countById(dto.directoryId);
+      if (!directoryCount) {
+        const { status, message, code } = EXCEPTION.DIRECTORY.DOES_NOT_EXIST;
+        this.throwException({ status, message, code, actorId });
+      }
+    }
   }
 
   private async validateGetDetail(id: number, actorId: number) {

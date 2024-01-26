@@ -1,11 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { ExerciseRepository } from './exercise.repository';
+import { SectionExerciseRepository } from '../section-exercise/section-exercise.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseDeleteRO, ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ExerciseEntity } from './exercise.entity';
+import { SectionExerciseEntity } from '../section-exercise/section-exercise.entity';
+import { SectionRepository } from 'src/section/section.repository';
 
 @Injectable()
 export class ExerciseService extends BaseService {
@@ -13,30 +17,47 @@ export class ExerciseService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly exerciseRepository: ExerciseRepository,
+    private readonly sectionRepository: SectionRepository,
+    private readonly sectionExerciseRepository: SectionExerciseRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: ExerciseStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    await this.validateStore(dto, actorId);
 
     let response: ExerciseStoreRO;
 
     try {
-      // Store exercise
-      const exerciseData = new ExerciseEntity({
-        name: dto.name,
-        difficultyId: dto.difficultyId,
-        lessonId: dto.lessonId,
-      });
-      const exercise = await this.exerciseRepository.insert(exerciseData);
+      await this.database.transaction().execute(async (transaction) => {
+        // Store exercise
+        const exerciseData = new ExerciseEntity({
+          name: dto.name,
+          difficultyId: dto.difficultyId,
+          createdBy: actorId,
+        });
+        const exercise = await this.exerciseRepository.insertWithTransaction(transaction, exerciseData);
 
-      response = new ExerciseStoreRO({
-        id: exercise.id,
-        name: exercise.name,
-        difficultyId: exercise.difficultyId,
-        lessonId: dto.lessonId,
+        // Store section exercise
+        let sectionExercise: Partial<SectionExerciseEntity>;
+        if (dto.sectionId) {
+          const sectionExerciseData = new SectionExerciseEntity({
+            sectionId: dto.sectionId,
+            exerciseId: exercise.id,
+            createdBy: actorId,
+          });
+          sectionExercise = await this.sectionExerciseRepository.insertWithTransaction(transaction, sectionExerciseData);
+        }
+
+        response = new ExerciseStoreRO({
+          id: exercise.id,
+          name: exercise.name,
+          difficultyId: exercise.difficultyId,
+          sectionId: sectionExercise?.sectionId,
+        });
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.STORE_FAILED;
@@ -147,6 +168,17 @@ export class ExerciseService extends BaseService {
       message: 'Exercise deleted successfully',
       actorId,
     });
+  }
+
+  private async validateStore(dto: ExerciseStoreDTO, actorId: number) {
+    // Check section exist
+    if (dto.sectionId) {
+      const sectionCount = await this.sectionRepository.countById(dto.sectionId);
+      if (!sectionCount) {
+        const { code, status, message } = EXCEPTION.SECTION.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
   }
 
   private async validateUpdate(id: number, actorId: number) {

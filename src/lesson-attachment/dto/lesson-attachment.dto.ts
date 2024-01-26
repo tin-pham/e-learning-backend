@@ -1,19 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsNumber } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNumber, IsUrl } from 'class-validator';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 
 export class LessonAttachmentBulkStoreDTO {
-  @ApiProperty({ type: [Number] })
-  @IsNumber({}, { each: true })
+  @ApiProperty()
+  @IsUrl({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
-  lessonIds: number[];
+  urls: string[];
 
-  @ApiProperty({ type: [Number] })
-  @IsNumber({}, { each: true })
-  @ArrayMinSize(1)
-  @IsArray()
-  attachmentIds: number[];
+  @ApiProperty()
+  @IsNumber()
+  lessonId: number;
 }
 
 export class LessonAttachmentBulkDeleteDTO {
@@ -21,11 +19,5 @@ export class LessonAttachmentBulkDeleteDTO {
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)
   @IsArray()
-  lessonIds: number[];
-
-  @ApiArrayProperty(SwaggerQueryParamStyle.CSV, [Number], (value) => Number.parseInt(value))
-  @IsNumber({}, { each: true })
-  @ArrayMinSize(1)
-  @IsArray()
-  attachmentIds: number[];
+  ids: number[];
 }

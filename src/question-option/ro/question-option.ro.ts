@@ -32,6 +32,10 @@ export class QuestionOptionGetListDataRO {
   @ApiProperty()
   @Expose()
   questionId: number;
+
+  @ApiProperty()
+  @Expose()
+  isCorrect: boolean;
 }
 
 export class QuestionOptionGetListRO extends PaginateRO<QuestionOptionGetListDataRO> {

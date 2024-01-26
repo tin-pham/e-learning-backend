@@ -8,20 +8,22 @@ export class ExerciseStoreDTO {
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   difficultyId: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional({ example: 1 })
   @IsNumber()
-  lessonId: number;
+  @IsOptional()
+  sectionId?: number;
 }
 
 export class ExerciseGetListDTO extends PaginateDTO {
-  @ApiProperty()
+  @ApiPropertyOptional({ example: 1 })
   @IsNumber()
   @Type(() => Number)
-  lessonId: number;
+  @IsOptional()
+  sectionId?: number;
 }
 
 export class ExerciseUpdateDTO {

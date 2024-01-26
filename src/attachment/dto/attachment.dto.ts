@@ -4,7 +4,7 @@ import { ArrayMinSize, IsArray, IsNumber, IsOptional } from 'class-validator';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
-export class AttachmentStoreDTO {
+export class AttachmentUploadDTO {
   @ApiPropertyOptional()
   @IsNumber()
   @Type(() => Number)

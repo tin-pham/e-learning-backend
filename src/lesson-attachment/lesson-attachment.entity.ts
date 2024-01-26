@@ -1,9 +1,9 @@
 import { BaseEntity } from '../base/base.entity';
 
 export class LessonAttachmentEntity extends BaseEntity {
-  lessonId: number;
+  url: string;
 
-  attachmentId: number;
+  lessonId: number;
 
   constructor(data?: Partial<LessonAttachmentEntity>) {
     super(data);

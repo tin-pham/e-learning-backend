@@ -22,30 +22,13 @@ export class AttachmentRepository {
   }
 
   find(dto: AttachmentGetListDTO) {
-    const { page, limit, lessonId, directoryId } = dto;
-
-    const withLesson = Boolean(lessonId);
-    const withDirectory = Boolean(directoryId);
+    const { page, limit } = dto;
 
     const query = this.database
       .selectFrom('attachment')
       .select(['attachment.id', 'attachment.name', 'attachment.path', 'attachment.mimeType'])
       .where('attachment.deletedAt', 'is', null)
-      .orderBy('attachment.id')
-      .$if(withLesson, (qb) =>
-        qb
-          .innerJoin('lessonAttachment', 'lessonAttachment.attachmentId', 'attachment.id')
-          .where('lessonAttachment.deletedAt', 'is', null)
-          .innerJoin('lesson', 'lesson.id', 'lessonAttachment.lessonId')
-          .where('lesson.deletedAt', 'is', null)
-          .where('lesson.id', '=', lessonId),
-      )
-      .$if(withDirectory, (qb) =>
-        qb
-          .innerJoin('directory', 'directory.id', 'attachment.directoryId')
-          .where('directory.deletedAt', 'is', null)
-          .where('directory.id', '=', directoryId),
-      );
+      .orderBy('attachment.id');
 
     return paginate(query, { page, limit });
   }

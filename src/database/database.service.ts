@@ -38,6 +38,12 @@ import { DirectoryEntity } from '../directory/directory.entity';
 import { CourseStudentEntity } from '../course-student/course-student.entity';
 import { AssignmentEntity } from '../assignment/assignment.entity';
 import { CourseAssignmentEntity } from '../course-assignment/course-assignment.entity';
+import { QuestionCategoryEntity } from '../question-category/question-category.entity';
+import { SubmitEntity } from '../submit/submit.entity';
+import { SubmitOptionEntity } from '../submit-option/submit-option.entity';
+import { AssignmentAttachmentEntity } from '../assignment-attachment/assignment-attachment.entity';
+import { SectionExerciseEntity } from '../section-exercise/section-exercise.entity';
+import { ExerciseSubmitEntity } from '../exercise-submit/exercise-submit.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -79,6 +85,12 @@ export interface KyselyTables {
   courseStudent: CourseStudentEntity;
   assignment: AssignmentEntity;
   courseAssignment: CourseAssignmentEntity;
+  questionCategory: QuestionCategoryEntity;
+  submit: SubmitEntity;
+  submitOption: SubmitOptionEntity;
+  assignmentAttachment: AssignmentAttachmentEntity;
+  sectionExercise: SectionExerciseEntity;
+  exerciseSubmit: ExerciseSubmitEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

@@ -88,4 +88,14 @@ export class StudentRepository {
   getUserIdByStudentId(id: string) {
     return this.database.selectFrom('student').select('student.userId').where('student.id', '=', id).executeTakeFirst();
   }
+
+  getStudentIdByUserId(userId: number) {
+    return this.database
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .select(['student.id'])
+      .where('student.userId', '=', userId)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
 }

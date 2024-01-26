@@ -17,7 +17,7 @@ export class ExerciseStoreRO {
 
   @ApiProperty()
   @Expose()
-  lessonId: number;
+  sectionId: number;
 
   constructor(data?: ExerciseStoreRO) {
     Object.assign(this, data);

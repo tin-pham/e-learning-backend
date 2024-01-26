@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from 'kysely';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { ExerciseEntity } from './exercise.entity';
 import { ExerciseGetListDTO } from './dto/exercise.dto';
 import { paginate } from '../common/function/paginate';
@@ -10,17 +10,27 @@ import { paginate } from '../common/function/paginate';
 export class ExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insert(entity: ExerciseEntity) {
-    return this.database.insertInto('exercise').values(entity).returning(['id', 'name', 'difficultyId', 'lessonId']).executeTakeFirst();
+  insertWithTransaction(transaction: Transaction, entity: ExerciseEntity) {
+    return transaction.insertInto('exercise').values(entity).returning(['id', 'name', 'difficultyId']).executeTakeFirst();
   }
 
   find(dto: ExerciseGetListDTO) {
-    const { limit, page, lessonId } = dto;
+    const { limit, page, sectionId } = dto;
+
+    const withSection = Boolean(sectionId);
+
     const query = this.database
       .selectFrom('exercise')
-      .select(['id', 'name', 'difficultyId', 'lessonId'])
+      .select(['id', 'name', 'difficultyId'])
       .where('deletedAt', 'is', null)
-      .where('lessonId', '=', lessonId);
+      .$if(withSection, (qb) =>
+        qb
+          .innerJoin('sectionExercise', 'sectionExercise.exerciseId', 'exercise.id')
+          .where('sectionExercise.deletedAt', 'is', null)
+          .innerJoin('section', 'section.id', 'sectionExercise.sectionId')
+          .where('section.id', '=', dto.sectionId)
+          .where('section.deletedAt', 'is', null),
+      );
 
     return paginate(query, { limit, page });
   }
