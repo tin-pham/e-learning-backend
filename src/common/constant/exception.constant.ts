@@ -1172,10 +1172,20 @@ export const EXCEPTION = {
     },
   },
   EXERCISE_SUBMIT: {
+    ALREADY_SUBMIT: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Already submit',
+      code: 'EXERCISE_SUBMIT_ALREADY_SUBMIT',
+    },
     ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
       message: 'Exercise submit already exist',
       code: 'EXERCISE_SUBMIT_ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Exercise submit does not exist',
+      code: 'EXERCISE_SUBMIT_DOES_NOT_EXIST',
     },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -1186,6 +1196,25 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get list exercise submit',
       code: 'EXERCISE_SUBMIT_GET_LIST_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update exercise submit',
+      code: 'EXERCISE_SUBMIT_UPDATE_FAILED',
+    },
+  },
+  EXERCISE_SUBMIT_OPTION: {
+    UPSERT_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to upsert exercise submit option',
+      code: 'EXERCISE_SUBMIT_OPTION_UPSERT_FAILED',
+    },
+  },
+  EXERCISE_SUBMIT_MARK: {
+    CALCULATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to calculate exercise submit mark',
+      code: 'EXERCISE_SUBMIT_MARK_CALCULATE_FAILED',
     },
   },
 };

@@ -24,6 +24,8 @@ import { SubmitOptionEntity } from '../submit-option/submit-option.entity';
 import { AssignmentAttachmentEntity } from '../assignment-attachment/assignment-attachment.entity';
 import { SectionExerciseEntity } from '../section-exercise/section-exercise.entity';
 import { ExerciseSubmitEntity } from '../exercise-submit/exercise-submit.entity';
+import { ExerciseSubmitOptionEntity } from '../exercise-submit-option/exercise-submit-option.entity';
+import { ExerciseSubmitMarkEntity } from '../exercise-submit-mark/exercise-submit-mark.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -51,6 +53,8 @@ export interface KyselyTables {
   assignmentAttachment: AssignmentAttachmentEntity;
   sectionExercise: SectionExerciseEntity;
   exerciseSubmit: ExerciseSubmitEntity;
+  exerciseSubmitOption: ExerciseSubmitOptionEntity;
+  exerciseSubmitMark: ExerciseSubmitMarkEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

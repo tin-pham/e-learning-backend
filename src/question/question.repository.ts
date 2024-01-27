@@ -8,6 +8,19 @@ import { QuestionGetListDTO } from './dto/question.dto';
 export class QuestionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getIdsByExerciseId(exerciseId: number) {
+    return this.database
+      .selectFrom('question')
+      .select(['question.id'])
+      .where('question.deletedAt', 'is', null)
+      .innerJoin('exerciseQuestion', 'exerciseQuestion.questionId', 'question.id')
+      .where('exerciseQuestion.deletedAt', 'is', null)
+      .where('exerciseQuestion.exerciseId', '=', exerciseId)
+      .innerJoin('exercise', 'exercise.id', 'exerciseQuestion.questionId')
+      .where('exercise.deletedAt', 'is', null)
+      .execute();
+  }
+
   find(dto: QuestionGetListDTO) {
     const { page, limit } = dto;
 

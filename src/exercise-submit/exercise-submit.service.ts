@@ -6,8 +6,8 @@ import { ExerciseSubmitRepository } from './exercise-submit.repository';
 import { ExerciseRepository } from '../exercise/exercise.repository';
 import { StudentRepository } from '../student/student.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { ExerciseSubmitGetListDTO, ExerciseSubmitStoreDTO } from './dto/exercise-submit.dto';
-import { ExerciseSubmitGetListDataRO, ExerciseSubmitStoreRO } from './ro/exercise-submit.ro';
+import { ExerciseSubmitGetListDTO, ExerciseSubmitStoreDTO, ExerciseSubmitUpdateDTO } from './dto/exercise-submit.dto';
+import { ExerciseSubmitGetListDataRO, ExerciseSubmitStoreRO, ExerciseSubmitUpdateRO } from './ro/exercise-submit.ro';
 
 @Injectable()
 export class ExerciseSubmitService extends BaseService {
@@ -74,6 +74,36 @@ export class ExerciseSubmitService extends BaseService {
     }
   }
 
+  async update(id: number, dto: ExerciseSubmitUpdateDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateUpdate(id, actorId);
+
+    let response: ExerciseSubmitUpdateRO;
+
+    try {
+      const exerciseSubmitData = new ExerciseSubmitEntity();
+      exerciseSubmitData.isSubmit = dto.isSubmit;
+
+      const submit = await this.exerciseSubmitRepository.update(id, exerciseSubmitData);
+
+      response = new ExerciseSubmitUpdateRO({
+        id: submit.id,
+        isSubmit: submit.isSubmit,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.EXERCISE_SUBMIT.UPDATE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ExerciseSubmitUpdateRO,
+      response,
+      message: 'Exercise submit updated successfully',
+      actorId,
+    });
+  }
+
   private async validateStore(dto: ExerciseSubmitStoreDTO, actorId: number) {
     // Check student exist
     const student = await this.studentRepository.getStudentIdByUserId(actorId);
@@ -97,5 +127,14 @@ export class ExerciseSubmitService extends BaseService {
     }
 
     return { student };
+  }
+
+  private async validateUpdate(id: number, actorId: number) {
+    // Check exist
+    const exerciseSubmitCount = await this.exerciseSubmitRepository.countById(id);
+    if (!exerciseSubmitCount) {
+      const { code, status, message } = EXCEPTION.EXERCISE_SUBMIT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 }

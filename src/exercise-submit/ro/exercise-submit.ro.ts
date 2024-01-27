@@ -48,3 +48,17 @@ export class ExerciseSubmitGetListRO extends PaginateRO<ExerciseSubmitGetListDat
   @Expose()
   override data: ExerciseSubmitGetListDataRO[];
 }
+
+export class ExerciseSubmitUpdateRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  isSubmit: boolean;
+
+  constructor(data?: ExerciseSubmitUpdateRO) {
+    Object.assign(this, data);
+  }
+}

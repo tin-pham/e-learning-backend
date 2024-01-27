@@ -18,6 +18,16 @@ export class ExerciseSubmitRepository {
     return Number(count);
   }
 
+  async countById(id: number) {
+    const { count } = await this.database
+      .selectFrom('exerciseSubmit')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   insert(entity: ExerciseSubmitEntity) {
     return this.database
       .insertInto('exerciseSubmit')
@@ -35,5 +45,24 @@ export class ExerciseSubmitRepository {
       .where('deletedAt', 'is', null);
 
     return paginate(query, { page, limit });
+  }
+
+  findOneById(id: number) {
+    return this.database
+      .selectFrom('exerciseSubmit')
+      .select(['id', 'exerciseId', 'isSubmit', 'studentId'])
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
+  update(id: number, entity: ExerciseSubmitEntity) {
+    return this.database
+      .updateTable('exerciseSubmit')
+      .set(entity)
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .returning(['id', 'isSubmit'])
+      .executeTakeFirst();
   }
 }

@@ -458,5 +458,25 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Get list exercise submits',
     },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update exercise submit',
+    },
+  },
+  EXERCISE_SUBMIT_OPTION: {
+    TAGS: 'ExerciseSubmitOption',
+    CONTROLLER: 'exercise-submit-option',
+    UPSERT: {
+      ROUTE: '',
+      OPERATION: 'Upsert exercise submit option',
+    },
+  },
+  EXERCISE_SUBMIT_MARK: {
+    TAGS: 'ExerciseSubmitMark',
+    CONTROLLER: 'exercise-submit-mark',
+    CALCULATE: {
+      ROUTE: '',
+      OPERATION: 'Calculate exercise submit mark',
+    },
   },
 };
