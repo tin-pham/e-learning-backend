@@ -2,36 +2,11 @@ import { Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
-export class StudentStoreUserRO {
-  @ApiProperty()
-  @Expose()
-  username: string;
-
-  @ApiProperty()
-  @Expose()
-  email: string;
-
-  @ApiProperty()
-  @Expose()
-  phone: string;
-
-  @ApiProperty()
-  @Expose()
-  displayName: string;
-}
-
 export class StudentStoreRO {
   @ApiProperty()
   @Expose()
   id: string;
 
-  @ApiProperty({ type: StudentStoreUserRO })
-  @Type(() => StudentStoreUserRO)
-  @Expose()
-  user: StudentStoreUserRO;
-}
-
-export class StudentGetListDataUserRO {
   @ApiProperty()
   @Expose()
   username: string;
@@ -54,20 +29,6 @@ export class StudentGetListDataRO {
   @Expose()
   id: string;
 
-  @ApiProperty({ type: StudentGetListDataUserRO })
-  @Type(() => StudentGetListDataUserRO)
-  @Expose()
-  user: StudentGetListDataUserRO;
-}
-
-export class StudentGetListRO extends PaginateRO<StudentGetListDataRO> {
-  @ApiProperty({ type: [StudentGetListDataRO] })
-  @Type(() => StudentGetListDataRO)
-  @Expose()
-  data: StudentGetListDataRO[];
-}
-
-export class StudentGetDetailUserRO {
   @ApiProperty()
   @Expose()
   username: string;
@@ -85,15 +46,33 @@ export class StudentGetDetailUserRO {
   displayName: string;
 }
 
+export class StudentGetListRO extends PaginateRO<StudentGetListDataRO> {
+  @ApiProperty({ type: [StudentGetListDataRO] })
+  @Type(() => StudentGetListDataRO)
+  @Expose()
+  data: StudentGetListDataRO[];
+}
+
 export class StudentGetDetailRO {
   @ApiProperty()
   @Expose()
   id: string;
 
-  @ApiProperty({ type: StudentGetDetailUserRO })
-  @Type(() => StudentGetDetailUserRO)
+  @ApiProperty()
   @Expose()
-  user: StudentGetDetailUserRO;
+  username: string;
+
+  @ApiProperty()
+  @Expose()
+  email: string;
+
+  @ApiProperty()
+  @Expose()
+  phone: string;
+
+  @ApiProperty()
+  @Expose()
+  displayName: string;
 }
 
 export class StudentUpdateUserRO {
@@ -119,13 +98,6 @@ export class StudentUpdateRO {
   @Expose()
   id: string;
 
-  @ApiProperty({ type: StudentUpdateUserRO })
-  @Type(() => StudentUpdateUserRO)
-  @Expose()
-  user: StudentUpdateUserRO;
-}
-
-export class StudentDeleteUserRO {
   @ApiProperty()
   @Expose()
   username: string;
@@ -148,8 +120,19 @@ export class StudentDeleteRO {
   @Expose()
   id: string;
 
-  @ApiProperty({ type: StudentDeleteUserRO })
-  @Type(() => StudentDeleteUserRO)
+  @ApiProperty()
   @Expose()
-  user: StudentDeleteUserRO;
+  username: string;
+
+  @ApiProperty()
+  @Expose()
+  email: string;
+
+  @ApiProperty()
+  @Expose()
+  phone: string;
+
+  @ApiProperty()
+  @Expose()
+  displayName: string;
 }

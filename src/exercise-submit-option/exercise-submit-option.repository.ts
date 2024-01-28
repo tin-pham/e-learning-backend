@@ -1,6 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { ExerciseSubmitOptionEntity } from './exercise-submit-option.entity';
+import { sql } from 'kysely';
+
+export interface IExerciseSubmitOptionInsertMultiple {
+  transaction: Transaction;
+  questionOptionIds: number[];
+  questionId: number;
+  exerciseSubmitId: number;
+}
 
 @Injectable()
 export class ExerciseSubmitOptionRepository {
@@ -16,13 +24,37 @@ export class ExerciseSubmitOptionRepository {
       .executeTakeFirst();
   }
 
-  upsert(entity: ExerciseSubmitOptionEntity) {
+  getQuestionOptionByExerciseSubmitIdAndQuestionId(exerciseSubmitId: number, questionId: number) {
+    return this.database
+      .selectFrom('exerciseSubmitOption')
+      .select(['questionOptionId'])
+      .where('questionId', '=', questionId)
+      .where('exerciseSubmitId', '=', exerciseSubmitId)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
+  insert(entity: ExerciseSubmitOptionEntity) {
     return this.database
       .insertInto('exerciseSubmitOption')
       .values(entity)
-      .onConflict((oc) => oc.columns(['questionId', 'exerciseSubmitId']).doUpdateSet(entity))
       .returning(['id', 'questionId', 'questionOptionId', 'exerciseSubmitId'])
       .executeTakeFirst();
+  }
+
+  insertMultipleQuestionOptionIdsWithTransaction(data: IExerciseSubmitOptionInsertMultiple) {
+    const { transaction, questionOptionIds, questionId, exerciseSubmitId } = data;
+    return transaction
+      .insertInto('exerciseSubmitOption')
+      .columns(['questionOptionId', 'exerciseSubmitId', 'questionId'])
+      .expression(() =>
+        this.database.selectNoFrom(() => [
+          sql`unnest(${questionOptionIds}::int[])`.as('questionOptionId'),
+          sql`${exerciseSubmitId}`.as('exerciseSubmitId'),
+          sql`${questionId}`.as('questionId'),
+        ]),
+      )
+      .execute();
   }
 
   async countById(id: number) {

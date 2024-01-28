@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import {
   ApiBadRequestResponse,
@@ -18,10 +18,10 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { ExerciseSubmitService } from './exercise-submit.service';
-import { ExerciseSubmitGetListDTO, ExerciseSubmitStoreDTO, ExerciseSubmitUpdateDTO } from './dto/exercise-submit.dto';
-import { ExerciseSubmitGetListRO, ExerciseSubmitStoreRO, ExerciseSubmitUpdateRO } from '../exercise-submit/ro/exercise-submit.ro';
+import { ExerciseSubmitGetListDTO, ExerciseSubmitStoreDTO } from './dto/exercise-submit.dto';
+import { ExerciseSubmitGetListRO, ExerciseSubmitStoreRO } from '../exercise-submit/ro/exercise-submit.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, UPDATE } = API.EXERCISE_SUBMIT;
+const { TAGS, CONTROLLER, STORE, GET_LIST } = API.EXERCISE_SUBMIT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -56,19 +56,5 @@ export class ExerciseSubmitController {
   @UseGuards(JwtGuard)
   getList(@Query() dto: ExerciseSubmitGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.exerciseSubmitService.getList(dto, decoded);
-  }
-
-  @ApiOperation({ summary: UPDATE.OPERATION })
-  @ApiOkResponse({ type: ExerciseSubmitUpdateRO })
-  @ApiBadRequestResponse({ type: HttpExceptionRO })
-  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
-  @ApiForbiddenResponse({ type: HttpExceptionRO })
-  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
-  @ApiBearerAuth('Authorization')
-  @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.STUDENT)
-  @UseGuards(JwtGuard, RoleGuard)
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: ExerciseSubmitUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.exerciseSubmitService.update(id, dto, decoded);
   }
 }

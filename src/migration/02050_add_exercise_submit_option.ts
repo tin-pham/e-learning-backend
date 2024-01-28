@@ -25,7 +25,6 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.UPDATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.DELETED_AT, 'timestamptz')
     .addColumn(SCHEMA.DELETED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
-    .addUniqueConstraint('unique_exercise_submit_option', [SCHEMA.QUESTION_ID, SCHEMA.EXERCISE_SUBMIT_ID])
     .execute();
 }
 

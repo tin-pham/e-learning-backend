@@ -11,16 +11,7 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
 import { UserService } from '../user/user.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
-import {
-  StudentDeleteRO,
-  StudentGetDetailRO,
-  StudentGetDetailUserRO,
-  StudentGetListRO,
-  StudentStoreRO,
-  StudentStoreUserRO,
-  StudentUpdateRO,
-  StudentUpdateUserRO,
-} from './ro/student.ro';
+import { StudentDeleteRO, StudentGetDetailRO, StudentGetListRO, StudentStoreRO, StudentUpdateRO } from './ro/student.ro';
 
 @Injectable()
 export class StudentService extends UserService {
@@ -60,11 +51,10 @@ export class StudentService extends UserService {
 
         // Set response
         response.id = student.id;
-        response.user = new StudentStoreUserRO();
-        response.user.username = user.username;
-        response.user.email = user.email;
-        response.user.phone = user.phone;
-        response.user.displayName = user.displayName;
+        response.username = user.username;
+        response.email = user.email;
+        response.phone = user.phone;
+        response.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.STORE_FAILED;
@@ -108,11 +98,10 @@ export class StudentService extends UserService {
       }
 
       response.id = id;
-      response.user = new StudentGetDetailUserRO();
-      response.user.username = student.username;
-      response.user.email = student.email;
-      response.user.phone = student.phone;
-      response.user.displayName = student.displayName;
+      response.username = student.username;
+      response.email = student.email;
+      response.phone = student.phone;
+      response.displayName = student.displayName;
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.GET_DETAIL_FAILED;
       this.logger.error(error);
@@ -140,11 +129,10 @@ export class StudentService extends UserService {
 
         // Set response
         response.id = student.id;
-        response.user = new StudentUpdateUserRO();
-        response.user.username = user.username;
-        response.user.email = user.email;
-        response.user.phone = user.phone;
-        response.user.displayName = user.displayName;
+        response.username = user.username;
+        response.email = user.email;
+        response.phone = user.phone;
+        response.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT.UPDATE_FAILED;

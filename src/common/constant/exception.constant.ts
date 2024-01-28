@@ -1197,24 +1197,34 @@ export const EXCEPTION = {
       message: 'Failed to get list exercise submit',
       code: 'EXERCISE_SUBMIT_GET_LIST_FAILED',
     },
-    UPDATE_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to update exercise submit',
-      code: 'EXERCISE_SUBMIT_UPDATE_FAILED',
-    },
   },
   EXERCISE_SUBMIT_OPTION: {
-    UPSERT_FAILED: {
+    INSERT_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to upsert exercise submit option',
-      code: 'EXERCISE_SUBMIT_OPTION_UPSERT_FAILED',
+      message: 'Failed to store exercise submit option',
+      code: 'EXERCISE_SUBMIT_OPTION_INSERT_FAILED',
     },
   },
   EXERCISE_SUBMIT_MARK: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Exercise submit mark does not exist',
+      code: 'EXERCISE_SUBMIT_MARK_DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Exercise submit mark already exist',
+      code: 'EXERCISE_SUBMIT_MARK_ALREADY_EXIST',
+    },
     CALCULATE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to calculate exercise submit mark',
       code: 'EXERCISE_SUBMIT_MARK_CALCULATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete exercise submit mark',
+      code: 'EXERCISE_SUBMIT_MARK_DELETE_FAILED',
     },
   },
 };

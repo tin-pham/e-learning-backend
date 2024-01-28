@@ -59,7 +59,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.ADMIN, ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: QuestionOptionGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.getList(dto, decoded);

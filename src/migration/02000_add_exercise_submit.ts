@@ -11,7 +11,6 @@ export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
-    .addColumn(SCHEMA.IS_SUBMIT, 'boolean', (column) => column.notNull())
     .addColumn(SCHEMA.EXERCISE_ID, 'integer', (column) => column.notNull().references(`${EXERCISE_NAME}.${EXERCISE_SCHEMA.ID}`))
     .addColumn(SCHEMA.STUDENT_ID, 'varchar(50)', (column) => column.notNull().references(`${STUDENT_NAME}.${STUDENT_SCHEMA.ID}`))
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))

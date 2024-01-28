@@ -320,7 +320,6 @@ export const DATABASE_TABLE = {
     NAME: 'exercise_submit',
     SCHEMA: {
       ID: 'id',
-      IS_SUBMIT: 'is_submit',
       EXERCISE_ID: 'exercise_id',
       STUDENT_ID: 'student_id',
       CREATED_AT: 'created_at',

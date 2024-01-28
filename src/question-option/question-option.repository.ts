@@ -15,7 +15,7 @@ export class QuestionOptionRepository {
       .where('deletedAt', 'is', null)
       .where('questionId', '=', questionId)
       .where('isCorrect', '=', true)
-      .executeTakeFirst();
+      .execute();
   }
 
   find(dto: QuestionOptionGetListDTO) {

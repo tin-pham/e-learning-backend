@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class ExerciseSubmitOptionUpsertRO {
+export class ExerciseSubmitOptionInsertRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -18,7 +18,7 @@ export class ExerciseSubmitOptionUpsertRO {
   @Expose()
   exerciseSubmitId: number;
 
-  constructor(data?: ExerciseSubmitOptionUpsertRO) {
+  constructor(data?: ExerciseSubmitOptionInsertRO) {
     Object.assign(this, data);
   }
 }

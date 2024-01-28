@@ -9,7 +9,7 @@ import { ExerciseSubmitOptionRepository } from '../exercise-submit-option/exerci
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseSubmitMarkCalculateDTO } from './dto/exercise-submit-mark.dto';
 import { ExerciseSubmitMarkEntity } from './exercise-submit-mark.entity';
-import { ExerciseSubmitMarkCalculateRO } from './ro/exercise-submit-mark.ro';
+import { ExerciseSubmitMarkCalculateRO, ExerciseSubmitMarkDeleteRO } from './ro/exercise-submit-mark.ro';
 
 @Injectable()
 export class ExerciseSubmitMarkService extends BaseService {
@@ -44,16 +44,20 @@ export class ExerciseSubmitMarkService extends BaseService {
 
       for (const questionId of questionIds) {
         // Get correct question option
-        const correctQuestionOption = await this.questionOptionRepository.getCorrectIdByQuestionId(questionId);
+        const correctQuestionOptions = await this.questionOptionRepository.getCorrectIdByQuestionId(questionId);
+        const correctQuestionOptionIds = correctQuestionOptions.map((option) => option.id);
+        console.log(correctQuestionOptionIds);
 
         // Get exercise submit option
-        const exerciseSubmitOption = await this.exerciseSubmitOptionRepository.findOneByExerciseSubmitIdAndQuestionId(
+        const exerciseSubmitOptions = await this.exerciseSubmitOptionRepository.getQuestionOptionByExerciseSubmitIdAndQuestionId(
           exerciseSubmit.id,
           questionId,
         );
+        const exerciseSubmitOptionQuestionOptionIds = exerciseSubmitOptions.map((option) => option.questionOptionId);
+        console.log(exerciseSubmitOptionQuestionOptionIds);
 
         // Compare
-        if (correctQuestionOption?.id === exerciseSubmitOption?.questionOptionId) {
+        if (correctQuestionOptionIds.every((optionId) => exerciseSubmitOptionQuestionOptionIds.includes(optionId))) {
           exerciseSubmitMarkData.correctCount += 1;
         }
       }
@@ -83,7 +87,40 @@ export class ExerciseSubmitMarkService extends BaseService {
     });
   }
 
+  async delete(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateDelete(id, actorId);
+
+    let response: ExerciseSubmitMarkDeleteRO;
+
+    try {
+      const exerciseSubmit = await this.exerciseSubmitMarkRepository.deleteById(id, actorId);
+
+      response = new ExerciseSubmitMarkDeleteRO({
+        id: exerciseSubmit.id,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.EXERCISE_SUBMIT_MARK.DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ExerciseSubmitMarkDeleteRO,
+      response,
+      message: 'Exercise submit mark deleted successfully',
+      actorId,
+    });
+  }
+
   private async validateCalculate(dto: ExerciseSubmitMarkCalculateDTO, actorId: number) {
+    // Check unique
+    const exerciseSubmitMarkCount = await this.exerciseSubmitMarkRepository.countByExerciseSubmitId(dto.exerciseSubmitId);
+    if (exerciseSubmitMarkCount) {
+      const { code, status, message } = EXCEPTION.EXERCISE_SUBMIT_MARK.ALREADY_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
     // Check exercise submit exist
     const exerciseSubmit = await this.exerciseSubmitRepository.findOneById(dto.exerciseSubmitId);
     if (!exerciseSubmit) {
@@ -92,5 +129,14 @@ export class ExerciseSubmitMarkService extends BaseService {
     }
 
     return { exerciseSubmit };
+  }
+
+  private async validateDelete(id: number, actorId: number) {
+    // Check exist
+    const exerciseSubmitMarkCount = await this.exerciseSubmitMarkRepository.countById(id);
+    if (!exerciseSubmitMarkCount) {
+      const { code, status, message } = EXCEPTION.EXERCISE_SUBMIT_MARK.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 }

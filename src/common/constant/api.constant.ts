@@ -458,17 +458,13 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Get list exercise submits',
     },
-    UPDATE: {
-      ROUTE: ':id',
-      OPERATION: 'Update exercise submit',
-    },
   },
   EXERCISE_SUBMIT_OPTION: {
     TAGS: 'ExerciseSubmitOption',
     CONTROLLER: 'exercise-submit-option',
-    UPSERT: {
+    STORE: {
       ROUTE: '',
-      OPERATION: 'Upsert exercise submit option',
+      OPERATION: 'Store exercise submit option',
     },
   },
   EXERCISE_SUBMIT_MARK: {
@@ -477,6 +473,10 @@ export const API = {
     CALCULATE: {
       ROUTE: '',
       OPERATION: 'Calculate exercise submit mark',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete exercise submit mark',
     },
   },
 };

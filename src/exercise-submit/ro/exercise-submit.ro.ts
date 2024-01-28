@@ -13,10 +13,6 @@ export class ExerciseSubmitStoreRO {
 
   @ApiProperty()
   @Expose()
-  isSubmit: boolean;
-
-  @ApiProperty()
-  @Expose()
   studentId: string;
 
   constructor(data?: ExerciseSubmitStoreRO) {
@@ -35,10 +31,6 @@ export class ExerciseSubmitGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  isSubmit: boolean;
-
-  @ApiProperty()
-  @Expose()
   studentId: string;
 }
 
@@ -47,18 +39,4 @@ export class ExerciseSubmitGetListRO extends PaginateRO<ExerciseSubmitGetListDat
   @Type(() => ExerciseSubmitGetListDataRO)
   @Expose()
   override data: ExerciseSubmitGetListDataRO[];
-}
-
-export class ExerciseSubmitUpdateRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  isSubmit: boolean;
-
-  constructor(data?: ExerciseSubmitUpdateRO) {
-    Object.assign(this, data);
-  }
 }

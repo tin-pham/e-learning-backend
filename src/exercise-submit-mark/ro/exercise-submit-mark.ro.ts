@@ -26,3 +26,13 @@ export class ExerciseSubmitMarkCalculateRO {
     Object.assign(this, data);
   }
 }
+
+export class ExerciseSubmitMarkDeleteRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  constructor(data?: ExerciseSubmitMarkDeleteRO) {
+    Object.assign(this, data);
+  }
+}

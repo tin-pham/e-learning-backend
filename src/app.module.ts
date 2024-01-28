@@ -26,7 +26,6 @@ import { AssignmentModule } from './assignment/assignment.module';
 import { CourseAssignmentModule } from './course-assignment/course-assignment.module';
 import { AssignmentAttachmentModule } from './assignment-attachment/assignment-attachment.module';
 import { ExerciseSubmitModule } from './exercise-submit/exercise-submit.module';
-import { ExerciseSubmitOptionModule } from './exercise-submit-option/exercise-submit-option.module';
 import { ExerciseSubmitMarkModule } from './exercise-submit-mark/exercise-submit-mark.module';
 
 @Module({
@@ -58,7 +57,6 @@ import { ExerciseSubmitMarkModule } from './exercise-submit-mark/exercise-submit
     CourseAssignmentModule,
     AssignmentAttachmentModule,
     ExerciseSubmitModule,
-    ExerciseSubmitOptionModule,
     ExerciseSubmitMarkModule,
   ],
   providers: [...appProviders],

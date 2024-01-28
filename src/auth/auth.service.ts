@@ -71,20 +71,20 @@ export class AuthService extends BaseService {
     const user = await this.userRepository.findOneByUsername(username);
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
-      this.throwException({ status, code, message, actorId: user.id });
+      this.throwException({ status, code, message, actorId: user?.id });
     }
 
     // Check password match
     const isValidPassword = await this.validatePassword(password, user.password);
     if (!isValidPassword) {
       const { status, code, message } = EXCEPTION.AUTH.USERNAME_OR_PASSWORD_INVALID;
-      this.throwException({ status, code, message, actorId: user.id });
+      this.throwException({ status, code, message, actorId: user?.id });
     }
 
     user.roles = await this.userRoleRepository.findRolesByUserId(user.id);
     if (!user.roles) {
       const { status, code, message } = EXCEPTION.AUTH.USER_DOES_NOT_HAVE_ROLES;
-      this.throwException({ status, code, message, actorId: user.id });
+      this.throwException({ status, code, message, actorId: user?.id });
     }
 
     return user;

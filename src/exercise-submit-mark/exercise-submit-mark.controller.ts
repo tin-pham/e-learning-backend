@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import {
   ApiBadRequestResponse,
@@ -7,6 +7,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -17,10 +18,10 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { ExerciseSubmitMarkService } from './exercise-submit-mark.service';
-import { ExerciseSubmitMarkCalculateRO } from './ro/exercise-submit-mark.ro';
+import { ExerciseSubmitMarkCalculateRO, ExerciseSubmitMarkDeleteRO } from './ro/exercise-submit-mark.ro';
 import { ExerciseSubmitMarkCalculateDTO } from './dto/exercise-submit-mark.dto';
 
-const { TAGS, CONTROLLER, CALCULATE } = API.EXERCISE_SUBMIT_MARK;
+const { TAGS, CONTROLLER, CALCULATE, DELETE } = API.EXERCISE_SUBMIT_MARK;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -39,7 +40,21 @@ export class ExerciseSubmitMarkController {
   @Roles(ROLE.ADMIN, ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkStore(@Body() dto: ExerciseSubmitMarkCalculateDTO, @JwtPayload() decoded: IJwtPayload) {
+  calculate(@Body() dto: ExerciseSubmitMarkCalculateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.exerciseSubmitMarkService.calculate(dto, decoded);
+  }
+
+  @ApiOperation({ summary: DELETE.OPERATION })
+  @ApiOkResponse({ type: ExerciseSubmitMarkDeleteRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Delete(DELETE.ROUTE)
+  @Roles(ROLE.ADMIN, ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.exerciseSubmitMarkService.delete(id, decoded);
   }
 }

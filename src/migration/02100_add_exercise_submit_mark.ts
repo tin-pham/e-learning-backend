@@ -10,7 +10,7 @@ export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
-    .addColumn(SCHEMA.POINT, 'real', (column) => column.notNull())
+    .addColumn(SCHEMA.POINT, 'decimal(5, 2)', (column) => column.notNull())
     .addColumn(SCHEMA.TOTAL_COUNT, 'integer', (column) => column.notNull())
     .addColumn(SCHEMA.CORRECT_COUNT, 'integer', (column) => column.notNull())
     .addColumn(SCHEMA.EXERCISE_SUBMIT_ID, 'integer', (column) =>
