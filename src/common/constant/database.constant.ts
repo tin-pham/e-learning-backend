@@ -266,6 +266,7 @@ export const DATABASE_TABLE = {
       NAME: 'name',
       DESCRIPTION: 'description',
       DUE_DATE: 'due_date',
+      COURSE_ID: 'course_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',
       UPDATED_AT: 'updated_at',

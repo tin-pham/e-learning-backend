@@ -24,7 +24,7 @@ export class AssignmentExerciseService extends BaseService {
     await this.validateBulkStore(dto, actorId);
 
     try {
-      await this.assignmentExerciseRepository.insertMulitpleByAssignmentIdsAndExerciseIds(dto.assignmentIds, dto.exerciseIds, actorId);
+      await this.assignmentExerciseRepository.insertMultipleByAssignmentIdsAndExerciseIds(dto.assignmentIds, dto.exerciseIds, actorId);
     } catch (error) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT_EXERCISE.BULK_STORE_FAILED;
       this.throwException({ code, status, message, actorId, error });

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { sql } from 'kysely';
 
-export interface IAssignmentExerciseInsertMultiple {
-  assignmentIds: number[];
+export interface IAssignmentExerciseInsertMultipleByExerciseIds {
+  assignmentId: number;
   exerciseIds: number[];
-  createdBy: number;
+  actorId: number;
 }
 
 @Injectable()
 export class AssignmentExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insertMulitpleByAssignmentIdsAndExerciseIds(assignmentIds: number[], exerciseIds: number[], actorId: number) {
+  insertMultipleByAssignmentIdsAndExerciseIds(assignmentIds: number[], exerciseIds: number[], actorId: number) {
     return this.database
       .with('assignmentIds', (eb) => eb.selectNoFrom([sql`unnest(${assignmentIds}::int[])`.as('assignmentId')]))
       .with('exerciseIds', (eb) => eb.selectNoFrom([sql`unnest(${exerciseIds}::int[])`.as('exerciseId')]))
@@ -23,6 +23,20 @@ export class AssignmentExerciseRepository {
           .selectFrom('assignmentIds')
           .innerJoin('exerciseIds', (join) => join.onTrue())
           .select(['assignmentIds.assignmentId', 'exerciseIds.exerciseId', sql`${actorId}`.as('createdBy')]),
+      )
+      .execute();
+  }
+
+  insertMultipleByExerciseIdsWithTransaction(transaction: Transaction, data: IAssignmentExerciseInsertMultipleByExerciseIds) {
+    return transaction
+      .insertInto('assignmentExercise')
+      .columns(['exerciseId', 'assignmentId', 'createdBy'])
+      .expression(() =>
+        this.database.selectNoFrom(() => [
+          sql`unnest(${data.exerciseIds}::int[])`.as('exerciseId'),
+          sql`${data.assignmentId}`.as('assignmentId'),
+          sql`${data.actorId}`.as('createdBy'),
+        ]),
       )
       .execute();
   }

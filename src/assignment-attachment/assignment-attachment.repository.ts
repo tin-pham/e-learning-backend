@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from 'kysely';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { AssignmentAttachmentBulkStoreDTO } from './dto/assignment-attachment.dto';
+
+export interface AssignmentAttachmentInsertMultipleByUrls {
+  urls: string[];
+  assignmentId: number;
+  actorId: number;
+}
 
 @Injectable()
 export class AssignmentAttachmentRepository {
@@ -15,6 +21,21 @@ export class AssignmentAttachmentRepository {
         this.database.selectNoFrom(() => [
           sql`unnest(${dto.urls}::text[])`.as('url'),
           sql`${dto.assignmentId}`.as('assignmentId'),
+          sql`${actorId}`.as('createdBy'),
+        ]),
+      )
+      .execute();
+  }
+
+  insertMultipleByUrlsWithTransaction(transaction: Transaction, data: AssignmentAttachmentInsertMultipleByUrls) {
+    const { urls, assignmentId, actorId } = data;
+    return transaction
+      .insertInto('assignmentAttachment')
+      .columns(['url', 'assignmentId', 'createdBy'])
+      .expression(() =>
+        this.database.selectNoFrom(() => [
+          sql`unnest(${urls}::text[])`.as('url'),
+          sql`${assignmentId}`.as('assignmentId'),
           sql`${actorId}`.as('createdBy'),
         ]),
       )

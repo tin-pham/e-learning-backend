@@ -1,11 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { AssignmentEntity } from './assignment.entity';
+import { AssignmentAttachmentRepository } from '../assignment-attachment/assignment-attachment.repository';
 import { AssignmentRepository } from './assignment.repository';
-import { AssignmentGetListDTO, AssignmentStoreDTO } from './dto/assignment.dto';
+import { AssignmentExerciseRepository } from '../assignment-exercise/assignment-exercise.repository';
+import { CourseRepository } from '../course/course.repository';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
+import { AssignmentGetListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
 import { AssignmentDeleteRO, AssignmentGetDetailRO, AssignmentGetListRO, AssignmentStoreRO, AssignmentUpdateRO } from './ro/assignment.ro';
-import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
+import { sql } from 'kysely';
 
 @Injectable()
 export class AssignmentService extends BaseService {
@@ -13,29 +18,55 @@ export class AssignmentService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
+    private readonly courseRepository: CourseRepository,
     private readonly assignmentRepository: AssignmentRepository,
+    private readonly assignmentAttachmentRepository: AssignmentAttachmentRepository,
+    private readonly assignmentExerciseRepository: AssignmentExerciseRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: AssignmentStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    await this.validateStore(dto, actorId);
+
     let response: AssignmentStoreRO;
     try {
-      const assignmentData = new AssignmentEntity({
-        name: dto.name,
-        description: dto.description,
-        dueDate: dto.dueDate,
-        createdBy: actorId,
-      });
+      await this.database.transaction().execute(async (transaction) => {
+        await transaction.executeQuery(sql`SET CONSTRAINTS ALL DEFERRED;`.compile(transaction));
+        const assignmentData = new AssignmentEntity({
+          name: dto.name,
+          description: dto.description,
+          dueDate: dto.dueDate,
+          courseId: dto.courseId,
+          createdBy: actorId,
+        });
 
-      const assignment = await this.assignmentRepository.insert(assignmentData);
+        const assignment = await this.assignmentRepository.insertWithTransaction(transaction, assignmentData);
 
-      response = new AssignmentStoreRO({
-        id: assignment.id,
-        name: assignment.name,
-        description: assignment.description,
-        dueDate: assignment.dueDate,
+        if (dto.urls) {
+          await this.assignmentAttachmentRepository.insertMultipleByUrlsWithTransaction(transaction, {
+            urls: dto.urls,
+            assignmentId: assignment.id,
+            actorId: actorId,
+          });
+        }
+
+        if (dto.exerciseIds) {
+          await this.assignmentExerciseRepository.insertMultipleByExerciseIdsWithTransaction(transaction, {
+            exerciseIds: dto.exerciseIds,
+            assignmentId: assignment.id,
+            actorId: actorId,
+          });
+        }
+
+        response = new AssignmentStoreRO({
+          id: assignment.id,
+          name: assignment.name,
+          description: assignment.description,
+          dueDate: assignment.dueDate,
+        });
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.STORE_FAILED;
@@ -97,7 +128,7 @@ export class AssignmentService extends BaseService {
     });
   }
 
-  async update(id: number, dto: AssignmentStoreDTO, decoded: IJwtPayload) {
+  async update(id: number, dto: AssignmentUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateUpdate(id, actorId);
 
@@ -108,6 +139,7 @@ export class AssignmentService extends BaseService {
         name: dto.name,
         description: dto.description,
         dueDate: dto.dueDate,
+        courseId: dto.courseId,
         updatedAt: new Date(),
         updatedBy: actorId,
       });
@@ -160,11 +192,27 @@ export class AssignmentService extends BaseService {
     });
   }
 
+  private async validateStore(dto: AssignmentStoreDTO, actorId: number) {
+    // Check course exist
+    const courseCount = await this.courseRepository.countById(dto.courseId);
+    if (!courseCount) {
+      const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
   private async validateUpdate(id: number, actorId: number) {
     // Check exist
     const assignmentCount = await this.assignmentRepository.countById(id);
     if (!assignmentCount) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check course exist
+    const courseCount = await this.courseRepository.countById(id);
+    if (!courseCount) {
+      const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }

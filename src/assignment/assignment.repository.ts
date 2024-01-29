@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { AssignmentEntity } from './assignment.entity';
 import { AssignmentGetListDTO } from './dto/assignment.dto';
 
@@ -8,15 +8,15 @@ import { AssignmentGetListDTO } from './dto/assignment.dto';
 export class AssignmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insert(assignment: AssignmentEntity) {
-    return this.database.insertInto('assignment').values(assignment).returning(['id', 'name', 'dueDate', 'description']).executeTakeFirst();
+  insertWithTransaction(transaction: Transaction, assignment: AssignmentEntity) {
+    return transaction.insertInto('assignment').values(assignment).returning(['id', 'name', 'dueDate', 'description']).executeTakeFirst();
   }
 
   find(dto: AssignmentGetListDTO) {
     const { limit, page } = dto;
     const query = this.database
       .selectFrom('assignment')
-      .select(['id', 'name', 'dueDate', 'description'])
+      .select(['id', 'name', 'dueDate', 'description', 'courseId'])
       .where('deletedAt', 'is', null)
       .orderBy('id', 'asc');
 
@@ -26,7 +26,7 @@ export class AssignmentRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('assignment')
-      .select(['id', 'name', 'dueDate', 'description'])
+      .select(['id', 'name', 'dueDate', 'description', 'courseId'])
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
@@ -38,7 +38,7 @@ export class AssignmentRepository {
       .set(assignment)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name', 'dueDate', 'description'])
+      .returning(['id', 'name', 'dueDate', 'description', 'courseId'])
       .executeTakeFirst();
   }
 
