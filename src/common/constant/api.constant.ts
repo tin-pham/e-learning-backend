@@ -479,4 +479,16 @@ export const API = {
       OPERATION: 'Delete exercise submit mark',
     },
   },
+  ASSIGNMENT_EXERCISE: {
+    TAGS: 'AssignmentExercise',
+    CONTROLLER: 'assignment-exercise',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store assignment exercise',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete assignment exercise',
+    },
+  },
 };

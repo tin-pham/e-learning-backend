@@ -1227,4 +1227,21 @@ export const EXCEPTION = {
       code: 'EXERCISE_SUBMIT_MARK_DELETE_FAILED',
     },
   },
+  ASSIGNMENT_EXERCISE: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Assignment exercise already exist',
+      code: 'ASSIGNMENT_EXCERCISE_ALREADY_EXIST',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store assignment exercise',
+      code: 'ASSIGNMENT_EXERCISE_BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete assignment exercise',
+      code: 'ASSIGNMENT_EXERCISE_BULK_DELETE_FAILED',
+    },
+  },
 };
