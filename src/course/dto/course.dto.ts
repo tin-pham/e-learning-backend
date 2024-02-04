@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class CourseStoreDTO {
@@ -16,6 +16,10 @@ export class CourseStoreDTO {
   @IsUrl()
   @IsOptional()
   imageUrl?: string;
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  categoryId?: number;
 }
 
 export class CourseGetListDTO extends PaginateDTO {
@@ -40,4 +44,16 @@ export class CourseUpdateDTO {
   @IsString()
   @IsOptional()
   imageUrl?: string;
+
+  @ApiPropertyOptional({ example: [1] })
+  @IsNumber({}, { each: true })
+  @IsArray()
+  @IsOptional()
+  addCategoryIds?: number[];
+
+  @ApiPropertyOptional({ example: [1] })
+  @IsNumber({}, { each: true })
+  @IsArray()
+  @IsOptional()
+  removeCategoryIds?: number[];
 }

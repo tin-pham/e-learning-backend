@@ -4,6 +4,7 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { CourseEntity } from './course.entity';
 import { CourseRepository } from './course.repository';
 import { SectionRepository } from '../section/section.repository';
+import { CategoryRepository } from '../category/category.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
 import { CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
@@ -15,9 +16,10 @@ export class CourseService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly courseRepository: CourseRepository,
     private readonly sectionRepository: SectionRepository,
-    private readonly database: DatabaseService,
+    private readonly categoryRepository: CategoryRepository,
   ) {
     super(elasticLogger);
   }
@@ -183,6 +185,15 @@ export class CourseService extends BaseService {
     if (nameCount) {
       const { code, status, message } = EXCEPTION.COURSE.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
+    }
+
+    // Check category exist
+    if (dto.categoryId) {
+      const categoryCount = await this.categoryRepository.countById(dto.categoryId);
+      if (!categoryCount) {
+        const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
   }
 

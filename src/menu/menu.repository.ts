@@ -8,7 +8,7 @@ export class MenuRepository {
   constructor(private readonly database: DatabaseService) {}
 
   find(dto: MenuGetListDTO) {
-    const { limit, page, parentId, roleId } = dto;
+    const { limit, page, roleId } = dto;
 
     const withRole = Boolean(roleId);
 
@@ -24,17 +24,13 @@ export class MenuRepository {
           .where('roleMenu.deletedAt', 'is', null),
       );
 
-    if (parentId) {
-      query.where('menu.parentId', '=', parentId);
-    }
-
     return paginate(query, { limit, page });
   }
 
   findOneById(id: number) {
     return this.database
       .selectFrom('menu')
-      .select(['id', 'name', 'route', 'parentId'])
+      .select(['id', 'name', 'route'])
       .where('deletedAt', 'is', null)
       .where('id', '=', id)
       .executeTakeFirst();

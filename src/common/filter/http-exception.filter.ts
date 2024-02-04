@@ -13,7 +13,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<IRequestWithUser>();
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
-    const message = this.getExceptionMessage(exceptionResponse);
+    const message = exceptionResponse['message'] && this.getExceptionMessage(exceptionResponse);
+    console.log(exceptionResponse);
 
     // Log the exception if it 401 or 403
     if (status === HttpStatus.UNAUTHORIZED) {
@@ -35,7 +36,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message,
-      code: exceptionResponse['message'].code,
+      code: exceptionResponse['code'] || exceptionResponse['message'].code,
     });
   }
 

@@ -2,16 +2,15 @@ import { sql } from 'kysely';
 import { DATABASE_TABLE } from '../common';
 import { DatabaseService } from '../database';
 
-const { NAME, SCHEMA } = DATABASE_TABLE.MENU;
+const { NAME, SCHEMA } = DATABASE_TABLE.CATEGORY;
 const { NAME: USER_NAME, SCHEMA: USER_SCHEMA } = DATABASE_TABLE.USERS;
 
 export async function up(database: DatabaseService): Promise<void> {
   await database.schema
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
-    .addColumn(SCHEMA.NAME, 'varchar(255)', (column) => column.notNull())
-    .addColumn(SCHEMA.ROUTE, 'varchar(255)', (column) => column.notNull())
-    .addColumn(SCHEMA.ICON, 'varchar(255)', (column) => column.notNull())
+    .addColumn(SCHEMA.NAME, 'varchar', (column) => column.notNull())
+    .addColumn(SCHEMA.DESCRIPTION, 'text')
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')

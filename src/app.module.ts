@@ -28,6 +28,7 @@ import { AssignmentAttachmentModule } from './assignment-attachment/assignment-a
 import { ExerciseSubmitModule } from './exercise-submit/exercise-submit.module';
 import { ExerciseSubmitMarkModule } from './exercise-submit-mark/exercise-submit-mark.module';
 import { AssignmentExerciseModule } from './assignment-exercise/assignment-exercise.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { AssignmentExerciseModule } from './assignment-exercise/assignment-exerc
     ExerciseSubmitModule,
     ExerciseSubmitMarkModule,
     AssignmentExerciseModule,
+    CategoryModule,
   ],
   providers: [...appProviders],
 })

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { QuestionEntity } from './question.entity';
 import { QuestionGetListDTO } from './dto/question.dto';
 
@@ -45,8 +45,8 @@ export class QuestionRepository {
       .executeTakeFirst();
   }
 
-  insert(entity: QuestionEntity) {
-    return this.database
+  insertWithTransaction(transaction: Transaction, entity: QuestionEntity) {
+    return transaction
       .insertInto('question')
       .values(entity)
       .returning(['id', 'text', 'difficultyId', 'isMultipleChoice'])

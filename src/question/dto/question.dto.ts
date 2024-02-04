@@ -1,6 +1,18 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { Type } from 'class-transformer';
+
+export class QuestionStoreOptionDTO {
+  @ApiProperty()
+  @IsString()
+  text: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  @Type(() => Boolean)
+  isCorrect: boolean = false;
+}
 
 export class QuestionStoreDTO {
   @ApiProperty()
@@ -13,7 +25,15 @@ export class QuestionStoreDTO {
 
   @ApiProperty()
   @IsBoolean()
+  @Type(() => Boolean)
   isMultipleChoice: boolean = false;
+
+  @ApiProperty({ type: [QuestionStoreOptionDTO] })
+  @ArrayMinSize(1)
+  @IsArray()
+  @Type(() => QuestionStoreOptionDTO)
+  @IsOptional()
+  options?: QuestionStoreOptionDTO[];
 }
 
 export class QuestionGetListDTO extends PaginateDTO {}

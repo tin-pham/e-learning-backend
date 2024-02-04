@@ -1,13 +1,11 @@
 import { BaseEntity } from '../base/base.entity';
 
-export class MenuEntity extends BaseEntity {
+export class CategoryEntity extends BaseEntity {
   name: string;
 
-  icon: string;
+  description: string;
 
-  route: string;
-
-  constructor(data?: Partial<MenuEntity>) {
+  constructor(data?: CategoryEntity) {
     super(data);
     Object.assign(this, data);
   }

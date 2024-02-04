@@ -4,4 +4,6 @@ export interface IJwtPayload {
   email: string;
   displayName: string;
   roles: string[];
+  iat: number;
+  exp: number;
 }

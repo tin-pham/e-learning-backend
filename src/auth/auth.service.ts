@@ -31,7 +31,7 @@ export class AuthService extends BaseService {
   }
 
   async signIn(user: UserEntity) {
-    const payload: IJwtPayload = {
+    const payload: Partial<IJwtPayload> = {
       userId: user.id,
       username: user.username,
       email: user.email,
@@ -61,7 +61,21 @@ export class AuthService extends BaseService {
       });
     }
 
-    return plainToInstance(SignInRO, { accessToken, refreshToken });
+    const response = new SignInRO();
+    response.accessToken = accessToken;
+    response.refreshToken = refreshToken;
+    response.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      displayName: user.displayName,
+      roles: payload.roles,
+    };
+
+    return plainToInstance(SignInRO, response, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async validateSignIn(dto: SignInDTO): Promise<UserEntity> {

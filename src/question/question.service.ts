@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { QuestionEntity } from './question.entity';
 import { QuestionRepository } from './question.repository';
 import { DifficultyRepository } from '../difficulty/difficulty.repository';
@@ -14,6 +15,7 @@ export class QuestionService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly questionRepository: QuestionRepository,
     private readonly difficultyRepository: DifficultyRepository,
   ) {
@@ -27,18 +29,19 @@ export class QuestionService extends BaseService {
     const response = new QuestionStoreRO();
 
     try {
-      const questionData = new QuestionEntity();
-      questionData.text = dto.text;
-      questionData.difficultyId = dto.difficultyId;
-      questionData.isMultipleChoice = dto.isMultipleChoice;
-      questionData.createdBy = actorId;
+      await this.database.transaction().execute(async (transaction) => {
+        const questionData = new QuestionEntity();
+        questionData.text = dto.text;
+        questionData.difficultyId = dto.difficultyId;
+        questionData.isMultipleChoice = dto.isMultipleChoice;
+        questionData.createdBy = actorId;
+        const question = await this.questionRepository.insertWithTransaction(transaction, questionData);
 
-      const question = await this.questionRepository.insert(questionData);
-
-      response.id = question.id;
-      response.text = question.text;
-      response.difficultyId = question.difficultyId;
-      response.isMultipleChoice = question.isMultipleChoice;
+        response.id = question.id;
+        response.text = question.text;
+        response.difficultyId = question.difficultyId;
+        response.isMultipleChoice = question.isMultipleChoice;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION.STORE_FAILED;
       this.logger.error(error);

@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { getLogLevels } from './logger/get-log-levels.util';
 import { HttpExceptionFilter } from './common';
 import { ElasticsearchLoggerService } from './elastic-search-logger/elastic-search-logger.service';
+import { CustomValidationPipe } from './common/pipe/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -61,9 +61,10 @@ async function bootstrap() {
   app.use(helmet());
 
   app.useGlobalPipes(
-    new ValidationPipe({
+    new CustomValidationPipe({
       forbidUnknownValues: true,
       forbidNonWhitelisted: true,
+      stopAtFirstError: true,
     }),
   );
 

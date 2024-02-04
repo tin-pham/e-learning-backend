@@ -6,4 +6,9 @@ export class QuestionEntity extends BaseEntity {
   difficultyId: number;
 
   isMultipleChoice: boolean;
+
+  constructor(data?: QuestionEntity) {
+    super(data);
+    Object.assign(this, data);
+  }
 }

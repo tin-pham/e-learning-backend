@@ -491,4 +491,28 @@ export const API = {
       OPERATION: 'Bulk delete assignment exercise',
     },
   },
+  CATEGORY: {
+    TAGS: 'Category',
+    CONTROLLER: 'category',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store category',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list categories',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get category detail',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update category',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete category',
+    },
+  },
 };
