@@ -5,6 +5,7 @@ import { CourseEntity } from './course.entity';
 import { CourseRepository } from './course.repository';
 import { SectionRepository } from '../section/section.repository';
 import { CategoryRepository } from '../category/category.repository';
+import { CategoryCourseRepository } from '../category-course/category-course.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
 import { CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
@@ -20,6 +21,7 @@ export class CourseService extends BaseService {
     private readonly courseRepository: CourseRepository,
     private readonly sectionRepository: SectionRepository,
     private readonly categoryRepository: CategoryRepository,
+    private readonly categoryCourseRepository: CategoryCourseRepository,
   ) {
     super(elasticLogger);
   }
@@ -31,18 +33,30 @@ export class CourseService extends BaseService {
     const response = new CourseStoreRO();
 
     try {
-      const courseData = new CourseEntity();
-      courseData.name = dto.name;
-      courseData.description = dto.description;
-      courseData.imageUrl = dto.imageUrl;
-      courseData.createdBy = actorId;
+      await this.database.transaction().execute(async (transaction) => {
+        // Store course
+        const courseData = new CourseEntity();
+        courseData.name = dto.name;
+        courseData.description = dto.description;
+        courseData.imageUrl = dto.imageUrl;
+        courseData.createdBy = actorId;
+        const course = await this.courseRepository.insertWithTransaction(transaction, courseData);
+        // Store category
 
-      const course = await this.courseRepository.insert(courseData);
+        if (dto.categoryIds) {
+          await this.categoryCourseRepository.insertByCategoryIdsAndCourseIdWithTransaction(
+            transaction,
+            dto.categoryIds,
+            course.id,
+            actorId,
+          );
+        }
 
-      response.id = course.id;
-      response.name = course.name;
-      response.description = course.description;
-      response.imageUrl = course.imageUrl;
+        response.id = course.id;
+        response.name = course.name;
+        response.description = course.description;
+        response.imageUrl = course.imageUrl;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.STORE_FAILED;
       this.logger.error(error);
@@ -113,27 +127,47 @@ export class CourseService extends BaseService {
     const response = new CourseUpdateRO();
 
     try {
-      const courseData = new CourseEntity();
-      courseData.updatedBy = actorId;
-      courseData.updatedAt = new Date();
-      if (dto.name) {
-        courseData.name = dto.name;
-      }
+      await this.database.transaction().execute(async (transaction) => {
+        const courseData = new CourseEntity();
+        courseData.updatedBy = actorId;
+        courseData.updatedAt = new Date();
+        if (dto.name) {
+          courseData.name = dto.name;
+        }
 
-      if (dto.description) {
-        courseData.description = dto.description;
-      }
+        if (dto.description) {
+          courseData.description = dto.description;
+        }
 
-      if (dto.imageUrl) {
-        courseData.imageUrl = dto.imageUrl;
-      }
+        if (dto.imageUrl) {
+          courseData.imageUrl = dto.imageUrl;
+        }
 
-      const course = await this.courseRepository.update(id, courseData);
+        const course = await this.courseRepository.updateWithTransaction(transaction, id, courseData);
 
-      response.id = course.id;
-      response.name = course.name;
-      response.imageUrl = course.imageUrl;
-      response.description = course.description;
+        if (dto.addCategoryIds) {
+          await this.categoryCourseRepository.insertByCategoryIdsAndCourseIdWithTransaction(
+            transaction,
+            dto.addCategoryIds,
+            course.id,
+            actorId,
+          );
+        }
+
+        if (dto.removeCategoryIds) {
+          await this.categoryCourseRepository.deleteByCategoryIdsAndCourseIdWithTransaction(
+            transaction,
+            dto.removeCategoryIds,
+            course.id,
+            actorId,
+          );
+        }
+
+        response.id = course.id;
+        response.name = course.name;
+        response.imageUrl = course.imageUrl;
+        response.description = course.description;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.UPDATE_FAILED;
       this.logger.error(error);
@@ -188,8 +222,8 @@ export class CourseService extends BaseService {
     }
 
     // Check category exist
-    if (dto.categoryId) {
-      const categoryCount = await this.categoryRepository.countById(dto.categoryId);
+    if (dto.categoryIds) {
+      const categoryCount = await this.categoryRepository.countByIds(dto.categoryIds);
       if (!categoryCount) {
         const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
@@ -210,6 +244,38 @@ export class CourseService extends BaseService {
     if (nameCount) {
       const { code, status, message } = EXCEPTION.COURSE.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
+    }
+
+    // Check add category exist
+    if (dto.addCategoryIds) {
+      const categoryCount = await this.categoryRepository.countByIds(dto.addCategoryIds);
+      if (!categoryCount) {
+        const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+      // Check category course unique
+
+      const categoryCourseCount = await this.categoryCourseRepository.countByCategoryIdsAndCourseId(dto.addCategoryIds, id);
+      if (categoryCourseCount) {
+        const { code, status, message } = EXCEPTION.CATEGORY_COURSE.ALREADY_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
+
+    // Check remove category exist
+    if (dto.removeCategoryIds) {
+      const categoryCount = await this.categoryRepository.countByIds(dto.removeCategoryIds);
+      if (!categoryCount) {
+        const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+
+      // Check category course exist
+      const categoryCourseCount = await this.categoryCourseRepository.countByCategoryIdsAndCourseId(dto.removeCategoryIds, id);
+      if (!categoryCourseCount) {
+        const { code, status, message } = EXCEPTION.CATEGORY_COURSE.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
   }
 

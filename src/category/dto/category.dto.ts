@@ -38,12 +38,19 @@ export class CategoryGetListDTO extends PaginateDTO {
 
 export class CategoryUpdateDTO {
   @ApiPropertyOptional()
-  @IsString()
+  @IsString({
+    message: NAME.FORMAT_IS_NOT_VALID,
+  })
+  @IsNotEmpty({
+    message: NAME.IS_NOT_EMPTY,
+  })
   @IsOptional()
   name: string;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsString({
+    message: DESCRIPTION.FORMAT_IS_NOT_VALID,
+  })
   @IsOptional()
   description: string;
 }

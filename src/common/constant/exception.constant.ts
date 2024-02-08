@@ -832,4 +832,16 @@ export const EXCEPTION = {
       code: 'CATEGORY.DELETE_FAILED',
     },
   },
+  CATEGORY_COURSE: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Category course does not exist',
+      code: 'CATEGORY_COURSE.DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Category course already exist',
+      code: 'CATEGORY_COURSE.ALREADY_EXIST',
+    },
+  },
 };

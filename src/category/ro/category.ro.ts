@@ -103,13 +103,3 @@ export class CategoryUpdateRO {
     Object.assign(this, data);
   }
 }
-
-export class CategoryDeleteRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  constructor(data?: CategoryDeleteRO) {
-    Object.assign(this, data);
-  }
-}

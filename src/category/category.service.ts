@@ -1,11 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
+import { CategoryCourseRepository } from '../category-course/category-course.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { CategoryGetListDTO, CategoryStoreDTO, CategoryUpdateDTO } from './dto/category.dto';
 import { CategoryRepository } from './category.repository';
-import { CategoryDeleteRO, CategoryGetDetailRO, CategoryGetListRO, CategoryStoreRO, CategoryUpdateRO } from './ro/category.ro';
+import { CategoryGetDetailRO, CategoryGetListRO, CategoryStoreRO, CategoryUpdateRO } from './ro/category.ro';
 import { CategoryEntity } from './category.entity';
+import { ResultRO } from 'src/common/ro/result.ro';
 
 @Injectable()
 export class CategoryService extends BaseService {
@@ -13,7 +16,9 @@ export class CategoryService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly categoryRepository: CategoryRepository,
+    private readonly categoryCourseRepository: CategoryCourseRepository,
   ) {
     super(elasticLogger);
   }
@@ -71,25 +76,19 @@ export class CategoryService extends BaseService {
 
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    let category: CategoryEntity;
+    let response: any;
     try {
-      category = await this.categoryRepository.findOneById(id);
+      response = await this.categoryRepository.findOneById(id);
     } catch (error) {
       const { code, status, message } = EXCEPTION.CATEGORY.GET_LIST_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
 
-    if (!category) {
+    if (!response) {
       const { code, status, message } = EXCEPTION.CATEGORY.NOT_FOUND;
       this.throwException({ code, status, message, actorId });
     }
-
-    const response = new CategoryGetDetailRO({
-      id: category.id,
-      name: category.name,
-      description: category.description,
-    });
 
     return this.success({
       classRO: CategoryGetDetailRO,
@@ -135,13 +134,11 @@ export class CategoryService extends BaseService {
     const actorId = decoded.userId;
     await this.validateDelele(id, actorId);
 
-    let response: CategoryDeleteRO;
-
     try {
-      const category = await this.categoryRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        await this.categoryRepository.deleteWithTransaction(transaction, id, actorId);
 
-      response = new CategoryDeleteRO({
-        id: category.id,
+        await this.categoryCourseRepository.deleteByCategoryIdWithTransaction(transaction, id, actorId);
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.CATEGORY.DELETE_FAILED;
@@ -150,8 +147,8 @@ export class CategoryService extends BaseService {
     }
 
     return this.success({
-      classRO: CategoryDeleteRO,
-      response,
+      classRO: ResultRO,
+      response: { result: true },
       message: 'Delete category successfully',
       actorId,
     });

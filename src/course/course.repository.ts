@@ -8,14 +8,15 @@ import { CourseGetListDTO } from './dto/course.dto';
 export class CourseRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insert(entity: CourseEntity) {
-    return this.database.insertInto('course').values(entity).returning(['id', 'name', 'description', 'imageUrl']).executeTakeFirst();
+  insertWithTransaction(transaction: Transaction, entity: CourseEntity) {
+    return transaction.insertInto('course').values(entity).returning(['id', 'name', 'description', 'imageUrl']).executeTakeFirst();
   }
 
   find(dto: CourseGetListDTO) {
-    const { limit, page, studentId } = dto;
+    const { limit, page, studentId, categoryId } = dto;
 
     const withStudent = Boolean(studentId);
+    const byCategory = Boolean(categoryId);
 
     const query = this.database
       .selectFrom('course')
@@ -27,6 +28,20 @@ export class CourseRepository {
           .innerJoin('courseStudent', 'courseStudent.courseId', 'course.id')
           .where('courseStudent.studentId', '=', studentId)
           .where('courseStudent.deletedAt', 'is', null),
+      )
+      .$if(byCategory, (qb) =>
+        qb
+          .innerJoin('categoryCourse', 'categoryCourse.courseId', 'course.id')
+          .where('categoryCourse.deletedAt', 'is', null)
+          .innerJoin('category', 'categoryCourse.categoryId', 'category.id')
+          .where('category.deletedAt', 'is', null)
+          .where('category.id', '=', categoryId),
+      )
+      .$if(categoryId === null, (qb) =>
+        qb
+          .leftJoin('categoryCourse', 'categoryCourse.courseId', 'course.id')
+          .where('categoryCourse.deletedAt', 'is', null)
+          .where('categoryCourse.categoryId', 'is', null),
       );
 
     return paginate(query, { limit, page });
@@ -41,8 +56,8 @@ export class CourseRepository {
       .executeTakeFirst();
   }
 
-  update(id: number, entity: CourseEntity) {
-    return this.database
+  updateWithTransaction(transaction: Transaction, id: number, entity: CourseEntity) {
+    return transaction
       .updateTable('course')
       .set(entity)
       .where('id', '=', id)

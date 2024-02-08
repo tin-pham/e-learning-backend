@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { CategoryEntity } from './category.entity';
 import { CategoryGetListDTO } from './dto/category.dto';
 import { paginate } from 'src/common/function/paginate';
@@ -49,6 +49,12 @@ export class CategoryRepository {
         ])
         .where('category.deletedAt', 'is', null)
         .groupBy(['category.id', 'category.name', 'category.description']);
+
+      if (withCourseCount) {
+        query = query
+          .select(({ fn }) => ['category.id', 'category.name', 'category.description', fn.count('course.id').as('courseCount')])
+          .orderBy('courseCount', 'desc');
+      }
     } else if (withCourseCount) {
       query = this.database
         .selectFrom('category')
@@ -77,34 +83,12 @@ export class CategoryRepository {
       .selectFrom('category')
       .where('category.id', '=', id)
       .where('category.deletedAt', 'is', null)
-      .leftJoin('categoryCourse', (join) =>
-        join.onRef('categoryCourse.categoryId', '=', 'category.id').on('categoryCourse.deletedAt', 'is', null),
-      )
-      .leftJoin('course', (join) => join.onRef('course.id', '=', 'categoryCourse.courseId').on('course.deletedAt', 'is', null))
-      .select(({ fn, ref }) => [
-        'category.id',
-        'category.name',
-        'category.description',
-        fn
-          .coalesce(
-            fn.jsonAgg(
-              jsonBuildObject({
-                id: ref('course.id'),
-                name: ref('course.name'),
-                description: ref('course.description'),
-                imageUrl: ref('course.imageUrl'),
-              }),
-            ),
-            sql`'[]'`,
-          )
-          .as('courses'),
-      ])
-      .groupBy(['category.id', 'category.name', 'category.description'])
+      .select(['id', 'name', 'description'])
       .executeTakeFirst();
   }
 
-  delete(id: number, actorId: number) {
-    return this.database
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction
       .updateTable('category')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)
@@ -149,6 +133,16 @@ export class CategoryRepository {
       .selectFrom('category')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByIds(ids: number[]) {
+    const { count } = await this.database
+      .selectFrom('category')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', 'in', ids)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);

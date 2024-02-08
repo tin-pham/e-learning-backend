@@ -20,7 +20,8 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { CategoryService } from './category.service';
 import { CategoryGetListDTO, CategoryStoreDTO, CategoryUpdateDTO } from './dto/category.dto';
-import { CategoryDeleteRO, CategoryGetDetailRO, CategoryGetListRO, CategoryStoreRO, CategoryUpdateRO } from './ro/category.ro';
+import { CategoryGetDetailRO, CategoryGetListRO, CategoryStoreRO, CategoryUpdateRO } from './ro/category.ro';
+import { ResultRO } from 'src/common/ro/result.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.CATEGORY;
 
@@ -89,7 +90,7 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })
-  @ApiOkResponse({ type: CategoryDeleteRO })
+  @ApiOkResponse({ type: ResultRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
