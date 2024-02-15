@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { LessonEntity } from './lesson.entity';
 import { LessonGetListDTO } from './dto/lesson.dto';
 
 @Injectable()
 export class LessonRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  deleteMultipleBySectionIdWithTransaction(transaction: Transaction, sectionId: number, actorId: number) {
+    return transaction
+      .updateTable('lesson')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('sectionId', '=', sectionId)
+      .execute();
+  }
 
   insert(entity: LessonEntity) {
     return this.database.insertInto('lesson').values(entity).returning(['id', 'body', 'title', 'sectionId', 'videoUrl']).executeTakeFirst();

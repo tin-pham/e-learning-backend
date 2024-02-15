@@ -5,8 +5,10 @@ import { SectionEntity } from './section.entity';
 import { SectionRepository } from './section.repository';
 import { CourseRepository } from '../course/course.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { SectionGetListDTO, SectionStoreDTO, SectionUpdateDTO } from './dto/section.dto';
+import { SectionGetDetailDTO, SectionGetListDTO, SectionStoreDTO, SectionUpdateDTO } from './dto/section.dto';
 import { SectionDeleteRO, SectionGetDetailRO, SectionGetListRO, SectionStoreRO, SectionUpdateRO } from './ro/section.ro';
+import { DatabaseService } from '../database';
+import { LessonRepository } from 'src/lesson/lesson.repository';
 
 @Injectable()
 export class SectionService extends BaseService {
@@ -14,8 +16,10 @@ export class SectionService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly sectionRepository: SectionRepository,
     private readonly courseRepository: CourseRepository,
+    private readonly lessonReposisotry: LessonRepository,
   ) {
     super(elasticLogger);
   }
@@ -70,26 +74,22 @@ export class SectionService extends BaseService {
     }
   }
 
-  async getDetail(id: number, decoded: IJwtPayload) {
+  async getDetail(id: number, dto: SectionGetDetailDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    let section: SectionEntity;
+    let response: any;
     try {
-      section = await this.sectionRepository.findOneById(id);
+      response = await this.sectionRepository.findOneById(id, dto);
     } catch (error) {
       const { code, status, message } = EXCEPTION.SECTION.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
 
-    if (!section) {
+    if (!response) {
       const { code, status, message } = EXCEPTION.SECTION.NOT_FOUND;
       this.throwException({ code, status, message, actorId });
     }
-
-    const response = new SectionGetDetailRO();
-    response.id = section.id;
-    response.name = section.name;
 
     return this.success({
       classRO: SectionGetDetailRO,
@@ -138,9 +138,15 @@ export class SectionService extends BaseService {
     const response = new SectionDeleteRO();
 
     try {
-      const section = await this.sectionRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        // Delete section
+        const section = await this.sectionRepository.deleteWithTransaction(transaction, id, actorId);
 
-      response.id = section.id;
+        // Delete lesson
+        await this.lessonReposisotry.deleteMultipleBySectionIdWithTransaction(transaction, section.id, actorId);
+
+        response.id = section.id;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.SECTION.DELETE_FAILED;
       this.logger.error(error);

@@ -6,6 +6,26 @@ import { DatabaseService, Transaction } from 'src/database';
 export class CategoryCourseRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async updateByCategoryIdsAndCourseIdWithTransaction(transaction: Transaction, categoryIds: number[], courseId: number, actorId: number) {
+    if (categoryIds && categoryIds.length) {
+      await transaction.deleteFrom('categoryCourse').where('categoryId', 'not in', categoryIds).execute();
+      return transaction
+        .insertInto('categoryCourse')
+        .columns(['categoryId', 'courseId', 'createdBy'])
+        .expression(() =>
+          this.database.selectNoFrom(() => [
+            sql`unnest(${categoryIds}::int[])`.as('categoryId'),
+            sql`${courseId}`.as('courseId'),
+            sql`${actorId}`.as('createdBy'),
+          ]),
+        )
+        .onConflict((oc) => oc.doNothing())
+        .execute();
+    } else {
+      return transaction.deleteFrom('categoryCourse').where('courseId', '=', courseId).execute();
+    }
+  }
+
   async countByCategoryIdsAndCourseId(categoryIds: number[], courseId: number) {
     const { count } = await this.database
       .selectFrom('categoryCourse')

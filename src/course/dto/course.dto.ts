@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 const { NAME, DESCRIPTION, IMAGE_URL, CATEGORY_ID, STUDENT_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
 
@@ -62,10 +62,20 @@ export class CourseGetListDTO extends PaginateDTO {
   categoryId: number;
 }
 
+export class CourseGetDetailDTO {
+  @ApiPropertyOptional()
+  @Type(() => Boolean)
+  @IsOptional()
+  withCategoryIds?: boolean;
+}
+
 export class CourseUpdateDTO {
   @ApiPropertyOptional()
   @IsString({
     message: NAME.FORMAT_IS_NOT_VALID,
+  })
+  @IsNotEmpty({
+    message: NAME.IS_NOT_EMPTY,
   })
   @IsOptional()
   name?: string;
@@ -88,11 +98,5 @@ export class CourseUpdateDTO {
   @IsNumber({}, { each: true })
   @IsArray()
   @IsOptional()
-  addCategoryIds?: number[];
-
-  @ApiPropertyOptional({ example: [1] })
-  @IsNumber({}, { each: true })
-  @IsArray()
-  @IsOptional()
-  removeCategoryIds?: number[];
+  categoryIds: number[];
 }

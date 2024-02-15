@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { SectionEntity } from './section.entity';
-import { SectionGetListDTO } from './dto/section.dto';
+import { SectionGetDetailDTO, SectionGetListDTO } from './dto/section.dto';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
+import { sql } from 'kysely';
 
 @Injectable()
 export class SectionRepository {
@@ -13,7 +15,7 @@ export class SectionRepository {
   }
 
   find(dto: SectionGetListDTO) {
-    const { limit, page, courseId } = dto;
+    const { limit, page, courseId, withLesson } = dto;
 
     const withCourse = Boolean(courseId);
 
@@ -21,23 +23,59 @@ export class SectionRepository {
       .selectFrom('section')
       .select(['section.id', 'section.name'])
       .where('section.deletedAt', 'is', null)
-      .orderBy('section.createdAt', 'desc')
+      .orderBy('section.name', 'asc')
+      .groupBy(['section.id', 'section.name'])
       .$if(withCourse, (qb) =>
         qb
           .innerJoin('course', 'course.id', 'section.courseId')
           .where('section.courseId', '=', courseId)
           .where('course.deletedAt', 'is', null),
+      )
+      .$if(withLesson, (qb) =>
+        qb
+          .leftJoin('lesson', (join) => join.onRef('lesson.sectionId', '=', 'section.id').on('lesson.deletedAt', 'is', null))
+          .select(({ fn, ref }) => [
+            fn
+              .coalesce(
+                sql`json_agg(json_build_object('id', ${ref('lesson.id')}, 'title', ${ref('lesson.title')}) ORDER BY ${ref(
+                  'lesson.id',
+                )} ) FILTER (WHERE ${ref('lesson.id')} is not null) `,
+                sql`'[]'`,
+              )
+              .as('lessons'),
+          ]),
       );
 
     return paginate(query, { limit, page });
   }
 
-  findOneById(id: number) {
+  findOneById(id: number, dto: SectionGetDetailDTO) {
+    const { withLesson } = dto;
     return this.database
       .selectFrom('section')
-      .select(['id', 'name', 'courseId'])
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
+      .select(['section.id', 'section.name', 'section.courseId'])
+      .where('section.id', '=', id)
+      .where('section.deletedAt', 'is', null)
+      .groupBy(['section.id', 'section.name', 'section.courseId'])
+      .$if(withLesson, (qb) =>
+        qb
+          .leftJoin('lesson', (join) => join.onRef('lesson.sectionId', '=', 'section.id').on('lesson.deletedAt', 'is', null))
+          .select(({ fn, ref }) => [
+            fn
+              .coalesce(
+                fn
+                  .jsonAgg(
+                    jsonBuildObject({
+                      id: ref('lesson.id'),
+                      title: ref('lesson.title'),
+                    }),
+                  )
+                  .filterWhere('lesson.id', 'is not', null),
+                sql`'[]'`,
+              )
+              .as('lessons'),
+          ]),
+      )
       .executeTakeFirst();
   }
 
@@ -51,8 +89,8 @@ export class SectionRepository {
       .executeTakeFirst();
   }
 
-  delete(id: number, actorId: number) {
-    return this.database
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction
       .updateTable('section')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)

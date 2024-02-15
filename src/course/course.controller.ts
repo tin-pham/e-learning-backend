@@ -19,7 +19,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { CourseService } from './course.service';
-import { CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
+import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
 import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.COURSE;
@@ -69,8 +69,8 @@ export class CourseController {
   @Get(GET_DETAIL.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
-    return this.courseService.getDetail(id, decoded);
+  getDetail(@Param('id', ParseIntPipe) id: number, @Query() dto: CourseGetDetailDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.courseService.getDetail(id, dto, decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })

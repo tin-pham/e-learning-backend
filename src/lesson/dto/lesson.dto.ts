@@ -1,46 +1,72 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { Type } from 'class-transformer';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+
+const { BODY, TITLE, VIDEO_URL, SECTION_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.LESSON;
 
 export class LessonStoreDTO {
   @ApiProperty()
-  @IsString()
+  @IsString({
+    message: TITLE.FORMAT_IS_NOT_VALID,
+  })
+  @IsNotEmpty({
+    message: TITLE.IS_NOT_EMPTY,
+  })
   title: string;
 
-  @ApiProperty()
-  @IsString()
-  body: string;
+  @ApiPropertyOptional()
+  @IsString({
+    message: BODY.FORMAT_IS_NOT_VALID,
+  })
+  @IsOptional()
+  body?: string;
 
   @ApiProperty({ example: 1 })
-  @IsNumber()
+  @IsNumber(
+    {},
+    {
+      message: SECTION_ID.FORMAT_IS_NOT_VALID,
+    },
+  )
+  @IsNotEmpty({
+    message: SECTION_ID.IS_NOT_EMPTY,
+  })
+  @Type(() => Number)
   sectionId: number;
 
   @ApiPropertyOptional()
-  @IsUrl()
+  @IsUrl({}, { message: VIDEO_URL.FORMAT_IS_NOT_VALID })
   @IsOptional()
   videoUrl?: string;
 }
 
 export class LessonGetListDTO extends PaginateDTO {
   @ApiProperty({ example: 1 })
-  @IsNumber()
+  @IsNumber(
+    {},
+    {
+      message: SECTION_ID.FORMAT_IS_NOT_VALID,
+    },
+  )
   @Type(() => Number)
   sectionId?: number;
 }
 
 export class LessonUpdateDTO {
   @ApiPropertyOptional()
-  @IsString()
+  @IsString({ message: TITLE.FORMAT_IS_NOT_VALID })
   @IsOptional()
   title?: string;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsString({ message: BODY.FORMAT_IS_NOT_VALID })
   @IsOptional()
   body?: string;
 
   @ApiProperty()
-  @IsUrl()
+  @IsUrl({}, { message: VIDEO_URL.FORMAT_IS_NOT_VALID })
+  @IsOptional()
   videoUrl: string;
 }

@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { CourseEntity } from './course.entity';
-import { CourseGetListDTO } from './dto/course.dto';
+import { CourseGetDetailDTO, CourseGetListDTO } from './dto/course.dto';
+import { sql } from 'kysely';
 
 @Injectable()
 export class CourseRepository {
@@ -39,20 +40,34 @@ export class CourseRepository {
       )
       .$if(categoryId === null, (qb) =>
         qb
-          .leftJoin('categoryCourse', 'categoryCourse.courseId', 'course.id')
-          .where('categoryCourse.deletedAt', 'is', null)
-          .where('categoryCourse.categoryId', 'is', null),
+          .leftJoin('categoryCourse', (join) =>
+            join.onRef('course.id', '=', 'categoryCourse.courseId').on('categoryCourse.deletedAt', 'is', null),
+          )
+          .where('categoryCourse.courseId', 'is', null),
       );
 
     return paginate(query, { limit, page });
   }
 
-  findOneById(id: number) {
+  findOneById(id: number, dto?: CourseGetDetailDTO) {
+    const { withCategoryIds } = dto;
     return this.database
       .selectFrom('course')
-      .select(['id', 'name', 'description', 'imageUrl'])
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
+      .select(['course.id', 'course.name', 'course.description', 'course.imageUrl'])
+      .where('course.id', '=', id)
+      .where('course.deletedAt', 'is', null)
+      .groupBy(['course.id', 'course.name', 'course.description', 'course.imageUrl'])
+      .$if(withCategoryIds, (query) =>
+        query
+          .leftJoin('categoryCourse', (join) =>
+            join.onRef('categoryCourse.courseId', '=', 'course.id').on('categoryCourse.deletedAt', 'is', null),
+          )
+          .select(({ fn, ref }) => [
+            fn
+              .coalesce(fn.jsonAgg(ref('categoryCourse.categoryId')).filterWhere('categoryCourse.categoryId', 'is not', null), sql`'[]'`)
+              .as('categoryIds'),
+          ]),
+      )
       .executeTakeFirst();
   }
 

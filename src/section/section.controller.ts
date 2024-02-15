@@ -19,7 +19,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { SectionService } from './section.service';
-import { SectionGetListDTO, SectionStoreDTO, SectionUpdateDTO } from './dto/section.dto';
+import { SectionGetDetailDTO, SectionGetListDTO, SectionStoreDTO, SectionUpdateDTO } from './dto/section.dto';
 import { SectionDeleteRO, SectionGetDetailRO, SectionGetListRO, SectionStoreRO, SectionUpdateRO } from './ro/section.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.SECTION;
@@ -69,8 +69,8 @@ export class SectionController {
   @Get(GET_DETAIL.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
-    return this.sectionService.getDetail(id, decoded);
+  getDetail(@Param('id', ParseIntPipe) id: number, @Query() dto: SectionGetDetailDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.sectionService.getDetail(id, dto, decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })

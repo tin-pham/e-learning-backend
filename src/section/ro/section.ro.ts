@@ -16,6 +16,16 @@ export class SectionStoreRO {
   courseId: number;
 }
 
+export class SectionGetListDataLessonRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  title: string;
+}
+
 export class SectionGetListDataRO {
   @ApiProperty()
   @Expose()
@@ -25,9 +35,10 @@ export class SectionGetListDataRO {
   @Expose()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: [SectionGetListDataLessonRO] })
+  @Type(() => SectionGetListDataLessonRO)
   @Expose()
-  courseId: number;
+  lessons: SectionGetListDataLessonRO[];
 }
 
 export class SectionGetListRO extends PaginateRO<SectionGetListDataRO> {
@@ -35,6 +46,16 @@ export class SectionGetListRO extends PaginateRO<SectionGetListDataRO> {
   @Type(() => SectionGetListDataRO)
   @Expose()
   data: SectionGetListDataRO[];
+}
+
+export class SectionGetDetailLessonRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  title: string;
 }
 
 export class SectionGetDetailRO {
@@ -49,6 +70,11 @@ export class SectionGetDetailRO {
   @ApiProperty()
   @Expose()
   courseId: number;
+
+  @ApiProperty({ type: [SectionGetDetailLessonRO] })
+  @Type(() => SectionGetDetailLessonRO)
+  @Expose()
+  lessons: SectionGetDetailLessonRO[];
 }
 
 export class SectionUpdateRO {

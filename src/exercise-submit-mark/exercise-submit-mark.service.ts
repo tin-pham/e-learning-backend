@@ -46,7 +46,6 @@ export class ExerciseSubmitMarkService extends BaseService {
         // Get correct question option
         const correctQuestionOptions = await this.questionOptionRepository.getCorrectIdByQuestionId(questionId);
         const correctQuestionOptionIds = correctQuestionOptions.map((option) => option.id);
-        console.log(correctQuestionOptionIds);
 
         // Get exercise submit option
         const exerciseSubmitOptions = await this.exerciseSubmitOptionRepository.getQuestionOptionByExerciseSubmitIdAndQuestionId(
@@ -54,7 +53,6 @@ export class ExerciseSubmitMarkService extends BaseService {
           questionId,
         );
         const exerciseSubmitOptionQuestionOptionIds = exerciseSubmitOptions.map((option) => option.questionOptionId);
-        console.log(exerciseSubmitOptionQuestionOptionIds);
 
         // Compare
         if (correctQuestionOptionIds.every((optionId) => exerciseSubmitOptionQuestionOptionIds.includes(optionId))) {

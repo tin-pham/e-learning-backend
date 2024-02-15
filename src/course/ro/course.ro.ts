@@ -61,6 +61,10 @@ export class CourseGetDetailRO {
   @ApiProperty()
   @Expose()
   imageUrl?: string;
+
+  @ApiProperty({ type: [Number] })
+  @Expose()
+  categoryIds: number[];
 }
 
 export class CourseUpdateRO {

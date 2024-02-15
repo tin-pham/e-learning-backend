@@ -8,7 +8,7 @@ import { CategoryRepository } from '../category/category.repository';
 import { CategoryCourseRepository } from '../category-course/category-course.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
-import { CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
+import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
 import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
 
 @Injectable()
@@ -90,28 +90,24 @@ export class CourseService extends BaseService {
     }
   }
 
-  async getDetail(id: number, decoded: IJwtPayload) {
+  async getDetail(id: number, dto: CourseGetDetailDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    let course: CourseEntity;
+    let response: any;
+
     try {
-      course = await this.courseRepository.findOneById(id);
+      response = await this.courseRepository.findOneById(id, dto);
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
 
-    if (!course) {
+    if (!response) {
       const { code, status, message } = EXCEPTION.COURSE.NOT_FOUND;
       this.throwException({ code, status, message, actorId });
     }
 
-    const response = new CourseGetDetailRO();
-    response.id = course.id;
-    response.name = course.name;
-    response.description = course.description;
-    response.imageUrl = course.imageUrl;
     return this.success({
       classRO: CourseGetDetailRO,
       response,
@@ -145,23 +141,7 @@ export class CourseService extends BaseService {
 
         const course = await this.courseRepository.updateWithTransaction(transaction, id, courseData);
 
-        if (dto.addCategoryIds) {
-          await this.categoryCourseRepository.insertByCategoryIdsAndCourseIdWithTransaction(
-            transaction,
-            dto.addCategoryIds,
-            course.id,
-            actorId,
-          );
-        }
-
-        if (dto.removeCategoryIds) {
-          await this.categoryCourseRepository.deleteByCategoryIdsAndCourseIdWithTransaction(
-            transaction,
-            dto.removeCategoryIds,
-            course.id,
-            actorId,
-          );
-        }
+        await this.categoryCourseRepository.updateByCategoryIdsAndCourseIdWithTransaction(transaction, dto.categoryIds, course.id, actorId);
 
         response.id = course.id;
         response.name = course.name;
@@ -247,33 +227,10 @@ export class CourseService extends BaseService {
     }
 
     // Check add category exist
-    if (dto.addCategoryIds) {
-      const categoryCount = await this.categoryRepository.countByIds(dto.addCategoryIds);
+    if (dto.categoryIds && dto.categoryIds.length) {
+      const categoryCount = await this.categoryRepository.countByIds(dto.categoryIds);
       if (!categoryCount) {
         const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
-        this.throwException({ code, status, message, actorId });
-      }
-      // Check category course unique
-
-      const categoryCourseCount = await this.categoryCourseRepository.countByCategoryIdsAndCourseId(dto.addCategoryIds, id);
-      if (categoryCourseCount) {
-        const { code, status, message } = EXCEPTION.CATEGORY_COURSE.ALREADY_EXIST;
-        this.throwException({ code, status, message, actorId });
-      }
-    }
-
-    // Check remove category exist
-    if (dto.removeCategoryIds) {
-      const categoryCount = await this.categoryRepository.countByIds(dto.removeCategoryIds);
-      if (!categoryCount) {
-        const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
-        this.throwException({ code, status, message, actorId });
-      }
-
-      // Check category course exist
-      const categoryCourseCount = await this.categoryCourseRepository.countByCategoryIdsAndCourseId(dto.removeCategoryIds, id);
-      if (!categoryCourseCount) {
-        const { code, status, message } = EXCEPTION.CATEGORY_COURSE.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
     }

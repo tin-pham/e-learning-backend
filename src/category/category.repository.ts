@@ -4,7 +4,6 @@ import { CategoryEntity } from './category.entity';
 import { CategoryGetListDTO } from './dto/category.dto';
 import { paginate } from 'src/common/function/paginate';
 import { sql } from 'kysely';
-import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 @Injectable()
 export class CategoryRepository {
@@ -17,44 +16,43 @@ export class CategoryRepository {
   find(dto: CategoryGetListDTO) {
     const { page, limit, withCourse, withCourseCount, search } = dto;
 
-    let query: any;
+    let query;
 
     if (withCourse) {
       query = this.database
-        .selectFrom('category')
-        .leftJoin('categoryCourse', (join) =>
-          join.onRef('categoryCourse.categoryId', '=', 'category.id').on('categoryCourse.deletedAt', 'is', null),
+        .with('limitedCourses', (eb) =>
+          eb
+            .selectFrom('course')
+            .innerJoin('categoryCourse', 'categoryCourse.courseId', 'course.id')
+            .where('course.deletedAt', 'is', null)
+            .where('categoryCourse.deletedAt', 'is', null)
+            .limit(10)
+            .select(['course.id', 'course.name', 'course.description', 'course.imageUrl', 'categoryCourse.categoryId'])
+            .distinct()
+            .orderBy('course.id'),
         )
-        .leftJoin('course', (join) => join.onRef('course.id', '=', 'categoryCourse.courseId').on('course.deletedAt', 'is', null))
+        .selectFrom('category')
         .where('category.deletedAt', 'is', null)
+        .leftJoin('limitedCourses', 'limitedCourses.categoryId', 'category.id')
         .select(({ fn, ref }) => [
           'category.id',
           'category.name',
           'category.description',
           fn
             .coalesce(
-              fn
-                .jsonAgg(
-                  jsonBuildObject({
-                    id: ref('course.id'),
-                    name: ref('course.name'),
-                    description: ref('course.description'),
-                    imageUrl: ref('course.imageUrl'),
-                  }),
-                )
-                .filterWhere('course.id', 'is not', null),
+              sql`json_agg(
+              json_build_object(
+                'id', ${ref('limitedCourses.id')}, 
+                'name', ${ref('limitedCourses.name')}, 
+                'description', ${ref('limitedCourses.description')}, 
+                'imageUrl', ${ref('limitedCourses.imageUrl')}
+              ) ORDER BY ${ref('limitedCourses.id')}
+            ) FILTER (WHERE ${ref('limitedCourses.id')} IS NOT NULL)`,
               sql`'[]'`,
             )
             .as('courses'),
         ])
-        .where('category.deletedAt', 'is', null)
         .groupBy(['category.id', 'category.name', 'category.description']);
-
-      if (withCourseCount) {
-        query = query
-          .select(({ fn }) => ['category.id', 'category.name', 'category.description', fn.count('course.id').as('courseCount')])
-          .orderBy('courseCount', 'desc');
-      }
     } else if (withCourseCount) {
       query = this.database
         .selectFrom('category')
@@ -70,7 +68,6 @@ export class CategoryRepository {
       query = this.database.selectFrom('category').select(['id', 'name', 'description']).where('deletedAt', 'is', null);
     }
 
-    console.log(search);
     if (search) {
       query = query.where('category.name', 'ilike', `%${search}%`);
     }
