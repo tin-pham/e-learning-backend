@@ -262,6 +262,10 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Bulk delete lesson attachment',
     },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list lesson attachments',
+    },
   },
   EXERCISE: {
     TAGS: 'Exercise',

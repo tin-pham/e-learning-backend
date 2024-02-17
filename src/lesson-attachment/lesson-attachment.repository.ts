@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
-import { sql } from 'kysely';
-import { LessonAttachmentBulkStoreDTO } from './dto/lesson-attachment.dto';
+import { LessonAttachmentEntity } from './lesson-attachment.entity';
 
 @Injectable()
 export class LessonAttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  findByLessonId(lessonId: number) {
+    return this.database
+      .selectFrom('lessonAttachment')
+      .select(['id', 'url', 'name', 'size', 'type'])
+      .where('lessonId', '=', lessonId)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
 
   async countByIds(ids: number[]) {
     const { count } = await this.database
@@ -17,18 +25,8 @@ export class LessonAttachmentRepository {
     return Number(count);
   }
 
-  insertMultiple(dto: LessonAttachmentBulkStoreDTO, actorId: number) {
-    return this.database
-      .insertInto('lessonAttachment')
-      .columns(['url', 'lessonId', 'createdBy'])
-      .expression(() =>
-        this.database.selectNoFrom(() => [
-          sql`unnest(${dto.urls}::text[])`.as('url'),
-          sql`${dto.lessonId}`.as('lessonId'),
-          sql`${actorId}`.as('createdBy'),
-        ]),
-      )
-      .execute();
+  insertMultiple(entities: LessonAttachmentEntity[]) {
+    return this.database.insertInto('lessonAttachment').values(entities).execute();
   }
 
   deleteMultipleByIds(ids: number[], actorId: number) {

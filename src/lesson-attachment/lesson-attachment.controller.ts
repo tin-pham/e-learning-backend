@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -19,9 +19,10 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { JwtPayload } from '../common/decorator';
 import { ResultRO } from '../common/ro/result.ro';
 import { LessonAttachmentService } from './lesson-attachment.service';
-import { LessonAttachmentBulkDeleteDTO, LessonAttachmentBulkStoreDTO } from './dto/lesson-attachment.dto';
+import { LessonAttachmentBulkDeleteDTO, LessonAttachmentBulkStoreDTO, LessonAttachmentGetListDTO } from './dto/lesson-attachment.dto';
+import { LessonAttachmentGetListRO } from './ro/lesson-attachment.ro';
 
-const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.LESSON_ATTACHMENT;
+const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE, GET_LIST } = API.LESSON_ATTACHMENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -56,5 +57,19 @@ export class LessonAttachmentController {
   @UseGuards(JwtGuard, RoleGuard)
   bulkDelete(@Query() dto: LessonAttachmentBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.lessonAttachmentService.bulkDelete(dto, decoded);
+  }
+
+  @ApiOperation({ summary: GET_LIST.OPERATION })
+  @ApiOkResponse({ type: LessonAttachmentGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
+  getList(@Query() dto: LessonAttachmentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.lessonAttachmentService.getList(dto, decoded);
   }
 }

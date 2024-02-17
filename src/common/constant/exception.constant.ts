@@ -461,6 +461,11 @@ export const EXCEPTION = {
       message: 'Lesson attachment does not exist',
       code: 'LESSON_ATTACHMENT.DOES_NOT_EXIST',
     },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list lesson attachment',
+      code: 'LESSON_ATTACHMENT.GET_LIST_FAILED',
+    },
     BULK_STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk store lesson attachment',

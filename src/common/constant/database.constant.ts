@@ -221,6 +221,9 @@ export const DATABASE_TABLE = {
     SCHEMA: {
       ID: 'id',
       URL: 'url',
+      NAME: 'name',
+      SIZE: 'size',
+      TYPE: 'type',
       LESSON_ID: 'lesson_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',

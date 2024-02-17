@@ -6,7 +6,8 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { S3DeleteDTO, S3UploadDTO } from './dto/s3.dto';
-import { S3UploadRO } from './ro/s3.ro';
+import { S3UploadDataRO, S3UploadRO } from './ro/s3.ro';
+import { formatBytes } from 'src/common/function/format-byte';
 
 @Injectable()
 export class S3Service extends BaseService {
@@ -33,7 +34,7 @@ export class S3Service extends BaseService {
     };
 
     const response = new S3UploadRO();
-    response.urls = [];
+    response.data = [];
 
     for (const file of dto.files) {
       const sanitizedFilename = sanitizeFilename(file.originalName);
@@ -49,7 +50,12 @@ export class S3Service extends BaseService {
         const s3Response = await this.s3Client.send(command);
         if (s3Response.$metadata.httpStatusCode === 200) {
           const url = `https://${bucket}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${key}`;
-          response.urls.push(url);
+          const data = new S3UploadDataRO();
+          data.url = url;
+          data.name = Buffer.from(file.originalName, 'latin1').toString('utf8')
+          data.type = file['fileType'].ext;
+          data.size = formatBytes(file.size);
+          response.data.push(data);
         } else {
           throw new Error('File not saved to s3');
         }

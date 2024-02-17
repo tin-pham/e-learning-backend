@@ -43,7 +43,7 @@ export class LessonRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('lesson')
-      .select(['id', 'title', 'body', 'sectionId'])
+      .select(['id', 'title', 'body', 'sectionId', 'videoUrl'])
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();

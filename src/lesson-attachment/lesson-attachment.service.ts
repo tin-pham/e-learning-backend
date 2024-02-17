@@ -3,8 +3,10 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { LessonAttachmentRepository } from './lesson-attachment.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { LessonAttachmentBulkDeleteDTO, LessonAttachmentBulkStoreDTO } from './dto/lesson-attachment.dto';
+import { LessonAttachmentBulkDeleteDTO, LessonAttachmentBulkStoreDTO, LessonAttachmentGetListDTO } from './dto/lesson-attachment.dto';
 import { ResultRO } from '../common/ro/result.ro';
+import { LessonAttachmentGetListRO } from './ro/lesson-attachment.ro';
+import { LessonAttachmentEntity } from './lesson-attachment.entity';
 
 @Injectable()
 export class LessonAttachmentService extends BaseService {
@@ -21,7 +23,21 @@ export class LessonAttachmentService extends BaseService {
     const actorId = decoded.userId;
 
     try {
-      await this.lessonAttachmentRepository.insertMultiple(dto, actorId);
+      const { files, lessonId } = dto;
+
+      const entities = files.map(
+        (file) =>
+          new LessonAttachmentEntity({
+            url: file.url,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lessonId,
+            createdBy: actorId,
+          }),
+      );
+
+      await this.lessonAttachmentRepository.insertMultiple(entities);
     } catch (error) {
       const { code, status, message } = EXCEPTION.LESSON_ATTACHMENT.BULK_STORE_FAILED;
       this.logger.error(error);
@@ -54,6 +70,21 @@ export class LessonAttachmentService extends BaseService {
       message: 'Delete lesson file successfully',
       actorId,
     });
+  }
+
+  async getList(dto: LessonAttachmentGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    try {
+      const response = await this.lessonAttachmentRepository.findByLessonId(dto.lessonId);
+      return this.success({
+        classRO: LessonAttachmentGetListRO,
+        response: { data: response },
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.LESSON_ATTACHMENT.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
   }
 
   private async validateBulkDelete(dto: LessonAttachmentBulkDeleteDTO, actorId: number) {

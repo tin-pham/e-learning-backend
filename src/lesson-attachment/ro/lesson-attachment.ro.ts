@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
-export class S3UploadDataRO {
+export class LessonAttachmentGetListDataRO {
   @ApiProperty()
   @Expose()
   url: string;
@@ -19,9 +19,9 @@ export class S3UploadDataRO {
   size: string;
 }
 
-export class S3UploadRO {
-  @ApiProperty({ type: [S3UploadDataRO] })
-  @Type(() => S3UploadDataRO)
+export class LessonAttachmentGetListRO {
+  @ApiProperty({ type: [LessonAttachmentGetListDataRO] })
+  @Type(() => LessonAttachmentGetListDataRO)
   @Expose()
-  data: S3UploadDataRO[];
+  data: LessonAttachmentGetListDataRO[];
 }
