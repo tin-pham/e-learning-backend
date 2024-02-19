@@ -1,0 +1,99 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { BaseService } from '../base';
+import { EXCEPTION, IJwtPayload } from '../common';
+import { AttachmentRepository } from './attachment.repository';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
+import { AttachmentEntity } from './attachment.entity';
+import { AttachmentBulkDeleteDTO, AttachmentBulkStoreDTO, AttachmentGetListDTO } from './dto/attachment.dto';
+import { ResultRO } from '../common/ro/result.ro';
+import { AttachmentGetListRO } from './ro/attachment.ro';
+
+@Injectable()
+export class AttachmentService extends BaseService {
+  private readonly logger = new Logger(AttachmentService.name);
+
+  constructor(
+    elasticLogger: ElasticsearchLoggerService,
+    private readonly attachmentRepository: AttachmentRepository,
+  ) {
+    super(elasticLogger);
+  }
+
+  async bulkStore(dto: AttachmentBulkStoreDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+
+    try {
+      const { files, lessonId, assignmentId } = dto;
+
+      const entities = files.map(
+        (file) =>
+          new AttachmentEntity({
+            url: file.url,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lessonId,
+            assignmentId,
+            createdBy: actorId,
+          }),
+      );
+
+      await this.attachmentRepository.insertMultiple(entities);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.BULK_STORE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Store file successfully',
+      actorId,
+    });
+  }
+
+  async bulkDelete(dto: AttachmentBulkDeleteDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateBulkDelete(dto, actorId);
+
+    try {
+      await this.attachmentRepository.deleteMultipleByIds(dto.ids, actorId);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.BULK_DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Delete file successfully',
+      actorId,
+    });
+  }
+
+  async getList(dto: AttachmentGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    try {
+      const response = await this.attachmentRepository.find(dto);
+      return this.success({
+        classRO: AttachmentGetListRO,
+        response,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateBulkDelete(dto: AttachmentBulkDeleteDTO, actorId: number) {
+    // Check exist
+    const attachmentCount = await this.attachmentRepository.countByIds(dto.ids);
+    if (attachmentCount !== dto.ids.length) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+}

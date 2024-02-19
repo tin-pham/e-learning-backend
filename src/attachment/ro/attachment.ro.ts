@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PaginateRO } from 'src/common/ro/paginate.ro';
 
-export class LessonAttachmentGetListDataRO {
+export class AttachmentGetListDataRO {
   @ApiProperty()
   @Expose()
   id: number;
@@ -28,9 +28,9 @@ export class LessonAttachmentGetListDataRO {
   createdAt: Date;
 }
 
-export class LessonAttachmentGetListRO extends PaginateRO<LessonAttachmentGetListDataRO> {
-  @ApiProperty({ type: [LessonAttachmentGetListDataRO] })
-  @Type(() => LessonAttachmentGetListDataRO)
+export class AttachmentGetListRO extends PaginateRO<AttachmentGetListDataRO> {
+  @ApiProperty({ type: [AttachmentGetListDataRO] })
+  @Type(() => AttachmentGetListDataRO)
   @Expose()
-  data: LessonAttachmentGetListDataRO[];
+  data: AttachmentGetListDataRO[];
 }

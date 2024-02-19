@@ -29,6 +29,7 @@ import { ExerciseSubmitMarkEntity } from '../exercise-submit-mark/exercise-submi
 import { AssignmentExerciseEntity } from '../assignment-exercise/assignment-exercise.entity';
 import { CategoryEntity } from '../category/category.entity';
 import { CategoryCourseEntity } from '../category-course/category-course.entity';
+import { AttachmentEntity } from '../attachment/attachment.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -61,6 +62,7 @@ export interface KyselyTables {
   assignmentExercise: AssignmentExerciseEntity;
   category: CategoryEntity;
   categoryCourse: CategoryCourseEntity;
+  attachment: AttachmentEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

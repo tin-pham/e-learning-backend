@@ -1,16 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { sql } from 'kysely';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { AssignmentEntity } from './assignment.entity';
-import { AssignmentAttachmentRepository } from '../assignment-attachment/assignment-attachment.repository';
 import { AssignmentRepository } from './assignment.repository';
 import { AssignmentExerciseRepository } from '../assignment-exercise/assignment-exercise.repository';
 import { CourseRepository } from '../course/course.repository';
+import { LessonRepository } from '../lesson/lesson.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AssignmentGetListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
 import { AssignmentDeleteRO, AssignmentGetDetailRO, AssignmentGetListRO, AssignmentStoreRO, AssignmentUpdateRO } from './ro/assignment.ro';
-import { sql } from 'kysely';
 
 @Injectable()
 export class AssignmentService extends BaseService {
@@ -21,8 +21,8 @@ export class AssignmentService extends BaseService {
     private readonly database: DatabaseService,
     private readonly courseRepository: CourseRepository,
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly assignmentAttachmentRepository: AssignmentAttachmentRepository,
     private readonly assignmentExerciseRepository: AssignmentExerciseRepository,
+    private readonly lessonRepository: LessonRepository,
   ) {
     super(elasticLogger);
   }
@@ -40,18 +40,11 @@ export class AssignmentService extends BaseService {
           description: dto.description,
           dueDate: dto.dueDate,
           courseId: dto.courseId,
+          lessonId: dto.lessonId,
           createdBy: actorId,
         });
 
         const assignment = await this.assignmentRepository.insertWithTransaction(transaction, assignmentData);
-
-        if (dto.urls) {
-          await this.assignmentAttachmentRepository.insertMultipleByUrlsWithTransaction(transaction, {
-            urls: dto.urls,
-            assignmentId: assignment.id,
-            actorId: actorId,
-          });
-        }
 
         if (dto.exerciseIds) {
           await this.assignmentExerciseRepository.insertMultipleByExerciseIdsWithTransaction(transaction, {
@@ -135,14 +128,12 @@ export class AssignmentService extends BaseService {
     let response: AssignmentUpdateRO;
 
     try {
-      const assignmentData = new AssignmentEntity({
-        name: dto.name,
-        description: dto.description,
-        dueDate: dto.dueDate,
-        courseId: dto.courseId,
-        updatedAt: new Date(),
-        updatedBy: actorId,
-      });
+      const assignmentData = new AssignmentEntity();
+      assignmentData.updatedAt = new Date();
+      assignmentData.updatedBy = actorId;
+      if (dto.name) assignmentData.name = dto.name;
+      if (dto.description) assignmentData.description = dto.description;
+      if (dto.dueDate) assignmentData.dueDate = dto.dueDate;
 
       const assignment = await this.assignmentRepository.update(id, assignmentData);
 
@@ -194,10 +185,21 @@ export class AssignmentService extends BaseService {
 
   private async validateStore(dto: AssignmentStoreDTO, actorId: number) {
     // Check course exist
-    const courseCount = await this.courseRepository.countById(dto.courseId);
-    if (!courseCount) {
-      const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
-      this.throwException({ code, status, message, actorId });
+    if (dto.courseId) {
+      const courseCount = await this.courseRepository.countById(dto.courseId);
+      if (!courseCount) {
+        const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
+
+    if (dto.lessonId) {
+      const lessonCount = await this.lessonRepository.countById(dto.lessonId);
+      console.log(lessonCount);
+      if (!lessonCount) {
+        const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
   }
 

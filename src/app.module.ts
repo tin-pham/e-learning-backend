@@ -29,6 +29,7 @@ import { ExerciseSubmitModule } from './exercise-submit/exercise-submit.module';
 import { ExerciseSubmitMarkModule } from './exercise-submit-mark/exercise-submit-mark.module';
 import { AssignmentExerciseModule } from './assignment-exercise/assignment-exercise.module';
 import { CategoryModule } from './category/category.module';
+import { AttachmentModule } from './attachment/attachment.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { CategoryModule } from './category/category.module';
     ExerciseSubmitMarkModule,
     AssignmentExerciseModule,
     CategoryModule,
+    AttachmentModule,
   ],
   providers: [...appProviders],
 })

@@ -1,18 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
 import { LessonAttachmentEntity } from './lesson-attachment.entity';
+import { LessonAttachmentGetListDTO } from './dto/lesson-attachment.dto';
+import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class LessonAttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  findByLessonId(lessonId: number) {
-    return this.database
+  findByLessonId(dto: LessonAttachmentGetListDTO) {
+    const { lessonId, page, limit } = dto;
+    const query = this.database
       .selectFrom('lessonAttachment')
-      .select(['id', 'url', 'name', 'size', 'type'])
+      .select(['id', 'url', 'name', 'size', 'type', 'createdAt'])
       .where('lessonId', '=', lessonId)
       .where('deletedAt', 'is', null)
-      .execute();
+      .orderBy('createdAt', 'desc');
+
+    return paginate(query, { page, limit });
   }
 
   async countByIds(ids: number[]) {

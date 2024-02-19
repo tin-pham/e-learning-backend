@@ -13,12 +13,22 @@ export class AssignmentRepository {
   }
 
   find(dto: AssignmentGetListDTO) {
-    const { limit, page } = dto;
+    const { limit, page, lessonId, courseId } = dto;
+
+    const withLesson = Boolean(lessonId);
+    const withCourse = Boolean(courseId);
+
     const query = this.database
       .selectFrom('assignment')
-      .select(['id', 'name', 'dueDate', 'description', 'courseId'])
-      .where('deletedAt', 'is', null)
-      .orderBy('id', 'asc');
+      .select(['assignment.id', 'assignment.name', 'assignment.dueDate', 'assignment.description', 'assignment.courseId'])
+      .where('assignment.deletedAt', 'is', null)
+      .orderBy('assignment.id', 'asc')
+      .$if(withLesson, (qb) =>
+        qb.innerJoin('lesson', 'lesson.id', 'assignment.lessonId').where('lessonId', '=', lessonId).where('lesson.deletedAt', 'is', null),
+      )
+      .$if(withCourse, (qb) =>
+        qb.innerJoin('course', 'course.id', 'assignment.courseId').where('courseId', '=', courseId).where('course.deletedAt', 'is', null),
+      );
 
     return paginate(query, { limit, page });
   }
@@ -26,7 +36,7 @@ export class AssignmentRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('assignment')
-      .select(['id', 'name', 'dueDate', 'description', 'courseId'])
+      .select(['id', 'name', 'dueDate', 'description', 'courseId', 'lessonId'])
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();

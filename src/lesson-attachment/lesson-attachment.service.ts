@@ -75,10 +75,10 @@ export class LessonAttachmentService extends BaseService {
   async getList(dto: LessonAttachmentGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     try {
-      const response = await this.lessonAttachmentRepository.findByLessonId(dto.lessonId);
+      const response = await this.lessonAttachmentRepository.findByLessonId(dto);
       return this.success({
         classRO: LessonAttachmentGetListRO,
-        response: { data: response },
+        response,
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.LESSON_ATTACHMENT.GET_LIST_FAILED;

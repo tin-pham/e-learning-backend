@@ -423,33 +423,6 @@ export const EXCEPTION = {
       code: 'LESSON_FILE.BULK_DELETE_FAILED',
     },
   },
-  ATTACHMENT: {
-    DOES_NOT_EXIST: {
-      status: HttpStatus.BAD_REQUEST,
-      message: 'Video does not exist',
-      code: 'ATTACHMENT.DOES_NOT_EXIST',
-    },
-    NOT_FOUND: {
-      status: HttpStatus.NOT_FOUND,
-      message: 'Video not found',
-      code: 'ATTACHMENT.NOT_FOUND',
-    },
-    UPLOAD_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to upload video',
-      code: 'ATTACHMENT.UPLOAD_FAILED',
-    },
-    BULK_DELETE_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to bulk delete video',
-      code: 'ATTACHMENT.BULK_DELETE_FAILED',
-    },
-    GET_LIST_FAILED: {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to get list video',
-      code: 'ATTACHMENT.GET_LIST_FAILED',
-    },
-  },
   LESSON_ATTACHMENT: {
     ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
@@ -847,6 +820,33 @@ export const EXCEPTION = {
       status: HttpStatus.CONFLICT,
       message: 'Category course already exist',
       code: 'CATEGORY_COURSE.ALREADY_EXIST',
+    },
+  },
+  ATTACHMENT: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Attachment already exist',
+      code: 'ATTACHMENT.ALREADY_EXIST',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Attachment does not exist',
+      code: 'ATTACHMENT.DOES_NOT_EXIST',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list attachment',
+      code: 'ATTACHMENT.GET_LIST_FAILED',
+    },
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store attachment',
+      code: 'ATTACHMENT.BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete attachment',
+      code: 'ATTACHMENT.BULK_DELETE_FAILED',
     },
   },
 };
