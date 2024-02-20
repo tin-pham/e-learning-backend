@@ -52,7 +52,7 @@ export class S3Service extends BaseService {
           const url = `https://${bucket}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${key}`;
           const data = new S3UploadDataRO();
           data.url = url;
-          data.name = Buffer.from(file.originalName, 'latin1').toString('utf8')
+          data.name = Buffer.from(file.originalName, 'latin1').toString('utf8');
           data.type = file['fileType'].ext;
           data.size = formatBytes(file.size);
           response.data.push(data);

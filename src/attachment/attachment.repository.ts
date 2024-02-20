@@ -8,6 +8,10 @@ import { AttachmentGetListDTO } from './dto/attachment.dto';
 export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  insert(entity: AttachmentEntity) {
+    return this.database.insertInto('attachment').values(entity).returning(['id', 'url', 'name', 'type', 'size']).executeTakeFirst();
+  }
+
   find(dto: AttachmentGetListDTO) {
     const { lessonId, page, limit, assignmentId } = dto;
 
@@ -32,6 +36,16 @@ export class AttachmentRepository {
     return paginate(query, { page, limit });
   }
 
+  async countById(id: number) {
+    const { count } = await this.database
+      .selectFrom('attachment')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('attachment')
@@ -48,5 +62,9 @@ export class AttachmentRepository {
 
   deleteMultipleByIds(ids: number[], actorId: number) {
     return this.database.updateTable('attachment').set({ deletedAt: new Date(), deletedBy: actorId }).where('id', 'in', ids).execute();
+  }
+
+  delete(id: number, actorId: number) {
+    return this.database.updateTable('attachment').set({ deletedAt: new Date(), deletedBy: actorId }).where('id', '=', id).execute();
   }
 }

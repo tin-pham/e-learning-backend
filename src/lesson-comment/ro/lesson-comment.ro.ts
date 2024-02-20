@@ -28,6 +28,20 @@ export class LessonCommentStoreRO {
   }
 }
 
+export class LessonCommentGetListDataCreatedByRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  displayName: string;
+
+  @ApiProperty()
+  @Expose()
+  avatar: string;
+}
+
 export class LessonCommentGetListDataRO {
   @ApiProperty()
   @Expose()
@@ -36,10 +50,6 @@ export class LessonCommentGetListDataRO {
   @ApiProperty()
   @Expose()
   body: string;
-
-  @ApiProperty()
-  @Expose()
-  lessonId: number;
 
   @ApiProperty()
   @Expose()

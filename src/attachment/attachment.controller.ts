@@ -18,16 +18,32 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { JwtPayload } from '../common/decorator';
 import { AttachmentService } from './attachment.service';
-import { AttachmentBulkDeleteDTO, AttachmentBulkStoreDTO, AttachmentGetListDTO } from './dto/attachment.dto';
-import { AttachmentGetListRO } from './ro/attachment.ro';
+import { AttachmentBulkDeleteDTO, AttachmentBulkStoreDTO, AttachmentGetListDTO, AttachmentStoreDTO } from './dto/attachment.dto';
+import { AttachmentGetListRO, AttachmentStoreRO } from './ro/attachment.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE, GET_LIST } = API.ATTACHMENT;
+const { TAGS, CONTROLLER, STORE, BULK_STORE, BULK_DELETE, GET_LIST } = API.ATTACHMENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
 export class AttachmentController {
   constructor(private readonly attachmentService: AttachmentService) {}
+
+  @ApiOperation({ summary: STORE.OPERATION })
+  @ApiCreatedResponse({ type: AttachmentStoreRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiConflictResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(STORE.ROUTE)
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
+  @HttpCode(HttpStatus.CREATED)
+  store(@Body() dto: AttachmentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.attachmentService.store(dto, decoded);
+  }
 
   @ApiOperation({ summary: BULK_STORE.OPERATION })
   @ApiCreatedResponse({ type: ResultRO })

@@ -20,6 +20,7 @@ import {
   TeacherUpdateRO,
   TeacherUpdateUserRO,
 } from './ro/teacher.ro';
+import { AttachmentRepository } from '../attachment/attachment.repository';
 
 @Injectable()
 export class TeacherService extends UserService {
@@ -30,10 +31,11 @@ export class TeacherService extends UserService {
     userRepository: UserRepository,
     roleRepository: RoleRepository,
     userRoleRepository: UserRoleRepository,
-    private readonly database: DatabaseService,
+    attachmentRepository: AttachmentRepository,
+    database: DatabaseService,
     private readonly teacherRepository: TeacherRepository,
   ) {
-    super(elasticLogger, userRepository, roleRepository, userRoleRepository);
+    super(elasticLogger, userRepository, roleRepository, userRoleRepository, attachmentRepository, database);
   }
 
   async store(dto: TeacherStoreDTO, decoded: IJwtPayload) {

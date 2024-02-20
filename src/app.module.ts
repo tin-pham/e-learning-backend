@@ -30,6 +30,7 @@ import { ExerciseSubmitMarkModule } from './exercise-submit-mark/exercise-submit
 import { AssignmentExerciseModule } from './assignment-exercise/assignment-exercise.module';
 import { CategoryModule } from './category/category.module';
 import { AttachmentModule } from './attachment/attachment.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -40,7 +41,9 @@ import { AttachmentModule } from './attachment/attachment.module';
     HealthModule,
     ThrottlerModule,
     S3Module,
+    AttachmentModule,
     RoleModule,
+    UserModule,
     // MenuModule,
     // RoleMenuModule,
     CourseModule,
@@ -63,7 +66,6 @@ import { AttachmentModule } from './attachment/attachment.module';
     ExerciseSubmitMarkModule,
     AssignmentExerciseModule,
     CategoryModule,
-    AttachmentModule,
   ],
   providers: [...appProviders],
 })

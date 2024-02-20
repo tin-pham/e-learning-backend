@@ -12,6 +12,7 @@ import { UserService } from '../user/user.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import { StudentDeleteRO, StudentGetDetailRO, StudentGetListRO, StudentStoreRO, StudentUpdateRO } from './ro/student.ro';
+import { AttachmentRepository } from 'src/attachment/attachment.repository';
 
 @Injectable()
 export class StudentService extends UserService {
@@ -22,10 +23,11 @@ export class StudentService extends UserService {
     userRepository: UserRepository,
     roleRepository: RoleRepository,
     userRoleRepository: UserRoleRepository,
-    private readonly database: DatabaseService,
+    attachmentRepository: AttachmentRepository,
+    database: DatabaseService,
     private readonly studentRepository: StudentRepository,
   ) {
-    super(elasticLogger, userRepository, roleRepository, userRoleRepository);
+    super(elasticLogger, userRepository, roleRepository, userRoleRepository, attachmentRepository, database);
   }
 
   async store(dto: StudentStoreDTO, decoded: IJwtPayload) {
@@ -113,7 +115,7 @@ export class StudentService extends UserService {
 
   async update(id: string, dto: StudentUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateUpdate(id, dto, actorId);
+    await this.validateUpdate(id, actorId);
 
     const response = new StudentUpdateRO();
 
@@ -174,7 +176,7 @@ export class StudentService extends UserService {
     });
   }
 
-  private async validateUpdate(id: string, dto: StudentUpdateDTO, actorId: number) {
+  private async validateUpdate(id: string, actorId: number) {
     // Check id exists
     const student = await this.studentRepository.findOneById(id);
     if (!student) {
@@ -185,34 +187,6 @@ export class StudentService extends UserService {
         message,
         actorId,
       });
-    }
-
-    // Check email unique
-    if (dto.email) {
-      const emailCount = await this.userRepository.countByEmailExceptId(dto.email, student.userId);
-      if (emailCount) {
-        const { code, status, message } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
-      }
-    }
-
-    // Check phone unique
-    if (dto.phone) {
-      const phoneCount = await this.userRepository.countByPhoneExceptId(dto.phone, student.userId);
-      if (phoneCount) {
-        const { code, status, message } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
-        this.throwException({
-          code,
-          status,
-          message,
-          actorId,
-        });
-      }
     }
 
     return {

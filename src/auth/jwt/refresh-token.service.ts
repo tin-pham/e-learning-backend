@@ -35,7 +35,7 @@ export class RefreshTokenService extends BaseService {
     }
 
     // Validate user exists
-    const user = await this.userRepository.findOneById(payload.userId);
+    const user = (await this.userRepository.findOneById(payload.userId)) as any;
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.REFRESH_TOKEN_INVALID;
       this.throwException({ status, code, message, actorId });

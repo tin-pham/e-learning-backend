@@ -27,7 +27,7 @@ export class CategoryRepository {
             .where('course.deletedAt', 'is', null)
             .where('categoryCourse.deletedAt', 'is', null)
             .limit(10)
-            .select(['course.id', 'course.name', 'course.description', 'course.imageUrl', 'categoryCourse.categoryId'])
+            .select(['course.id', 'course.name', 'course.description', 'course.imageId', 'categoryCourse.categoryId'])
             .distinct()
             .orderBy('course.id'),
         )
@@ -45,7 +45,7 @@ export class CategoryRepository {
                 'id', ${ref('limitedCourses.id')}, 
                 'name', ${ref('limitedCourses.name')}, 
                 'description', ${ref('limitedCourses.description')}, 
-                'imageUrl', ${ref('limitedCourses.imageUrl')}
+                'imageUrl', ${ref('limitedCourses.imageId')}
               ) ORDER BY ${ref('limitedCourses.id')}
             ) FILTER (WHERE ${ref('limitedCourses.id')} IS NOT NULL)`,
               sql`'[]'`,

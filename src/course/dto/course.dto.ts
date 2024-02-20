@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 import { Transform, Type } from 'class-transformer';
 
-const { NAME, DESCRIPTION, IMAGE_URL, CATEGORY_ID, STUDENT_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
+const { NAME, DESCRIPTION, IMAGE_ID, CATEGORY_ID, STUDENT_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
 
 export class CourseStoreDTO {
   @ApiProperty()
@@ -22,14 +22,15 @@ export class CourseStoreDTO {
   description?: string;
 
   @ApiPropertyOptional()
-  @IsUrl(
+  @IsNumber(
     {},
     {
-      message: IMAGE_URL.FORMAT_IS_NOT_VALID,
+      message: IMAGE_ID.FORMAT_IS_NOT_VALID,
     },
   )
+  @Type(() => Number)
   @IsOptional()
-  imageUrl?: string;
+  imageId?: number;
 
   @ApiPropertyOptional({
     example: [1, 2, 3],
@@ -88,11 +89,14 @@ export class CourseUpdateDTO {
   description?: string;
 
   @ApiPropertyOptional()
-  @IsString({
-    message: IMAGE_URL.FORMAT_IS_NOT_VALID,
-  })
+  @IsNumber(
+    {},
+    {
+      message: IMAGE_ID.FORMAT_IS_NOT_VALID,
+    },
+  )
   @IsOptional()
-  imageUrl?: string;
+  imageId?: number;
 
   @ApiPropertyOptional({ example: [1] })
   @IsNumber({}, { each: true })

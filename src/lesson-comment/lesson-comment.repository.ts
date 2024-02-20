@@ -24,7 +24,7 @@ export class LessonCommentRepository {
     const { page, limit, lessonId } = dto;
     const query = this.database
       .selectFrom('lessonComment')
-      .select(['id', 'lessonId', 'body', 'parentId', 'createdBy'])
+      .select(['id', 'body', 'parentId', 'createdBy'])
       .where('lessonId', '=', lessonId)
       .where('deletedAt', 'is', null);
 

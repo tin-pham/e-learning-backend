@@ -17,7 +17,7 @@ export class CourseStoreRO {
 
   @ApiProperty()
   @Expose()
-  imageUrl?: string;
+  imageId?: number;
 }
 
 export class CourseGetListDataRO {
@@ -35,7 +35,7 @@ export class CourseGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  imageUrl?: string;
+  imageId?: number;
 }
 
 export class CourseGetListRO extends PaginateRO<CourseGetListDataRO> {
@@ -60,7 +60,7 @@ export class CourseGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  imageUrl?: string;
+  imageId?: number;
 
   @ApiProperty({ type: [Number] })
   @Expose()
@@ -82,7 +82,7 @@ export class CourseUpdateRO {
 
   @ApiProperty()
   @Expose()
-  imageUrl?: string;
+  imageId?: number;
 }
 
 export class CourseDeleteRO {

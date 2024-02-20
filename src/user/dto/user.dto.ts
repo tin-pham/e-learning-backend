@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { Type } from 'class-transformer';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -31,6 +32,12 @@ export class UserStoreDTO {
   @IsString()
   @IsNotEmpty()
   displayName: string;
+
+  @ApiPropertyOptional({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  imageId?: number;
 }
 
 export class UserGetListDTO extends PaginateDTO {}
@@ -60,4 +67,18 @@ export class UserUpdateDTO {
   @IsNotEmpty()
   @IsOptional()
   displayName?: string;
+
+  @ApiPropertyOptional({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  imageId?: number;
+}
+
+export class UserGetProfileDTO {
+  @ApiProperty()
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  withImage?: boolean;
 }

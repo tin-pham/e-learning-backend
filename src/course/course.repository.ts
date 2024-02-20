@@ -10,7 +10,7 @@ export class CourseRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertWithTransaction(transaction: Transaction, entity: CourseEntity) {
-    return transaction.insertInto('course').values(entity).returning(['id', 'name', 'description', 'imageUrl']).executeTakeFirst();
+    return transaction.insertInto('course').values(entity).returning(['id', 'name', 'description', 'imageId']).executeTakeFirst();
   }
 
   find(dto: CourseGetListDTO) {
@@ -21,7 +21,7 @@ export class CourseRepository {
 
     const query = this.database
       .selectFrom('course')
-      .select(['course.id', 'course.name', 'course.description', 'course.imageUrl'])
+      .select(['course.id', 'course.name', 'course.description', 'course.imageId'])
       .where('course.deletedAt', 'is', null)
       .orderBy('course.createdAt', 'desc')
       .$if(withStudent, (qb) =>
@@ -53,10 +53,10 @@ export class CourseRepository {
     const { withCategoryIds } = dto;
     return this.database
       .selectFrom('course')
-      .select(['course.id', 'course.name', 'course.description', 'course.imageUrl'])
+      .select(['course.id', 'course.name', 'course.description', 'course.imageId'])
       .where('course.id', '=', id)
       .where('course.deletedAt', 'is', null)
-      .groupBy(['course.id', 'course.name', 'course.description', 'course.imageUrl'])
+      .groupBy(['course.id', 'course.name', 'course.description', 'course.imageId'])
       .$if(withCategoryIds, (query) =>
         query
           .leftJoin('categoryCourse', (join) =>
@@ -77,7 +77,7 @@ export class CourseRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name', 'description', 'imageUrl'])
+      .returning(['id', 'name', 'description', 'imageId'])
       .executeTakeFirst();
   }
 

@@ -4,6 +4,27 @@ import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator
 import { PaginateDTO } from 'src/common/dto/paginate.dto';
 import { Type } from 'class-transformer';
 
+export class AttachmentStoreDTO {
+  @ApiProperty({ example: 'https://example.com' })
+  @IsUrl()
+  url: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  size: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+}
+
 export class AttachmentBulkStoreFileDTO {
   @ApiProperty({ example: 'https://example.com' })
   @IsUrl()

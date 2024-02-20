@@ -4,9 +4,9 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { AttachmentRepository } from './attachment.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AttachmentEntity } from './attachment.entity';
-import { AttachmentBulkDeleteDTO, AttachmentBulkStoreDTO, AttachmentGetListDTO } from './dto/attachment.dto';
+import { AttachmentBulkDeleteDTO, AttachmentBulkStoreDTO, AttachmentGetListDTO, AttachmentStoreDTO } from './dto/attachment.dto';
 import { ResultRO } from '../common/ro/result.ro';
-import { AttachmentGetListRO } from './ro/attachment.ro';
+import { AttachmentGetListRO, AttachmentStoreRO } from './ro/attachment.ro';
 
 @Injectable()
 export class AttachmentService extends BaseService {
@@ -17,6 +17,40 @@ export class AttachmentService extends BaseService {
     private readonly attachmentRepository: AttachmentRepository,
   ) {
     super(elasticLogger);
+  }
+
+  async store(dto: AttachmentStoreDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const response = new AttachmentStoreRO();
+
+    try {
+      const entity = new AttachmentEntity({
+        url: dto.url,
+        name: dto.name,
+        type: dto.type,
+        size: dto.size,
+        createdBy: actorId,
+      });
+
+      const attachment = await this.attachmentRepository.insert(entity);
+
+      response.id = attachment.id;
+      response.url = attachment.url;
+      response.name = attachment.name;
+      response.type = attachment.type;
+      response.size = attachment.size;
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.STORE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: AttachmentStoreRO,
+      response,
+      message: 'Store file successfully',
+      actorId,
+    });
   }
 
   async bulkStore(dto: AttachmentBulkStoreDTO, decoded: IJwtPayload) {

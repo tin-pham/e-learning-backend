@@ -11,7 +11,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.NAME, 'varchar(255)', (column) => column.notNull())
     .addColumn(SCHEMA.DESCRIPTION, 'varchar(255)')
-    .addColumn(SCHEMA.IMAGE_URL, 'varchar(255)')
+    .addColumn(SCHEMA.IMAGE_ID, 'integer')
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')

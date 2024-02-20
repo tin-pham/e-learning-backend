@@ -130,7 +130,7 @@ export class AuthService extends BaseService {
 
   async validatePayload(payload: IJwtPayload) {
     const actorId = payload.userId;
-    const user = await this.userRepository.findOneById(payload.userId);
+    const user = (await this.userRepository.findOneById(payload.userId)) as any;
     if (!user) {
       const { status, code, message } = EXCEPTION.AUTH.AUTHORIZE_FAILED;
       this.throwException({ status, code, message, actorId });

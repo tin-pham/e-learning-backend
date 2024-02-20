@@ -1,25 +1,107 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { BaseService } from '../base';
-import { EXCEPTION } from '../common';
-import { Transaction } from '../database';
+import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService, Transaction } from '../database';
 import { UserRoleEntity } from '../user-role/user-role.entity';
 import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
+import { AttachmentRepository } from '../attachment/attachment.repository';
 import { RoleRepository } from '../role/role.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { UserStoreDTO, UserUpdateDTO } from './dto/user.dto';
+import { UserGetProfileDTO, UserStoreDTO, UserUpdateDTO } from './dto/user.dto';
+import { UserGetProfileRO, UserUpdateRO } from './ro/user.ro';
 
 @Injectable()
 export class UserService extends BaseService {
+  private readonly _logger = new Logger(UserService.name);
+
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     protected readonly userRepository: UserRepository,
     protected readonly roleRepository: RoleRepository,
     protected readonly userRoleRepository: UserRoleRepository,
+    protected readonly attachmentRepository: AttachmentRepository,
+    protected readonly database: DatabaseService,
   ) {
     super(elasticLogger);
+  }
+
+  async getProfile(dto: UserGetProfileDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    let response: any;
+    try {
+      response = await this.userRepository.findOneById(decoded.userId, dto);
+      console.log(response);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.USER.GET_PROFILE_FAILED;
+      this._logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    if (!response) {
+      const { code, status, message } = EXCEPTION.USER.NOT_FOUND;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: UserGetProfileRO,
+      response,
+    });
+  }
+
+  async updateProfile(dto: UserUpdateDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this._validateUpdate(dto, actorId);
+
+    const data = new UserEntity();
+
+    data.updatedBy = actorId;
+    data.updatedAt = new Date();
+
+    if (dto.displayName) {
+      data.displayName = dto.displayName;
+    }
+
+    if (dto.email) {
+      data.email = dto.email;
+    }
+
+    if (dto.phone) {
+      data.phone = dto.phone;
+    }
+
+    if (dto.password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(dto.password, salt);
+      data.password = hashedPassword;
+    }
+
+    if (dto.imageId) {
+      data.imageId = dto.imageId;
+    }
+
+    let user: any;
+    try {
+      await this.database.transaction().execute(async (transaction) => {
+        user = await this.userRepository.updateWithTransaction(transaction, actorId, data);
+        if (!data.imageId) {
+          await this.attachmentRepository.delete(data.imageId, actorId);
+        }
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.USER.UPDATE_PROFILE_FAILED;
+      this._logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: UserUpdateRO,
+      response: new UserUpdateRO(user),
+      message: 'Update user successfully',
+      actorId,
+    });
   }
 
   protected async storeWithTransaction(transaction: Transaction, dto: UserStoreDTO, actorId: number) {
@@ -32,6 +114,7 @@ export class UserService extends BaseService {
     userData.phone = dto.phone;
     userData.displayName = dto.displayName;
     userData.createdBy = actorId;
+    userData.imageId = dto.imageId;
     return this.userRepository.insertWithTransaction(transaction, userData);
   }
 
@@ -67,9 +150,19 @@ export class UserService extends BaseService {
         this.throwException({ status, code, message, actorId });
       }
     }
+
+    // Check image id exist
+    if (dto.imageId) {
+      const imageCount = await this.attachmentRepository.countById(dto.imageId);
+      if (!imageCount) {
+        const { status, code, message } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
+        this.throwException({ status, code, message, actorId });
+      }
+    }
   }
 
   protected async updateWithTransaction(transaction: Transaction, id: number, dto: UserUpdateDTO, actorId: number) {
+    await this._validateUpdate(dto, actorId);
     // Set data
     const userData = new UserEntity();
     userData.updatedBy = actorId;
@@ -89,6 +182,10 @@ export class UserService extends BaseService {
       userData.password = hashedPassword;
     }
 
+    if (dto.imageId) {
+      userData.imageId = dto.imageId;
+    }
+
     // Update user
     const user = await this.userRepository.updateWithTransaction(transaction, id, userData);
     return user;
@@ -103,5 +200,41 @@ export class UserService extends BaseService {
 
   protected async deleteUserRoleWithTransaction(transaction: Transaction, userId: number, actorId: number) {
     await this.userRoleRepository.deleteMultipleByUserIdWithTransaction(transaction, userId, actorId);
+  }
+
+  protected async _validateUpdate(dto: UserUpdateDTO, actorId: number) {
+    // Check exist
+    const userCount = await this.userRepository.countById(actorId);
+    if (!userCount) {
+      const { status, message, code } = EXCEPTION.USER.DOES_NOT_EXIST;
+      this.throwException({ status, message, code, actorId });
+    }
+
+    // Check image id exist
+    if (dto.imageId) {
+      const imageCount = await this.attachmentRepository.countById(dto.imageId);
+      if (!imageCount) {
+        const { status, message, code } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
+        this.throwException({ status, message, code, actorId });
+      }
+    }
+
+    // Check email unique
+    if (dto.email) {
+      const emailCount = await this.userRepository.countByEmailExceptId(dto.email, actorId);
+      if (emailCount) {
+        const { status, message, code } = EXCEPTION.USER.EMAIL_ALREADY_EXISTS;
+        this.throwException({ status, message, code, actorId });
+      }
+    }
+
+    // Check phone unique
+    if (dto.phone) {
+      const phoneCount = await this.userRepository.countByPhoneExceptId(dto.phone, actorId);
+      if (phoneCount) {
+        const { status, message, code } = EXCEPTION.USER.PHONE_ALREADY_EXISTS;
+        this.throwException({ status, message, code, actorId });
+      }
+    }
   }
 }

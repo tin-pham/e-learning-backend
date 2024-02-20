@@ -101,10 +101,63 @@ export class UserUpdateRO {
   @ApiProperty({ example: 'Tin Pham' })
   @Expose()
   displayName: string;
+
+  @ApiProperty({ example: 1 })
+  @Expose()
+  imageId: number;
+
+  constructor(data?: UserUpdateRO) {
+    Object.assign(this, data);
+  }
 }
 
 export class UserDeleteRO {
   @ApiProperty()
   @Expose()
   id: number;
+}
+
+export class UserGetProfileImageRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  url: string;
+}
+
+export class UserGetProfileRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty({ example: 'tinpham' })
+  @Expose()
+  username: string;
+
+  @ApiProperty({ required: false, example: 'tinpham@example.com' })
+  @Expose()
+  email?: string;
+
+  @ApiProperty({ required: false, example: '0987654321' })
+  @Expose()
+  phone?: string;
+
+  @ApiProperty({ example: 'Tin Pham' })
+  @Expose()
+  displayName: string;
+
+  @ApiProperty({ example: 1 })
+  @Expose()
+  imageId: number;
+
+  @ApiProperty({ type: UserGetProfileImageRO })
+  @Type(() => UserGetProfileImageRO)
+  @Expose()
+  image?: UserGetProfileImageRO;
+
+  constructor(data?: UserGetProfileRO) {
+    Object.assign(this, data);
+  }
 }

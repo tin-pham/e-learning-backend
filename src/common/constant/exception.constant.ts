@@ -34,6 +34,16 @@ export const EXCEPTION = {
       code: 'USER.NOT_FOUND',
       message: 'User not found',
     },
+    GET_PROFILE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      code: 'USER.GET_PROFILE_FAILED',
+      message: 'Failed to get profile',
+    },
+    UPDATE_PROFILE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      code: 'USER.UPDATE_PROFILE_FAILED',
+      message: 'Failed to update profile',
+    },
   },
   AUTH: {
     USERNAME_OR_PASSWORD_INVALID: {
@@ -832,6 +842,11 @@ export const EXCEPTION = {
       status: HttpStatus.BAD_REQUEST,
       message: 'Attachment does not exist',
       code: 'ATTACHMENT.DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store attachment',
+      code: 'ATTACHMENT.STORE_FAILED',
     },
     GET_LIST_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
