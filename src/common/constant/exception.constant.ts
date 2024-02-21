@@ -46,6 +46,16 @@ export const EXCEPTION = {
     },
   },
   AUTH: {
+    SIGNIN_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Signin failed',
+      code: 'AUTH.SIGNIN_FAILED',
+    },
+    SIGNOUT_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Signout failed',
+      code: 'AUTH.SIGNOUT_FAILED',
+    },
     USERNAME_OR_PASSWORD_INVALID: {
       status: HttpStatus.UNAUTHORIZED,
       message: 'Username or password invalid',

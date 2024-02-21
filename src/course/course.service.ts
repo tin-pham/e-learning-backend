@@ -246,7 +246,6 @@ export class CourseService extends BaseService {
       }
     }
 
-    console.log(dto.imageId);
     if (dto.imageId) {
       const imageCount = await this.attachmentRepository.countById(dto.imageId);
       if (!imageCount) {

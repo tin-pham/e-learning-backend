@@ -4,6 +4,7 @@ import { DatabaseService, Transaction } from '../database';
 import { CourseEntity } from './course.entity';
 import { CourseGetDetailDTO, CourseGetListDTO } from './dto/course.dto';
 import { sql } from 'kysely';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 @Injectable()
 export class CourseRepository {
@@ -21,8 +22,8 @@ export class CourseRepository {
 
     const query = this.database
       .selectFrom('course')
-      .select(['course.id', 'course.name', 'course.description', 'course.imageId'])
       .where('course.deletedAt', 'is', null)
+      .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'course.imageId').on('attachment.deletedAt', 'is', null))
       .orderBy('course.createdAt', 'desc')
       .$if(withStudent, (qb) =>
         qb
@@ -44,8 +45,17 @@ export class CourseRepository {
             join.onRef('course.id', '=', 'categoryCourse.courseId').on('categoryCourse.deletedAt', 'is', null),
           )
           .where('categoryCourse.courseId', 'is', null),
-      );
-
+      )
+      .select(({ ref }) => [
+        'course.id',
+        'course.name',
+        'course.description',
+        'course.imageId',
+        jsonBuildObject({
+          id: ref('attachment.id'),
+          url: ref('attachment.url'),
+        }).as('image'),
+      ]);
     return paginate(query, { limit, page });
   }
 
@@ -53,10 +63,10 @@ export class CourseRepository {
     const { withCategoryIds } = dto;
     return this.database
       .selectFrom('course')
-      .select(['course.id', 'course.name', 'course.description', 'course.imageId'])
+      .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'course.imageId').on('attachment.deletedAt', 'is', null))
       .where('course.id', '=', id)
       .where('course.deletedAt', 'is', null)
-      .groupBy(['course.id', 'course.name', 'course.description', 'course.imageId'])
+      .groupBy(['course.id', 'course.name', 'course.description', 'course.imageId', 'attachment.id', 'attachment.url'])
       .$if(withCategoryIds, (query) =>
         query
           .leftJoin('categoryCourse', (join) =>
@@ -68,6 +78,16 @@ export class CourseRepository {
               .as('categoryIds'),
           ]),
       )
+      .select(({ ref }) => [
+        'course.id',
+        'course.name',
+        'course.description',
+        'course.imageId',
+        jsonBuildObject({
+          id: ref('attachment.id'),
+          url: ref('attachment.url'),
+        }).as('image'),
+      ])
       .executeTakeFirst();
   }
 

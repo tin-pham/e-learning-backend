@@ -65,7 +65,11 @@ export class LessonCommentGetListDataRO {
   @ApiProperty({ type: LessonCommentGetListDataCreatedByRO })
   @Type(() => LessonCommentGetListDataCreatedByRO)
   @Expose()
-  createdBy: LessonCommentGetListDataCreatedByRO;
+  createdByUser: LessonCommentGetListDataCreatedByRO;
+
+  @ApiProperty()
+  @Expose()
+  createdAt: Date;
 
   @ApiPropertyOptional()
   @Expose()

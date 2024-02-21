@@ -28,11 +28,6 @@ export class CategoryGetListDTO extends PaginateDTO {
   @ApiPropertyOptional()
   @Type(() => Boolean)
   @IsOptional()
-  withCourse?: boolean;
-
-  @ApiPropertyOptional()
-  @Type(() => Boolean)
-  @IsOptional()
   withCourseCount?: boolean;
 }
 

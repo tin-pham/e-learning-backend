@@ -20,6 +20,16 @@ export class CategoryStoreRO {
   }
 }
 
+export class CategoryGetListDataCourseImageRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  url: string;
+}
+
 export class CategoryGetListDataCourseRO {
   @ApiProperty()
   @Expose()
@@ -35,7 +45,12 @@ export class CategoryGetListDataCourseRO {
 
   @ApiProperty()
   @Expose()
-  imageUrl: string;
+  imageId: number;
+
+  @ApiProperty({ type: CategoryGetListDataCourseImageRO })
+  @Type(() => CategoryGetListDataCourseImageRO)
+  @Expose()
+  image: CategoryGetListDataCourseImageRO;
 }
 
 export class CategoryGetListDataRO {

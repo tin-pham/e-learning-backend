@@ -3,7 +3,6 @@ import { DatabaseService, Transaction } from '../database';
 import { CategoryEntity } from './category.entity';
 import { CategoryGetListDTO } from './dto/category.dto';
 import { paginate } from 'src/common/function/paginate';
-import { sql } from 'kysely';
 
 @Injectable()
 export class CategoryRepository {
@@ -14,46 +13,11 @@ export class CategoryRepository {
   }
 
   find(dto: CategoryGetListDTO) {
-    const { page, limit, withCourse, withCourseCount, search } = dto;
+    const { page, limit, withCourseCount, search } = dto;
 
     let query;
 
-    if (withCourse) {
-      query = this.database
-        .with('limitedCourses', (eb) =>
-          eb
-            .selectFrom('course')
-            .innerJoin('categoryCourse', 'categoryCourse.courseId', 'course.id')
-            .where('course.deletedAt', 'is', null)
-            .where('categoryCourse.deletedAt', 'is', null)
-            .limit(10)
-            .select(['course.id', 'course.name', 'course.description', 'course.imageId', 'categoryCourse.categoryId'])
-            .distinct()
-            .orderBy('course.id'),
-        )
-        .selectFrom('category')
-        .where('category.deletedAt', 'is', null)
-        .leftJoin('limitedCourses', 'limitedCourses.categoryId', 'category.id')
-        .select(({ fn, ref }) => [
-          'category.id',
-          'category.name',
-          'category.description',
-          fn
-            .coalesce(
-              sql`json_agg(
-              json_build_object(
-                'id', ${ref('limitedCourses.id')}, 
-                'name', ${ref('limitedCourses.name')}, 
-                'description', ${ref('limitedCourses.description')}, 
-                'imageUrl', ${ref('limitedCourses.imageId')}
-              ) ORDER BY ${ref('limitedCourses.id')}
-            ) FILTER (WHERE ${ref('limitedCourses.id')} IS NOT NULL)`,
-              sql`'[]'`,
-            )
-            .as('courses'),
-        ])
-        .groupBy(['category.id', 'category.name', 'category.description']);
-    } else if (withCourseCount) {
+    if (withCourseCount) {
       query = this.database
         .selectFrom('category')
         .leftJoin('categoryCourse', (join) =>
