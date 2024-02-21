@@ -12,10 +12,7 @@ export class RoleService {
   private priority: number = 1;
 
   constructor() {
-    this.buildRoles([ROLE.MODERATOR, ROLE.ADMIN]);
-    this.buildRoles([ROLE.TEACHER, ROLE.FORM_TEACHER, ROLE.PRINCIPAL]);
-    this.buildRoles([ROLE.STAFF]);
-    this.buildRoles([ROLE.STUDENT]);
+    this.buildRoles([ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN]);
   }
 
   /**

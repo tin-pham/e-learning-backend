@@ -3,7 +3,6 @@ import { ConfigModule } from './config';
 import { DatabaseModule, databaseConfig } from './database';
 import { AuthModule } from './auth';
 import { HealthModule } from './health/health.module';
-import { ThrottlerModule } from './throttler/throttler.module';
 import { LogsMiddleware } from './logger/logs.middleware';
 import { appProviders } from './app.provider';
 import { ElasticsearchLoggerModule } from './elastic-search-logger/elastic-search-logger.module';
@@ -39,7 +38,7 @@ import { UserModule } from './user/user.module';
     ElasticsearchLoggerModule,
     AuthModule,
     HealthModule,
-    ThrottlerModule,
+    //  ThrottlerModule,
     S3Module,
     AttachmentModule,
     RoleModule,

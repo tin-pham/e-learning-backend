@@ -28,6 +28,16 @@ export class LessonCommentStoreRO {
   }
 }
 
+export class LessonCommentGetListDataCreatedByImageRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  url: string;
+}
+
 export class LessonCommentGetListDataCreatedByRO {
   @ApiProperty()
   @Expose()
@@ -37,9 +47,10 @@ export class LessonCommentGetListDataCreatedByRO {
   @Expose()
   displayName: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: LessonCommentGetListDataCreatedByImageRO })
+  @Type(() => LessonCommentGetListDataCreatedByImageRO)
   @Expose()
-  avatar: string;
+  image: LessonCommentGetListDataCreatedByImageRO;
 }
 
 export class LessonCommentGetListDataRO {
@@ -51,9 +62,10 @@ export class LessonCommentGetListDataRO {
   @Expose()
   body: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: LessonCommentGetListDataCreatedByRO })
+  @Type(() => LessonCommentGetListDataCreatedByRO)
   @Expose()
-  createdBy: number;
+  createdBy: LessonCommentGetListDataCreatedByRO;
 
   @ApiPropertyOptional()
   @Expose()
