@@ -13,44 +13,35 @@ export class LessonCommentStoreRO {
 
   @ApiProperty()
   @Expose()
-  lessonId: number;
+  createdAt: Date;
 
   @ApiProperty()
   @Expose()
   createdBy: number;
 
+  @ApiProperty()
+  @Expose()
+  lessonId: number;
+
   @ApiPropertyOptional()
   @Expose()
   parentId?: number;
 
+  @ApiProperty()
+  @Expose()
+  userId: number;
+
+  @ApiProperty()
+  @Expose()
+  userDisplayName: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  userImageUrl?: string;
+
   constructor(data?: LessonCommentStoreRO) {
     Object.assign(this, data);
   }
-}
-
-export class LessonCommentGetListDataCreatedByImageRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  url: string;
-}
-
-export class LessonCommentGetListDataCreatedByRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  displayName: string;
-
-  @ApiProperty({ type: LessonCommentGetListDataCreatedByImageRO })
-  @Type(() => LessonCommentGetListDataCreatedByImageRO)
-  @Expose()
-  image: LessonCommentGetListDataCreatedByImageRO;
 }
 
 export class LessonCommentGetListDataRO {
@@ -62,18 +53,37 @@ export class LessonCommentGetListDataRO {
   @Expose()
   body: string;
 
-  @ApiProperty({ type: LessonCommentGetListDataCreatedByRO })
-  @Type(() => LessonCommentGetListDataCreatedByRO)
-  @Expose()
-  createdByUser: LessonCommentGetListDataCreatedByRO;
-
   @ApiProperty()
   @Expose()
   createdAt: Date;
 
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
+
+  @ApiProperty()
+  @Expose()
+  lessonId: number;
+
   @ApiPropertyOptional()
   @Expose()
   parentId?: number;
+
+  @ApiProperty()
+  @Expose()
+  userId: number;
+
+  @ApiProperty()
+  @Expose()
+  userDisplayName: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  userImageUrl?: string;
+
+  @ApiProperty()
+  @Expose()
+  depth: number;
 }
 
 export class LessonCommentGetListRO extends PaginateRO<LessonCommentGetListDataRO> {

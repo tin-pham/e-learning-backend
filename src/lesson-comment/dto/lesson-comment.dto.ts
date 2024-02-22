@@ -23,6 +23,12 @@ export class LessonCommentGetListDTO extends PaginateDTO {
   @IsNumber()
   @Type(() => Number)
   lessonId: number;
+
+  @ApiPropertyOptional({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  commentId?: number;
 }
 
 export class LessonCommentUpdateDTO {

@@ -45,6 +45,10 @@ export class LessonCommentService extends BaseService {
         body: lesson.body,
         parentId: lesson.parentId,
         createdBy: lesson.createdBy,
+        userId: lesson.userId,
+        userDisplayName: lesson.userDisplayName,
+        createdAt: lesson.createdAt,
+        userImageUrl: lesson.userImageUrl,
       });
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON_COMMENT.STORE_FAILED;
