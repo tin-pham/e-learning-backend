@@ -161,12 +161,22 @@ export class LessonCommentRepository {
 
   delete(id: number, actorId: number) {
     return this.database
+      .withRecursive('commentTree', (qb) =>
+        qb
+          .selectFrom('lessonComment')
+          .select('lessonComment.id')
+          .where('lessonComment.id', '=', id)
+          .where('deletedAt', 'is', null)
+          .unionAll((eb) =>
+            eb.selectFrom('commentTree').innerJoin('lessonComment', 'lessonComment.parentId', 'commentTree.id').select('lessonComment.id'),
+          ),
+      )
       .updateTable('lessonComment')
+      .where(({ selectFrom, eb }) => eb('id', 'in', selectFrom('commentTree').select(['id']).where('deletedAt', 'is', null)))
       .set({
         deletedAt: new Date(),
         deletedBy: actorId,
       })
-      .where('id', '=', id)
       .returning(['id'])
       .executeTakeFirst();
   }
