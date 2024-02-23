@@ -36,9 +36,19 @@ export class AssignmentRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('assignment')
-      .select(['id', 'name', 'dueDate', 'description', 'courseId', 'lessonId'])
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
+      .where('assignment.id', '=', id)
+      .where('assignment.deletedAt', 'is', null)
+      .innerJoin('users', 'users.id', 'assignment.createdBy')
+      .where('users.deletedAt', 'is', null)
+      .select([
+        'assignment.id',
+        'assignment.name',
+        'assignment.dueDate',
+        'assignment.description',
+        'assignment.courseId',
+        'assignment.lessonId',
+        'users.displayName as createdByDisplayName',
+      ])
       .executeTakeFirst();
   }
 

@@ -19,10 +19,11 @@ export class LessonCommentStoreDTO {
 }
 
 export class LessonCommentGetListDTO extends PaginateDTO {
-  @ApiProperty({ example: 1 })
+  @ApiPropertyOptional({ example: 1 })
   @IsNumber()
   @Type(() => Number)
-  lessonId: number;
+  @IsOptional()
+  lessonId?: number;
 
   @ApiPropertyOptional({ example: 1 })
   @IsNumber()

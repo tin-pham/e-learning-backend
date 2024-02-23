@@ -88,6 +88,10 @@ export class AssignmentGetDetailRO {
   @Expose()
   dueDate: Date;
 
+  @ApiProperty()
+  @Expose()
+  createdByDisplayName: string;
+
   constructor(data?: AssignmentGetDetailRO) {
     Object.assign(this, data);
   }

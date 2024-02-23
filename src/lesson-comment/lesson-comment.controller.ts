@@ -42,7 +42,7 @@ export class LessonCommentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: LessonCommentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -57,7 +57,7 @@ export class LessonCommentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: LessonCommentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.lessonCommentService.getList(dto, decoded);
@@ -71,7 +71,7 @@ export class LessonCommentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.lessonCommentService.getDetail(id, decoded);
@@ -85,7 +85,7 @@ export class LessonCommentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: LessonCommentUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.lessonCommentService.update(id, dto, decoded);
@@ -99,7 +99,7 @@ export class LessonCommentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.lessonCommentService.delete(id, decoded);

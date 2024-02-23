@@ -51,7 +51,7 @@ export class AssignmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: AssignmentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.assignmentService.getList(dto, decoded);
@@ -66,7 +66,7 @@ export class AssignmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.assignmentService.getDetail(id, decoded);

@@ -43,54 +43,17 @@ export class LessonCommentRepository {
     const { page, limit, lessonId, commentId } = dto;
 
     const byComment = Boolean(commentId);
+    const byLesson = Boolean(lessonId);
 
-    // const query = this.database
-    //   .with('userData', (qb) =>
-    //     qb
-    //       .selectFrom('lessonComment')
-    //       .innerJoin('users', 'lessonComment.createdBy', 'users.id')
-    //       .where('users.deletedAt', 'is', null)
-    //       .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
-    //       .where('lessonComment.lessonId', '=', lessonId)
-    //       .where('lessonComment.deletedAt', 'is', null)
-    //       .select(({ ref }) => [
-    //         'users.id',
-    //         'users.displayName',
-    //         'users.email',
-    //         'users.username',
-    //         'users.phone',
-    //         jsonBuildObject({
-    //           url: ref('attachment.url'),
-    //         }).as('image'),
-    //       ]),
-    //   )
-    //   .selectFrom('lessonComment')
-    //   .innerJoin('userData', 'userData.id', 'lessonComment.createdBy')
-    //   .select(({ ref }) => [
-    //     'lessonComment.id',
-    //     'lessonComment.lessonId',
-    //     'lessonComment.body',
-    //     'lessonComment.parentId',
-    //     'lessonComment.createdAt',
-    //     'lessonComment.createdBy',
-    //     jsonBuildObject({
-    //       id: ref('userData.id'),
-    //       displayName: ref('userData.displayName'),
-    //       email: ref('userData.email'),
-    //       username: ref('userData.username'),
-    //       phone: ref('userData.phone'),
-    //       image: ref('userData.image'),
-    //     }).as('createdByUser'),
-    //   ])
-    //   .where('lessonComment.deletedAt', 'is', null);
+    console.log(byComment, byLesson);
 
     const query = this.database
       .withRecursive('commentTree', (qb) =>
         qb
           .selectFrom('lessonComment')
-          .where('lessonComment.lessonId', '=', lessonId)
-          .where('lessonComment.parentId', 'is', null)
           .where('lessonComment.deletedAt', 'is', null)
+          .$if(!byComment, (eb) => eb.where('lessonComment.parentId', 'is', null))
+          .$if(byLesson, (eb) => eb.where('lessonComment.lessonId', '=', lessonId))
           .$if(byComment, (eb) => eb.where('lessonComment.id', '=', commentId))
           .innerJoin('users', 'lessonComment.createdBy', 'users.id')
           .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
@@ -130,18 +93,67 @@ export class LessonCommentRepository {
           ),
       )
       .selectFrom('commentTree')
-      .selectAll()
-      .orderBy('createdAt', 'desc');
+      .selectAll();
+
+    if (byComment) {
+      query.orderBy('depth');
+    } else {
+      query.orderBy('createdAt');
+    }
 
     return paginate(query, { limit, page });
   }
 
   findOneById(id: number) {
+    // return this.database
+    //   .selectFrom('lessonComment')
+    //   .select(['id', 'lessonId', 'body', 'parentId', 'createdBy'])
+    //   .where('id', '=', id)
+    //   .where('deletedAt', 'is', null)
+    //   .executeTakeFirst();
     return this.database
-      .selectFrom('lessonComment')
-      .select(['id', 'lessonId', 'body', 'parentId', 'createdBy'])
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
+      .withRecursive('commentTree', (qb) =>
+        qb
+          .selectFrom('lessonComment')
+          .where('lessonComment.id', '=', id)
+          .where('lessonComment.deletedAt', 'is', null)
+          .innerJoin('users', 'lessonComment.createdBy', 'users.id')
+          .where('users.deletedAt', 'is', null)
+          .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
+          .select([
+            'lessonComment.id',
+            'lessonComment.lessonId',
+            'lessonComment.body',
+            'lessonComment.parentId',
+            'lessonComment.createdAt',
+            'lessonComment.createdBy',
+            'users.id as userId',
+            'users.displayName as userDisplayName',
+            'attachment.url as userImageUrl',
+          ])
+          .unionAll((eb) =>
+            eb
+              .selectFrom('commentTree')
+              .innerJoin('lessonComment', 'lessonComment.parentId', 'commentTree.id')
+              .where('lessonComment.deletedAt', 'is', null)
+              .innerJoin('users', 'lessonComment.createdBy', 'users.id')
+              .where('users.deletedAt', 'is', null)
+              .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
+              .select([
+                'lessonComment.id',
+                'lessonComment.lessonId',
+                'lessonComment.body',
+                'lessonComment.parentId',
+                'lessonComment.createdAt',
+                'lessonComment.createdBy',
+                'users.id as userId',
+                'users.displayName as userDisplayName',
+                'attachment.url as userImageUrl',
+              ]),
+          ),
+      )
+      .selectFrom('commentTree')
+      .selectAll()
       .executeTakeFirst();
   }
 
@@ -186,6 +198,17 @@ export class LessonCommentRepository {
       .selectFrom('lessonComment')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('lessonComment.id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByIdAndCreatedBy(id: number, createdBy: number) {
+    const { count } = await this.database
+      .selectFrom('lessonComment')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('lessonComment.id', '=', id)
+      .where('lessonComment.createdBy', '=', createdBy)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);

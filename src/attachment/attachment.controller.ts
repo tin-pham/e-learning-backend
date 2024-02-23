@@ -83,7 +83,7 @@ export class AttachmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: AttachmentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.attachmentService.getList(dto, decoded);

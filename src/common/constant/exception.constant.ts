@@ -525,6 +525,11 @@ export const EXCEPTION = {
     },
   },
   LESSON_COMMENT: {
+    NOT_OWNER: {
+      status: HttpStatus.FORBIDDEN,
+      message: 'You are not owner of this lesson comment',
+      code: 'LESSON_COMMENT.NOT_OWNER',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Lesson comment does not exist',

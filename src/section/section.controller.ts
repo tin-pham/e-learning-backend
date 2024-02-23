@@ -53,7 +53,7 @@ export class SectionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: SectionGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.sectionService.getList(dto, decoded);
@@ -67,7 +67,7 @@ export class SectionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @Query() dto: SectionGetDetailDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.sectionService.getDetail(id, dto, decoded);

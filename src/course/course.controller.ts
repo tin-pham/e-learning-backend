@@ -53,7 +53,7 @@ export class CourseController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: CourseGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.courseService.getList(dto, decoded);
@@ -67,7 +67,7 @@ export class CourseController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @Query() dto: CourseGetDetailDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.courseService.getDetail(id, dto, decoded);

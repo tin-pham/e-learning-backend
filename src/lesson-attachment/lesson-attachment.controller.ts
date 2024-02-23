@@ -67,7 +67,7 @@ export class LessonAttachmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: LessonAttachmentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.lessonAttachmentService.getList(dto, decoded);

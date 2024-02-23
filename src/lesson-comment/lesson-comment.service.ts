@@ -83,7 +83,7 @@ export class LessonCommentService extends BaseService {
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
-    let lesson: LessonCommentEntity;
+    let lesson: LessonCommentGetDetailRO;
 
     try {
       lesson = await this.lessonCommentRepository.findOneById(id);
@@ -100,10 +100,14 @@ export class LessonCommentService extends BaseService {
 
     const response = new LessonCommentGetDetailRO({
       id: lesson.id,
-      lessonId: lesson.lessonId,
       body: lesson.body,
-      parentId: lesson.parentId,
+      createdAt: lesson.createdAt,
       createdBy: lesson.createdBy,
+      lessonId: lesson.lessonId,
+      parentId: lesson.parentId,
+      userId: lesson.userId,
+      userDisplayName: lesson.userDisplayName,
+      userImageUrl: lesson.userImageUrl,
     });
 
     return this.success({
@@ -192,6 +196,13 @@ export class LessonCommentService extends BaseService {
     const commentCount = await this.lessonCommentRepository.countById(id);
     if (!commentCount) {
       const { status, message, code } = EXCEPTION.LESSON_COMMENT.DOES_NOT_EXIST;
+      this.throwException({ status, message, code, actorId });
+    }
+
+    // Check actor is owner
+    const commentCountByIdAndCreatedBy = await this.lessonCommentRepository.countByIdAndCreatedBy(id, actorId);
+    if (!commentCountByIdAndCreatedBy) {
+      const { status, message, code } = EXCEPTION.LESSON_COMMENT.NOT_OWNER;
       this.throwException({ status, message, code, actorId });
     }
   }

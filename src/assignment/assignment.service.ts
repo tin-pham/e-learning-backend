@@ -93,7 +93,7 @@ export class AssignmentService extends BaseService {
 
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    let assignment: AssignmentEntity;
+    let assignment: AssignmentGetDetailRO;
 
     try {
       assignment = await this.assignmentRepository.findOneById(id);
@@ -108,16 +108,9 @@ export class AssignmentService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
-    const response = new AssignmentGetDetailRO({
-      id: assignment.id,
-      name: assignment.name,
-      description: assignment.description,
-      dueDate: assignment.dueDate,
-    });
-
     return this.success({
       classRO: AssignmentGetDetailRO,
-      response,
+      response: assignment,
     });
   }
 

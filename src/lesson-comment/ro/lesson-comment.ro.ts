@@ -104,7 +104,7 @@ export class LessonCommentGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  lessonId: number;
+  createdAt: Date;
 
   @ApiProperty()
   @Expose()
@@ -112,7 +112,23 @@ export class LessonCommentGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  parentId: number;
+  lessonId: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  parentId?: number;
+
+  @ApiProperty()
+  @Expose()
+  userId: number;
+
+  @ApiProperty()
+  @Expose()
+  userDisplayName: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  userImageUrl?: string;
 
   constructor(data?: LessonCommentGetDetailRO) {
     Object.assign(this, data);
