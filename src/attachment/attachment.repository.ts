@@ -9,7 +9,11 @@ export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insert(entity: AttachmentEntity) {
-    return this.database.insertInto('attachment').values(entity).returning(['id', 'url', 'name', 'type', 'size']).executeTakeFirst();
+    return this.database
+      .insertInto('attachment')
+      .values(entity)
+      .returning(['id', 'url', 'name', 'type', 'size', 'createdAt', 'createdBy', 'assignmentId', 'lessonId'])
+      .executeTakeFirst();
   }
 
   find(dto: AttachmentGetListDTO) {

@@ -22,6 +22,22 @@ export class AttachmentStoreRO {
   @ApiProperty()
   @Expose()
   size: string;
+
+  @ApiProperty()
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
+
+  @ApiProperty()
+  @Expose()
+  lessonId: number;
+
+  @ApiProperty()
+  @Expose()
+  assignmentId: number;
 }
 
 export class AttachmentGetListDataRO {

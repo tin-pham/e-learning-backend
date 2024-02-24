@@ -23,6 +23,18 @@ export class AttachmentStoreDTO {
   @IsString()
   @IsNotEmpty()
   type: string;
+
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  lessonId?: number;
+
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  assignmentId?: number;
 }
 
 export class AttachmentBulkStoreFileDTO {

@@ -30,15 +30,21 @@ export class AttachmentService extends BaseService {
         type: dto.type,
         size: dto.size,
         createdBy: actorId,
+        lessonId: dto.lessonId,
+        assignmentId: dto.assignmentId,
       });
 
       const attachment = await this.attachmentRepository.insert(entity);
+      console.log(attachment);
 
       response.id = attachment.id;
       response.url = attachment.url;
       response.name = attachment.name;
       response.type = attachment.type;
       response.size = attachment.size;
+      response.createdBy = attachment.createdBy;
+      response.lessonId = attachment.lessonId;
+      response.createdAt = attachment.createdAt;
     } catch (error) {
       const { code, status, message } = EXCEPTION.ATTACHMENT.STORE_FAILED;
       this.logger.error(error);

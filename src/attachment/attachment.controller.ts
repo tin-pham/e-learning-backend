@@ -38,7 +38,7 @@ export class AttachmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: AttachmentStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -54,7 +54,7 @@ export class AttachmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(BULK_STORE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   bulkStore(@Body() dto: AttachmentBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -69,7 +69,7 @@ export class AttachmentController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(BULK_DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   bulkDelete(@Query() dto: AttachmentBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.attachmentService.bulkDelete(dto, decoded);

@@ -6,9 +6,18 @@ import { SectionRepository } from '../section/section.repository';
 import { CategoryRepository } from '../category/category.repository';
 import { CategoryCourseRepository } from '../category-course/category-course.repository';
 import { AttachmentRepository } from '../attachment/attachment.repository';
+import { StudentRepository } from '../student/student.repository';
 
 @Module({
   controllers: [CourseController],
-  providers: [CourseService, CourseRepository, SectionRepository, CategoryRepository, CategoryCourseRepository, AttachmentRepository],
+  providers: [
+    CourseService,
+    CourseRepository,
+    SectionRepository,
+    CategoryRepository,
+    CategoryCourseRepository,
+    AttachmentRepository,
+    StudentRepository,
+  ],
 })
 export class CourseModule {}

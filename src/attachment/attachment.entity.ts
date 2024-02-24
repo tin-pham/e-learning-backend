@@ -13,7 +13,7 @@ export class AttachmentEntity extends BaseEntity {
 
   assignmentId?: number;
 
-  constructor(data?: Partial<AttachmentEntity>) {
+  constructor(data?: AttachmentEntity) {
     super(data);
     Object.assign(this, data);
   }

@@ -14,10 +14,34 @@ export class CourseRepository {
     return transaction.insertInto('course').values(entity).returning(['id', 'name', 'description', 'imageId']).executeTakeFirst();
   }
 
-  find(dto: CourseGetListDTO) {
-    const { limit, page, studentId, categoryId } = dto;
+  findByStudentId(studentId: string, dto: CourseGetListDTO) {
+    const { limit, page } = dto;
 
-    const withStudent = Boolean(studentId);
+    const query = this.database
+      .selectFrom('course')
+      .where('course.deletedAt', 'is', null)
+      .leftJoin('courseStudent', 'courseStudent.courseId', 'course.id')
+      .where('courseStudent.deletedAt', 'is', null)
+      .where('courseStudent.studentId', '=', studentId)
+      .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'course.imageId').on('attachment.deletedAt', 'is', null))
+      .orderBy('course.createdAt', 'desc')
+      .select(({ ref }) => [
+        'course.id',
+        'course.name',
+        'course.description',
+        'course.imageId',
+        jsonBuildObject({
+          id: ref('attachment.id'),
+          url: ref('attachment.url'),
+        }).as('image'),
+      ]);
+
+    return paginate(query, { limit, page });
+  }
+
+  find(dto: CourseGetListDTO) {
+    const { limit, page, categoryId } = dto;
+
     const byCategory = Boolean(categoryId);
 
     const query = this.database
@@ -25,12 +49,6 @@ export class CourseRepository {
       .where('course.deletedAt', 'is', null)
       .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'course.imageId').on('attachment.deletedAt', 'is', null))
       .orderBy('course.createdAt', 'desc')
-      .$if(withStudent, (qb) =>
-        qb
-          .innerJoin('courseStudent', 'courseStudent.courseId', 'course.id')
-          .where('courseStudent.studentId', '=', studentId)
-          .where('courseStudent.deletedAt', 'is', null),
-      )
       .$if(byCategory, (qb) =>
         qb
           .innerJoin('categoryCourse', 'categoryCourse.courseId', 'course.id')

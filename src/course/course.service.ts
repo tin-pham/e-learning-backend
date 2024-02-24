@@ -11,6 +11,7 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
 import { DatabaseService } from '../database/database.service';
 import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
 import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
+import { StudentRepository } from 'src/student/student.repository';
 
 @Injectable()
 export class CourseService extends BaseService {
@@ -24,6 +25,7 @@ export class CourseService extends BaseService {
     private readonly categoryRepository: CategoryRepository,
     private readonly categoryCourseRepository: CategoryCourseRepository,
     private readonly attachmentRepository: AttachmentRepository,
+    private readonly studentRepository: StudentRepository,
   ) {
     super(elasticLogger);
   }
@@ -75,9 +77,16 @@ export class CourseService extends BaseService {
 
   async getList(dto: CourseGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    const { student } = await this.validateGetList(dto, actorId);
 
     try {
-      const response = await this.courseRepository.find(dto);
+      let response: any;
+
+      if (student) {
+        response = await this.courseRepository.findByStudentId(student.id, dto);
+      } else {
+        response = await this.courseRepository.find(dto);
+      }
 
       return this.success({
         classRO: CourseGetListRO,
@@ -260,5 +269,19 @@ export class CourseService extends BaseService {
       const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+  }
+
+  private async validateGetList(dto: CourseGetListDTO, actorId: number) {
+    // Check is user student
+    let student: any;
+    if (dto.userId) {
+      student = await this.studentRepository.getStudentIdByUserId(dto.userId);
+      if (!student) {
+        const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
+
+    return { student };
   }
 }

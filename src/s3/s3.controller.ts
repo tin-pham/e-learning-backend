@@ -39,7 +39,7 @@ export class S3Controller {
   @ApiBearerAuth('Authorization')
   @Post(BULK_UPLOAD.ROUTE)
   @FormDataRequest()
-  @Roles(ROLE.ADMIN, ROLE.STAFF)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   bulkUpload(@Body() dto: S3UploadDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -54,7 +54,7 @@ export class S3Controller {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(BULK_DELETE.ROUTE)
-  @Roles(ROLE.ADMIN, ROLE.STAFF)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   bulkDelete(@Query() dto: S3DeleteDTO, @JwtPayload() decoded: IJwtPayload) {

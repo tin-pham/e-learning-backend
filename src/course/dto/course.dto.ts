@@ -4,7 +4,7 @@ import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 import { Transform, Type } from 'class-transformer';
 
-const { NAME, DESCRIPTION, IMAGE_ID, CATEGORY_ID, STUDENT_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
+const { NAME, DESCRIPTION, IMAGE_ID, CATEGORY_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
 
 export class CourseStoreDTO {
   @ApiProperty()
@@ -50,12 +50,10 @@ export class CourseStoreDTO {
 }
 
 export class CourseGetListDTO extends PaginateDTO {
-  @ApiPropertyOptional({ example: 'STU-001' })
-  @IsString({
-    message: STUDENT_ID.FORMAT_IS_NOT_VALID,
-  })
+  @ApiPropertyOptional({ example: 1 })
+  @IsString()
   @IsOptional()
-  studentId?: string;
+  userId?: number;
 
   @ApiPropertyOptional({ example: 1 })
   @Transform(({ value }) => (value === 'null' ? null : value))
