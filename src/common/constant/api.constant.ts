@@ -358,6 +358,22 @@ export const API = {
   COURSE_STUDENT: {
     TAGS: 'CourseStudent',
     CONTROLLER: 'course-student',
+    UN_REGISTER: {
+      ROUTE: 'un-register',
+      OPERATION: 'UnRegister course student',
+    },
+    IS_REGISTERED: {
+      ROUTE: 'is-registered',
+      OPERATION: 'Is register course student',
+    },
+    REGISTER: {
+      ROUTE: 'register',
+      OPERATION: 'Register course student',
+    },
+    CHECK_REGISTERED: {
+      ROUTE: 'check-registered',
+      OPERATION: 'Check registered course student',
+    },
     BULK_STORE: {
       ROUTE: '',
       OPERATION: 'Bulk store course student',

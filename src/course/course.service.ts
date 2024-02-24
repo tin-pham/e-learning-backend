@@ -93,7 +93,7 @@ export class CourseService extends BaseService {
   }
 
   async getDetail(id: number, dto: CourseGetDetailDTO, decoded: IJwtPayload) {
-    const actorId = decoded.userId;
+    const { userId: actorId } = decoded;
 
     let response: any;
 
@@ -113,8 +113,6 @@ export class CourseService extends BaseService {
     return this.success({
       classRO: CourseGetDetailRO,
       response,
-      message: 'Get course detail successfully',
-      actorId,
     });
   }
 

@@ -19,9 +19,17 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { JwtPayload } from '../common/decorator';
 import { CourseStudentService } from './course-student.service';
 import { ResultRO } from '../common/ro/result.ro';
-import { CourseStudentBulkDeleteDTO, CourseStudentBulkStoreDTO } from './dto/course-student.dto';
+import {
+  CourseStudentBulkDeleteDTO,
+  CourseStudentBulkStoreDTO,
+  CourseStudentCheckRegisteredDTO,
+  CourseStudentIsRegisteredDTO,
+  CourseStudentRegisterDTO,
+  CourseStudentUnRegisterDTO,
+} from './dto/course-student.dto';
+import { CourseStudentRegisterRO } from './ro/course-student.ro';
 
-const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.COURSE_STUDENT;
+const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE, CHECK_REGISTERED, REGISTER, IS_REGISTERED, UN_REGISTER } = API.COURSE_STUDENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -56,5 +64,61 @@ export class CourseStudentController {
   @UseGuards(JwtGuard, RoleGuard)
   bulkDelete(@Query() dto: CourseStudentBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.courseStudentService.bulkDelete(dto, decoded);
+  }
+
+  @ApiOperation({ summary: CHECK_REGISTERED.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(CHECK_REGISTERED.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  checkRegistered(@Body() dto: CourseStudentCheckRegisteredDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.courseStudentService.checkRegistered(dto, decoded);
+  }
+
+  @ApiOperation({ summary: REGISTER.OPERATION })
+  @ApiOkResponse({ type: CourseStudentRegisterRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(REGISTER.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  register(@Body() dto: CourseStudentRegisterDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.courseStudentService.register(dto, decoded);
+  }
+
+  @ApiOperation({ summary: IS_REGISTERED.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(IS_REGISTERED.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  isRegister(@Body() dto: CourseStudentIsRegisteredDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.courseStudentService.isRegistered(dto, decoded);
+  }
+
+  @ApiOperation({ summary: UN_REGISTER.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(UN_REGISTER.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  unRegister(@Body() dto: CourseStudentUnRegisterDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.courseStudentService.unregister(dto, decoded);
   }
 }

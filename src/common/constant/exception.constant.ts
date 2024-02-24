@@ -567,6 +567,26 @@ export const EXCEPTION = {
     },
   },
   COURSE_STUDENT: {
+    UNREGISTER_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to unregister course student',
+      code: 'COURSE_STUDENT.UNREGISTER_FAILED',
+    },
+    CHECK_REGISTERED_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to check course student registered',
+      code: 'COURSE_STUDENT.CHECK_REGISTERED_FAILED',
+    },
+    REGISTER_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to register course student',
+      code: 'COURSE_STUDENT.REGISTER_FAILED',
+    },
+    NOT_REGISTERED: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Course student not registered',
+      code: 'COURSE_STUDENT.NOT_REGISTERED',
+    },
     ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
       message: 'Course student already exist',

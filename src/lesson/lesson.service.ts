@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
+import { ROLE } from '../role/enum/role.enum';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { LessonEntity } from './lesson.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
@@ -7,6 +8,8 @@ import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.
 import { LessonRepository } from './lesson.repository';
 import { SectionRepository } from '../section/section.repository';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
+import { StudentRepository } from 'src/student/student.repository';
+import { CourseStudentRepository } from 'src/course-student/course-student.repository';
 
 @Injectable()
 export class LessonService extends BaseService {
@@ -16,6 +19,8 @@ export class LessonService extends BaseService {
     elasticLogger: ElasticsearchLoggerService,
     private readonly lessonRepository: LessonRepository,
     private readonly sectionRepository: SectionRepository,
+    private readonly studentRepository: StudentRepository,
+    private readonly courseStudentRepository: CourseStudentRepository,
   ) {
     super(elasticLogger);
   }
@@ -75,9 +80,20 @@ export class LessonService extends BaseService {
   }
 
   async getDetail(id: number, decoded: IJwtPayload) {
-    const actorId = decoded.userId;
+    const { roles, userId: actorId } = decoded;
 
     let lesson: LessonEntity;
+
+    // Is student register to this course
+    if (roles.includes(ROLE.STUDENT)) {
+      const student = await this.studentRepository.getStudentIdByUserId(actorId);
+      const courseStudent = await this.courseStudentRepository.countByCourseIdAndStudentId(id, student.id);
+
+      if (!courseStudent) {
+        const { status, message, code } = EXCEPTION.COURSE_STUDENT.NOT_REGISTERED;
+        this.throwException({ status, message, code, actorId });
+      }
+    }
 
     try {
       lesson = await this.lessonRepository.findOneById(id);
