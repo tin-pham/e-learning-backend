@@ -14,7 +14,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
     const message = exceptionResponse['message'] && this.getExceptionMessage(exceptionResponse);
-    console.log(exceptionResponse);
 
     // Log the exception if it 401 or 403
     if (status === HttpStatus.UNAUTHORIZED) {

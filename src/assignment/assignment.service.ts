@@ -188,7 +188,6 @@ export class AssignmentService extends BaseService {
 
     if (dto.lessonId) {
       const lessonCount = await this.lessonRepository.countById(dto.lessonId);
-      console.log(lessonCount);
       if (!lessonCount) {
         const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });

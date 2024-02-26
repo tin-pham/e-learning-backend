@@ -47,8 +47,6 @@ export class LessonCommentRepository {
     const byComment = Boolean(commentId);
     const byLesson = Boolean(lessonId);
 
-    console.log(byComment, byLesson);
-
     const query = this.database
       .withRecursive('commentTree', (qb) =>
         qb

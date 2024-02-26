@@ -33,7 +33,6 @@ export class UserService extends BaseService {
     let response: any;
     try {
       response = await this.userRepository.findOneById(decoded.userId);
-      console.log(response);
     } catch (error) {
       const { code, status, message } = EXCEPTION.USER.GET_PROFILE_FAILED;
       this._logger.error(error);

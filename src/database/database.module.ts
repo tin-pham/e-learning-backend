@@ -34,7 +34,6 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
           log(event) {
             if (event.level === 'query') {
               const { sql, parameters } = event.query;
-              console.log(sql);
               elasticLogger.query({
                 sql,
                 parameters: parameters as unknown[],

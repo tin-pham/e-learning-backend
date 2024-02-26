@@ -24,7 +24,6 @@ export class UserImageRepository {
       .updateTable('userImage')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('userId', '=', userId)
-      .where('deletedAt', 'is', null)
       .returning(['id', 'imageId', 'userId'])
       .executeTakeFirst();
   }

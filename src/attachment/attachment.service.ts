@@ -66,7 +66,6 @@ export class AttachmentService extends BaseService {
       });
 
       const attachment = await this.attachmentRepository.insert(entity);
-      console.log(attachment);
 
       response.id = attachment.id;
       response.url = attachment.url;
