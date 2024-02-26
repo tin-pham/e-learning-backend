@@ -117,16 +117,6 @@ export class UserDeleteRO {
   id: number;
 }
 
-export class UserGetProfileImageRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  url: string;
-}
-
 export class UserGetProfileRO {
   @ApiProperty()
   @Expose()
@@ -152,10 +142,9 @@ export class UserGetProfileRO {
   @Expose()
   imageId: number;
 
-  @ApiProperty({ type: UserGetProfileImageRO })
-  @Type(() => UserGetProfileImageRO)
+  @ApiProperty()
   @Expose()
-  image?: UserGetProfileImageRO;
+  imageUrl: string;
 
   constructor(data?: UserGetProfileRO) {
     Object.assign(this, data);

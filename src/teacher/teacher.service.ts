@@ -20,7 +20,7 @@ import {
   TeacherUpdateRO,
   TeacherUpdateUserRO,
 } from './ro/teacher.ro';
-import { AttachmentRepository } from '../attachment/attachment.repository';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class TeacherService extends UserService {
@@ -31,11 +31,11 @@ export class TeacherService extends UserService {
     userRepository: UserRepository,
     roleRepository: RoleRepository,
     userRoleRepository: UserRoleRepository,
-    attachmentRepository: AttachmentRepository,
     database: DatabaseService,
+    s3Service: S3Service,
     private readonly teacherRepository: TeacherRepository,
   ) {
-    super(elasticLogger, userRepository, roleRepository, userRoleRepository, attachmentRepository, database);
+    super(elasticLogger, userRepository, roleRepository, userRoleRepository, database, s3Service);
   }
 
   async store(dto: TeacherStoreDTO, decoded: IJwtPayload) {
@@ -46,7 +46,7 @@ export class TeacherService extends UserService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Store user
-        const user = await super.storeWithTransaction(transaction, dto, actorId);
+        const user = await super.storeWithTransaction(transaction, dto, decoded);
 
         // Get teacher role id
         const { id: roleId } = await this.roleRepository.getIdByName(ROLE.TEACHER);

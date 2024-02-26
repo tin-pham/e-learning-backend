@@ -97,4 +97,18 @@ export class AttachmentGetListDTO extends PaginateDTO {
   @Type(() => Number)
   @IsOptional()
   lessonId?: number;
+
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  createdBy?: number;
+}
+
+export class AttachmentGetDetailDTO {
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  assignmentId?: number;
 }

@@ -4,8 +4,6 @@ import { UserEntity } from './user.entity';
 import { ROLE } from '../role/enum/role.enum';
 import { paginate } from '../common/function/paginate';
 import { PaginateDTO } from '../common/dto/paginate.dto';
-import { UserGetProfileDTO } from './dto/user.dto';
-import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 @Injectable()
 export class UserRepository {
@@ -86,23 +84,22 @@ export class UserRepository {
       .executeTakeFirst();
   }
 
-  findOneById(id: number, dto: UserGetProfileDTO = {}) {
-    const { withImage } = dto;
+  findOneById(id: number) {
     return this.database
       .selectFrom('users')
-      .select(['users.id', 'users.username', 'users.email', 'users.phone', 'users.displayName', 'users.imageId'])
       .where('users.id', '=', id)
       .where('users.deletedAt', 'is', null)
-      .$if(withImage, (q) =>
-        q
-          .leftJoin('attachment', (join) => join.onRef('users.imageId', '=', 'attachment.id').on('attachment.deletedAt', 'is', null))
-          .select(({ ref }) => [
-            jsonBuildObject({
-              id: ref('attachment.id'),
-              url: ref('attachment.url'),
-            }).as('image'),
-          ]),
-      )
+      .leftJoin('userImage', (join) => join.onRef('users.id', '=', 'userImage.userId').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
+      .select([
+        'users.id',
+        'users.username',
+        'users.email',
+        'users.phone',
+        'users.displayName',
+        'userImage.imageId',
+        'image.url as imageUrl',
+      ])
       .executeTakeFirst();
   }
 
@@ -127,7 +124,8 @@ export class UserRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'username', 'email', 'phone', 'displayName', 'imageId'])
+      .leftJoin('userImage', 'userImage.userId', 'users.id')
+      .returning(['users.id', 'users.username', 'users.email', 'users.phone', 'users.displayName', 'userImage.imageId'])
       .executeTakeFirst();
   }
 
@@ -137,7 +135,7 @@ export class UserRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'username', 'email', 'phone', 'displayName', 'imageId'])
+      .returning(['id', 'username', 'email', 'phone', 'displayName'])
       .executeTakeFirst();
   }
 

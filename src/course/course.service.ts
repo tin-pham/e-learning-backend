@@ -5,13 +5,12 @@ import { CourseEntity } from './course.entity';
 import { CourseRepository } from './course.repository';
 import { SectionRepository } from '../section/section.repository';
 import { CategoryRepository } from '../category/category.repository';
+import { StudentRepository } from '../student/student.repository';
 import { CategoryCourseRepository } from '../category-course/category-course.repository';
-import { AttachmentRepository } from '../attachment/attachment.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
 import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
 import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
-import { StudentRepository } from 'src/student/student.repository';
 
 @Injectable()
 export class CourseService extends BaseService {
@@ -24,7 +23,6 @@ export class CourseService extends BaseService {
     private readonly sectionRepository: SectionRepository,
     private readonly categoryRepository: CategoryRepository,
     private readonly categoryCourseRepository: CategoryCourseRepository,
-    private readonly attachmentRepository: AttachmentRepository,
     private readonly studentRepository: StudentRepository,
   ) {
     super(elasticLogger);
@@ -42,7 +40,6 @@ export class CourseService extends BaseService {
         const courseData = new CourseEntity();
         courseData.name = dto.name;
         courseData.description = dto.description;
-        courseData.imageId = dto.imageId;
         courseData.createdBy = actorId;
         const course = await this.courseRepository.insertWithTransaction(transaction, courseData);
         // Store category
@@ -59,7 +56,6 @@ export class CourseService extends BaseService {
         response.id = course.id;
         response.name = course.name;
         response.description = course.description;
-        response.imageId = course.imageId;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.STORE_FAILED;
@@ -144,17 +140,12 @@ export class CourseService extends BaseService {
           courseData.description = dto.description;
         }
 
-        if (dto.imageId) {
-          courseData.imageId = dto.imageId;
-        }
-
         const course = await this.courseRepository.updateWithTransaction(transaction, id, courseData);
 
         await this.categoryCourseRepository.updateByCategoryIdsAndCourseIdWithTransaction(transaction, dto.categoryIds, course.id, actorId);
 
         response.id = course.id;
         response.name = course.name;
-        response.imageId = course.imageId;
         response.description = course.description;
       });
     } catch (error) {
@@ -218,15 +209,6 @@ export class CourseService extends BaseService {
         this.throwException({ code, status, message, actorId });
       }
     }
-
-    // Check image exist
-    if (dto.imageId) {
-      const imageCount = await this.attachmentRepository.countById(dto.imageId);
-      if (!imageCount) {
-        const { code, status, message } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
-        this.throwException({ code, status, message, actorId });
-      }
-    }
   }
 
   private async validateUpdate(id: number, dto: CourseUpdateDTO, actorId: number) {
@@ -249,14 +231,6 @@ export class CourseService extends BaseService {
       const categoryCount = await this.categoryRepository.countByIds(dto.categoryIds);
       if (!categoryCount) {
         const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
-        this.throwException({ code, status, message, actorId });
-      }
-    }
-
-    if (dto.imageId) {
-      const imageCount = await this.attachmentRepository.countById(dto.imageId);
-      if (!imageCount) {
-        const { code, status, message } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
     }

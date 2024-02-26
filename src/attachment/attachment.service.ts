@@ -4,7 +4,13 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { AttachmentRepository } from './attachment.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AttachmentEntity } from './attachment.entity';
-import { AttachmentBulkDeleteDTO, AttachmentBulkStoreDTO, AttachmentGetListDTO, AttachmentStoreDTO } from './dto/attachment.dto';
+import {
+  AttachmentBulkDeleteDTO,
+  AttachmentBulkStoreDTO,
+  AttachmentGetDetailDTO,
+  AttachmentGetListDTO,
+  AttachmentStoreDTO,
+} from './dto/attachment.dto';
 import { ResultRO } from '../common/ro/result.ro';
 import { AttachmentGetListRO, AttachmentStoreRO } from './ro/attachment.ro';
 
@@ -17,6 +23,31 @@ export class AttachmentService extends BaseService {
     private readonly attachmentRepository: AttachmentRepository,
   ) {
     super(elasticLogger);
+  }
+
+  async getDetail(dto: AttachmentGetDetailDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateGetDetail(dto, actorId);
+
+    let attachment;
+
+    try {
+      attachment = await this.attachmentRepository.findOneByAssignmentIdAndCreatedById(dto.assignmentId, actorId);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.GET_DETAIL_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    if (!attachment) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.NOT_FOUND;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: AttachmentGetListRO,
+      response: attachment,
+    });
   }
 
   async store(dto: AttachmentStoreDTO, decoded: IJwtPayload) {
@@ -132,6 +163,15 @@ export class AttachmentService extends BaseService {
     // Check exist
     const attachmentCount = await this.attachmentRepository.countByIds(dto.ids);
     if (attachmentCount !== dto.ids.length) {
+      const { code, status, message } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateGetDetail(dto: AttachmentGetDetailDTO, actorId: number) {
+    // Check exist
+    const attachmentCount = await this.attachmentRepository.countByAssignmentIdAndCreatedById(dto.assignmentId, actorId);
+    if (!attachmentCount) {
       const { code, status, message } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }

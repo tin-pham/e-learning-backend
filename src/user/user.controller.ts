@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -19,7 +19,7 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { UserService } from './user.service';
 import { UserGetProfileRO, UserUpdateRO } from './ro/user.ro';
-import { UserGetProfileDTO, UserUpdateDTO } from './dto/user.dto';
+import { UserUpdateDTO } from './dto/user.dto';
 
 const { TAGS, CONTROLLER, GET_PROFILE, UPDATE } = API.USER;
 
@@ -38,8 +38,8 @@ export class UserController {
   @Get(GET_PROFILE.ROUTE)
   @Roles(ROLE.STUDENT, ROLE.ADMIN, ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
-  getProfile(@Query() dto: UserGetProfileDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.userService.getProfile(dto, decoded);
+  getProfile(@JwtPayload() decoded: IJwtPayload) {
+    return this.userService.getProfile(decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })

@@ -30,6 +30,9 @@ import { AssignmentExerciseEntity } from '../assignment-exercise/assignment-exer
 import { CategoryEntity } from '../category/category.entity';
 import { CategoryCourseEntity } from '../category-course/category-course.entity';
 import { AttachmentEntity } from '../attachment/attachment.entity';
+import { ImageEntity } from 'src/image/image.entity';
+import { UserImageEntity } from 'src/user-image/user-image.entity';
+import { CourseImageEntity } from 'src/course-image/course-image.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -63,6 +66,9 @@ export interface KyselyTables {
   category: CategoryEntity;
   categoryCourse: CategoryCourseEntity;
   attachment: AttachmentEntity;
+  image: ImageEntity;
+  userImage: UserImageEntity;
+  courseImage: CourseImageEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

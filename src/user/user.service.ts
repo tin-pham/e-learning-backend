@@ -7,11 +7,11 @@ import { UserRoleEntity } from '../user-role/user-role.entity';
 import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
-import { AttachmentRepository } from '../attachment/attachment.repository';
 import { RoleRepository } from '../role/role.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { UserGetProfileDTO, UserStoreDTO, UserUpdateDTO } from './dto/user.dto';
+import { UserStoreDTO, UserUpdateDTO } from './dto/user.dto';
 import { UserGetProfileRO, UserUpdateRO } from './ro/user.ro';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -22,17 +22,17 @@ export class UserService extends BaseService {
     protected readonly userRepository: UserRepository,
     protected readonly roleRepository: RoleRepository,
     protected readonly userRoleRepository: UserRoleRepository,
-    protected readonly attachmentRepository: AttachmentRepository,
     protected readonly database: DatabaseService,
+    protected readonly s3Service: S3Service,
   ) {
     super(elasticLogger);
   }
 
-  async getProfile(dto: UserGetProfileDTO, decoded: IJwtPayload) {
+  async getProfile(decoded: IJwtPayload) {
     const actorId = decoded.userId;
     let response: any;
     try {
-      response = await this.userRepository.findOneById(decoded.userId, dto);
+      response = await this.userRepository.findOneById(decoded.userId);
       console.log(response);
     } catch (error) {
       const { code, status, message } = EXCEPTION.USER.GET_PROFILE_FAILED;
@@ -78,18 +78,9 @@ export class UserService extends BaseService {
       data.password = hashedPassword;
     }
 
-    if (dto.imageId) {
-      data.imageId = dto.imageId;
-    }
-
     let user: any;
     try {
-      await this.database.transaction().execute(async (transaction) => {
-        user = await this.userRepository.updateWithTransaction(transaction, actorId, data);
-        if (!data.imageId) {
-          await this.attachmentRepository.delete(data.imageId, actorId);
-        }
-      });
+      user = await this.userRepository.update(actorId, data);
     } catch (error) {
       const { code, status, message } = EXCEPTION.USER.UPDATE_PROFILE_FAILED;
       this._logger.error(error);
@@ -104,7 +95,8 @@ export class UserService extends BaseService {
     });
   }
 
-  protected async storeWithTransaction(transaction: Transaction, dto: UserStoreDTO, actorId: number) {
+  protected async storeWithTransaction(transaction: Transaction, dto: UserStoreDTO, decoded: IJwtPayload) {
+    const { userId: actorId } = decoded;
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(dto.password, salt);
     const userData = new UserEntity();
@@ -114,8 +106,9 @@ export class UserService extends BaseService {
     userData.phone = dto.phone;
     userData.displayName = dto.displayName;
     userData.createdBy = actorId;
-    userData.imageId = dto.imageId;
-    return this.userRepository.insertWithTransaction(transaction, userData);
+
+    const user = await this.userRepository.insertWithTransaction(transaction, userData);
+    return user;
   }
 
   protected async storeUserRoleWithTransaction(transaction: Transaction, userId: number, roleId: number) {
@@ -150,15 +143,6 @@ export class UserService extends BaseService {
         this.throwException({ status, code, message, actorId });
       }
     }
-
-    // Check image id exist
-    if (dto.imageId) {
-      const imageCount = await this.attachmentRepository.countById(dto.imageId);
-      if (!imageCount) {
-        const { status, code, message } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
-        this.throwException({ status, code, message, actorId });
-      }
-    }
   }
 
   protected async updateWithTransaction(transaction: Transaction, id: number, dto: UserUpdateDTO, actorId: number) {
@@ -181,13 +165,8 @@ export class UserService extends BaseService {
       const hashedPassword = await bcrypt.hash(dto.password, salt);
       userData.password = hashedPassword;
     }
-
-    if (dto.imageId) {
-      userData.imageId = dto.imageId;
-    }
-
-    // Update user
     const user = await this.userRepository.updateWithTransaction(transaction, id, userData);
+
     return user;
   }
 
@@ -208,15 +187,6 @@ export class UserService extends BaseService {
     if (!userCount) {
       const { status, message, code } = EXCEPTION.USER.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
-    }
-
-    // Check image id exist
-    if (dto.imageId) {
-      const imageCount = await this.attachmentRepository.countById(dto.imageId);
-      if (!imageCount) {
-        const { status, message, code } = EXCEPTION.ATTACHMENT.DOES_NOT_EXIST;
-        this.throwException({ status, message, code, actorId });
-      }
     }
 
     // Check email unique

@@ -24,7 +24,9 @@ export class LessonCommentRepository {
       .selectFrom('commentData')
       .innerJoin('users', 'users.id', 'commentData.createdBy')
       .where('users.deletedAt', 'is', null)
-      .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
+      .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
+
       .select([
         'commentData.id',
         'commentData.lessonId',
@@ -34,7 +36,7 @@ export class LessonCommentRepository {
         'commentData.createdBy',
         'users.id as userId',
         'users.displayName as userDisplayName',
-        'attachment.url as userImageUrl',
+        'image.url as userImageUrl',
       ])
       .executeTakeFirst();
   }
@@ -56,7 +58,8 @@ export class LessonCommentRepository {
           .$if(byLesson, (eb) => eb.where('lessonComment.lessonId', '=', lessonId))
           .$if(byComment, (eb) => eb.where('lessonComment.id', '=', commentId))
           .innerJoin('users', 'lessonComment.createdBy', 'users.id')
-          .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
+          .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
+          .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
           .where('users.deletedAt', 'is', null)
           .select([
             'lessonComment.id',
@@ -67,7 +70,7 @@ export class LessonCommentRepository {
             'lessonComment.createdBy',
             'users.id as userId',
             'users.displayName as userDisplayName',
-            'attachment.url as userImageUrl',
+            'image.url as userImageUrl',
             sql`0`.as('depth'),
           ])
           .unionAll((eb) =>
@@ -76,7 +79,8 @@ export class LessonCommentRepository {
               .innerJoin('lessonComment', 'lessonComment.parentId', 'commentTree.id')
               .where('lessonComment.deletedAt', 'is', null)
               .innerJoin('users', 'lessonComment.createdBy', 'users.id')
-              .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
+              .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
+              .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
               .where('users.deletedAt', 'is', null)
               .select([
                 'lessonComment.id',
@@ -87,7 +91,7 @@ export class LessonCommentRepository {
                 'lessonComment.createdBy',
                 'users.id as userId',
                 'users.displayName as userDisplayName',
-                'attachment.url as userImageUrl',
+                'image.url as userImageUrl',
                 sql`comment_tree.depth + 1`.as('depth'),
               ]),
           ),
@@ -119,7 +123,8 @@ export class LessonCommentRepository {
           .where('lessonComment.deletedAt', 'is', null)
           .innerJoin('users', 'lessonComment.createdBy', 'users.id')
           .where('users.deletedAt', 'is', null)
-          .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
+          .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
+          .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
           .select([
             'lessonComment.id',
             'lessonComment.lessonId',
@@ -129,7 +134,7 @@ export class LessonCommentRepository {
             'lessonComment.createdBy',
             'users.id as userId',
             'users.displayName as userDisplayName',
-            'attachment.url as userImageUrl',
+            'image.url as userImageUrl',
           ])
           .unionAll((eb) =>
             eb
@@ -138,7 +143,8 @@ export class LessonCommentRepository {
               .where('lessonComment.deletedAt', 'is', null)
               .innerJoin('users', 'lessonComment.createdBy', 'users.id')
               .where('users.deletedAt', 'is', null)
-              .leftJoin('attachment', (join) => join.onRef('attachment.id', '=', 'users.imageId').on('attachment.deletedAt', 'is', null))
+              .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
+              .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
               .select([
                 'lessonComment.id',
                 'lessonComment.lessonId',
@@ -148,7 +154,7 @@ export class LessonCommentRepository {
                 'lessonComment.createdBy',
                 'users.id as userId',
                 'users.displayName as userDisplayName',
-                'attachment.url as userImageUrl',
+                'image.url as userImageUrl',
               ]),
           ),
       )

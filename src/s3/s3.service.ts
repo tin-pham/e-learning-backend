@@ -24,7 +24,7 @@ export class S3Service extends BaseService {
     });
   }
 
-  async bulkUpload(dto: S3UploadDTO, decoded: IJwtPayload): Promise<string[]> {
+  async bulkUpload(dto: S3UploadDTO, decoded: IJwtPayload): Promise<S3UploadRO> {
     const actorId = decoded.userId;
     const bucket = this.configService.getOrThrow('AWS_S3_BUCKET');
 

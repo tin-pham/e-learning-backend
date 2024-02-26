@@ -6,6 +6,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -18,11 +19,17 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { JwtPayload } from '../common/decorator';
 import { AttachmentService } from './attachment.service';
-import { AttachmentBulkDeleteDTO, AttachmentBulkStoreDTO, AttachmentGetListDTO, AttachmentStoreDTO } from './dto/attachment.dto';
-import { AttachmentGetListRO, AttachmentStoreRO } from './ro/attachment.ro';
+import {
+  AttachmentBulkDeleteDTO,
+  AttachmentBulkStoreDTO,
+  AttachmentGetDetailDTO,
+  AttachmentGetListDTO,
+  AttachmentStoreDTO,
+} from './dto/attachment.dto';
+import { AttachmentGetDetailRO, AttachmentGetListRO, AttachmentStoreRO } from './ro/attachment.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, STORE, BULK_STORE, BULK_DELETE, GET_LIST } = API.ATTACHMENT;
+const { TAGS, CONTROLLER, STORE, BULK_STORE, BULK_DELETE, GET_LIST, GET_DETAIL } = API.ATTACHMENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -87,5 +94,20 @@ export class AttachmentController {
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: AttachmentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.attachmentService.getList(dto, decoded);
+  }
+
+  @ApiOperation({ summary: GET_DETAIL.OPERATION })
+  @ApiOkResponse({ type: AttachmentGetDetailRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiNotFoundResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_DETAIL.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  getDetail(@Query() dto: AttachmentGetDetailDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.attachmentService.getDetail(dto, decoded);
   }
 }

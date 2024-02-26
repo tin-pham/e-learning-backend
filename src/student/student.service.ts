@@ -12,7 +12,7 @@ import { UserService } from '../user/user.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import { StudentDeleteRO, StudentGetDetailRO, StudentGetListRO, StudentStoreRO, StudentUpdateRO } from './ro/student.ro';
-import { AttachmentRepository } from 'src/attachment/attachment.repository';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class StudentService extends UserService {
@@ -23,11 +23,11 @@ export class StudentService extends UserService {
     userRepository: UserRepository,
     roleRepository: RoleRepository,
     userRoleRepository: UserRoleRepository,
-    attachmentRepository: AttachmentRepository,
     database: DatabaseService,
+    s3Service: S3Service,
     private readonly studentRepository: StudentRepository,
   ) {
-    super(elasticLogger, userRepository, roleRepository, userRoleRepository, attachmentRepository, database);
+    super(elasticLogger, userRepository, roleRepository, userRoleRepository, database, s3Service);
   }
 
   async store(dto: StudentStoreDTO, decoded: IJwtPayload) {
@@ -38,7 +38,7 @@ export class StudentService extends UserService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Store user
-        const user = await super.storeWithTransaction(transaction, dto, decoded.userId);
+        const user = await super.storeWithTransaction(transaction, dto, decoded);
 
         // Get student role id
         const { id: roleId } = await this.roleRepository.getIdByName(ROLE.STUDENT);

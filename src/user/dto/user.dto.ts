@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
-import { Type } from 'class-transformer';
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -14,14 +13,14 @@ export class UserStoreDTO {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty({ required: false, example: 'tinpham@example.com' })
+  @ApiPropertyOptional({ example: 'tinpham@example.com' })
   @IsEmail()
   @IsNotEmpty()
   @IsString()
   @IsOptional()
   email?: string;
 
-  @ApiProperty({ required: false, example: '0987654321' })
+  @ApiPropertyOptional({ example: '0987654321' })
   @IsPhoneNumber('VN')
   @IsNotEmpty()
   @IsNumberString()
@@ -32,53 +31,33 @@ export class UserStoreDTO {
   @IsString()
   @IsNotEmpty()
   displayName: string;
-
-  @ApiPropertyOptional({ example: 1 })
-  @IsNumber()
-  @Type(() => Number)
-  @IsOptional()
-  imageId?: number;
 }
 
 export class UserGetListDTO extends PaginateDTO {}
 export class UserUpdateDTO {
-  @ApiProperty({ example: '123456' })
+  @ApiPropertyOptional({ example: '123456' })
   @IsString()
   @IsNotEmpty()
   @IsOptional()
   password?: string;
 
-  @ApiProperty({ required: false, example: 'tinpham@example.com' })
+  @ApiPropertyOptional({ example: 'tinpham@example.com' })
   @IsEmail()
   @IsNotEmpty()
   @IsString()
   @IsOptional()
   email?: string;
 
-  @ApiProperty({ required: false, example: '0987654321' })
+  @ApiPropertyOptional({ example: '0987654321' })
   @IsPhoneNumber('VN')
   @IsNotEmpty()
   @IsNumberString()
   @IsOptional()
   phone?: string;
 
-  @ApiProperty({ example: 'Tin Pham' })
+  @ApiPropertyOptional({ example: 'Tin Pham' })
   @IsString()
   @IsNotEmpty()
   @IsOptional()
   displayName?: string;
-
-  @ApiPropertyOptional({ example: 1 })
-  @IsNumber()
-  @Type(() => Number)
-  @IsOptional()
-  imageId?: number;
-}
-
-export class UserGetProfileDTO {
-  @ApiProperty()
-  @IsBoolean()
-  @Type(() => Boolean)
-  @IsOptional()
-  withImage?: boolean;
 }

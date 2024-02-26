@@ -64,6 +64,18 @@ export class AttachmentGetListDataRO {
   @ApiProperty()
   @Expose()
   createdAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
+
+  @ApiProperty()
+  @Expose()
+  createdByDisplayName: string;
+
+  @ApiProperty()
+  @Expose()
+  createdByImageUrl: string;
 }
 
 export class AttachmentGetListRO extends PaginateRO<AttachmentGetListDataRO> {
@@ -71,4 +83,34 @@ export class AttachmentGetListRO extends PaginateRO<AttachmentGetListDataRO> {
   @Type(() => AttachmentGetListDataRO)
   @Expose()
   data: AttachmentGetListDataRO[];
+}
+
+export class AttachmentGetDetailRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  url: string;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+
+  @ApiProperty()
+  @Expose()
+  type: string;
+
+  @ApiProperty()
+  @Expose()
+  size: string;
+
+  @ApiProperty()
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
 }

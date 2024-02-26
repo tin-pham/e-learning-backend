@@ -14,20 +14,6 @@ export class CourseStoreRO {
   @ApiProperty()
   @Expose()
   description?: string;
-
-  @ApiProperty()
-  @Expose()
-  imageId?: number;
-}
-
-export class CourseGetListImageRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  url: string;
 }
 
 export class CourseGetListDataRO {
@@ -45,11 +31,7 @@ export class CourseGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  imageId?: number;
-
-  @ApiProperty()
-  @Expose()
-  image?: CourseGetListImageRO;
+  imageUrl?: string;
 }
 
 export class CourseGetListRO extends PaginateRO<CourseGetListDataRO> {
@@ -57,16 +39,6 @@ export class CourseGetListRO extends PaginateRO<CourseGetListDataRO> {
   @Type(() => CourseGetListDataRO)
   @Expose()
   data: CourseGetListDataRO[];
-}
-
-export class CourseGetDetailImageRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  url: string;
 }
 
 export class CourseGetDetailRO {
@@ -84,11 +56,7 @@ export class CourseGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  imageId?: number;
-
-  @ApiProperty()
-  @Expose()
-  image?: CourseGetDetailImageRO;
+  imageUrl?: string;
 
   @ApiProperty({ type: [Number] })
   @Expose()
@@ -107,10 +75,6 @@ export class CourseUpdateRO {
   @ApiProperty()
   @Expose()
   description?: string;
-
-  @ApiProperty()
-  @Expose()
-  imageId?: number;
 }
 
 export class CourseDeleteRO {

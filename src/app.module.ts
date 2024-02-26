@@ -30,6 +30,8 @@ import { AssignmentExerciseModule } from './assignment-exercise/assignment-exerc
 import { CategoryModule } from './category/category.module';
 import { AttachmentModule } from './attachment/attachment.module';
 import { UserModule } from './user/user.module';
+import { UserImageModule } from './user-image/user-image.module';
+import { CourseImageModule } from './course-image/course-image.module';
 
 @Module({
   imports: [
@@ -43,9 +45,11 @@ import { UserModule } from './user/user.module';
     AttachmentModule,
     RoleModule,
     UserModule,
+    UserImageModule,
     // MenuModule,
     // RoleMenuModule,
     CourseModule,
+    CourseImageModule,
     SectionModule,
     LessonModule,
     LessonAttachmentModule,

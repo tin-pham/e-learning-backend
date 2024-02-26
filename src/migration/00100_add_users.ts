@@ -12,7 +12,6 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.PASSWORD, 'varchar(255)', (column) => column.notNull())
     .addColumn(SCHEMA.EMAIL, 'varchar(50)', (column) => column)
     .addColumn(SCHEMA.PHONE, 'varchar(50)', (column) => column)
-    .addColumn(SCHEMA.IMAGE_ID, 'integer', (column) => column)
     .addColumn(SCHEMA.DISPLAY_NAME, 'varchar(50)')
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${NAME}.${SCHEMA.ID}`))

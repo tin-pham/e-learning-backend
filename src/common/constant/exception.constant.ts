@@ -868,10 +868,20 @@ export const EXCEPTION = {
     },
   },
   ATTACHMENT: {
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail attachment',
+      code: 'ATTACHMENT.GET_DETAIL_FAILED',
+    },
     ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
       message: 'Attachment already exist',
       code: 'ATTACHMENT.ALREADY_EXIST',
+    },
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Attachment not found',
+      code: 'ATTACHMENT.NOT_FOUND',
     },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
@@ -897,6 +907,47 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk delete attachment',
       code: 'ATTACHMENT.BULK_DELETE_FAILED',
+    },
+  },
+  IMAGE: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Image does not exist',
+      code: 'IMAGE.DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store image',
+      code: 'IMAGE.STORE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete image',
+      code: 'IMAGE.DELETE_FAILED',
+    },
+  },
+  USER_IMAGE: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'User image does not exist',
+      code: 'USER_IMAGE.DOES_NOT_EXIST',
+    },
+    UPSERT_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to upsert user image',
+      code: 'USER_IMAGE.UPSERT_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete user image',
+      code: 'USER_IMAGE.DELETE_FAILED',
+    },
+  },
+  COURSE_IMAGE: {
+    UPSERT_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to upsert course image',
+      code: 'COURSE_IMAGE.UPSERT_FAILED',
     },
   },
 };
