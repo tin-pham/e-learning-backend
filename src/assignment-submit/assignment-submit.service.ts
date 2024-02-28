@@ -92,6 +92,31 @@ export class AssignmentSubmitService extends BaseService {
     }
   }
 
+  async delete(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateDelete(id, actorId);
+
+    try {
+      await this.database.transaction().execute(async (transaction) => {
+        const { id: assignmentSubmitId } = await this.assignmentSubmitRepository.deleteWithTransaction(transaction, id, actorId);
+        const assignmentSubmit = await this.assignmentSubmitRepository.findOneById(assignmentSubmitId);
+
+        await this.s3Service.bulkDelete({ urls: [assignmentSubmit.attachmentUrl] }, decoded);
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Delete assignment submit successfully',
+      actorId,
+    });
+  }
+
   private async validateStore(dto: AssignmentSubmitStoreDTO, actorId: number) {
     // Check assignment exist
     const assignment = await this.assignmentRepository.getCourseIdById(dto.assignmentId);
@@ -109,12 +134,20 @@ export class AssignmentSubmitService extends BaseService {
 
     // Check student registered
     const registerCount = await this.courseStudentRepository.countByCourseIdAndStudentId(assignment.courseId, student.id);
-    console.log(assignment.courseId, student.id);
     if (!registerCount) {
       const { code, status, message } = EXCEPTION.COURSE_STUDENT.NOT_REGISTERED;
       this.throwException({ code, status, message, actorId });
     }
 
     return { student };
+  }
+
+  private async validateDelete(id: number, actorId: number) {
+    // Check exist
+    const assignmentSubmitCount = await this.assignmentSubmitRepository.countById(id);
+    if (!assignmentSubmitCount) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 }

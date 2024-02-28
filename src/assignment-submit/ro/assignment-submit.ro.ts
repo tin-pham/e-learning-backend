@@ -5,7 +5,23 @@ import { PaginateRO } from '../../common/ro/paginate.ro';
 export class AssignmentSubmitGetListDataRO {
   @ApiProperty()
   @Expose()
-  url: string;
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  attachmentUrl: string;
+
+  @ApiProperty()
+  @Expose()
+  attachmentName: string;
+
+  @ApiProperty()
+  @Expose()
+  attachmentCreatedAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  attachmentCreatedBy: number;
 }
 
 export class AssignmentSubmitGetListRO extends PaginateRO<AssignmentSubmitGetListDataRO> {

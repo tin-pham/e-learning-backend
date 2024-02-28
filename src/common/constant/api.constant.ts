@@ -478,6 +478,10 @@ export const API = {
   ASSIGNMENT_SUBMIT: {
     TAGS: 'AssignmentSubmit',
     CONTROLLER: 'assignment-submit',
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete assignment submit',
+    },
     STORE: {
       ROUTE: '',
       OPERATION: 'Store assignment submit',

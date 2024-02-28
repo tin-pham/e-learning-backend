@@ -18,13 +18,13 @@ export class CourseRepository {
 
     const query = this.database
       .selectFrom('course')
+      .distinct()
       .where('course.deletedAt', 'is', null)
       .leftJoin('courseStudent', 'courseStudent.courseId', 'course.id')
       .where('courseStudent.deletedAt', 'is', null)
       .where('courseStudent.studentId', '=', studentId)
       .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
-      .orderBy('course.createdAt', 'desc')
       .select(['course.id', 'course.name', 'course.description', 'image.url as imageUrl']);
 
     return paginate(query, { limit, page });

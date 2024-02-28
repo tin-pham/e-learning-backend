@@ -951,6 +951,16 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT_SUBMIT: {
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete assignment submit',
+      code: 'ASSIGNMENT_SUBMIT.DELETE_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Assignment submit does not exist',
+      code: 'ASSIGNMENT_SUBMIT.DOES_NOT_EXIST',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store assignment submit',

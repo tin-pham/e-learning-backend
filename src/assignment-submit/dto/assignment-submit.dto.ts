@@ -28,3 +28,10 @@ export class AssignmentSubmitGetListDTO extends PaginateDTO {
   @IsOptional()
   assignmentId?: number;
 }
+
+export class AssignmentSubmitDeleteDTO {
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  id: number;
+}

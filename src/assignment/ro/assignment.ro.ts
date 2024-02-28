@@ -114,5 +114,17 @@ export class AssignmentGetSubmissionRO {
 
   @ApiProperty()
   @Expose()
-  url: string;
+  attachmentUrl: string;
+
+  @ApiProperty()
+  @Expose()
+  attachmentName: string;
+
+  @ApiProperty()
+  @Expose()
+  attachmentCreatedAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  attachmentCreatedBy: number;
 }

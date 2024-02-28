@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -24,7 +24,7 @@ import { AssignmentSubmitService } from './assignment-submit.service';
 import { AssignmentSubmitGetListDTO, AssignmentSubmitStoreDTO } from './dto/assignment-submit.dto';
 import { AssignmentSubmitGetListRO } from './ro/assignment-submit.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST } = API.ASSIGNMENT_SUBMIT;
+const { TAGS, CONTROLLER, STORE, GET_LIST, DELETE } = API.ASSIGNMENT_SUBMIT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -61,5 +61,19 @@ export class AssignmentSubmitController {
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: AssignmentSubmitGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.assignmentSubmitService.getList(dto, decoded);
+  }
+
+  @ApiOperation({ summary: DELETE.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Delete(DELETE.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.assignmentSubmitService.delete(id, decoded);
   }
 }
