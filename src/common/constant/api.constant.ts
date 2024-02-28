@@ -410,6 +410,10 @@ export const API = {
       ROUTE: ':id',
       OPERATION: 'Delete assignment',
     },
+    GET_SUBMISSION: {
+      ROUTE: ':id/submission',
+      OPERATION: 'Get assignment submission',
+    },
   },
   COURSE_ASSIGNMENT: {
     TAGS: 'CourseAssignment',
@@ -469,6 +473,22 @@ export const API = {
     BULK_DELETE: {
       ROUTE: '',
       OPERATION: 'Bulk delete assignment attachment',
+    },
+  },
+  ASSIGNMENT_SUBMIT: {
+    TAGS: 'AssignmentSubmit',
+    CONTROLLER: 'assignment-submit',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store assignment submit',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list assignment submits',
+    },
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get assignment submit detail',
     },
   },
   EXERCISE_SUBMIT: {

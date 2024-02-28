@@ -23,7 +23,6 @@ import { TeacherModule } from './teacher/teacher.module';
 import { CourseStudentModule } from './course-student/course-student.module';
 import { AssignmentModule } from './assignment/assignment.module';
 import { CourseAssignmentModule } from './course-assignment/course-assignment.module';
-import { AssignmentAttachmentModule } from './assignment-attachment/assignment-attachment.module';
 import { ExerciseSubmitModule } from './exercise-submit/exercise-submit.module';
 import { ExerciseSubmitMarkModule } from './exercise-submit-mark/exercise-submit-mark.module';
 import { AssignmentExerciseModule } from './assignment-exercise/assignment-exercise.module';
@@ -32,6 +31,8 @@ import { AttachmentModule } from './attachment/attachment.module';
 import { UserModule } from './user/user.module';
 import { UserImageModule } from './user-image/user-image.module';
 import { CourseImageModule } from './course-image/course-image.module';
+import { AssignmentAttachmentModule } from './assignment-attachment/assignment-attachment.module';
+import { AssignmentSubmitModule } from './assignment-submit/assignment-submit.module';
 
 @Module({
   imports: [
@@ -63,8 +64,9 @@ import { CourseImageModule } from './course-image/course-image.module';
     TeacherModule,
     CourseStudentModule,
     AssignmentModule,
-    CourseAssignmentModule,
     AssignmentAttachmentModule,
+    AssignmentSubmitModule,
+    CourseAssignmentModule,
     ExerciseSubmitModule,
     ExerciseSubmitMarkModule,
     AssignmentExerciseModule,

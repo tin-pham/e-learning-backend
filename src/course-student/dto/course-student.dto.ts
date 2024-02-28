@@ -38,21 +38,21 @@ export class CourseStudentCheckRegisteredDTO {
 }
 
 export class CourseStudentRegisterDTO {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @IsNotEmpty()
   courseId: number;
 }
 
 export class CourseStudentIsRegisteredDTO {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @IsNotEmpty()
   courseId: number;
 }
 
 export class CourseStudentUnRegisterDTO {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @IsNotEmpty()
   courseId: number;

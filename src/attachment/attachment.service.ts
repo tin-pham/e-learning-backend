@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { AttachmentRepository } from './attachment.repository';
+import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AttachmentEntity } from './attachment.entity';
 import {
@@ -20,6 +22,8 @@ export class AttachmentService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly s3Service: S3Service,
+    private readonly database: DatabaseService,
     private readonly attachmentRepository: AttachmentRepository,
   ) {
     super(elasticLogger);
@@ -55,26 +59,30 @@ export class AttachmentService extends BaseService {
     const response = new AttachmentStoreRO();
 
     try {
-      const entity = new AttachmentEntity({
-        url: dto.url,
-        name: dto.name,
-        type: dto.type,
-        size: dto.size,
-        createdBy: actorId,
-        lessonId: dto.lessonId,
-        assignmentId: dto.assignmentId,
+      await this.database.transaction().execute(async (transaction) => {
+        const s3Response = await this.s3Service.bulkUpload({ files: [dto.file], directoryPath: 'attachment' }, decoded);
+
+        const entity = new AttachmentEntity({
+          url: s3Response[0].url,
+          name: s3Response[0].name,
+          type: s3Response[0].type,
+          size: s3Response[0].size,
+          createdBy: actorId,
+          lessonId: dto.lessonId,
+          assignmentId: dto.assignmentId,
+        });
+
+        const attachment = await this.attachmentRepository.insertWithTransaction(transaction, entity);
+
+        response.id = attachment.id;
+        response.url = attachment.url;
+        response.name = attachment.name;
+        response.type = attachment.type;
+        response.size = attachment.size;
+        response.createdBy = attachment.createdBy;
+        response.lessonId = attachment.lessonId;
+        response.createdAt = attachment.createdAt;
       });
-
-      const attachment = await this.attachmentRepository.insert(entity);
-
-      response.id = attachment.id;
-      response.url = attachment.url;
-      response.name = attachment.name;
-      response.type = attachment.type;
-      response.size = attachment.size;
-      response.createdBy = attachment.createdBy;
-      response.lessonId = attachment.lessonId;
-      response.createdAt = attachment.createdAt;
     } catch (error) {
       const { code, status, message } = EXCEPTION.ATTACHMENT.STORE_FAILED;
       this.logger.error(error);

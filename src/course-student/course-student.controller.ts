@@ -81,9 +81,10 @@ export class CourseStudentController {
   }
 
   @ApiOperation({ summary: REGISTER.OPERATION })
-  @ApiOkResponse({ type: CourseStudentRegisterRO })
+  @ApiCreatedResponse({ type: CourseStudentRegisterRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')

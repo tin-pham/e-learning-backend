@@ -6,11 +6,19 @@ import { DatabaseService } from '../database';
 import { AssignmentEntity } from './assignment.entity';
 import { AssignmentRepository } from './assignment.repository';
 import { AssignmentExerciseRepository } from '../assignment-exercise/assignment-exercise.repository';
-import { CourseRepository } from '../course/course.repository';
+import { StudentRepository } from '../student/student.repository';
+import { AssignmentSubmitRepository } from '../assignment-submit/assignment-submit.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AssignmentGetListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
-import { AssignmentDeleteRO, AssignmentGetDetailRO, AssignmentGetListRO, AssignmentStoreRO, AssignmentUpdateRO } from './ro/assignment.ro';
+import {
+  AssignmentDeleteRO,
+  AssignmentGetDetailRO,
+  AssignmentGetListRO,
+  AssignmentGetSubmissionRO,
+  AssignmentStoreRO,
+  AssignmentUpdateRO,
+} from './ro/assignment.ro';
 
 @Injectable()
 export class AssignmentService extends BaseService {
@@ -19,10 +27,11 @@ export class AssignmentService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
-    private readonly courseRepository: CourseRepository,
     private readonly assignmentRepository: AssignmentRepository,
     private readonly assignmentExerciseRepository: AssignmentExerciseRepository,
     private readonly lessonRepository: LessonRepository,
+    private readonly studentRepository: StudentRepository,
+    private readonly assignmentSubmitRepository: AssignmentSubmitRepository,
   ) {
     super(elasticLogger);
   }
@@ -39,7 +48,6 @@ export class AssignmentService extends BaseService {
           name: dto.name,
           description: dto.description,
           dueDate: dto.dueDate,
-          courseId: dto.courseId,
           lessonId: dto.lessonId,
           createdBy: actorId,
         });
@@ -176,16 +184,25 @@ export class AssignmentService extends BaseService {
     });
   }
 
-  private async validateStore(dto: AssignmentStoreDTO, actorId: number) {
-    // Check course exist
-    if (dto.courseId) {
-      const courseCount = await this.courseRepository.countById(dto.courseId);
-      if (!courseCount) {
-        const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
-        this.throwException({ code, status, message, actorId });
-      }
-    }
+  async getSubmission(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const { student } = await this.validateGetSubmission(id, actorId);
 
+    try {
+      const submission = this.assignmentSubmitRepository.findOneByAssignmentIdAndStudentId(id, student.id);
+
+      return this.success({
+        classRO: AssignmentGetSubmissionRO,
+        response: submission,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT.GET_SUBMISSION_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateStore(dto: AssignmentStoreDTO, actorId: number) {
     if (dto.lessonId) {
       const lessonCount = await this.lessonRepository.countById(dto.lessonId);
       if (!lessonCount) {
@@ -202,13 +219,6 @@ export class AssignmentService extends BaseService {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
-
-    // Check course exist
-    const courseCount = await this.courseRepository.countById(id);
-    if (!courseCount) {
-      const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
-      this.throwException({ code, status, message, actorId });
-    }
   }
 
   private async validateDelete(id: number, actorId: number) {
@@ -218,5 +228,23 @@ export class AssignmentService extends BaseService {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+  }
+
+  private async validateGetSubmission(id: number, actorId: number) {
+    // Check exist
+    const assignmentCount = await this.assignmentRepository.countById(id);
+    if (!assignmentCount) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check student exist
+    const student = await this.studentRepository.findOneByUserId(actorId);
+    if (!student) {
+      const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return { student };
   }
 }

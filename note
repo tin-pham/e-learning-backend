@@ -1,0 +1,2 @@
+assignment => GET /assignment/:id
+assignment submit  => /student/:student_id/submission

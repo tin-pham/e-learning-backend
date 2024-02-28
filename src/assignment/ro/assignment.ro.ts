@@ -106,3 +106,13 @@ export class AssignmentDeleteRO {
     Object.assign(this, data);
   }
 }
+
+export class AssignmentGetSubmissionRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  url: string;
+}

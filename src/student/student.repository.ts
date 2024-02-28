@@ -55,6 +55,16 @@ export class StudentRepository {
       .executeTakeFirst();
   }
 
+  findOneByUserId(userId: number) {
+    return this.database
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .selectAll('student')
+      .where('student.userId', '=', userId)
+      .where('users.deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
   async countById(id: string) {
     const { count } = await this.database
       .selectFrom('student')

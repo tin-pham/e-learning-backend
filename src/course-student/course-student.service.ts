@@ -103,12 +103,11 @@ export class CourseStudentService extends BaseService {
 
   async register(dto: CourseStudentRegisterDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.checkRegister(dto, actorId);
+    const { student } = await this.checkRegister(dto, actorId);
 
     const response = new CourseStudentRegisterRO();
 
     try {
-      const student = await this.studentRepository.getStudentIdByUserId(actorId);
       const data = new CourseStudentEntity({ courseId: dto.courseId, studentId: student.id });
 
       const courseStudent = await this.courseStudentRepository.insert(data);
@@ -189,12 +188,28 @@ export class CourseStudentService extends BaseService {
   }
 
   private async checkRegister(dto: CourseStudentRegisterDTO, actorId: number) {
+    // Check student exist
+    const student = await this.studentRepository.getStudentIdByUserId(actorId);
+    if (!student) {
+      const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check exist
+    const courseStudentCount = await this.courseStudentRepository.countByCourseIdAndStudentId(dto.courseId, student.id);
+    if (courseStudentCount) {
+      const { code, status, message } = EXCEPTION.COURSE_STUDENT.ALREADY_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
     // Check course exist
     const courseCount = await this.courseRepository.countById(dto.courseId);
     if (!courseCount) {
       const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+
+    return { student };
   }
 
   private async validateBulkStore(dto: CourseStudentBulkStoreDTO, actorId: number) {

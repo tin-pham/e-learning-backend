@@ -583,7 +583,7 @@ export const EXCEPTION = {
       code: 'COURSE_STUDENT.REGISTER_FAILED',
     },
     NOT_REGISTERED: {
-      status: HttpStatus.BAD_REQUEST,
+      status: HttpStatus.FORBIDDEN,
       message: 'Course student not registered',
       code: 'COURSE_STUDENT.NOT_REGISTERED',
     },
@@ -609,6 +609,11 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT: {
+    GET_SUBMISSION_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get assignment submission',
+      code: 'ASSIGNMENT.GET_SUBMISSION_FAILED',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Assignment does not exist',
@@ -734,11 +739,6 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT_ATTACHMENT: {
-    ALREADY_EXIST: {
-      status: HttpStatus.CONFLICT,
-      message: 'Assignment attachment already exist',
-      code: 'ASSIGNMENT_ATTACHMENT.ALREADY_EXIST',
-    },
     BULK_STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk store assignment attachment',
@@ -948,6 +948,28 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to upsert course image',
       code: 'COURSE_IMAGE.UPSERT_FAILED',
+    },
+  },
+  ASSIGNMENT_SUBMIT: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store assignment submit',
+      code: 'ASSIGNMENT_SUBMIT.STORE_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail assignment submit',
+      code: 'ASSIGNMENT_SUBMIT.GET_DETAIL_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list assignment submit',
+      code: 'ASSIGNMENT_SUBMIT.GET_LIST_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update assignment submit',
+      code: 'ASSIGNMENT_SUBMIT.UPDATE_FAILED',
     },
   },
 };

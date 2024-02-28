@@ -3,26 +3,13 @@ import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUr
 import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 import { PaginateDTO } from 'src/common/dto/paginate.dto';
 import { Type } from 'class-transformer';
+import { IsFile, MaxFileSize, MemoryStoredFile } from 'nestjs-form-data';
 
 export class AttachmentStoreDTO {
-  @ApiProperty({ example: 'https://example.com' })
-  @IsUrl()
-  url: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  size: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  type: string;
+  @ApiProperty({ type: [String], format: 'binary' })
+  @MaxFileSize(3 * 1024 * 1024)
+  @IsFile()
+  file: MemoryStoredFile;
 
   @ApiProperty({ example: 1 })
   @IsNumber()

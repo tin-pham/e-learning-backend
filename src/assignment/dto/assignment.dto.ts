@@ -4,7 +4,7 @@ import { ArrayMinSize, IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsStri
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 
-const { NAME, DESCRIPTION, DUE_DATE, LESSON_ID, COURSE_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.ASSIGNMENT;
+const { NAME, DESCRIPTION, DUE_DATE, LESSON_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.ASSIGNMENT;
 
 export class AssignmentStoreDTO {
   @ApiProperty()
@@ -37,7 +37,7 @@ export class AssignmentStoreDTO {
   @Transform(({ value }) => new Date(value))
   dueDate: Date;
 
-  @ApiProperty()
+  @ApiPropertyOptional({ example: 1 })
   @IsNumber(
     {},
     {
@@ -48,17 +48,6 @@ export class AssignmentStoreDTO {
   @IsOptional()
   lessonId?: number;
 
-  @ApiProperty()
-  @IsNumber(
-    {},
-    {
-      message: COURSE_ID.FORMAT_IS_NOT_VALID,
-    },
-  )
-  @Type(() => Number)
-  @IsOptional()
-  courseId?: number;
-
   @ApiProperty({ example: [1] })
   @ArrayMinSize(1)
   @IsNumber({}, { each: true })
@@ -68,7 +57,7 @@ export class AssignmentStoreDTO {
 }
 
 export class AssignmentGetListDTO extends PaginateDTO {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsNumber(
     {},
     {
@@ -77,18 +66,7 @@ export class AssignmentGetListDTO extends PaginateDTO {
   )
   @Type(() => Number)
   @IsOptional()
-  lessonId: number;
-
-  @ApiProperty()
-  @IsNumber(
-    {},
-    {
-      message: COURSE_ID.FORMAT_IS_NOT_VALID,
-    },
-  )
-  @Type(() => Number)
-  @IsOptional()
-  courseId: number;
+  lessonId?: number;
 }
 
 export class AssignmentUpdateDTO {

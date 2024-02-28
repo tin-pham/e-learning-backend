@@ -9,10 +9,10 @@ import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { UserService } from '../user/user.service';
+import { S3Service } from '../s3/s3.service';
 import { StudentStoreDTO, StudentUpdateDTO } from './dto/student.dto';
 import { UserGetListDTO } from '../user/dto/user.dto';
 import { StudentDeleteRO, StudentGetDetailRO, StudentGetListRO, StudentStoreRO, StudentUpdateRO } from './ro/student.ro';
-import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class StudentService extends UserService {

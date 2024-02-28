@@ -19,9 +19,15 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { AssignmentService } from './assignment.service';
 import { AssignmentGetListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
-import { AssignmentDeleteRO, AssignmentGetListRO, AssignmentStoreRO, AssignmentUpdateRO } from './ro/assignment.ro';
+import {
+  AssignmentDeleteRO,
+  AssignmentGetListRO,
+  AssignmentGetSubmissionRO,
+  AssignmentStoreRO,
+  AssignmentUpdateRO,
+} from './ro/assignment.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.ASSIGNMENT;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, GET_SUBMISSION } = API.ASSIGNMENT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -98,5 +104,19 @@ export class AssignmentController {
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.assignmentService.delete(id, decoded);
+  }
+
+  @ApiOperation({ summary: GET_SUBMISSION.OPERATION })
+  @ApiOkResponse({ type: AssignmentGetSubmissionRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_SUBMISSION.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  getSubmission(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.assignmentService.getSubmission(id, decoded);
   }
 }

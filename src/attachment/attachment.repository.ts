@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { AttachmentEntity } from './attachment.entity';
 import { AttachmentGetListDTO } from './dto/attachment.dto';
 
@@ -8,18 +8,26 @@ import { AttachmentGetListDTO } from './dto/attachment.dto';
 export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insert(entity: AttachmentEntity) {
-    return this.database
+  insertMultipleWithTransaction(transaction: Transaction, entities: AttachmentEntity[]) {
+    return transaction
+      .insertInto('attachment')
+      .values(entities)
+      .returning(['id', 'url', 'name', 'type', 'size', 'createdAt', 'createdBy'])
+      .execute();
+  }
+
+  insertWithTransaction(transaction: Transaction, entity: AttachmentEntity) {
+    return transaction
       .insertInto('attachment')
       .values(entity)
-      .returning(['id', 'url', 'name', 'type', 'size', 'createdAt', 'createdBy', 'assignmentId', 'lessonId'])
+      .returning(['id', 'url', 'name', 'type', 'size', 'createdAt', 'createdBy', 'lessonId'])
       .executeTakeFirst();
   }
 
   findOneByAssignmentIdAndCreatedById(assignmentId: number, createdById: number) {
     return this.database
       .selectFrom('attachment')
-      .select(['id', 'url', 'name', 'type', 'size', 'createdAt', 'createdBy', 'assignmentId', 'lessonId'])
+      .select(['id', 'url', 'name', 'type', 'size', 'createdAt', 'createdBy', 'lessonId'])
       .where('assignmentId', '=', assignmentId)
       .where('createdBy', '=', createdById)
       .where('deletedAt', 'is', null)

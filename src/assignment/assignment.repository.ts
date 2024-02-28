@@ -8,26 +8,37 @@ import { AssignmentGetListDTO } from './dto/assignment.dto';
 export class AssignmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getCourseIdById(id: number) {
+    return this.database
+      .selectFrom('assignment')
+      .where('assignment.id', '=', id)
+      .where('assignment.deletedAt', 'is', null)
+      .innerJoin('lesson', 'lesson.id', 'assignment.lessonId')
+      .where('lesson.deletedAt', 'is', null)
+      .innerJoin('section', 'section.id', 'lesson.sectionId')
+      .where('section.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'section.courseId')
+      .where('course.deletedAt', 'is', null)
+      .select(['course.id as courseId'])
+      .executeTakeFirst();
+  }
+
   insertWithTransaction(transaction: Transaction, assignment: AssignmentEntity) {
     return transaction.insertInto('assignment').values(assignment).returning(['id', 'name', 'dueDate', 'description']).executeTakeFirst();
   }
 
   find(dto: AssignmentGetListDTO) {
-    const { limit, page, lessonId, courseId } = dto;
+    const { limit, page, lessonId } = dto;
 
     const withLesson = Boolean(lessonId);
-    const withCourse = Boolean(courseId);
 
     const query = this.database
       .selectFrom('assignment')
-      .select(['assignment.id', 'assignment.name', 'assignment.dueDate', 'assignment.description', 'assignment.courseId'])
+      .select(['assignment.id', 'assignment.name', 'assignment.dueDate', 'assignment.description'])
       .where('assignment.deletedAt', 'is', null)
       .orderBy('assignment.id', 'asc')
       .$if(withLesson, (qb) =>
         qb.innerJoin('lesson', 'lesson.id', 'assignment.lessonId').where('lessonId', '=', lessonId).where('lesson.deletedAt', 'is', null),
-      )
-      .$if(withCourse, (qb) =>
-        qb.innerJoin('course', 'course.id', 'assignment.courseId').where('courseId', '=', courseId).where('course.deletedAt', 'is', null),
       );
 
     return paginate(query, { limit, page });
@@ -45,7 +56,6 @@ export class AssignmentRepository {
         'assignment.name',
         'assignment.dueDate',
         'assignment.description',
-        'assignment.courseId',
         'assignment.lessonId',
         'users.displayName as createdByDisplayName',
       ])
@@ -58,7 +68,7 @@ export class AssignmentRepository {
       .set(assignment)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name', 'dueDate', 'description', 'courseId'])
+      .returning(['id', 'name', 'dueDate', 'description'])
       .executeTakeFirst();
   }
 

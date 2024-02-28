@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -13,51 +15,51 @@ import {
 import { FormDataRequest } from 'nestjs-form-data';
 import { API, HttpExceptionRO, IJwtPayload } from '../common';
 import { Roles } from '../auth/role/role.decorator';
-import { JwtPayload } from '../common/decorator';
 import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
-import { S3Service } from './s3.service';
-import { S3DeleteDTO, S3UploadDTO } from './dto/s3.dto';
-import { S3UploadRO } from './ro/s3.ro';
+import { JwtPayload } from '../common/decorator';
 import { ResultRO } from '../common/ro/result.ro';
+import { AssignmentSubmitService } from './assignment-submit.service';
+import { AssignmentSubmitGetListDTO, AssignmentSubmitStoreDTO } from './dto/assignment-submit.dto';
+import { AssignmentSubmitGetListRO } from './ro/assignment-submit.ro';
 
-const { TAGS, CONTROLLER, BULK_UPLOAD, BULK_DELETE } = API.S3;
+const { TAGS, CONTROLLER, STORE, GET_LIST } = API.ASSIGNMENT_SUBMIT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
-export class S3Controller {
-  constructor(private readonly s3Service: S3Service) {}
+export class AssignmentSubmitController {
+  constructor(private readonly assignmentSubmitService: AssignmentSubmitService) {}
 
-  @ApiOperation({ summary: BULK_UPLOAD.OPERATION })
-  @ApiCreatedResponse({ type: S3UploadRO })
-  @ApiBadRequestResponse({ type: HttpExceptionRO })
-  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
-  @ApiForbiddenResponse({ type: HttpExceptionRO })
-  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
-  @ApiBearerAuth('Authorization')
-  @Post(BULK_UPLOAD.ROUTE)
-  @ApiConsumes('multipart/form-data')
-  @FormDataRequest()
-  @Roles(ROLE.STUDENT)
-  @UseGuards(JwtGuard, RoleGuard)
-  @HttpCode(HttpStatus.CREATED)
-  bulkUpload(@Body() dto: S3UploadDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.s3Service.bulkUpload(dto, decoded);
-  }
-
-  @ApiOperation({ summary: BULK_DELETE.OPERATION })
+  @ApiOperation({ summary: STORE.OPERATION })
   @ApiCreatedResponse({ type: ResultRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
-  @Delete(BULK_DELETE.ROUTE)
+  @ApiConsumes('multipart/form-data')
+  @FormDataRequest()
+  @Post(STORE.ROUTE)
   @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
-  bulkDelete(@Query() dto: S3DeleteDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.s3Service.bulkDelete(dto, decoded);
+  store(@Body() dto: AssignmentSubmitStoreDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.assignmentSubmitService.store(dto, decoded);
+  }
+
+  @ApiOperation({ summary: GET_LIST.OPERATION })
+  @ApiOkResponse({ type: AssignmentSubmitGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  getList(@Query() dto: AssignmentSubmitGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.assignmentSubmitService.getList(dto, decoded);
   }
 }

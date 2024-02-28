@@ -7,8 +7,6 @@ export class AssignmentEntity extends BaseEntity {
 
   dueDate: Date;
 
-  courseId: number;
-
   lessonId: number;
 
   constructor(data?: AssignmentEntity) {
