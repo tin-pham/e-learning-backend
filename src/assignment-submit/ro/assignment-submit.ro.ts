@@ -52,3 +52,29 @@ export class AssignmentSubmitGetStatisticRO {
   @Expose()
   missingCount: number;
 }
+
+export class AssignmentSubmitGetDetailRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
+
+  @ApiProperty()
+  @Expose()
+  attachmentUrl: string;
+
+  @ApiProperty()
+  @Expose()
+  attachmentName: string;
+
+  @ApiProperty()
+  @Expose()
+  studentName: string;
+}

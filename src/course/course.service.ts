@@ -202,7 +202,8 @@ export class CourseService extends BaseService {
     }
 
     // Check category exist
-    if (dto.categoryIds) {
+    console.log(dto.categoryIds);
+    if (dto.categoryIds && dto.categoryIds.length) {
       const categoryCount = await this.categoryRepository.countByIds(dto.categoryIds);
       if (!categoryCount) {
         const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;

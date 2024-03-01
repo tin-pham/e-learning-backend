@@ -33,6 +33,7 @@ import { UserImageModule } from './user-image/user-image.module';
 import { CourseImageModule } from './course-image/course-image.module';
 import { AssignmentAttachmentModule } from './assignment-attachment/assignment-attachment.module';
 import { AssignmentSubmitModule } from './assignment-submit/assignment-submit.module';
+import { AssignmentSubmitGradeModule } from './assignment-submit-grade/assignment-submit-grade.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { AssignmentSubmitModule } from './assignment-submit/assignment-submit.mo
     ExerciseSubmitMarkModule,
     AssignmentExerciseModule,
     CategoryModule,
+    AssignmentSubmitGradeModule,
   ],
   providers: [...appProviders],
 })

@@ -73,7 +73,17 @@ export class AssignmentSubmitRepository {
       .where('assignmentSubmit.deletedAt', 'is', null)
       .innerJoin('attachment', 'attachment.id', 'assignmentSubmit.attachmentId')
       .where('attachment.deletedAt', 'is', null)
-      .select(['attachment.url as attachmentUrl'])
+      .innerJoin('student', 'student.id', 'assignmentSubmit.studentId')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .where('users.deletedAt', 'is', null)
+      .select([
+        'assignmentSubmit.id',
+        'assignmentSubmit.createdBy',
+        'assignmentSubmit.createdAt',
+        'attachment.url as attachmentUrl',
+        'attachment.name as attachmentName',
+        'users.displayName as studentName',
+      ])
       .executeTakeFirst();
   }
 

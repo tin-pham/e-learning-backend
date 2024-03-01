@@ -34,6 +34,7 @@ import { ImageEntity } from '../image/image.entity';
 import { UserImageEntity } from '../user-image/user-image.entity';
 import { CourseImageEntity } from '../course-image/course-image.entity';
 import { AssignmentSubmitEntity } from '../assignment-submit/assignment-submit.entity';
+import { AssignmentSubmitGradeEntity } from 'src/assignment-submit-grade/assignment-submit-grade.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -71,6 +72,7 @@ export interface KyselyTables {
   userImage: UserImageEntity;
   courseImage: CourseImageEntity;
   assignmentSubmit: AssignmentSubmitEntity;
+  assignmentSubmitGrade: AssignmentSubmitGradeEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

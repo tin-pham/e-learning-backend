@@ -956,6 +956,11 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT_SUBMIT: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Assignment submit not found',
+      code: 'ASSIGNMENT_SUBMIT.NOT_FOUND',
+    },
     GET_STATISTIC_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get assignment submit statistic',
@@ -990,6 +995,28 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to update assignment submit',
       code: 'ASSIGNMENT_SUBMIT.UPDATE_FAILED',
+    },
+  },
+  ASSIGNMENT_SUBMIT_GRADE: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store assignment submit grade',
+      code: 'ASSIGNMENT_SUBMIT_GRADE.STORE_FAILED',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail assignment submit grade',
+      code: 'ASSIGNMENT_SUBMIT_GRADE.GET_DETAIL_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list assignment submit grade',
+      code: 'ASSIGNMENT_SUBMIT_GRADE.GET_LIST_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update assignment submit grade',
+      code: 'ASSIGNMENT_SUBMIT_GRADE.UPDATE_FAILED',
     },
   },
 };

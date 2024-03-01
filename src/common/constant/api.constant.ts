@@ -603,4 +603,12 @@ export const API = {
       OPERATION: 'Upsert course image',
     },
   },
+  ASSIGNMENT_SUBMIT_GRADE: {
+    TAGS: 'AssignmentSubmitGrade',
+    CONTROLLER: 'assignment-submit-grade',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store assignment submit grade',
+    },
+  },
 };

@@ -8,6 +8,10 @@ import { AttachmentGetListDTO } from './dto/attachment.dto';
 export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction.updateTable('attachment').set({ deletedAt: new Date(), deletedBy: actorId }).where('id', '=', id).execute();
+  }
+
   insertMultipleWithTransaction(transaction: Transaction, entities: AttachmentEntity[]) {
     return transaction
       .insertInto('attachment')

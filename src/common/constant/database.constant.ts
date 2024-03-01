@@ -469,4 +469,19 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  ASSIGNMENT_SUBMIT_GRADE: {
+    NAME: 'assignment_submit_grade',
+    SCHEMA: {
+      ID: 'id',
+      ASSIGNMENT_SUBMIT_ID: 'assignment_submit_id',
+      GRADE: 'grade',
+      MESSAGE: 'message',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };
