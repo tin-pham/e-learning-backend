@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { DOCUMENT_MIME } from '../../common/constant/mime-type.constant';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 import { HasMimeType, IsFile, MaxFileSize, MemoryStoredFile } from 'nestjs-form-data';
 
 const { FORMAT_IS_NOT_VALID } = UNPROCESSABLE_ENTITY_EXCEPTION.MIME;
@@ -27,6 +27,18 @@ export class AssignmentSubmitGetListDTO extends PaginateDTO {
   @Type(() => Number)
   @IsOptional()
   assignmentId?: number;
+
+  @ApiPropertyOptional({ example: false })
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  isLate?: boolean;
+
+  @ApiPropertyOptional({ example: false })
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  isCorrect?: boolean;
 }
 
 export class AssignmentSubmitDeleteDTO {
@@ -34,4 +46,11 @@ export class AssignmentSubmitDeleteDTO {
   @IsNumber()
   @Type(() => Number)
   id: number;
+}
+
+export class AssignmentSubmitGetStatisticDTO {
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  assignmentId: number;
 }

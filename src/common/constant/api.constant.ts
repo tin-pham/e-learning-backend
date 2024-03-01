@@ -414,6 +414,10 @@ export const API = {
       ROUTE: ':id/submission',
       OPERATION: 'Get assignment submission',
     },
+    GET_STATISTIC: {
+      ROUTE: ':id/statistic',
+      OPERATION: 'Get assignment statistic',
+    },
   },
   COURSE_ASSIGNMENT: {
     TAGS: 'CourseAssignment',
@@ -478,6 +482,10 @@ export const API = {
   ASSIGNMENT_SUBMIT: {
     TAGS: 'AssignmentSubmit',
     CONTROLLER: 'assignment-submit',
+    GET_STATISTIC: {
+      ROUTE: 'statistic',
+      OPERATION: 'Get assignment submit statistic',
+    },
     DELETE: {
       ROUTE: ':id',
       OPERATION: 'Delete assignment submit',

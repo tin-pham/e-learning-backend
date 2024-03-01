@@ -8,6 +8,64 @@ import { AssignmentSubmitGetListDTO } from './dto/assignment-submit.dto';
 export class AssignmentSubmitRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  findBeforeEqualDueDateByAssignmentId(assignmentId: number) {
+    return this.database
+      .selectFrom('assignmentSubmit')
+      .where('assignmentSubmit.deletedAt', 'is', null)
+      .where('assignmentSubmit.assignmentId', '=', assignmentId)
+      .innerJoin('assignment', 'assignment.id', 'assignmentSubmit.assignmentId')
+      .where('assignment.deletedAt', 'is', null)
+      .whereRef('assignment.dueDate', '>=', 'assignmentSubmit.createdAt')
+      .execute();
+  }
+
+  findAfterDueDateByAssignmentId(assignmentId: number) {
+    return this.database
+      .selectFrom('assignmentSubmit')
+      .where('assignmentSubmit.deletedAt', 'is', null)
+      .where('assignmentSubmit.assignmentId', '=', assignmentId)
+      .innerJoin('assignment', 'assignment.id', 'assignmentSubmit.assignmentId')
+      .where('assignment.deletedAt', 'is', null)
+      .whereRef('assignment.dueDate', '<', 'assignmentSubmit.createdAt')
+      .execute();
+  }
+
+  async countByAssignmentId(assignmentId: number) {
+    const { count } = await this.database
+      .selectFrom('assignmentSubmit')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('assignmentSubmit.assignmentId', '=', assignmentId)
+      .where('assignmentSubmit.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByAssignmentIdBeforeDueDate(assignmentId: number) {
+    const { count } = await this.database
+      .selectFrom('assignmentSubmit')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('assignmentSubmit.assignmentId', '=', assignmentId)
+      .where('assignmentSubmit.deletedAt', 'is', null)
+      .innerJoin('assignment', 'assignment.id', 'assignmentSubmit.assignmentId')
+      .where('assignment.deletedAt', 'is', null)
+      .whereRef('assignment.dueDate', '>=', 'assignmentSubmit.createdAt')
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByAssignmentIdAfterDueDate(assignmentId: number) {
+    const { count } = await this.database
+      .selectFrom('assignmentSubmit')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('assignmentSubmit.assignmentId', '=', assignmentId)
+      .where('assignmentSubmit.deletedAt', 'is', null)
+      .innerJoin('assignment', 'assignment.id', 'assignmentSubmit.assignmentId')
+      .where('assignment.deletedAt', 'is', null)
+      .whereRef('assignment.dueDate', '<', 'assignmentSubmit.createdAt')
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   findOneById(id: number) {
     return this.database
       .selectFrom('assignmentSubmit')
@@ -55,7 +113,17 @@ export class AssignmentSubmitRepository {
       .where('assignmentSubmit.deletedAt', 'is', null)
       .innerJoin('attachment', 'attachment.id', 'assignmentSubmit.attachmentId')
       .where('attachment.deletedAt', 'is', null)
-      .select(['attachment.url']);
+      .innerJoin('student', 'student.id', 'assignmentSubmit.studentId')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .where('users.deletedAt', 'is', null)
+      .select([
+        'assignmentSubmit.id',
+        'attachment.url as attachmentUrl',
+        'attachment.name as attachmentName',
+        'attachment.createdAt as attachmentCreatedAt',
+        'attachment.createdBy as attachmentCreatedBy',
+        'users.displayName as studentName',
+      ]);
 
     return paginate(query, { limit, page });
   }

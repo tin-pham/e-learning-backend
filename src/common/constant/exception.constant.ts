@@ -609,6 +609,11 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT: {
+    GET_STATISTIC_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get assignment statistic',
+      code: 'ASSIGNMENT.GET_STATISTIC_FAILED',
+    },
     GET_SUBMISSION_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get assignment submission',
@@ -951,6 +956,11 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT_SUBMIT: {
+    GET_STATISTIC_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get assignment submit statistic',
+      code: 'ASSIGNMENT_SUBMIT.GET_STATISTIC_FAILED',
+    },
     DELETE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to delete assignment submit',

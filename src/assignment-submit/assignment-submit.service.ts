@@ -11,9 +11,9 @@ import { CourseStudentRepository } from '../course-student/course-student.reposi
 import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ResultRO } from '../common/ro/result.ro';
-import { AssignmentSubmitGetListDTO, AssignmentSubmitStoreDTO } from './dto/assignment-submit.dto';
+import { AssignmentSubmitGetListDTO, AssignmentSubmitGetStatisticDTO, AssignmentSubmitStoreDTO } from './dto/assignment-submit.dto';
 import { AssignmentSubmitEntity } from './assignment-submit.entity';
-import { AssignmentSubmitGetListRO } from './ro/assignment-submit.ro';
+import { AssignmentSubmitGetListRO, AssignmentSubmitGetStatisticRO } from './ro/assignment-submit.ro';
 
 @Injectable()
 export class AssignmentSubmitService extends BaseService {
@@ -76,8 +76,15 @@ export class AssignmentSubmitService extends BaseService {
   async getList(dto: AssignmentSubmitGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
+    let response;
     try {
-      const response = await this.assignmentSubmitRepository.find(dto);
+      if (dto.isLate) {
+        response = await this.assignmentSubmitRepository.findAfterDueDateByAssignmentId(dto.assignmentId);
+      } else if (dto.isCorrect) {
+        response = await this.assignmentSubmitRepository.findBeforeEqualDueDateByAssignmentId(dto.assignmentId);
+      } else {
+        response = await this.assignmentSubmitRepository.find(dto);
+      }
 
       return this.success({
         classRO: AssignmentSubmitGetListRO,
@@ -117,6 +124,33 @@ export class AssignmentSubmitService extends BaseService {
     });
   }
 
+  async getStatistic(dto: AssignmentSubmitGetStatisticDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateGetStatistic(dto, actorId);
+
+    try {
+      // Count submit
+      const submitCount = await this.assignmentSubmitRepository.countByAssignmentId(dto.assignmentId);
+      const correctCount = await this.assignmentSubmitRepository.countByAssignmentIdBeforeDueDate(dto.assignmentId);
+      const lateCount = await this.assignmentSubmitRepository.countByAssignmentIdAfterDueDate(dto.assignmentId);
+      const missingCount = submitCount - correctCount - lateCount;
+
+      return this.success({
+        classRO: AssignmentSubmitGetStatisticRO,
+        response: {
+          submitCount,
+          correctCount,
+          lateCount,
+          missingCount,
+        },
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.GET_STATISTIC_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
   private async validateStore(dto: AssignmentSubmitStoreDTO, actorId: number) {
     // Check assignment exist
     const assignment = await this.assignmentRepository.getCourseIdById(dto.assignmentId);
@@ -147,6 +181,15 @@ export class AssignmentSubmitService extends BaseService {
     const assignmentSubmitCount = await this.assignmentSubmitRepository.countById(id);
     if (!assignmentSubmitCount) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateGetStatistic(dto: AssignmentSubmitGetStatisticDTO, actorId: number) {
+    // Check exist
+    const assignmentCount = await this.assignmentRepository.countById(dto.assignmentId);
+    if (!assignmentCount) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }

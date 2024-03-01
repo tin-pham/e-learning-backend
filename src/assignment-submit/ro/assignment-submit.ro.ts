@@ -22,6 +22,10 @@ export class AssignmentSubmitGetListDataRO {
   @ApiProperty()
   @Expose()
   attachmentCreatedBy: number;
+
+  @ApiProperty()
+  @Expose()
+  studentName: string;
 }
 
 export class AssignmentSubmitGetListRO extends PaginateRO<AssignmentSubmitGetListDataRO> {
@@ -29,4 +33,22 @@ export class AssignmentSubmitGetListRO extends PaginateRO<AssignmentSubmitGetLis
   @Type(() => AssignmentSubmitGetListDataRO)
   @Expose()
   data: AssignmentSubmitGetListDataRO[];
+}
+
+export class AssignmentSubmitGetStatisticRO {
+  @ApiProperty()
+  @Expose()
+  submitCount: number;
+
+  @ApiProperty()
+  @Expose()
+  correctCount: number;
+
+  @ApiProperty()
+  @Expose()
+  lateCount: number;
+
+  @ApiProperty()
+  @Expose()
+  missingCount: number;
 }
