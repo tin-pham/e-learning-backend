@@ -7,6 +7,7 @@ import { EXCEPTION, IJwtPayload } from 'src/common';
 import { AssignmentSubmitGradeEntity } from './assignment-submit-grade.entity';
 import { AssignmentSubmitGradeRepository } from './assignment-submit-grade.repository';
 import { AssignmentSubmitGradeStoreRO } from './ro/assignment-submit-grade.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class AssignmentSubmitGradeService extends BaseService {
@@ -54,11 +55,49 @@ export class AssignmentSubmitGradeService extends BaseService {
     });
   }
 
+  async delete(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateDelete(id, actorId);
+
+    try {
+      await this.assignmentSubmitGradeRepository.delete(id, actorId);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT_GRADE.DELETE_FAILED;
+      this.logger.error({ actorId, code, status, message });
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Delete assignment submit grade successfully',
+      actorId,
+    });
+  }
+
   private async validateStore(dto: AssignmentSubmitGradeStoreDTO, actorId: number) {
     // Check assignment submit exist
     const assignmentSubmitCount = await this.assignmentSubmitRepository.countById(dto.assignmentSubmitId);
     if (!assignmentSubmitCount) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.DOES_NOT_EXIST;
+      this.logger.error({ actorId, code, status, message });
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check exist
+    const assignmentSubmitGradeCount = await this.assignmentSubmitGradeRepository.countByAssignmentSubmitId(dto.assignmentSubmitId);
+    if (assignmentSubmitGradeCount) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT_GRADE.ALREADY_EXIST;
+      this.logger.error({ actorId, code, status, message });
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateDelete(id: number, actorId: number) {
+    // Check exist
+    const assignmentSubmitGradeCount = await this.assignmentSubmitGradeRepository.countById(id);
+    if (!assignmentSubmitGradeCount) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT_GRADE.DOES_NOT_EXIST;
       this.logger.error({ actorId, code, status, message });
       this.throwException({ code, status, message, actorId });
     }

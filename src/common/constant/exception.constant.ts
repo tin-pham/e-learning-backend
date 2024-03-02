@@ -956,6 +956,11 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT_SUBMIT: {
+    GET_GRADE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get assignment submit grade',
+      code: 'ASSIGNMENT_SUBMIT.GET_GRADE_FAILED',
+    },
     NOT_FOUND: {
       status: HttpStatus.NOT_FOUND,
       message: 'Assignment submit not found',
@@ -998,6 +1003,21 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT_SUBMIT_GRADE: {
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete assignment submit grade',
+      code: 'ASSIGNMENT_SUBMIT_GRADE.DELETE_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Assignment submit grade does not exist',
+      code: 'ASSIGNMENT_SUBMIT_GRADE.DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Assignment submit grade already exist',
+      code: 'ASSIGNMENT_SUBMIT_GRADE.ALREADY_EXIST',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store assignment submit grade',

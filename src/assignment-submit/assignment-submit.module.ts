@@ -8,6 +8,7 @@ import { AssignmentRepository } from '../assignment/assignment.repository';
 import { AttachmentRepository } from '../attachment/attachment.repository';
 import { StudentRepository } from '../student/student.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { AssignmentSubmitGradeRepository } from 'src/assignment-submit-grade/assignment-submit-grade.repository';
 
 @Module({
   imports: [NestjsFormDataModule.config({ storage: MemoryStoredFile })],
@@ -20,6 +21,7 @@ import { CourseStudentRepository } from '../course-student/course-student.reposi
     S3Service,
     StudentRepository,
     CourseStudentRepository,
+    AssignmentSubmitGradeRepository,
   ],
 })
 export class AssignmentSubmitModule {}

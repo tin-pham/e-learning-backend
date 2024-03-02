@@ -77,4 +77,26 @@ export class AssignmentSubmitGetDetailRO {
   @ApiProperty()
   @Expose()
   studentName: string;
+
+  @ApiProperty()
+  @Expose()
+  userImageUrl: string;
+}
+
+export class AssignmentSubmitGetGradeRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  message: string;
+
+  @ApiProperty()
+  @Expose()
+  grade: number;
+
+  @ApiProperty()
+  @Expose()
+  assignmentSubmitId: number;
 }

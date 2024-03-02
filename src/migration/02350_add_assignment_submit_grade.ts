@@ -14,7 +14,7 @@ export async function up(database: DatabaseService): Promise<void> {
       column.notNull().references(`${ASSIGNMENT_SUBMIT_NAME}.${ASSIGNMENT_SUBMIT_SCHEMA.ID}`),
     )
     .addColumn(SCHEMA.GRADE, 'integer', (column) => column.notNull())
-    .addColumn(SCHEMA.MESSAGE, 'varchar', (column) => column.notNull())
+    .addColumn(SCHEMA.MESSAGE, 'varchar')
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')

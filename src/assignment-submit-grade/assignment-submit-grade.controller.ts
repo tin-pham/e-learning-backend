@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -6,6 +6,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -19,8 +20,9 @@ import { JwtPayload } from '../common/decorator';
 import { AssignmentSubmitGradeService } from './assignment-submit-grade.service';
 import { AssignmentSubmitGradeStoreRO } from './ro/assignment-submit-grade.ro';
 import { AssignmentSubmitGradeStoreDTO } from './dto/assignment-submit-grade.dto';
+import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, STORE } = API.ASSIGNMENT_SUBMIT_GRADE;
+const { TAGS, CONTROLLER, STORE, DELETE } = API.ASSIGNMENT_SUBMIT_GRADE;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -41,5 +43,19 @@ export class AssignmentSubmitGradeController {
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: AssignmentSubmitGradeStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.assignmentSubmitGradeService.store(dto, decoded);
+  }
+
+  @ApiOperation({ summary: DELETE.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Delete(DELETE.ROUTE)
+  @Roles(ROLE.TEACHER)
+  @UseGuards(JwtGuard, RoleGuard)
+  delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.assignmentSubmitGradeService.delete(id, decoded);
   }
 }

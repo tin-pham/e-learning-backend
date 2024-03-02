@@ -502,6 +502,10 @@ export const API = {
       ROUTE: ':id',
       OPERATION: 'Get assignment submit detail',
     },
+    GET_GRADE: {
+      ROUTE: ':id/grade',
+      OPERATION: 'Get assignment submit grade',
+    },
   },
   EXERCISE_SUBMIT: {
     TAGS: 'ExerciseSubmit',
@@ -609,6 +613,10 @@ export const API = {
     STORE: {
       ROUTE: '',
       OPERATION: 'Store assignment submit grade',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete assignment submit grade',
     },
   },
 };

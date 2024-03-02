@@ -13,7 +13,13 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
 import { ResultRO } from '../common/ro/result.ro';
 import { AssignmentSubmitGetListDTO, AssignmentSubmitGetStatisticDTO, AssignmentSubmitStoreDTO } from './dto/assignment-submit.dto';
 import { AssignmentSubmitEntity } from './assignment-submit.entity';
-import { AssignmentSubmitGetDetailRO, AssignmentSubmitGetListRO, AssignmentSubmitGetStatisticRO } from './ro/assignment-submit.ro';
+import {
+  AssignmentSubmitGetDetailRO,
+  AssignmentSubmitGetGradeRO,
+  AssignmentSubmitGetListRO,
+  AssignmentSubmitGetStatisticRO,
+} from './ro/assignment-submit.ro';
+import { AssignmentSubmitGradeRepository } from 'src/assignment-submit-grade/assignment-submit-grade.repository';
 
 @Injectable()
 export class AssignmentSubmitService extends BaseService {
@@ -28,6 +34,7 @@ export class AssignmentSubmitService extends BaseService {
     private readonly attachmentRepository: AttachmentRepository,
     private readonly studentRepository: StudentRepository,
     private readonly courseStudentRepository: CourseStudentRepository,
+    private readonly assignmentSubmitGradeRepository: AssignmentSubmitGradeRepository,
   ) {
     super(elasticLogger);
   }
@@ -173,6 +180,24 @@ export class AssignmentSubmitService extends BaseService {
     }
   }
 
+  async getGrade(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateGetGrade(id, actorId);
+
+    try {
+      const response = await this.assignmentSubmitGradeRepository.findOneByAssignmentSubmitId(id);
+
+      return this.success({
+        classRO: AssignmentSubmitGetGradeRO,
+        response,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.GET_GRADE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
   private async validateStore(dto: AssignmentSubmitStoreDTO, actorId: number) {
     // Check assignment exist
     const assignment = await this.assignmentRepository.getCourseIdById(dto.assignmentId);
@@ -217,6 +242,15 @@ export class AssignmentSubmitService extends BaseService {
   }
 
   private async validateGetDetail(id: number, actorId: number) {
+    // Check exist
+    const assignmentSubmitCount = await this.assignmentSubmitRepository.countById(id);
+    if (!assignmentSubmitCount) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.NOT_FOUND;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateGetGrade(id: number, actorId: number) {
     // Check exist
     const assignmentSubmitCount = await this.assignmentSubmitRepository.countById(id);
     if (!assignmentSubmitCount) {

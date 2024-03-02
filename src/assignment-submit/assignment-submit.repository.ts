@@ -76,6 +76,8 @@ export class AssignmentSubmitRepository {
       .innerJoin('student', 'student.id', 'assignmentSubmit.studentId')
       .innerJoin('users', 'users.id', 'student.userId')
       .where('users.deletedAt', 'is', null)
+      .leftJoin('userImage', (join) => join.onRef('users.id', '=', 'userImage.userId').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
       .select([
         'assignmentSubmit.id',
         'assignmentSubmit.createdBy',
@@ -83,6 +85,7 @@ export class AssignmentSubmitRepository {
         'attachment.url as attachmentUrl',
         'attachment.name as attachmentName',
         'users.displayName as studentName',
+        'image.url as userImageUrl',
       ])
       .executeTakeFirst();
   }

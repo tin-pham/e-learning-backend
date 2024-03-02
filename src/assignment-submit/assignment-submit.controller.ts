@@ -23,9 +23,9 @@ import { JwtPayload } from '../common/decorator';
 import { ResultRO } from '../common/ro/result.ro';
 import { AssignmentSubmitService } from './assignment-submit.service';
 import { AssignmentSubmitGetListDTO, AssignmentSubmitGetStatisticDTO, AssignmentSubmitStoreDTO } from './dto/assignment-submit.dto';
-import { AssignmentSubmitGetDetailRO, AssignmentSubmitGetListRO } from './ro/assignment-submit.ro';
+import { AssignmentSubmitGetDetailRO, AssignmentSubmitGetGradeRO, AssignmentSubmitGetListRO } from './ro/assignment-submit.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, DELETE, GET_STATISTIC, GET_DETAIL } = API.ASSIGNMENT_SUBMIT;
+const { TAGS, CONTROLLER, STORE, GET_LIST, DELETE, GET_STATISTIC, GET_DETAIL, GET_GRADE } = API.ASSIGNMENT_SUBMIT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -105,5 +105,20 @@ export class AssignmentSubmitController {
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.assignmentSubmitService.getDetail(id, decoded);
+  }
+
+  @ApiOperation({ summary: GET_GRADE.OPERATION })
+  @ApiOkResponse({ type: AssignmentSubmitGetGradeRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiNotFoundResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_GRADE.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  getGrade(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.assignmentSubmitService.getGrade(id, decoded);
   }
 }
