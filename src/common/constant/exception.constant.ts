@@ -609,6 +609,11 @@ export const EXCEPTION = {
     },
   },
   ASSIGNMENT: {
+    GET_MY_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get assignment my list',
+      code: 'ASSIGNMENT.GET_MY_LIST_FAILED',
+    },
     GET_STATISTIC_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get assignment statistic',
@@ -861,6 +866,11 @@ export const EXCEPTION = {
     },
   },
   CATEGORY_COURSE: {
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete category course',
+      code: 'CATEGORY_COURSE.DELETE_FAILED',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Category course does not exist',

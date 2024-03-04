@@ -7,6 +7,11 @@ import { SectionRepository } from '../section/section.repository';
 import { CategoryRepository } from '../category/category.repository';
 import { StudentRepository } from '../student/student.repository';
 import { CategoryCourseRepository } from '../category-course/category-course.repository';
+import { CourseAssignmentRepository } from '../course-assignment/course-assignment.repository';
+import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { CourseImageRepository } from '../course-image/course-image.repository';
+import { ImageRepository } from '../image/image.repository';
+import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
 import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
@@ -19,11 +24,16 @@ export class CourseService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
+    private readonly s3Service: S3Service,
     private readonly courseRepository: CourseRepository,
     private readonly sectionRepository: SectionRepository,
     private readonly categoryRepository: CategoryRepository,
     private readonly categoryCourseRepository: CategoryCourseRepository,
     private readonly studentRepository: StudentRepository,
+    private readonly courseAssignmentRepository: CourseAssignmentRepository,
+    private readonly courseStudentRepository: CourseStudentRepository,
+    private readonly courseImageRepository: CourseImageRepository,
+    private readonly imageRepository: ImageRepository,
   ) {
     super(elasticLogger);
   }
@@ -176,6 +186,22 @@ export class CourseService extends BaseService {
         // Delete section
         await this.sectionRepository.deleteMultipleByCourseIdWithTransaction(transaction, id, actorId);
 
+        // Delete assignment
+        await this.courseAssignmentRepository.deleteByCourseIdWithTransaction(transaction, id, actorId);
+
+        // Delete course student
+        await this.courseStudentRepository.deleteByCourseIdWithTransaction(transaction, id, actorId);
+
+        // Delete course image
+        const courseImage = await this.courseImageRepository.deleteByCourseIdWithTransaction(transaction, id, actorId);
+
+        if (courseImage) {
+          // Delete image
+          const image = await this.imageRepository.deleteWithTransaction(transaction, courseImage.imageId, actorId);
+
+          // Delete s3 image
+          await this.s3Service.bulkDelete({ urls: [image.url] }, decoded);
+        }
         // Set response
         response.id = course.id;
       });

@@ -88,3 +88,5 @@ export class AssignmentUpdateDTO {
   @IsOptional()
   dueDate: Date;
 }
+
+export class AssignmentGetMyListDTO extends PaginateDTO {}

@@ -10,11 +10,12 @@ import { StudentRepository } from '../student/student.repository';
 import { AssignmentSubmitRepository } from '../assignment-submit/assignment-submit.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { AssignmentGetListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
+import { AssignmentGetListDTO, AssignmentGetMyListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
 import {
   AssignmentDeleteRO,
   AssignmentGetDetailRO,
   AssignmentGetListRO,
+  AssignmentGetMyListRO,
   AssignmentGetSubmissionRO,
   AssignmentStoreRO,
   AssignmentUpdateRO,
@@ -202,6 +203,24 @@ export class AssignmentService extends BaseService {
     }
   }
 
+  async getMyList(dto: AssignmentGetMyListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const { student } = await this.validateGetMyList(actorId);
+
+    try {
+      const response = await this.assignmentRepository.findByStudentId(student.id, dto);
+
+      return this.success({
+        classRO: AssignmentGetMyListRO,
+        response,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.ASSIGNMENT.GET_MY_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
   private async validateStore(dto: AssignmentStoreDTO, actorId: number) {
     if (dto.lessonId) {
       const lessonCount = await this.lessonRepository.countById(dto.lessonId);
@@ -238,6 +257,18 @@ export class AssignmentService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
+    // Check student exist
+    const student = await this.studentRepository.findOneByUserId(actorId);
+    if (!student) {
+      const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return { student };
+  }
+
+  private async validateGetMyList(actorId: number) {
+    console.log(actorId);
     // Check student exist
     const student = await this.studentRepository.findOneByUserId(actorId);
     if (!student) {

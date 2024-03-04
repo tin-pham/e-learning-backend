@@ -4,21 +4,21 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PaginateDTO {
   @ApiPropertyOptional({ default: 1 })
-  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
+  @IsOptional()
   page: number = 1;
 
   @ApiPropertyOptional({ default: 10 })
-  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
+  @IsOptional()
   limit: number = 10;
 
   @ApiPropertyOptional()
-  @IsOptional()
   @IsString()
+  @IsOptional()
   search: string;
 }

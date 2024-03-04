@@ -128,3 +128,28 @@ export class AssignmentGetSubmissionRO {
   @Expose()
   attachmentCreatedBy: number;
 }
+
+export class AssignmentGetMyListDataRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+
+  @ApiProperty()
+  @Expose()
+  description: string;
+
+  @ApiProperty()
+  @Expose()
+  dueDate: Date;
+}
+
+export class AssignmentGetMyListRO extends PaginateRO<AssignmentGetMyListDataRO> {
+  @ApiProperty({ type: [AssignmentGetMyListDataRO] })
+  @Type(() => AssignmentGetMyListDataRO)
+  @Expose()
+  data: AssignmentGetMyListDataRO[];
+}

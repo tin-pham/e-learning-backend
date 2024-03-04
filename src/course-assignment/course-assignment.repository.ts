@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { CourseAssignmentEntity } from './course-assignment.entity';
 
 @Injectable()
@@ -10,12 +10,21 @@ export class CourseAssignmentRepository {
     return this.database.insertInto('courseAssignment').values(entities).execute();
   }
 
-  deleteMultipleByCourseIdsAndAssignmentIds(courseIds: number[], assignmentIds: number[], actorId: number) {
+  deleteByCourseIdsAndAssignmentIds(courseIds: number[], assignmentIds: number[], actorId: number) {
     return this.database
       .updateTable('courseAssignment')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('courseId', 'in', courseIds)
       .where('assignmentId', 'in', assignmentIds)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
+  deleteByCourseIdWithTransaction(transaction: Transaction, courseId: number, actorId: number) {
+    return transaction
+      .updateTable('courseAssignment')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('courseId', '=', courseId)
       .where('deletedAt', 'is', null)
       .execute();
   }

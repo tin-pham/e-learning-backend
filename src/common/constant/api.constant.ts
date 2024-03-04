@@ -398,6 +398,10 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Get list assignments',
     },
+    GET_MY_LIST: {
+      ROUTE: 'my-list',
+      OPERATION: 'Get my assignments',
+    },
     GET_DETAIL: {
       ROUTE: ':id',
       OPERATION: 'Get assignment detail',
@@ -617,6 +621,14 @@ export const API = {
     DELETE: {
       ROUTE: ':id',
       OPERATION: 'Delete assignment submit grade',
+    },
+  },
+  CATEGORY_COURSE: {
+    TAGS: 'CategoryCourse',
+    CONTROLLER: 'category-course',
+    DELETE: {
+      ROUTE: 'delete',
+      OPERATION: 'Delete category course',
     },
   },
 };

@@ -2,11 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { AssignmentEntity } from './assignment.entity';
-import { AssignmentGetListDTO } from './dto/assignment.dto';
+import { AssignmentGetListDTO, AssignmentGetMyListDTO } from './dto/assignment.dto';
 
 @Injectable()
 export class AssignmentRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  findByStudentId(studentId: string, dto: AssignmentGetMyListDTO) {
+    const { page, limit } = dto;
+    const query = this.database
+      .selectFrom('assignment')
+      .where('assignment.deletedAt', 'is', null)
+      .innerJoin('lesson', 'lesson.id', 'assignment.lessonId')
+      .where('lesson.deletedAt', 'is', null)
+      .innerJoin('section', 'section.id', 'lesson.sectionId')
+      .where('section.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'section.courseId')
+      .where('course.deletedAt', 'is', null)
+      .innerJoin('courseStudent', 'courseStudent.courseId', 'course.id')
+      .where('courseStudent.deletedAt', 'is', null)
+      .innerJoin('student', 'student.id', 'courseStudent.studentId')
+      .where('student.id', '=', studentId)
+      .innerJoin('users', 'users.id', 'student.userId')
+      .where('users.deletedAt', 'is', null)
+      .select(['assignment.id', 'assignment.name', 'assignment.dueDate', 'assignment.description']);
+
+    return paginate(query, { page, limit });
+  }
 
   getCourseIdById(id: number) {
     return this.database

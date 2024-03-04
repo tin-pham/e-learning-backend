@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { CourseStudentEntity } from './course-student.entity';
 
 @Injectable()
@@ -20,6 +20,16 @@ export class CourseStudentRepository {
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('courseId', '=', courseId)
       .where('studentId', '=', studentId)
+      .where('deletedAt', 'is', null)
+      .returning(['id'])
+      .executeTakeFirst();
+  }
+
+  deleteByCourseIdWithTransaction(transaction: Transaction, courseId: number, actorId: number) {
+    return transaction
+      .updateTable('courseStudent')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('courseId', '=', courseId)
       .where('deletedAt', 'is', null)
       .returning(['id'])
       .executeTakeFirst();

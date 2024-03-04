@@ -34,6 +34,7 @@ import { CourseImageModule } from './course-image/course-image.module';
 import { AssignmentAttachmentModule } from './assignment-attachment/assignment-attachment.module';
 import { AssignmentSubmitModule } from './assignment-submit/assignment-submit.module';
 import { AssignmentSubmitGradeModule } from './assignment-submit-grade/assignment-submit-grade.module';
+import { CategoryCourseModule } from './category-course/category-course.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AssignmentSubmitGradeModule } from './assignment-submit-grade/assignmen
     // RoleMenuModule,
     CourseModule,
     CourseImageModule,
+    CategoryCourseModule,
     SectionModule,
     LessonModule,
     LessonAttachmentModule,

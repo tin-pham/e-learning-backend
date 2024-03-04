@@ -52,7 +52,7 @@ export class CourseAssignmentService extends BaseService {
     await this.validateBulkDelete(dto, actorId);
 
     try {
-      await this.courseAssignmentRepository.deleteMultipleByCourseIdsAndAssignmentIds(dto.courseIds, dto.assignmentIds, actorId);
+      await this.courseAssignmentRepository.deleteByCourseIdsAndAssignmentIds(dto.courseIds, dto.assignmentIds, actorId);
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE_ASSIGNMENT.BULK_DELETE_FAILED;
       this.logger.error(error);
