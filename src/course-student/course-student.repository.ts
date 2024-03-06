@@ -6,6 +6,15 @@ import { CourseStudentEntity } from './course-student.entity';
 export class CourseStudentRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getStudentIdsByCourseId(courseId: number) {
+    return this.database
+      .selectFrom('courseStudent')
+      .select(['studentId'])
+      .where('courseId', '=', courseId)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
   insert(entity: CourseStudentEntity) {
     return this.database.insertInto('courseStudent').values(entity).returning(['id', 'courseId', 'studentId']).executeTakeFirst();
   }

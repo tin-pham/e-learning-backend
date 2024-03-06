@@ -100,4 +100,14 @@ export class StudentRepository {
       .where('users.deletedAt', 'is', null)
       .executeTakeFirst();
   }
+
+  getUserIdsByStudentIds(studentIds: string[]) {
+    return this.database
+      .selectFrom('student')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .select('users.id')
+      .where('student.id', 'in', studentIds)
+      .where('users.deletedAt', 'is', null)
+      .execute();
+  }
 }

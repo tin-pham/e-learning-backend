@@ -1049,4 +1049,16 @@ export const EXCEPTION = {
       code: 'ASSIGNMENT_SUBMIT_GRADE.UPDATE_FAILED',
     },
   },
+  NOTIFICATION: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store notification',
+      code: 'NOTIFICATION.STORE_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list notification',
+      code: 'NOTIFICATION.GET_LIST_FAILED',
+    },
+  },
 };

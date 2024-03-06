@@ -34,6 +34,7 @@ import { AssignmentAttachmentModule } from './assignment-attachment/assignment-a
 import { AssignmentSubmitModule } from './assignment-submit/assignment-submit.module';
 import { AssignmentSubmitGradeModule } from './assignment-submit-grade/assignment-submit-grade.module';
 import { CategoryCourseModule } from './category-course/category-course.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { CategoryCourseModule } from './category-course/category-course.module';
     AssignmentExerciseModule,
     CategoryModule,
     AssignmentSubmitGradeModule,
+    NotificationModule,
   ],
   providers: [...appProviders],
 })

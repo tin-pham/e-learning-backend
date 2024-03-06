@@ -619,4 +619,16 @@ export const API = {
       OPERATION: 'Delete category course',
     },
   },
+  NOTIFICATION: {
+    TAGS: 'Notification',
+    CONTROLLER: 'notification',
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list notifications',
+    },
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store notification',
+    },
+  },
 };
