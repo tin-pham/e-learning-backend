@@ -94,6 +94,8 @@ export class CourseService extends BaseService {
         response = await this.courseRepository.find(dto);
       }
 
+      console.log(response);
+
       return this.success({
         classRO: CourseGetListRO,
         response,

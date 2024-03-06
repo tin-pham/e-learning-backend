@@ -35,11 +35,9 @@ export class AssignmentRepository {
       .selectFrom('assignment')
       .where('assignment.id', '=', id)
       .where('assignment.deletedAt', 'is', null)
-      .innerJoin('lesson', 'lesson.id', 'assignment.lessonId')
-      .where('lesson.deletedAt', 'is', null)
-      .innerJoin('section', 'section.id', 'lesson.sectionId')
-      .where('section.deletedAt', 'is', null)
-      .innerJoin('course', 'course.id', 'section.courseId')
+      .innerJoin('courseAssignment', 'courseAssignment.assignmentId', 'assignment.id')
+      .where('courseAssignment.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'courseAssignment.courseId')
       .where('course.deletedAt', 'is', null)
       .select(['course.id as courseId'])
       .executeTakeFirst();
@@ -50,17 +48,42 @@ export class AssignmentRepository {
   }
 
   find(dto: AssignmentGetListDTO) {
-    const { limit, page, lessonId } = dto;
+    const { limit, page, lessonId, courseId, withSubmission } = dto;
 
-    const withLesson = Boolean(lessonId);
+    const byLesson = Boolean(lessonId);
+    const byCourse = Boolean(courseId);
 
     const query = this.database
       .selectFrom('assignment')
       .select(['assignment.id', 'assignment.name', 'assignment.dueDate', 'assignment.description'])
       .where('assignment.deletedAt', 'is', null)
       .orderBy('assignment.id', 'asc')
-      .$if(withLesson, (qb) =>
+      .$if(byLesson, (qb) =>
         qb.innerJoin('lesson', 'lesson.id', 'assignment.lessonId').where('lessonId', '=', lessonId).where('lesson.deletedAt', 'is', null),
+      )
+      .$if(byCourse, (qb) =>
+        qb
+          .innerJoin('courseAssignment', 'courseAssignment.assignmentId', 'assignment.id')
+          .where('courseAssignment.deletedAt', 'is', null)
+          .innerJoin('course', 'course.id', 'courseAssignment.courseId')
+          .where('course.id', '=', courseId)
+          .where('course.deletedAt', 'is', null),
+      )
+      .$if(withSubmission, (qb) =>
+        qb
+          .leftJoin('assignmentSubmit', (join) =>
+            join.onRef('assignmentSubmit.assignmentId', '=', 'assignment.id').on('assignmentSubmit.deletedAt', 'is', null),
+          )
+          .leftJoin('assignmentSubmitGrade', (join) =>
+            join
+              .onRef('assignmentSubmitGrade.assignmentSubmitId', '=', 'assignmentSubmit.id')
+              .on('assignmentSubmitGrade.deletedAt', 'is', null),
+          )
+          .select([
+            'assignmentSubmit.id as submissionId',
+            'assignmentSubmit.createdAt as submissionDate',
+            'assignmentSubmitGrade.grade as submissionGrade',
+          ]),
       );
 
     return paginate(query, { limit, page });
@@ -73,6 +96,14 @@ export class AssignmentRepository {
       .where('assignment.deletedAt', 'is', null)
       .innerJoin('users', 'users.id', 'assignment.createdBy')
       .where('users.deletedAt', 'is', null)
+      .leftJoin('assignmentSubmit', (join) =>
+        join.onRef('assignmentSubmit.assignmentId', '=', 'assignment.id').on('assignmentSubmit.deletedAt', 'is', null),
+      )
+      .leftJoin('assignmentSubmitGrade', (join) =>
+        join
+          .onRef('assignmentSubmitGrade.assignmentSubmitId', '=', 'assignmentSubmit.id')
+          .on('assignmentSubmitGrade.deletedAt', 'is', null),
+      )
       .select([
         'assignment.id',
         'assignment.name',
@@ -80,6 +111,9 @@ export class AssignmentRepository {
         'assignment.description',
         'assignment.lessonId',
         'users.displayName as createdByDisplayName',
+        'assignmentSubmit.id as submissionId',
+        'assignmentSubmit.createdAt as submissionDate',
+        'assignmentSubmitGrade.grade as submissionGrade',
       ])
       .executeTakeFirst();
   }

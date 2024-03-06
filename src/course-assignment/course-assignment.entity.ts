@@ -7,8 +7,6 @@ export class CourseAssignmentEntity extends BaseEntity {
 
   constructor(data?: CourseAssignmentEntity) {
     super(data);
-    if (data) {
-      Object.assign(this, data);
-    }
+    Object.assign(this, data);
   }
 }

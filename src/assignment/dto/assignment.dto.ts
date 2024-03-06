@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { ArrayMinSize, IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, MaxDate, MinDate } from 'class-validator';
+import { ArrayMinSize, IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, MaxDate, MinDate } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 
@@ -54,6 +54,12 @@ export class AssignmentStoreDTO {
   @IsArray()
   @IsOptional()
   exerciseIds?: number[];
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  courseId?: number;
 }
 
 export class AssignmentGetListDTO extends PaginateDTO {
@@ -67,6 +73,18 @@ export class AssignmentGetListDTO extends PaginateDTO {
   @Type(() => Number)
   @IsOptional()
   lessonId?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  courseId?: number;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  withSubmission?: boolean;
 }
 
 export class AssignmentUpdateDTO {

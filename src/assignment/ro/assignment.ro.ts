@@ -62,6 +62,18 @@ export class AssignmentGetListDataRO {
   @ApiProperty()
   @Expose()
   dueDate: Date;
+
+  @ApiProperty()
+  @Expose()
+  submissionId?: number;
+
+  @ApiProperty()
+  @Expose()
+  submissionDate?: Date;
+
+  @ApiProperty()
+  @Expose()
+  submissionGrade?: number;
 }
 
 export class AssignmentGetListRO extends PaginateRO<AssignmentGetListDataRO> {
@@ -91,6 +103,18 @@ export class AssignmentGetDetailRO {
   @ApiProperty()
   @Expose()
   createdByDisplayName: string;
+
+  @ApiProperty()
+  @Expose()
+  submissionId?: number;
+
+  @ApiProperty()
+  @Expose()
+  submissionDate?: Date;
+
+  @ApiProperty()
+  @Expose()
+  submissionGrade?: number;
 
   constructor(data?: AssignmentGetDetailRO) {
     Object.assign(this, data);

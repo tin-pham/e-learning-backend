@@ -8,6 +8,8 @@ import { AssignmentRepository } from '../assignment/assignment.repository';
 import { AttachmentRepository } from '../attachment/attachment.repository';
 import { StudentRepository } from '../student/student.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { AssignmentSubmitGradeRepository } from '../assignment-submit-grade/assignment-submit-grade.repository';
+import { LessonRepository } from '../lesson/lesson.repository';
 import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ResultRO } from '../common/ro/result.ro';
@@ -19,7 +21,6 @@ import {
   AssignmentSubmitGetListRO,
   AssignmentSubmitGetStatisticRO,
 } from './ro/assignment-submit.ro';
-import { AssignmentSubmitGradeRepository } from 'src/assignment-submit-grade/assignment-submit-grade.repository';
 
 @Injectable()
 export class AssignmentSubmitService extends BaseService {
@@ -35,6 +36,7 @@ export class AssignmentSubmitService extends BaseService {
     private readonly studentRepository: StudentRepository,
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly assignmentSubmitGradeRepository: AssignmentSubmitGradeRepository,
+    private readonly lessonRepository: LessonRepository,
   ) {
     super(elasticLogger);
   }
@@ -200,7 +202,7 @@ export class AssignmentSubmitService extends BaseService {
 
   private async validateStore(dto: AssignmentSubmitStoreDTO, actorId: number) {
     // Check assignment exist
-    const assignment = await this.assignmentRepository.getCourseIdById(dto.assignmentId);
+    const assignment = await this.assignmentRepository.findOneById(dto.assignmentId);
     if (!assignment) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
@@ -213,8 +215,19 @@ export class AssignmentSubmitService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
+    // Get course id
+    let courseId: number;
+
+    if (assignment.lessonId) {
+      const lesson = await this.lessonRepository.getCourseIdById(assignment.lessonId);
+      courseId = lesson.courseId;
+    } else {
+      const assignmentJoined = await this.assignmentRepository.getCourseIdById(assignment.id);
+      courseId = assignmentJoined.courseId;
+    }
+
     // Check student registered
-    const registerCount = await this.courseStudentRepository.countByCourseIdAndStudentId(assignment.courseId, student.id);
+    const registerCount = await this.courseStudentRepository.countByCourseIdAndStudentId(courseId, student.id);
     if (!registerCount) {
       const { code, status, message } = EXCEPTION.COURSE_STUDENT.NOT_REGISTERED;
       this.throwException({ code, status, message, actorId });

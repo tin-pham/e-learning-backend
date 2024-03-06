@@ -5,10 +5,13 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { AssignmentEntity } from './assignment.entity';
 import { AssignmentRepository } from './assignment.repository';
+import { CourseAssignmentEntity } from '../course-assignment/course-assignment.entity';
 import { AssignmentExerciseRepository } from '../assignment-exercise/assignment-exercise.repository';
 import { StudentRepository } from '../student/student.repository';
 import { AssignmentSubmitRepository } from '../assignment-submit/assignment-submit.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
+import { CourseRepository } from '../course/course.repository';
+import { CourseAssignmentRepository } from '../course-assignment/course-assignment.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AssignmentGetListDTO, AssignmentGetMyListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
 import {
@@ -33,6 +36,8 @@ export class AssignmentService extends BaseService {
     private readonly lessonRepository: LessonRepository,
     private readonly studentRepository: StudentRepository,
     private readonly assignmentSubmitRepository: AssignmentSubmitRepository,
+    private readonly courseRepository: CourseRepository,
+    private readonly courseAssignmentRepository: CourseAssignmentRepository,
   ) {
     super(elasticLogger);
   }
@@ -45,15 +50,24 @@ export class AssignmentService extends BaseService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         await transaction.executeQuery(sql`SET CONSTRAINTS ALL DEFERRED;`.compile(transaction));
-        const assignmentData = new AssignmentEntity({
-          name: dto.name,
-          description: dto.description,
-          dueDate: dto.dueDate,
-          lessonId: dto.lessonId,
-          createdBy: actorId,
-        });
+        const assignmentData = new AssignmentEntity();
+
+        assignmentData.createdBy = actorId;
+        assignmentData.updatedBy = actorId;
+        assignmentData.name = dto.name;
+        assignmentData.description = dto.description;
+        assignmentData.dueDate = dto.dueDate;
+
+        if (dto.lessonId) {
+          assignmentData.lessonId = dto.lessonId;
+        }
 
         const assignment = await this.assignmentRepository.insertWithTransaction(transaction, assignmentData);
+
+        if (dto.courseId) {
+          const data = new CourseAssignmentEntity({ courseId: dto.courseId, assignmentId: assignment.id });
+          await this.courseAssignmentRepository.storeWithTransaction(transaction, data);
+        }
 
         if (dto.exerciseIds) {
           await this.assignmentExerciseRepository.insertMultipleByExerciseIdsWithTransaction(transaction, {
@@ -222,10 +236,20 @@ export class AssignmentService extends BaseService {
   }
 
   private async validateStore(dto: AssignmentStoreDTO, actorId: number) {
+    // Check lesson exist
     if (dto.lessonId) {
       const lessonCount = await this.lessonRepository.countById(dto.lessonId);
       if (!lessonCount) {
         const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
+
+    // Check course exist
+    if (dto.courseId) {
+      const courseCount = await this.courseRepository.countById(dto.courseId);
+      if (!courseCount) {
+        const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
     }

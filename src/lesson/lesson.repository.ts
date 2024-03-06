@@ -8,6 +8,19 @@ import { LessonGetListDTO } from './dto/lesson.dto';
 export class LessonRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getCourseIdById(id: number) {
+    return this.database
+      .selectFrom('lesson')
+      .where('lesson.id', '=', id)
+      .where('lesson.deletedAt', 'is', null)
+      .innerJoin('section', 'section.id', 'lesson.sectionId')
+      .where('section.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'section.courseId')
+      .where('course.deletedAt', 'is', null)
+      .select(['course.id as courseId'])
+      .executeTakeFirst();
+  }
+
   deleteMultipleBySectionIdWithTransaction(transaction: Transaction, sectionId: number, actorId: number) {
     return transaction
       .updateTable('lesson')

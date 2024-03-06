@@ -7,6 +7,8 @@ export class AssignmentSubmitEntity extends BaseEntity {
 
   studentId: string;
 
+  status: number;
+
   constructor(data?: AssignmentSubmitEntity) {
     super(data);
     Object.assign(this, data);

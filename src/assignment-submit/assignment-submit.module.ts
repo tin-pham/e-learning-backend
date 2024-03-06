@@ -9,6 +9,7 @@ import { AttachmentRepository } from '../attachment/attachment.repository';
 import { StudentRepository } from '../student/student.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { AssignmentSubmitGradeRepository } from 'src/assignment-submit-grade/assignment-submit-grade.repository';
+import { LessonRepository } from 'src/lesson/lesson.repository';
 
 @Module({
   imports: [NestjsFormDataModule.config({ storage: MemoryStoredFile })],
@@ -22,6 +23,7 @@ import { AssignmentSubmitGradeRepository } from 'src/assignment-submit-grade/ass
     StudentRepository,
     CourseStudentRepository,
     AssignmentSubmitGradeRepository,
+    LessonRepository,
   ],
 })
 export class AssignmentSubmitModule {}

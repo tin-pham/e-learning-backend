@@ -32,6 +32,10 @@ export class CourseGetListDataRO {
   @ApiProperty()
   @Expose()
   imageUrl?: string;
+
+  @ApiProperty()
+  @Expose()
+  unsubmittedPendingCount?: number;
 }
 
 export class CourseGetListRO extends PaginateRO<CourseGetListDataRO> {

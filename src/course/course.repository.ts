@@ -14,7 +14,7 @@ export class CourseRepository {
   }
 
   findByStudentId(studentId: string, dto: CourseGetListDTO) {
-    const { limit, page } = dto;
+    const { limit, page, withAssignmentCount } = dto;
 
     const query = this.database
       .selectFrom('course')
@@ -25,15 +25,31 @@ export class CourseRepository {
       .where('courseStudent.studentId', '=', studentId)
       .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
+      .$if(withAssignmentCount, (qb) =>
+        qb
+          .leftJoin('courseAssignment', (join) =>
+            join.onRef('courseAssignment.courseId', '=', 'course.id').on('courseAssignment.deletedAt', 'is', null),
+          )
+          .leftJoin('assignment', (join) =>
+            join.onRef('assignment.id', '=', 'courseAssignment.assignmentId').on('assignment.deletedAt', 'is', null),
+          )
+          .leftJoin('assignmentSubmit', (join) =>
+            join.onRef('assignmentSubmit.assignmentId', '=', 'assignment.id').on('assignmentSubmit.deletedAt', 'is', null),
+          )
+          .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url'])
+          .select(({ fn }) => fn.count('assignment.id').filterWhere('assignmentSubmit.id', 'is', null).as('unsubmittedPendingCount'))
+          .orderBy('unsubmittedPendingCount', 'desc'),
+      )
       .select(['course.id', 'course.name', 'course.description', 'image.url as imageUrl']);
 
     return paginate(query, { limit, page });
   }
 
   find(dto: CourseGetListDTO) {
-    const { limit, page, categoryId } = dto;
+    const { limit, page, categoryId, withAssignmentCount } = dto;
 
     const byCategory = Boolean(categoryId);
+    console.log(withAssignmentCount);
 
     const query = this.database
       .selectFrom('course')
@@ -55,6 +71,17 @@ export class CourseRepository {
             join.onRef('course.id', '=', 'categoryCourse.courseId').on('categoryCourse.deletedAt', 'is', null),
           )
           .where('categoryCourse.courseId', 'is', null),
+      )
+      .$if(withAssignmentCount, (qb) =>
+        qb
+          .leftJoin('courseAssignment', (join) =>
+            join.onRef('courseAssignment.courseId', '=', 'course.id').on('courseAssignment.deletedAt', 'is', null),
+          )
+          .leftJoin('assignment', (join) =>
+            join.onRef('assignment.id', '=', 'courseAssignment.assignmentId').on('assignment.deletedAt', 'is', null),
+          )
+          .groupBy('course.id')
+          .select(({ fn }) => fn.countAll().as('assignmentCount')),
       )
       .select(['course.id', 'course.name', 'course.description', 'image.url as imageUrl']);
     return paginate(query, { limit, page });

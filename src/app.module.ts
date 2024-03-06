@@ -22,7 +22,6 @@ import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { CourseStudentModule } from './course-student/course-student.module';
 import { AssignmentModule } from './assignment/assignment.module';
-import { CourseAssignmentModule } from './course-assignment/course-assignment.module';
 import { ExerciseSubmitModule } from './exercise-submit/exercise-submit.module';
 import { ExerciseSubmitMarkModule } from './exercise-submit-mark/exercise-submit-mark.module';
 import { AssignmentExerciseModule } from './assignment-exercise/assignment-exercise.module';
@@ -69,7 +68,6 @@ import { CategoryCourseModule } from './category-course/category-course.module';
     AssignmentModule,
     AssignmentAttachmentModule,
     AssignmentSubmitModule,
-    CourseAssignmentModule,
     ExerciseSubmitModule,
     ExerciseSubmitMarkModule,
     AssignmentExerciseModule,

@@ -423,18 +423,6 @@ export const API = {
       OPERATION: 'Get assignment statistic',
     },
   },
-  COURSE_ASSIGNMENT: {
-    TAGS: 'CourseAssignment',
-    CONTROLLER: 'course-assignment',
-    BULK_STORE: {
-      ROUTE: '',
-      OPERATION: 'Bulk store course assignment',
-    },
-    BULK_DELETE: {
-      ROUTE: '',
-      OPERATION: 'Bulk delete course assignment',
-    },
-  },
   QUESTION_CATEGORY: {
     TAGS: 'QuestionCategory',
     CONTROLLER: 'question-category',

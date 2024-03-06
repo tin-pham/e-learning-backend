@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 import { Transform, Type } from 'class-transformer';
@@ -48,6 +48,12 @@ export class CourseGetListDTO extends PaginateDTO {
   @Transform(({ value }) => (value === 'null' ? null : value))
   @IsOptional()
   categoryId: number;
+
+  @ApiPropertyOptional({ example: false })
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  withAssignmentCount?: boolean;
 }
 
 export class CourseGetDetailDTO {
