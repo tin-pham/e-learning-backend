@@ -9,8 +9,9 @@ import { AssignmentSubmitRepository } from '../assignment-submit/assignment-subm
 import { CourseRepository } from '../course/course.repository';
 import { CourseAssignmentRepository } from '../course-assignment/course-assignment.repository';
 import { NotificationRepository } from '../notification/notification.repository';
-import { CourseStudentRepository } from 'src/course-student/course-student.repository';
-import { UserNotificationRepository } from 'src/user-notification/user-notification.repository';
+import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { UserNotificationRepository } from '../user-notification/user-notification.repository';
+import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
 
 @Module({
   controllers: [AssignmentController],
@@ -26,6 +27,7 @@ import { UserNotificationRepository } from 'src/user-notification/user-notificat
     NotificationRepository,
     CourseStudentRepository,
     UserNotificationRepository,
+    CourseNotificationRepository,
   ],
 })
 export class AssignmentModule {}

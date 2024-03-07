@@ -28,6 +28,7 @@ import {
   AssignmentStoreRO,
   AssignmentUpdateRO,
 } from './ro/assignment.ro';
+import { CourseNotificationRepository } from 'src/course-notification/course-notification.repository';
 
 @Injectable()
 export class AssignmentService extends BaseService {
@@ -46,6 +47,7 @@ export class AssignmentService extends BaseService {
     private readonly notificationRepository: NotificationRepository,
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly userNotificationRepository: UserNotificationRepository,
+    private readonly courseNotificationRepository: CourseNotificationRepository,
   ) {
     super(elasticLogger);
   }
@@ -89,9 +91,13 @@ export class AssignmentService extends BaseService {
         const notificationData = new NotificationEntity({
           title: 'BÀI TẬP',
           content: `Bài tập ${assignment.name} vừa tạo`,
-          courseId: courseFromLesson?.courseId || dto.courseId,
         });
-        await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+        const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+
+        await this.courseNotificationRepository.insertWithTransaction(transaction, {
+          courseId: dto.courseId,
+          notificationId: notification.id,
+        });
 
         // Notify to student
         const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(courseFromLesson?.courseId || dto.courseId);
@@ -100,12 +106,13 @@ export class AssignmentService extends BaseService {
         if (courseStudents.length) {
           const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
           users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
+          console.log(users);
 
           const userNotificationData = users.map(
             (user) =>
               new UserNotificationEntity({
                 userId: user.id,
-                notificationId: notificationData.id,
+                notificationId: notification.id,
               }),
           );
           await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);

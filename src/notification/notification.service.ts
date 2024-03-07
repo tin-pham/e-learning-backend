@@ -8,10 +8,14 @@ import { UserNotificationEntity } from '../user-notification/user-notificaiton.e
 import { NotificationRepository } from './notification.repository';
 import { CourseRepository } from '../course/course.repository';
 import { StudentRepository } from '../student/student.repository';
+import { UserRepository } from '../user/user.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
+import { CommentNotificationRepository } from '../comment-notification/comment-notification.repository';
+import { LessonCommentRepository } from '../lesson-comment/lesson-comment.repository';
 import { NotificationGetListDTO, NotificationStoreDTO } from './dto/notification.dto';
-import { NotificationGetListRO, NotificationStoreRO } from './ro/notificaiton.ro';
+import { NotificationGetListRO, NotificationStoreRO } from './ro/notification.ro';
 
 @Injectable()
 export class NotificationService extends BaseService {
@@ -25,6 +29,10 @@ export class NotificationService extends BaseService {
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly studentRepository: StudentRepository,
     private readonly userNotificationRepository: UserNotificationRepository,
+    private readonly userRepository: UserRepository,
+    private readonly courseNotificationRepository: CourseNotificationRepository,
+    private readonly commentNotificationRepository: CommentNotificationRepository,
+    private readonly lessonCommentRepository: LessonCommentRepository,
   ) {
     super(elasticLogger);
   }
@@ -41,27 +49,49 @@ export class NotificationService extends BaseService {
         const notificationData = new NotificationEntity({
           title: dto.title,
           content: dto.content,
-          courseId: dto.courseId,
           createdBy: actorId,
         });
         const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
 
-        // Store user notification
-        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(dto.courseId);
+        // Store course notification
+        if (dto.courseId) {
+          await this.courseNotificationRepository.insertWithTransaction(transaction, {
+            courseId: dto.courseId,
+            notificationId: notification.id,
+          });
+          // Store user notification
+          const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(dto.courseId);
 
-        let users: { id: number }[] = [];
-        if (courseStudents.length) {
-          const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
-          users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
+          let users: { id: number }[] = [];
+          if (courseStudents.length) {
+            const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
+            users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
 
-          const userNotificationData = users.map(
-            (user) =>
-              new UserNotificationEntity({
-                userId: user.id,
-                notificationId: notificationData.id,
-              }),
-          );
-          await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
+            const userNotificationData = users.map(
+              (user) =>
+                new UserNotificationEntity({
+                  userId: user.id,
+                  notificationId: notificationData.id,
+                }),
+            );
+            await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
+          }
+        }
+
+        // By comment
+        if (dto.commentId) {
+          await this.commentNotificationRepository.insertWithTransaction(transaction, {
+            commentId: dto.commentId,
+            notificationId: notification.id,
+          });
+
+          const comment = await this.lessonCommentRepository.getUserIdById(dto.commentId);
+          if (comment) {
+            await this.userNotificationRepository.insertWithTransaction(transaction, {
+              userId: comment.userId,
+              notificationId: notification.id,
+            });
+          }
         }
 
         response.id = notification.id;
@@ -87,7 +117,12 @@ export class NotificationService extends BaseService {
     const actorId = decoded.userId;
 
     try {
-      const response = await this.notificationRepository.find(dto);
+      let response;
+      if (dto.courseId) {
+        response = await this.notificationRepository.findByCourseId(dto, actorId);
+      } else if (dto.byUser) {
+        response = await this.notificationRepository.findByUserId(actorId, dto);
+      }
 
       return this.success({
         classRO: NotificationGetListRO,
@@ -105,6 +140,13 @@ export class NotificationService extends BaseService {
     const courseCount = await this.courseRepository.countById(dto.courseId);
     if (!courseCount) {
       const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check user exist
+    const userCount = await this.userRepository.countById(actorId);
+    if (!userCount) {
+      const { code, status, message } = EXCEPTION.USER.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }

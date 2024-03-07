@@ -7,4 +7,8 @@ export class UserNotificationRepository {
   insertMultipleWithTransaction(transaction: Transaction, entities: UserNotificationEntity[]) {
     return transaction.insertInto('userNotification').values(entities).execute();
   }
+
+  insertWithTransaction(transaction: Transaction, entity: UserNotificationEntity) {
+    return transaction.insertInto('userNotification').values(entity).execute();
+  }
 }

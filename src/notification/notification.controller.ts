@@ -17,8 +17,8 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { NotificationService } from './notification.service';
-import { NotificationGetListRO, NotificationStoreRO } from './ro/notificaiton.ro';
 import { NotificationGetListDTO, NotificationStoreDTO } from './dto/notification.dto';
+import { NotificationGetListRO, NotificationStoreRO } from './ro/notification.ro';
 
 const { TAGS, CONTROLLER, GET_LIST, STORE } = API.NOTIFICATION;
 

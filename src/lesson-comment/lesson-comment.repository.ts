@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { LessonCommentEntity } from './lesson-comment.entity';
 import { LessonCommentGetListDTO } from './dto/lesson-comment.dto';
 import { sql } from 'kysely';
@@ -9,8 +9,28 @@ import { sql } from 'kysely';
 export class LessonCommentRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  insert(entity: LessonCommentEntity, actorId: number) {
+  getCreatedByById(id: number) {
     return this.database
+      .selectFrom('lessonComment')
+      .where('deletedAt', 'is', null)
+      .where('id', '=', id)
+      .select(['createdBy'])
+      .executeTakeFirst();
+  }
+
+  getUserIdById(id: number) {
+    return this.database
+      .selectFrom('lessonComment')
+      .where('lessonComment.deletedAt', 'is', null)
+      .where('lessonComment.id', '=', id)
+      .innerJoin('users', 'users.id', 'lessonComment.createdBy')
+      .where('users.deletedAt', 'is', null)
+      .select(['users.id as userId'])
+      .executeTakeFirst();
+  }
+
+  insertWithTransaction(transaction: Transaction, entity: LessonCommentEntity, actorId: number) {
+    return transaction
       .with('commentData', (eb) =>
         eb
           .insertInto('lessonComment')

@@ -39,7 +39,27 @@ export class NotificationGetListDataRO {
 
   @ApiProperty()
   @Expose()
+  courseId: number;
+
+  @ApiProperty()
+  @Expose()
   courseName: string;
+
+  @ApiProperty()
+  @Expose()
+  isRead: boolean;
+
+  @ApiProperty()
+  @Expose()
+  commentId: number;
+
+  @ApiProperty()
+  @Expose()
+  commentOwnerDisplayName: string;
+
+  @ApiProperty()
+  @Expose()
+  commentOwnerImageUrl: string;
 }
 
 export class NotificationGetListRO extends PaginateRO<NotificationGetListDataRO> {

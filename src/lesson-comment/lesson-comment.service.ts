@@ -1,9 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { LessonCommentEntity } from './lesson-comment.entity';
+import { CommentNotificationEntity } from '../comment-notification/comment-notification.entity';
+import { NotificationEntity } from '../notification/notification.entity';
+import { UserNotificationEntity } from '../user-notification/user-notificaiton.entity';
 import { LessonCommentRepository } from './lesson-comment.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
+import { NotificationRepository } from '../notification/notification.repository';
+import { CommentNotificationRepository } from '../comment-notification/comment-notification.repository';
+import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { LessonCommentGetListDTO, LessonCommentStoreDTO, LessonCommentUpdateDTO } from './dto/lesson-comment.dto';
 import {
@@ -20,35 +27,72 @@ export class LessonCommentService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly lessonRepository: LessonRepository,
     private readonly lessonCommentRepository: LessonCommentRepository,
+    private readonly commentNotificationRepository: CommentNotificationRepository,
+    private readonly notificationRepository: NotificationRepository,
+    private readonly userNotificationRepository: UserNotificationRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: LessonCommentStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateStore(dto, actorId);
+    const { lesson, parentComment } = await this.validateStore(dto, actorId);
     let response: LessonCommentStoreRO;
     try {
-      const lessonCommentData = new LessonCommentEntity({
-        lessonId: dto.lessonId,
-        body: dto.body,
-        parentId: dto.parentId,
-      });
+      await this.database.transaction().execute(async (transaction) => {
+        // Store comment
+        const lessonCommentData = new LessonCommentEntity({
+          lessonId: dto.lessonId,
+          body: dto.body,
+          parentId: dto.parentId,
+        });
+        const comment = await this.lessonCommentRepository.insertWithTransaction(transaction, lessonCommentData, actorId);
 
-      const lesson = await this.lessonCommentRepository.insert(lessonCommentData, actorId);
+        // Notify
+        let notificationData: NotificationEntity;
+        const userNotificationData = new UserNotificationEntity();
 
-      response = new LessonCommentStoreRO({
-        id: lesson.id,
-        lessonId: lesson.lessonId,
-        body: lesson.body,
-        parentId: lesson.parentId,
-        createdBy: lesson.createdBy,
-        userId: lesson.userId,
-        userDisplayName: lesson.userDisplayName,
-        createdAt: lesson.createdAt,
-        userImageUrl: lesson.userImageUrl,
+        if (dto.parentId && parentComment.createdBy !== comment.createdBy) {
+          notificationData = new NotificationEntity({
+            title: 'Phản hồi mới',
+            content: `${dto.body}`,
+          });
+          userNotificationData.userId = parentComment.createdBy;
+        } else if (dto.lessonId && lesson.createdBy !== comment.createdBy) {
+          notificationData = new NotificationEntity({
+            title: 'Bình luận mới',
+            content: `${dto.body}`,
+          });
+          userNotificationData.userId = lesson.createdBy;
+        }
+
+        if (notificationData && userNotificationData) {
+          const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+
+          const commentNotificationData = new CommentNotificationEntity({
+            commentId: comment.id,
+            notificationId: notification.id,
+          });
+          await this.commentNotificationRepository.insertWithTransaction(transaction, commentNotificationData);
+
+          userNotificationData.notificationId = notification.id;
+          await this.userNotificationRepository.insertWithTransaction(transaction, userNotificationData);
+        }
+
+        response = new LessonCommentStoreRO({
+          id: comment.id,
+          lessonId: comment.lessonId,
+          body: comment.body,
+          parentId: comment.parentId,
+          createdBy: comment.createdBy,
+          userId: comment.userId,
+          userDisplayName: comment.userDisplayName,
+          createdAt: comment.createdAt,
+          userImageUrl: comment.userImageUrl,
+        });
       });
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON_COMMENT.STORE_FAILED;
@@ -175,20 +219,23 @@ export class LessonCommentService extends BaseService {
 
   private async validateStore(dto: LessonCommentStoreDTO, actorId: number) {
     // Check if lesson exists
-    const lessonCount = await this.lessonRepository.countById(dto.lessonId);
-    if (!lessonCount) {
+    const lesson = await this.lessonRepository.findOneById(dto.lessonId);
+    if (!lesson) {
       const { status, message, code } = EXCEPTION.LESSON.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
 
     // Check if parent comment exist
+    let parentComment;
     if (dto.parentId) {
-      const commentCount = await this.lessonCommentRepository.countById(dto.parentId);
-      if (!commentCount) {
+      parentComment = await this.lessonCommentRepository.getCreatedByById(dto.parentId);
+      if (!parentComment) {
         const { status, message, code } = EXCEPTION.LESSON_COMMENT.DOES_NOT_EXIST;
         this.throwException({ status, message, code, actorId });
       }
     }
+
+    return { lesson, parentComment };
   }
 
   private async validateUpdate(id: number, actorId: number) {
