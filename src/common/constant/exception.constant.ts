@@ -1050,6 +1050,11 @@ export const EXCEPTION = {
     },
   },
   NOTIFICATION: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Notification does not exist',
+      code: 'NOTIFICATION.DOES_NOT_EXIST',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store notification',
@@ -1059,6 +1064,23 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get list notification',
       code: 'NOTIFICATION.GET_LIST_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update notification',
+      code: 'NOTIFICATION.UPDATE_FAILED',
+    },
+  },
+  USER_NOTIFICATION: {
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete user notification',
+      code: 'USER_NOTIFICATION.BULK_DELETE_FAILED',
+    },
+    BULK_UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk update user notification',
+      code: 'USER_NOTIFICATION.BULK_UPDATE_FAILED',
     },
   },
 };

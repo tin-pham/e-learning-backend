@@ -82,7 +82,7 @@ export class LessonService extends BaseService {
   async getDetail(id: number, decoded: IJwtPayload) {
     const { roles, userId: actorId } = decoded;
 
-    let lesson: LessonEntity;
+    let response: any;
 
     // Is student register to this course
     if (roles.includes(ROLE.STUDENT)) {
@@ -96,24 +96,17 @@ export class LessonService extends BaseService {
     }
 
     try {
-      lesson = await this.lessonRepository.findOneById(id);
+      response = await this.lessonRepository.findOneById(id);
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ status, message, code, actorId });
     }
 
-    if (!lesson) {
+    if (!response) {
       const { status, message, code } = EXCEPTION.LESSON.NOT_FOUND;
       this.throwException({ status, message, code, actorId });
     }
-
-    const response = new LessonGetDetailRO();
-    response.id = lesson.id;
-    response.body = lesson.body;
-    response.title = lesson.title;
-    response.sectionId = lesson.sectionId;
-    response.videoUrl = lesson.videoUrl;
 
     return this.success({
       classRO: LessonGetDetailRO,

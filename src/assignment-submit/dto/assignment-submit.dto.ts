@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { DOCUMENT_MIME } from '../../common/constant/mime-type.constant';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
@@ -30,13 +30,21 @@ export class AssignmentSubmitGetListDTO extends PaginateDTO {
 
   @ApiPropertyOptional({ example: false })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   isLate?: boolean;
 
   @ApiPropertyOptional({ example: false })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   isCorrect?: boolean;
 }

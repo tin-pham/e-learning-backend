@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
@@ -23,7 +23,7 @@ export class NotificationStoreRO {
 export class NotificationGetListDataRO {
   @ApiProperty()
   @Expose()
-  id: string;
+  id: number;
 
   @ApiProperty()
   @Expose()
@@ -37,29 +37,41 @@ export class NotificationGetListDataRO {
   @Expose()
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  courseId: number;
+  courseId?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  courseName: string;
+  courseName?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  isRead: boolean;
+  assignmentId?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  commentId: number;
+  isRead?: boolean;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  commentOwnerDisplayName: string;
+  commentId?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Expose()
-  commentOwnerImageUrl: string;
+  commentParentId?: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  commentOwnerId?: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  commentOwnerDisplayName?: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  commentOwnerImageUrl?: string;
 }
 
 export class NotificationGetListRO extends PaginateRO<NotificationGetListDataRO> {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsNumber } from 'class-validator';
-import { ApiArrayProperty, SwaggerQueryParamStyle } from 'src/common/decorator';
+import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
 
 export class ExerciseQuestionBulkStoreDTO {
   @ApiProperty({ type: [Number], example: [1] })

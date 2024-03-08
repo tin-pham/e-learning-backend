@@ -56,9 +56,21 @@ export class LessonRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('lesson')
-      .select(['id', 'title', 'body', 'sectionId', 'videoUrl', 'createdBy'])
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
+      .where('lesson.id', '=', id)
+      .where('lesson.deletedAt', 'is', null)
+      .innerJoin('section', 'section.id', 'lesson.sectionId')
+      .where('section.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'section.courseId')
+      .where('course.deletedAt', 'is', null)
+      .select([
+        'lesson.id',
+        'lesson.title',
+        'lesson.body',
+        'lesson.sectionId',
+        'lesson.videoUrl',
+        'lesson.createdBy',
+        'course.id as courseId',
+      ])
       .executeTakeFirst();
   }
 

@@ -35,6 +35,7 @@ import { AssignmentSubmitModule } from './assignment-submit/assignment-submit.mo
 import { AssignmentSubmitGradeModule } from './assignment-submit-grade/assignment-submit-grade.module';
 import { CategoryCourseModule } from './category-course/category-course.module';
 import { NotificationModule } from './notification/notification.module';
+import { UserNotificationModule } from './user-notification/user-notification.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { NotificationModule } from './notification/notification.module';
     CategoryModule,
     AssignmentSubmitGradeModule,
     NotificationModule,
+    UserNotificationModule,
   ],
   providers: [...appProviders],
 })

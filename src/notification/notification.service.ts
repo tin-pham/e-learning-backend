@@ -4,7 +4,7 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { NotificationEntity } from './notification.entity';
-import { UserNotificationEntity } from '../user-notification/user-notificaiton.entity';
+import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { NotificationRepository } from './notification.repository';
 import { CourseRepository } from '../course/course.repository';
 import { StudentRepository } from '../student/student.repository';
@@ -115,14 +115,18 @@ export class NotificationService extends BaseService {
 
   async getList(dto: NotificationGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    console.log(dto);
 
     try {
       let response;
       if (dto.courseId) {
+        console.log('hey');
         response = await this.notificationRepository.findByCourseId(dto, actorId);
       } else if (dto.byUser) {
+        console.log('hey2');
         response = await this.notificationRepository.findByUserId(actorId, dto);
       }
+      console.log(response);
 
       return this.success({
         classRO: NotificationGetListRO,

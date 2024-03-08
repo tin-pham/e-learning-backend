@@ -5,7 +5,7 @@ import { DatabaseService } from '../database';
 import { LessonCommentEntity } from './lesson-comment.entity';
 import { CommentNotificationEntity } from '../comment-notification/comment-notification.entity';
 import { NotificationEntity } from '../notification/notification.entity';
-import { UserNotificationEntity } from '../user-notification/user-notificaiton.entity';
+import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { LessonCommentRepository } from './lesson-comment.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { NotificationRepository } from '../notification/notification.repository';

@@ -51,7 +51,11 @@ export class CourseGetListDTO extends PaginateDTO {
 
   @ApiPropertyOptional({ example: false })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   withAssignmentCount?: boolean;
 }

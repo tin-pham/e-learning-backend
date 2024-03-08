@@ -631,4 +631,16 @@ export const API = {
       OPERATION: 'Store notification',
     },
   },
+  USER_NOTIFICATION: {
+    TAGS: 'UserNotification',
+    CONTROLLER: 'user-notification',
+    BULK_UPDATE: {
+      ROUTE: 'bulk-update',
+      OPERATION: 'Bulk update user notification',
+    },
+    BULK_DELETE: {
+      ROUTE: 'bulk-delete',
+      OPERATION: 'Bulk delete user notification',
+    },
+  },
 };

@@ -8,12 +8,41 @@ import { NotificationGetListDTO } from './dto/notification.dto';
 export class NotificationRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async countByIds(ids: number[]) {
+    const { count } = await this.database
+      .selectFrom('notification')
+      .where('notification.deletedAt', 'is', null)
+      .where('notification.id', 'in', ids)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  update(id: number, entity: NotificationEntity) {
+    return this.database
+      .updateTable('notification')
+      .set(entity)
+      .where('notification.id', '=', id)
+      .returning(['id', 'title', 'content', 'createdAt'])
+      .executeTakeFirst();
+  }
+
+  async countById(id: number) {
+    const { count } = await this.database
+      .selectFrom('notification')
+      .where('notification.id', '=', id)
+      .where('notification.deletedAt', 'is', null)
+      .select(({ fn }) => [fn.countAll().as('count')])
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   insertWithTransaction(transaction: Transaction, entity: NotificationEntity) {
     return transaction.insertInto('notification').values(entity).returning(['id', 'title', 'content', 'createdAt']).executeTakeFirst();
   }
 
   findByCourseId(dto: NotificationGetListDTO, actorId: number) {
-    const { courseId, page, limit } = dto;
+    const { courseId, page, limit, withRead } = dto;
 
     const byUser = Boolean(actorId);
 
@@ -32,8 +61,10 @@ export class NotificationRepository {
           .innerJoin('users', 'users.id', 'userNotification.userId')
           .where('users.deletedAt', 'is', null)
           .where('users.id', '=', actorId)
-          .select(['userNotification.isRead']),
+          .select(['userNotification.isRead'])
+          .$if(withRead, (qb) => qb.where('userNotification.isRead', '=', true)),
       )
+      .orderBy('notification.createdAt', 'desc')
       .select([
         'notification.id',
         'notification.title',
@@ -47,15 +78,23 @@ export class NotificationRepository {
   }
 
   findByUserId(userId: number, dto: NotificationGetListDTO) {
-    const { page, limit } = dto;
+    const { page, limit, withRead } = dto;
+    console.log(withRead);
 
     const query = this.database
       .selectFrom('notification')
+      .distinctOn(['notification.id', 'notification.createdAt'])
       .where('notification.deletedAt', 'is', null)
       .leftJoin('courseNotification', (join) =>
         join.onRef('courseNotification.notificationId', '=', 'notification.id').on('courseNotification.deletedAt', 'is', null),
       )
       .leftJoin('course', (join) => join.onRef('course.id', '=', 'courseNotification.courseId').on('course.deletedAt', 'is', null))
+      .leftJoin('courseAssignment', (join) =>
+        join.onRef('courseAssignment.courseId', '=', 'course.id').on('courseAssignment.deletedAt', 'is', null),
+      )
+      .leftJoin('assignment', (join) =>
+        join.onRef('assignment.id', '=', 'courseAssignment.assignmentId').on('assignment.deletedAt', 'is', null),
+      )
       .leftJoin('commentNotification', (join) =>
         join.onRef('commentNotification.notificationId', '=', 'notification.id').on('commentNotification.deletedAt', 'is', null),
       )
@@ -70,8 +109,7 @@ export class NotificationRepository {
       .innerJoin('userNotification', 'userNotification.notificationId', 'notification.id')
       .where('userNotification.userId', '=', userId)
       .where('userNotification.deletedAt', 'is', null)
-      .innerJoin('users', 'users.id', 'userNotification.userId')
-      .where('users.deletedAt', 'is', null)
+      .where('userNotification.isRead', '=', withRead)
       .select([
         'notification.id',
         'notification.title',
@@ -79,10 +117,14 @@ export class NotificationRepository {
         'notification.createdAt',
         'course.id as courseId',
         'course.name as courseName',
+        'assignment.id as assignmentId',
         'lessonComment.id as commentId',
+        'lessonComment.parentId as commentParentId',
+        'commentOwner.id as commentOwnerId',
         'commentOwner.displayName as commentOwnerDisplayName',
         'image.url as commentOwnerImageUrl',
-      ]);
+      ])
+      .orderBy('notification.createdAt', 'desc');
 
     return paginate(query, { page, limit });
   }

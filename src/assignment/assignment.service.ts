@@ -4,7 +4,7 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { AssignmentEntity } from './assignment.entity';
-import { UserNotificationEntity } from '../user-notification/user-notificaiton.entity';
+import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { CourseAssignmentEntity } from '../course-assignment/course-assignment.entity';
 import { NotificationEntity } from '../notification/notification.entity';
 import { AssignmentRepository } from './assignment.repository';

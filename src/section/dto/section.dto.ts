@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
@@ -28,7 +28,11 @@ export class SectionGetListDTO extends PaginateDTO {
 
   @ApiPropertyOptional({ example: false })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   withLesson?: boolean;
 }
@@ -36,7 +40,11 @@ export class SectionGetListDTO extends PaginateDTO {
 export class SectionGetDetailDTO {
   @ApiPropertyOptional({ example: false })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   withLesson?: boolean;
 }

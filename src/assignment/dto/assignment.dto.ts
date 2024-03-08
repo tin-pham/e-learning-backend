@@ -82,7 +82,11 @@ export class AssignmentGetListDTO extends PaginateDTO {
 
   @ApiPropertyOptional()
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   withSubmission?: boolean;
 }

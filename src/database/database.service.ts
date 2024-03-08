@@ -36,9 +36,9 @@ import { CourseImageEntity } from '../course-image/course-image.entity';
 import { AssignmentSubmitEntity } from '../assignment-submit/assignment-submit.entity';
 import { AssignmentSubmitGradeEntity } from '../assignment-submit-grade/assignment-submit-grade.entity';
 import { NotificationEntity } from '../notification/notification.entity';
-import { UserNotificationEntity } from '../user-notification/user-notificaiton.entity';
-import { CourseNotificationEntity } from 'src/course-notification/course-notification.entity';
-import { CommentNotificationEntity } from 'src/comment-notification/comment-notification.entity';
+import { UserNotificationEntity } from '../user-notification/user-notification.entity';
+import { CourseNotificationEntity } from '../course-notification/course-notification.entity';
+import { CommentNotificationEntity } from '../comment-notification/comment-notification.entity';
 
 export interface KyselyTables {
   users: UserEntity;

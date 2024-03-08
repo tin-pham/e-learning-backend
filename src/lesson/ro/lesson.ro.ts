@@ -60,11 +60,15 @@ export class LessonGetDetailRO {
 
   @ApiProperty()
   @Expose()
+  videoUrl: string;
+
+  @ApiProperty()
+  @Expose()
   sectionId: number;
 
   @ApiProperty()
   @Expose()
-  videoUrl: string;
+  courseId: number;
 }
 
 export class LessonUpdateRO {

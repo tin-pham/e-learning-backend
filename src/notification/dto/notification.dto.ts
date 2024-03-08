@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 
@@ -38,7 +38,21 @@ export class NotificationGetListDTO extends PaginateDTO {
 
   @ApiPropertyOptional({ example: true })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   byUser?: boolean;
+
+  @ApiPropertyOptional({ example: true })
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsOptional()
+  withRead?: boolean;
 }
