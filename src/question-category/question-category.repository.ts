@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
+import { paginate } from '../common/function/paginate';
 import { QuestionCategoryEntity } from './question-category.entity';
 import { QuestionCategoryGetListDTO } from './dto/question-category.dto';
-import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class QuestionCategoryRepository {

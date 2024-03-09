@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsNumber } from 'class-validator';
 import { HasMimeType, IsFiles, MaxFileSize, MemoryStoredFile } from 'nestjs-form-data';
 import { DOCUMENT_MIME, IMAGE_MIME } from '../../common/constant/mime-type.constant';
-import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 
 const { FORMAT_IS_NOT_VALID } = UNPROCESSABLE_ENTITY_EXCEPTION.MIME;
 

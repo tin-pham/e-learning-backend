@@ -115,18 +115,14 @@ export class NotificationService extends BaseService {
 
   async getList(dto: NotificationGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    console.log(dto);
 
     try {
       let response;
       if (dto.courseId) {
-        console.log('hey');
         response = await this.notificationRepository.findByCourseId(dto, actorId);
       } else if (dto.byUser) {
-        console.log('hey2');
         response = await this.notificationRepository.findByUserId(actorId, dto);
       }
-      console.log(response);
 
       return this.success({
         classRO: NotificationGetListRO,

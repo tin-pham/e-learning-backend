@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { CategoryEntity } from './category.entity';
 import { CategoryGetListDTO } from './dto/category.dto';
-import { paginate } from 'src/common/function/paginate';
+import { paginate } from '../common/function/paginate';
 
 @Injectable()
 export class CategoryRepository {

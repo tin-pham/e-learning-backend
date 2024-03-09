@@ -21,7 +21,7 @@ import { ROLE } from '../role/enum/role.enum';
 import { CategoryService } from './category.service';
 import { CategoryGetListDTO, CategoryStoreDTO, CategoryUpdateDTO } from './dto/category.dto';
 import { CategoryGetDetailRO, CategoryGetListRO, CategoryStoreRO, CategoryUpdateRO } from './ro/category.ro';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.CATEGORY;
 

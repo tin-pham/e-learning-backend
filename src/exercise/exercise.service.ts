@@ -9,7 +9,7 @@ import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/e
 import { ExerciseDeleteRO, ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ExerciseEntity } from './exercise.entity';
 import { SectionExerciseEntity } from '../section-exercise/section-exercise.entity';
-import { SectionRepository } from 'src/section/section.repository';
+import { SectionRepository } from '../section/section.repository';
 
 @Injectable()
 export class ExerciseService extends BaseService {

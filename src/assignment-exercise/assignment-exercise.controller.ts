@@ -19,7 +19,7 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { AssignmentExerciseService } from './assignment-exercise.service';
 import { AssignmentExerciseDeleteDTO, AssignmentExerciseStoreDTO } from './dto/assignment-exercise.dto';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE } = API.ASSIGNMENT_EXERCISE;
 

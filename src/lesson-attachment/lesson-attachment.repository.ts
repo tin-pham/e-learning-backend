@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
 import { LessonAttachmentEntity } from './lesson-attachment.entity';
 import { LessonAttachmentGetListDTO } from './dto/lesson-attachment.dto';
-import { paginate } from 'src/common/function/paginate';
+import { paginate } from '../common/function/paginate';
 
 @Injectable()
 export class LessonAttachmentRepository {

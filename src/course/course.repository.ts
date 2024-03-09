@@ -10,7 +10,7 @@ export class CourseRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertWithTransaction(transaction: Transaction, entity: CourseEntity) {
-    return transaction.insertInto('course').values(entity).returning(['id', 'name', 'description']).executeTakeFirst();
+    return transaction.insertInto('course').values(entity).returning(['id', 'name', 'description', 'levelId', 'hours']).executeTakeFirst();
   }
 
   findByStudentId(studentId: string, dto: CourseGetListDTO) {
@@ -20,6 +20,8 @@ export class CourseRepository {
       .selectFrom('course')
       .distinct()
       .where('course.deletedAt', 'is', null)
+      .innerJoin('level', 'level.id', 'course.levelId')
+      .where('level.deletedAt', 'is', null)
       .leftJoin('courseStudent', 'courseStudent.courseId', 'course.id')
       .where('courseStudent.deletedAt', 'is', null)
       .where('courseStudent.studentId', '=', studentId)
@@ -36,11 +38,19 @@ export class CourseRepository {
           .leftJoin('assignmentSubmit', (join) =>
             join.onRef('assignmentSubmit.assignmentId', '=', 'assignment.id').on('assignmentSubmit.deletedAt', 'is', null),
           )
-          .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url'])
+          .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'course.hours'])
           .select(({ fn }) => fn.count('assignment.id').filterWhere('assignmentSubmit.id', 'is', null).as('unsubmittedPendingCount'))
           .orderBy('unsubmittedPendingCount', 'desc'),
       )
-      .select(['course.id', 'course.name', 'course.description', 'image.url as imageUrl']);
+      .select([
+        'course.id',
+        'course.name',
+        'course.description',
+        'image.url as imageUrl',
+        'level.name as levelName',
+        'level.id as levelId',
+        'course.hours',
+      ]);
 
     return paginate(query, { limit, page });
   }
@@ -49,11 +59,12 @@ export class CourseRepository {
     const { limit, page, categoryId, withAssignmentCount } = dto;
 
     const byCategory = Boolean(categoryId);
-    console.log(withAssignmentCount);
 
     const query = this.database
       .selectFrom('course')
       .where('course.deletedAt', 'is', null)
+      .innerJoin('level', 'level.id', 'course.levelId')
+      .where('level.deletedAt', 'is', null)
       .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
       .orderBy('course.createdAt', 'desc')
@@ -83,7 +94,15 @@ export class CourseRepository {
           .groupBy('course.id')
           .select(({ fn }) => fn.countAll().as('assignmentCount')),
       )
-      .select(['course.id', 'course.name', 'course.description', 'image.url as imageUrl']);
+      .select([
+        'course.id',
+        'course.name',
+        'course.description',
+        'image.url as imageUrl',
+        'level.id as levelId',
+        'level.name as levelName',
+        'course.hours',
+      ]);
     return paginate(query, { limit, page });
   }
 
@@ -91,11 +110,15 @@ export class CourseRepository {
     const { withCategoryIds } = dto;
     return this.database
       .selectFrom('course')
-      .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
-      .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
       .where('course.id', '=', id)
       .where('course.deletedAt', 'is', null)
-      .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url'])
+      .innerJoin('level', 'level.id', 'course.levelId')
+      .where('level.deletedAt', 'is', null)
+      .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
+      .leftJoin('section', (join) => join.onRef('section.courseId', '=', 'course.id').on('section.deletedAt', 'is', null))
+      .leftJoin('lesson', (join) => join.onRef('lesson.sectionId', '=', 'section.id').on('lesson.deletedAt', 'is', null))
+      .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'course.hours'])
       .$if(withCategoryIds, (query) =>
         query
           .leftJoin('categoryCourse', (join) =>
@@ -107,7 +130,17 @@ export class CourseRepository {
               .as('categoryIds'),
           ]),
       )
-      .select(['course.id', 'course.name', 'course.description', 'image.url as imageUrl'])
+      .select(({ fn }) => [
+        'course.id',
+        'course.name',
+        'course.description',
+        'image.url as imageUrl',
+        'level.name as levelName',
+        'level.id as levelId',
+        'course.hours',
+        fn.count('lesson.id').as('lessonCount'),
+      ])
+      .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'level.id', 'course.hours'])
       .executeTakeFirst();
   }
 
@@ -117,7 +150,7 @@ export class CourseRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name', 'description'])
+      .returning(['id', 'name', 'description', 'levelId', 'hours'])
       .executeTakeFirst();
   }
 

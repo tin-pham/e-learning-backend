@@ -643,4 +643,12 @@ export const API = {
       OPERATION: 'Bulk delete user notification',
     },
   },
+  LEVEL: {
+    TAGS: 'Level',
+    CONTROLLER: 'level',
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list levels',
+    },
+  },
 };

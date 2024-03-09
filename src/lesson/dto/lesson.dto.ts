@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
-import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { Type } from 'class-transformer';
-import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
+import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 const { BODY, TITLE, VIDEO_URL, SECTION_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.LESSON;
 

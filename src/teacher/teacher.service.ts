@@ -8,6 +8,7 @@ import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
 import { UserRoleRepository } from '../user-role/user-role.repository';
 import { UserService } from '../user/user.service';
+import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { TeacherGetListDTO, TeacherStoreDTO, TeacherUpdateDTO } from './dto/teacher.dto';
 import {
@@ -20,7 +21,6 @@ import {
   TeacherUpdateRO,
   TeacherUpdateUserRO,
 } from './ro/teacher.ro';
-import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class TeacherService extends UserService {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Transaction } from 'src/database';
+import { Transaction } from '../database';
 import { SectionExerciseEntity } from './section-exercise.entity';
 
 @Injectable()

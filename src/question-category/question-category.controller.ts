@@ -26,7 +26,7 @@ import {
   QuestionCategoryUpdateRO,
 } from './ro/question-category.ro';
 import { QuestionCategoryGetListDTO, QuestionCategoryStoreDTO, QuestionCategoryUpdateDTO } from './dto/question-category.dto';
-import { QuestionGetDetailRO } from 'src/question/ro/question.ro';
+import { QuestionGetDetailRO } from '../question/ro/question.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.QUESTION_CATEGORY;
 

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsString, IsUrl } from 'class-validator';
-import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
-import { PaginateDTO } from 'src/common/dto/paginate.dto';
 import { Type } from 'class-transformer';
+import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
+import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 export class LessonAttachmentBulkStoreFileDTO {
   @ApiProperty({ example: 'https://example.com' })

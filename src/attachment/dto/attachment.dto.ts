@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { ApiArrayProperty, SwaggerQueryParamStyle } from '../../common/decorator';
-import { PaginateDTO } from 'src/common/dto/paginate.dto';
+import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { Type } from 'class-transformer';
 import { IsFile, MaxFileSize, MemoryStoredFile } from 'nestjs-form-data';
 

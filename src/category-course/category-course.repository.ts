@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from 'kysely';
-import { DatabaseService, Transaction } from 'src/database';
+import { DatabaseService, Transaction } from '../database';
 
 @Injectable()
 export class CategoryCourseRepository {

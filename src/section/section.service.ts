@@ -4,11 +4,11 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { SectionEntity } from './section.entity';
 import { SectionRepository } from './section.repository';
 import { CourseRepository } from '../course/course.repository';
+import { LessonRepository } from '../lesson/lesson.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { SectionGetDetailDTO, SectionGetListDTO, SectionStoreDTO, SectionUpdateDTO } from './dto/section.dto';
 import { SectionDeleteRO, SectionGetDetailRO, SectionGetListRO, SectionStoreRO, SectionUpdateRO } from './ro/section.ro';
 import { DatabaseService } from '../database';
-import { LessonRepository } from 'src/lesson/lesson.repository';
 
 @Injectable()
 export class SectionService extends BaseService {

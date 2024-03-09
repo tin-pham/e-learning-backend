@@ -9,7 +9,7 @@ import { CourseRepository } from '../course/course.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { CourseImageUpsertDTO } from './dto/course-image.dto';
 import { S3Service } from '../s3/s3.service';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class CourseImageService extends BaseService {

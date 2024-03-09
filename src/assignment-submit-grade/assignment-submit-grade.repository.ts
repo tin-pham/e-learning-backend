@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/database';
+import { DatabaseService } from '../database';
 import { AssignmentSubmitGradeEntity } from './assignment-submit-grade.entity';
 
 @Injectable()

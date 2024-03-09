@@ -4,10 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { formatBytes } from '../common/function/format-byte';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { S3DeleteDTO, S3UploadDTO } from './dto/s3.dto';
 import { S3UploadDataRO, S3UploadRO } from './ro/s3.ro';
-import { formatBytes } from 'src/common/function/format-byte';
 
 @Injectable()
 export class S3Service extends BaseService {

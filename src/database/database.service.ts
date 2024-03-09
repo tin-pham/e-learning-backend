@@ -39,6 +39,7 @@ import { NotificationEntity } from '../notification/notification.entity';
 import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { CourseNotificationEntity } from '../course-notification/course-notification.entity';
 import { CommentNotificationEntity } from '../comment-notification/comment-notification.entity';
+import { LevelEntity } from '../level/level.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -81,6 +82,7 @@ export interface KyselyTables {
   userNotification: UserNotificationEntity;
   courseNotification: CourseNotificationEntity;
   commentNotification: CommentNotificationEntity;
+  level: LevelEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

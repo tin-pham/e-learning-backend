@@ -1,15 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { ImageEntity } from '../image/image.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { S3Service } from '../s3/s3.service';
-import { S3UploadRO } from '../s3/ro/s3.ro';
-import { DatabaseService } from 'src/database';
-import { ImageRepository } from 'src/image/image.repository';
+import { ImageRepository } from '../image/image.repository';
+import { UserImageRepository } from './user-image.repository';
+import { DatabaseService } from '../database';
 import { UserImageUpsertDTO } from './dto/user-image.dto';
 import { UserImageDeleteRO, UserImageUpsertRO } from './ro/user-image.ro';
-import { ImageEntity } from '../image/image.entity';
-import { UserImageRepository } from './user-image.repository';
+import { S3UploadRO } from '../s3/ro/s3.ro';
 
 @Injectable()
 export class UserImageService extends BaseService {

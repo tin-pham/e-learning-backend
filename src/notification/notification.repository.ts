@@ -79,7 +79,6 @@ export class NotificationRepository {
 
   findByUserId(userId: number, dto: NotificationGetListDTO) {
     const { page, limit, withRead } = dto;
-    console.log(withRead);
 
     const query = this.database
       .selectFrom('notification')

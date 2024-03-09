@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
-import { ElasticsearchLoggerService } from 'src/elastic-search-logger/elastic-search-logger.service';
-import { AssignmentSubmitGradeStoreDTO } from './dto/assignment-submit-grade.dto';
-import { AssignmentSubmitRepository } from 'src/assignment-submit/assignment-submit.repository';
-import { EXCEPTION, IJwtPayload } from 'src/common';
+import { EXCEPTION, IJwtPayload } from '../common';
 import { AssignmentSubmitGradeEntity } from './assignment-submit-grade.entity';
+import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
+import { AssignmentSubmitRepository } from '../assignment-submit/assignment-submit.repository';
 import { AssignmentSubmitGradeRepository } from './assignment-submit-grade.repository';
+import { AssignmentSubmitGradeStoreDTO } from './dto/assignment-submit-grade.dto';
 import { AssignmentSubmitGradeStoreRO } from './ro/assignment-submit-grade.ro';
 import { ResultRO } from '../common/ro/result.ro';
 

@@ -1083,4 +1083,16 @@ export const EXCEPTION = {
       code: 'USER_NOTIFICATION.BULK_UPDATE_FAILED',
     },
   },
+  LEVEL: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Level does not exist',
+      code: 'LEVEL.DOES_NOT_EXIST',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list level',
+      code: 'LEVEL.GET_LIST_FAILED',
+    },
+  },
 };

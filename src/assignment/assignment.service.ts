@@ -17,6 +17,7 @@ import { CourseAssignmentRepository } from '../course-assignment/course-assignme
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { NotificationRepository } from '../notification/notification.repository';
+import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AssignmentGetListDTO, AssignmentGetMyListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
 import {
@@ -28,7 +29,6 @@ import {
   AssignmentStoreRO,
   AssignmentUpdateRO,
 } from './ro/assignment.ro';
-import { CourseNotificationRepository } from 'src/course-notification/course-notification.repository';
 
 @Injectable()
 export class AssignmentService extends BaseService {
@@ -106,7 +106,6 @@ export class AssignmentService extends BaseService {
         if (courseStudents.length) {
           const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
           users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
-          console.log(users);
 
           const userNotificationData = users.map(
             (user) =>

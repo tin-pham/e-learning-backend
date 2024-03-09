@@ -11,6 +11,7 @@ import { CourseAssignmentRepository } from '../course-assignment/course-assignme
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { CourseImageRepository } from '../course-image/course-image.repository';
 import { ImageRepository } from '../image/image.repository';
+import { LevelRepository } from '../level/level.repository';
 import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
@@ -34,6 +35,7 @@ export class CourseService extends BaseService {
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly courseImageRepository: CourseImageRepository,
     private readonly imageRepository: ImageRepository,
+    private readonly levelRepository: LevelRepository,
   ) {
     super(elasticLogger);
   }
@@ -48,9 +50,12 @@ export class CourseService extends BaseService {
       await this.database.transaction().execute(async (transaction) => {
         // Store course
         const courseData = new CourseEntity();
+        courseData.createdBy = actorId;
+        courseData.createdBy = actorId;
         courseData.name = dto.name;
         courseData.description = dto.description;
-        courseData.createdBy = actorId;
+        courseData.levelId = dto.levelId;
+        courseData.hours = dto.hours;
         const course = await this.courseRepository.insertWithTransaction(transaction, courseData);
         // Store category
 
@@ -66,6 +71,8 @@ export class CourseService extends BaseService {
         response.id = course.id;
         response.name = course.name;
         response.description = course.description;
+        response.levelId = course.levelId;
+        response.hours = course.hours;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.STORE_FAILED;
@@ -93,8 +100,6 @@ export class CourseService extends BaseService {
       } else {
         response = await this.courseRepository.find(dto);
       }
-
-      console.log(response);
 
       return this.success({
         classRO: CourseGetListRO,
@@ -152,6 +157,14 @@ export class CourseService extends BaseService {
           courseData.description = dto.description;
         }
 
+        if (dto.levelId) {
+          courseData.levelId = dto.levelId;
+        }
+
+        if (dto.hours) {
+          courseData.hours = dto.hours;
+        }
+
         const course = await this.courseRepository.updateWithTransaction(transaction, id, courseData);
 
         await this.categoryCourseRepository.updateByCategoryIdsAndCourseIdWithTransaction(transaction, dto.categoryIds, course.id, actorId);
@@ -159,6 +172,8 @@ export class CourseService extends BaseService {
         response.id = course.id;
         response.name = course.name;
         response.description = course.description;
+        response.levelId = course.levelId;
+        response.hours = course.hours;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.UPDATE_FAILED;
@@ -230,13 +245,19 @@ export class CourseService extends BaseService {
     }
 
     // Check category exist
-    console.log(dto.categoryIds);
     if (dto.categoryIds && dto.categoryIds.length) {
       const categoryCount = await this.categoryRepository.countByIds(dto.categoryIds);
       if (!categoryCount) {
         const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
+    }
+
+    // Check level exist
+    const levelCount = await this.levelRepository.countById(dto.levelId);
+    if (!levelCount) {
+      const { code, status, message } = EXCEPTION.LEVEL.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
     }
   }
 
@@ -260,6 +281,15 @@ export class CourseService extends BaseService {
       const categoryCount = await this.categoryRepository.countByIds(dto.categoryIds);
       if (!categoryCount) {
         const { code, status, message } = EXCEPTION.CATEGORY.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
+
+    // Check level exist
+    if (dto.levelId) {
+      const levelCount = await this.levelRepository.countById(dto.levelId);
+      if (!levelCount) {
+        const { code, status, message } = EXCEPTION.LEVEL.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
     }

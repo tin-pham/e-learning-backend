@@ -4,12 +4,12 @@ import { ROLE } from '../role/enum/role.enum';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { LessonEntity } from './lesson.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonRepository } from './lesson.repository';
 import { SectionRepository } from '../section/section.repository';
+import { StudentRepository } from '../student/student.repository';
+import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
-import { StudentRepository } from 'src/student/student.repository';
-import { CourseStudentRepository } from 'src/course-student/course-student.repository';
 
 @Injectable()
 export class LessonService extends BaseService {

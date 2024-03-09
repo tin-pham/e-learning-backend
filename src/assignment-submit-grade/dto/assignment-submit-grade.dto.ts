@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
-import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 
 const { GRADE } = UNPROCESSABLE_ENTITY_EXCEPTION.ASSIGNMENT_SUBMIT_GRADE;
 

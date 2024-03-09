@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { ArrayMinSize, IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, MaxDate, MinDate } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
-import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 
 const { NAME, DESCRIPTION, DUE_DATE, LESSON_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.ASSIGNMENT;
 

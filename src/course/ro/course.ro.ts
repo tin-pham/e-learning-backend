@@ -14,6 +14,14 @@ export class CourseStoreRO {
   @ApiProperty()
   @Expose()
   description?: string;
+
+  @ApiProperty()
+  @Expose()
+  levelId?: number;
+
+  @ApiProperty()
+  @Expose()
+  hours?: number;
 }
 
 export class CourseGetListDataRO {
@@ -35,7 +43,19 @@ export class CourseGetListDataRO {
 
   @ApiProperty()
   @Expose()
+  levelId: number;
+
+  @ApiProperty()
+  @Expose()
+  levelName: string;
+
+  @ApiProperty()
+  @Expose()
   unsubmittedPendingCount?: number;
+
+  @ApiProperty()
+  @Expose()
+  hours: number;
 }
 
 export class CourseGetListRO extends PaginateRO<CourseGetListDataRO> {
@@ -60,11 +80,27 @@ export class CourseGetDetailRO {
 
   @ApiProperty()
   @Expose()
+  levelId: number;
+
+  @ApiProperty()
+  @Expose()
+  levelName: string;
+
+  @ApiProperty()
+  @Expose()
   imageUrl?: string;
 
   @ApiProperty({ type: [Number] })
   @Expose()
   categoryIds: number[];
+
+  @ApiProperty()
+  @Expose()
+  hours: number;
+
+  @ApiProperty()
+  @Expose()
+  lessonCount: number;
 }
 
 export class CourseUpdateRO {
@@ -79,6 +115,14 @@ export class CourseUpdateRO {
   @ApiProperty()
   @Expose()
   description?: string;
+
+  @ApiProperty()
+  @Expose()
+  levelId: number;
+
+  @ApiProperty()
+  @Expose()
+  hours: number;
 }
 
 export class CourseDeleteRO {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { PaginateRO } from 'src/common/ro/paginate.ro';
+import { PaginateRO } from '../../common/ro/paginate.ro';
 
 export class LessonStoreRO {
   @ApiProperty()
