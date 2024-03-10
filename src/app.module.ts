@@ -37,6 +37,7 @@ import { CategoryCourseModule } from './category-course/category-course.module';
 import { NotificationModule } from './notification/notification.module';
 import { UserNotificationModule } from './user-notification/user-notification.module';
 import { LevelModule } from './level/level.module';
+import { QuestionCategoryModule } from './question-category/question-category.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { LevelModule } from './level/level.module';
     LessonCommentModule,
     DifficultyModule,
     QuestionModule,
+    QuestionCategoryModule,
     QuestionOptionModule,
     ExerciseModule,
     ExerciseQuestionModule,

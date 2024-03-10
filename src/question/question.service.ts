@@ -5,6 +5,10 @@ import { DatabaseService } from '../database';
 import { QuestionEntity } from './question.entity';
 import { QuestionRepository } from './question.repository';
 import { DifficultyRepository } from '../difficulty/difficulty.repository';
+import { QuestionCategoryHasQuestionRepository } from '../question-category-has-question/question-category-has-question.repository';
+import { QuestionCategoryRepository } from '../question-category/question-category.repository';
+import { QuestionOptionRepository } from '../question-option/question-option.repository';
+import { QuestionOptionEntity } from '../question-option/question-option.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
 import { QuestionDeleteRO, QuestionGetDetailRO, QuestionGetListRO, QuestionStoreRO, QuestionUpdateRO } from './ro/question.ro';
@@ -17,7 +21,10 @@ export class QuestionService extends BaseService {
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
     private readonly questionRepository: QuestionRepository,
+    private readonly questionOptionRepository: QuestionOptionRepository,
     private readonly difficultyRepository: DifficultyRepository,
+    private readonly questionCategoryRepository: QuestionCategoryRepository,
+    private readonly questionCategoryHasQuestionRepository: QuestionCategoryHasQuestionRepository,
   ) {
     super(elasticLogger);
   }
@@ -36,6 +43,26 @@ export class QuestionService extends BaseService {
         questionData.isMultipleChoice = dto.isMultipleChoice;
         questionData.createdBy = actorId;
         const question = await this.questionRepository.insertWithTransaction(transaction, questionData);
+
+        const questionOptionData = dto.options.map((option, index) => {
+          // Prepend the label (A, B, C, etc.) to the option text
+          const label = String.fromCharCode(65 + index); // 65 is the ASCII code for 'A'
+          return new QuestionOptionEntity({
+            text: `${label}. ${option.text}`,
+            isCorrect: option.isCorrect,
+            questionId: question.id,
+          });
+        });
+        await this.questionOptionRepository.insertMultipleWithTransaction(transaction, questionOptionData);
+
+        if (dto.questionCategoryIds) {
+          const questionCategoryHasQuestionEntities = dto.questionCategoryIds.map((questionCategoryId) => ({
+            questionId: question.id,
+            questionCategoryId,
+          }));
+
+          await this.questionCategoryHasQuestionRepository.insertMultipleWithTransaction(transaction, questionCategoryHasQuestionEntities);
+        }
 
         response.id = question.id;
         response.text = question.text;
@@ -129,12 +156,21 @@ export class QuestionService extends BaseService {
         questionData.isMultipleChoice = dto.isMultipleChoice;
       }
 
-      const question = await this.questionRepository.update(id, questionData);
+      await this.database.transaction().execute(async (transaction) => {
+        const question = await this.questionRepository.updateWithTransaction(transaction, id, questionData);
 
-      response.id = question.id;
-      response.text = question.text;
-      response.difficultyId = question.difficultyId;
-      response.isMultipleChoice = question.isMultipleChoice;
+        await this.questionCategoryHasQuestionRepository.updateByQuestionCategoryIdsAndQuestionIdWithTransaction(
+          transaction,
+          dto.questionCategoryIds,
+          question.id,
+          actorId,
+        );
+
+        response.id = question.id;
+        response.text = question.text;
+        response.difficultyId = question.difficultyId;
+        response.isMultipleChoice = question.isMultipleChoice;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION.UPDATE_FAILED;
       this.logger.error(error);
@@ -180,6 +216,29 @@ export class QuestionService extends BaseService {
       const { code, status, message } = EXCEPTION.DIFFICULTY.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+
+    // Check question category ids exist
+    if (dto.questionCategoryIds) {
+      const questionCategoryCount = await this.questionCategoryRepository.countByIds(dto.questionCategoryIds);
+      if (!questionCategoryCount) {
+        const { code, status, message } = EXCEPTION.QUESTION_CATEGORY.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
+
+    // Check duplicate isCorrect
+    const isCorrects = dto.options.filter((option) => option.isCorrect);
+    if (!dto.isMultipleChoice && isCorrects.length > 1) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_DUPLICATE;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check text unique in same question
+    const texts = dto.options.map((option) => option.text);
+    if (texts.length !== new Set(texts).size) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.TEXT_DUPLICATE;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 
   private async validateUpdate(id: number, dto: QuestionUpdateDTO, actorId: number) {
@@ -195,6 +254,15 @@ export class QuestionService extends BaseService {
     if (!difficultyCount) {
       const { code, status, message } = EXCEPTION.DIFFICULTY.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
+    }
+
+    // Check question category ids exist
+    if (dto.questionCategoryIds) {
+      const questionCategoryCount = await this.questionCategoryRepository.countByIds(dto.questionCategoryIds);
+      if (!questionCategoryCount) {
+        const { code, status, message } = EXCEPTION.QUESTION_CATEGORY.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
   }
 

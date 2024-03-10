@@ -2,15 +2,15 @@ import { DifficultyEntity } from '../difficulty.entity';
 
 export const DIFFILCULTY_DATA: DifficultyEntity[] = [
   {
-    name: 'EASY',
+    name: 'dễ',
   },
   {
-    name: 'MEDIUM',
+    name: 'trung bình',
   },
   {
-    name: 'HARD',
+    name: 'khó',
   },
   {
-    name: 'VERY HARD',
+    name: 'siêu khó',
   },
 ];

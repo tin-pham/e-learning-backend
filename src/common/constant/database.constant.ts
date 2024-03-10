@@ -340,11 +340,11 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
-  SECTION_EXERCISE: {
-    NAME: 'section_exercise',
+  LESSON_EXERCISE: {
+    NAME: 'lesson_exercise',
     SCHEMA: {
       ID: 'id',
-      SECTION_ID: 'section_id',
+      LESSON_ID: 'lesson_id',
       EXERCISE_ID: 'exercise_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',
@@ -547,6 +547,33 @@ export const DATABASE_TABLE = {
     SCHEMA: {
       ID: 'id',
       NAME: 'name',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
+  QUESTION_CATEGORY: {
+    NAME: 'question_category',
+    SCHEMA: {
+      ID: 'id',
+      NAME: 'name',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
+  QUESTION_CATEGORY_HAS_QUESTION: {
+    NAME: 'question_category_has_question',
+    SCHEMA: {
+      ID: 'id',
+      QUESTION_CATEGORY_ID: 'question_category_id',
+      QUESTION_ID: 'question_id',
       CREATED_AT: 'created_at',
       CREATED_BY: 'created_by',
       UPDATED_AT: 'updated_at',

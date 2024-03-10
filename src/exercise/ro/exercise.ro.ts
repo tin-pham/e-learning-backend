@@ -17,7 +17,7 @@ export class ExerciseStoreRO {
 
   @ApiProperty()
   @Expose()
-  sectionId: number;
+  lessonId: number;
 
   constructor(data?: ExerciseStoreRO) {
     Object.assign(this, data);
@@ -32,6 +32,18 @@ export class ExerciseGetListDataRO {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty()
+  @Expose()
+  difficultyId: number;
+
+  @ApiProperty()
+  @Expose()
+  difficultyName: string;
+
+  @ApiProperty()
+  @Expose()
+  submissionId: number;
 }
 
 export class ExerciseGetListRO extends PaginateRO<ExerciseGetListDataRO> {

@@ -1,10 +1,10 @@
 import { BaseEntity } from '../base/base.entity';
 
-export class SectionExerciseEntity extends BaseEntity {
-  sectionId: number;
+export class LessonExerciseEntity extends BaseEntity {
+  lessonId: number;
   exerciseId: number;
 
-  constructor(data?: SectionExerciseEntity) {
+  constructor(data?: LessonExerciseEntity) {
     super(data);
     Object.assign(this, data);
   }

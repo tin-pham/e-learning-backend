@@ -6,4 +6,9 @@ export class QuestionOptionEntity extends BaseEntity {
   isCorrect: boolean;
 
   questionId: number;
+
+  constructor(data?: QuestionOptionEntity) {
+    super(data);
+    Object.assign(this, data);
+  }
 }

@@ -3,7 +3,6 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DifficultyRepository } from './difficulty.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { DifficultyGetListDTO } from './dto/difficulty.dto';
 import { DifficultyGetListRO } from './ro/difficulty.ro';
 
 @Injectable()
@@ -17,14 +16,14 @@ export class DifficultyService extends BaseService {
     super(elasticLogger);
   }
 
-  async getList(dto: DifficultyGetListDTO, decoded: IJwtPayload) {
+  async getList(decoded: IJwtPayload) {
     const actorId = decoded.userId;
     try {
-      const response = await this.difficultyRepository.find(dto);
+      const difficulties = await this.difficultyRepository.find();
 
       return this.success({
         classRO: DifficultyGetListRO,
-        response,
+        response: { data: difficulties },
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.DIFFICULTY.GET_LIST_FAILED;

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
+import { PaginateRO } from 'src/common/ro/paginate.ro';
 
 export class QuestionCategoryStoreRO {
   @ApiProperty()
@@ -23,9 +24,13 @@ export class QuestionCategoryGetListDataRO {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty()
+  @Expose()
+  questionCount: number;
 }
 
-export class QuestionCategoryGetListRO {
+export class QuestionCategoryGetListRO extends PaginateRO<QuestionCategoryGetListDataRO> {
   @ApiProperty({ type: [QuestionCategoryGetListDataRO] })
   @Type(() => QuestionCategoryGetListDataRO)
   @Expose()

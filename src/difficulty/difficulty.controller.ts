@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -16,7 +16,6 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { DifficultyService } from './difficulty.service';
-import { DifficultyGetListDTO } from './dto/difficulty.dto';
 import { DifficultyGetListRO } from './ro/difficulty.ro';
 
 const { TAGS, CONTROLLER, GET_LIST } = API.DIFFICULTY;
@@ -36,7 +35,7 @@ export class DifficultyController {
   @Get(GET_LIST.ROUTE)
   @Roles(ROLE.ADMIN)
   @UseGuards(JwtGuard, RoleGuard)
-  getList(@Query() dto: DifficultyGetListDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.difficultyService.getList(dto, decoded);
+  getList(@JwtPayload() decoded: IJwtPayload) {
+    return this.difficultyService.getList(decoded);
   }
 }

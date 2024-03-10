@@ -22,7 +22,6 @@ import { CourseAssignmentEntity } from '../course-assignment/course-assignment.e
 import { QuestionCategoryEntity } from '../question-category/question-category.entity';
 import { SubmitOptionEntity } from '../submit-option/submit-option.entity';
 import { AssignmentAttachmentEntity } from '../assignment-attachment/assignment-attachment.entity';
-import { SectionExerciseEntity } from '../section-exercise/section-exercise.entity';
 import { ExerciseSubmitEntity } from '../exercise-submit/exercise-submit.entity';
 import { ExerciseSubmitOptionEntity } from '../exercise-submit-option/exercise-submit-option.entity';
 import { ExerciseSubmitMarkEntity } from '../exercise-submit-mark/exercise-submit-mark.entity';
@@ -40,6 +39,8 @@ import { UserNotificationEntity } from '../user-notification/user-notification.e
 import { CourseNotificationEntity } from '../course-notification/course-notification.entity';
 import { CommentNotificationEntity } from '../comment-notification/comment-notification.entity';
 import { LevelEntity } from '../level/level.entity';
+import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity';
+import { QuestionCategoryHasQuestionEntity } from '../question-category-has-question/question-category-has-question.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -65,7 +66,7 @@ export interface KyselyTables {
   questionCategory: QuestionCategoryEntity;
   submitOption: SubmitOptionEntity;
   assignmentAttachment: AssignmentAttachmentEntity;
-  sectionExercise: SectionExerciseEntity;
+  lessonExercise: LessonExerciseEntity;
   exerciseSubmit: ExerciseSubmitEntity;
   exerciseSubmitOption: ExerciseSubmitOptionEntity;
   exerciseSubmitMark: ExerciseSubmitMarkEntity;
@@ -83,6 +84,7 @@ export interface KyselyTables {
   courseNotification: CourseNotificationEntity;
   commentNotification: CommentNotificationEntity;
   level: LevelEntity;
+  questionCategoryHasQuestion: QuestionCategoryHasQuestionEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

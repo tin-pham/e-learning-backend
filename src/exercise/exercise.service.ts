@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
+import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity';
 import { ExerciseRepository } from './exercise.repository';
-import { SectionExerciseRepository } from '../section-exercise/section-exercise.repository';
+import { LessonRepository } from '../lesson/lesson.repository';
+import { LessonExerciseRepository } from '../lesson-exercise/lesson-exercise.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseDeleteRO, ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ExerciseEntity } from './exercise.entity';
-import { SectionExerciseEntity } from '../section-exercise/section-exercise.entity';
-import { SectionRepository } from '../section/section.repository';
 
 @Injectable()
 export class ExerciseService extends BaseService {
@@ -19,8 +19,8 @@ export class ExerciseService extends BaseService {
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
     private readonly exerciseRepository: ExerciseRepository,
-    private readonly sectionRepository: SectionRepository,
-    private readonly sectionExerciseRepository: SectionExerciseRepository,
+    private readonly lessonExerciseRepository: LessonExerciseRepository,
+    private readonly lessonRepository: LessonRepository,
   ) {
     super(elasticLogger);
   }
@@ -41,22 +41,22 @@ export class ExerciseService extends BaseService {
         });
         const exercise = await this.exerciseRepository.insertWithTransaction(transaction, exerciseData);
 
-        // Store section exercise
-        let sectionExercise: Partial<SectionExerciseEntity>;
-        if (dto.sectionId) {
-          const sectionExerciseData = new SectionExerciseEntity({
-            sectionId: dto.sectionId,
+        // Store lesson exercise
+        let lessonExercise: Partial<LessonExerciseEntity>;
+        if (dto.lessonId) {
+          const lessonExerciseData = new LessonExerciseEntity({
+            lessonId: dto.lessonId,
             exerciseId: exercise.id,
             createdBy: actorId,
           });
-          sectionExercise = await this.sectionExerciseRepository.insertWithTransaction(transaction, sectionExerciseData);
+          lessonExercise = await this.lessonExerciseRepository.insertWithTransaction(transaction, lessonExerciseData);
         }
 
         response = new ExerciseStoreRO({
           id: exercise.id,
           name: exercise.name,
           difficultyId: exercise.difficultyId,
-          sectionId: sectionExercise?.sectionId,
+          lessonId: lessonExercise?.lessonId,
         });
       });
     } catch (error) {
@@ -171,11 +171,11 @@ export class ExerciseService extends BaseService {
   }
 
   private async validateStore(dto: ExerciseStoreDTO, actorId: number) {
-    // Check section exist
-    if (dto.sectionId) {
-      const sectionCount = await this.sectionRepository.countById(dto.sectionId);
-      if (!sectionCount) {
-        const { code, status, message } = EXCEPTION.SECTION.DOES_NOT_EXIST;
+    // Check lesson exist
+    if (dto.lessonId) {
+      const lessonCount = await this.lessonRepository.countById(dto.lessonId);
+      if (!lessonCount) {
+        const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
     }

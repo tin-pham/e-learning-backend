@@ -14,8 +14,19 @@ export class QuestionCategoryRepository {
 
   find(dto: QuestionCategoryGetListDTO) {
     const { page, limit } = dto;
-    const query = this.database.selectFrom('questionCategory').select(['id', 'name']).where('deletedAt', 'is', null);
-
+    const query = this.database
+      .selectFrom('questionCategory')
+      .where('questionCategory.deletedAt', 'is', null)
+      .leftJoin('questionCategoryHasQuestion', (join) =>
+        join
+          .onRef('questionCategory.id', '=', 'questionCategoryHasQuestion.questionCategoryId')
+          .on('questionCategoryHasQuestion.deletedAt', 'is', null),
+      )
+      .leftJoin('question', (join) =>
+        join.onRef('questionCategoryHasQuestion.questionId', '=', 'question.id').on('question.deletedAt', 'is', null),
+      )
+      .groupBy('questionCategory.id')
+      .select(({ fn }) => ['questionCategory.id as id', 'questionCategory.name as name', fn.count('question.id').as('questionCount')]);
     return paginate(query, { page, limit });
   }
 
@@ -63,6 +74,16 @@ export class QuestionCategoryRepository {
       .selectFrom('questionCategory')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByIds(ids: number[]) {
+    const { count } = await this.database
+      .selectFrom('questionCategory')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', 'in', ids)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);

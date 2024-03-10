@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { PaginateRO } from '../../common/ro/paginate.ro';
 
 export class DifficultyGetListDataRO {
   @ApiProperty()
@@ -12,7 +11,7 @@ export class DifficultyGetListDataRO {
   name: string;
 }
 
-export class DifficultyGetListRO extends PaginateRO<DifficultyGetListDataRO> {
+export class DifficultyGetListRO {
   @ApiProperty({ type: [DifficultyGetListDataRO] })
   @Type(() => DifficultyGetListDataRO)
   @Expose()

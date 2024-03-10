@@ -15,21 +15,32 @@ export class ExerciseRepository {
   }
 
   find(dto: ExerciseGetListDTO) {
-    const { limit, page, sectionId } = dto;
+    const { limit, page, lessonId } = dto;
 
-    const withSection = Boolean(sectionId);
+    const withLesson = Boolean(lessonId);
 
     const query = this.database
       .selectFrom('exercise')
-      .select(['id', 'name', 'difficultyId'])
-      .where('deletedAt', 'is', null)
-      .$if(withSection, (qb) =>
+      .where('exercise.deletedAt', 'is', null)
+      .innerJoin('difficulty', 'difficulty.id', 'exercise.difficultyId')
+      .where('difficulty.deletedAt', 'is', null)
+      .leftJoin('exerciseSubmit', (join) =>
+        join.onRef('exerciseSubmit.exerciseId', '=', 'exercise.id').on('exerciseSubmit.deletedAt', 'is', null),
+      )
+      .select([
+        'exercise.id',
+        'exercise.name',
+        'exercise.difficultyId',
+        'difficulty.name as difficultyName',
+        'exerciseSubmit.id as submissionId',
+      ])
+      .$if(withLesson, (qb) =>
         qb
-          .innerJoin('sectionExercise', 'sectionExercise.exerciseId', 'exercise.id')
-          .where('sectionExercise.deletedAt', 'is', null)
-          .innerJoin('section', 'section.id', 'sectionExercise.sectionId')
-          .where('section.id', '=', dto.sectionId)
-          .where('section.deletedAt', 'is', null),
+          .innerJoin('lessonExercise', 'lessonExercise.exerciseId', 'exercise.id')
+          .where('lessonExercise.deletedAt', 'is', null)
+          .innerJoin('lesson', 'lesson.id', 'lessonExercise.lessonId')
+          .where('lesson.id', '=', dto.lessonId)
+          .where('lesson.deletedAt', 'is', null),
       );
 
     return paginate(query, { limit, page });

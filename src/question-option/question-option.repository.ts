@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { paginate } from '../common/function/paginate';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { QuestionOptionEntity } from './question-option.entity';
 import { QuestionOptionGetListDTO } from './dto/question-option.dto';
 
 @Injectable()
 export class QuestionOptionRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  insertMultipleWithTransaction(transaction: Transaction, options: QuestionOptionEntity[]) {
+    return transaction.insertInto('questionOption').values(options).execute();
+  }
 
   getCorrectIdByQuestionId(questionId: number) {
     return this.database

@@ -53,8 +53,8 @@ export class QuestionRepository {
       .executeTakeFirst();
   }
 
-  update(id: number, entity: QuestionEntity) {
-    return this.database
+  updateWithTransaction(transaction: Transaction, id: number, entity: QuestionEntity) {
+    return transaction
       .updateTable('question')
       .set(entity)
       .where('id', '=', id)

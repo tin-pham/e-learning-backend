@@ -326,6 +326,11 @@ export const EXCEPTION = {
     },
   },
   QUESTION_OPTION: {
+    TEXT_DUPLICATE: {
+      status: HttpStatus.CONFLICT,
+      message: 'Question option text duplicate',
+      code: 'QUESTION_OPTION.TEXT_DUPLICATE',
+    },
     ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
       message: 'Question option already exist',
@@ -340,6 +345,11 @@ export const EXCEPTION = {
       status: HttpStatus.BAD_REQUEST,
       message: 'Question option does not belong to question',
       code: 'QUESTION_OPTION.DOES_NOT_BELONG_TO_QUESTION',
+    },
+    IS_CORRECT_DUPLICATE: {
+      status: HttpStatus.CONFLICT,
+      message: 'Question option is correct duplicate',
+      code: 'QUESTION_OPTION.IS_CORRECT_DUPLICATE',
     },
     IS_CORRECT_ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
