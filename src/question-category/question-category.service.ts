@@ -7,8 +7,8 @@ import { QuestionCategoryGetListDTO, QuestionCategoryStoreDTO, QuestionCategoryU
 import { QuestionCategoryEntity } from './question-category.entity';
 import {
   QuestionCategoryDeleteRO,
-  QuestionCategoryGetDetailRO,
   QuestionCategoryGetListRO,
+  QuestionCategoryGetDetailRO,
   QuestionCategoryStoreRO,
   QuestionCategoryUpdateRO,
 } from './ro/question-category.ro';
@@ -75,25 +75,20 @@ export class QuestionCategoryService extends BaseService {
 
   async getDetail(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    let questionCategory: QuestionCategoryEntity;
+    let response: any;
 
     try {
-      questionCategory = await this.questionCategoryRepository.findOneById(id);
+      response = await this.questionCategoryRepository.findOneById(id);
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION_CATEGORY.GET_DETAIL_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
     }
 
-    if (!questionCategory) {
+    if (!response) {
       const { code, status, message } = EXCEPTION.QUESTION_CATEGORY.NOT_FOUND;
       this.throwException({ code, status, message, actorId });
     }
-
-    const response = new QuestionCategoryGetDetailRO({
-      id: questionCategory.id,
-      name: questionCategory.name,
-    });
 
     return this.success({
       classRO: QuestionCategoryGetDetailRO,

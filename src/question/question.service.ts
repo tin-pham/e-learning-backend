@@ -31,7 +31,7 @@ export class QuestionService extends BaseService {
 
   async store(dto: QuestionStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateStore(dto, actorId);
+    const { isMultipleChoice } = await this.validateStore(dto, actorId);
 
     const response = new QuestionStoreRO();
 
@@ -40,15 +40,13 @@ export class QuestionService extends BaseService {
         const questionData = new QuestionEntity();
         questionData.text = dto.text;
         questionData.difficultyId = dto.difficultyId;
-        questionData.isMultipleChoice = dto.isMultipleChoice;
+        questionData.isMultipleChoice = isMultipleChoice;
         questionData.createdBy = actorId;
         const question = await this.questionRepository.insertWithTransaction(transaction, questionData);
 
-        const questionOptionData = dto.options.map((option, index) => {
-          // Prepend the label (A, B, C, etc.) to the option text
-          const label = String.fromCharCode(65 + index); // 65 is the ASCII code for 'A'
+        const questionOptionData = dto.options.map((option) => {
           return new QuestionOptionEntity({
-            text: `${label}. ${option.text}`,
+            text: option.text,
             isCorrect: option.isCorrect,
             questionId: question.id,
           });
@@ -152,10 +150,6 @@ export class QuestionService extends BaseService {
         questionData.difficultyId = dto.difficultyId;
       }
 
-      if (dto.isMultipleChoice) {
-        questionData.isMultipleChoice = dto.isMultipleChoice;
-      }
-
       await this.database.transaction().execute(async (transaction) => {
         const question = await this.questionRepository.updateWithTransaction(transaction, id, questionData);
 
@@ -228,9 +222,9 @@ export class QuestionService extends BaseService {
 
     // Check duplicate isCorrect
     const isCorrects = dto.options.filter((option) => option.isCorrect);
-    if (!dto.isMultipleChoice && isCorrects.length > 1) {
-      const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_DUPLICATE;
-      this.throwException({ code, status, message, actorId });
+    let isMultipleChoice = false;
+    if (isCorrects.length > 1) {
+      isMultipleChoice = true;
     }
 
     // Check text unique in same question
@@ -239,6 +233,8 @@ export class QuestionService extends BaseService {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.TEXT_DUPLICATE;
       this.throwException({ code, status, message, actorId });
     }
+
+    return { isMultipleChoice };
   }
 
   private async validateUpdate(id: number, dto: QuestionUpdateDTO, actorId: number) {

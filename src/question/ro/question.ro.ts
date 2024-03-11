@@ -20,6 +20,20 @@ export class QuestionStoreRO {
   isMultipleChoice: boolean;
 }
 
+export class QuestionGetListOptionRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  text: string;
+
+  @ApiProperty()
+  @Expose()
+  isCorrect: boolean;
+}
+
 export class QuestionGetListDataRO {
   @ApiProperty()
   @Expose()
@@ -35,7 +49,16 @@ export class QuestionGetListDataRO {
 
   @ApiProperty()
   @Expose()
+  difficultyName: string;
+
+  @ApiProperty()
+  @Expose()
   isMultipleChoice: boolean;
+
+  @ApiProperty({ type: [QuestionGetListOptionRO] })
+  @Type(() => QuestionGetListOptionRO)
+  @Expose()
+  options: QuestionGetListOptionRO[];
 }
 
 export class QuestionGetListRO extends PaginateRO<QuestionGetListDataRO> {

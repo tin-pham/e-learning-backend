@@ -123,10 +123,15 @@ export class QuestionOptionService extends BaseService {
         questionOptionData.text = dto.text;
       }
 
+      if (dto.isCorrect) {
+        questionOptionData.isCorrect = dto.isCorrect;
+      }
+
       const questionOption = await this.questionOptionRepository.update(id, questionOptionData);
 
       response.id = questionOption.id;
       response.text = questionOption.text;
+      response.isCorrect = questionOption.isCorrect;
       response.questionId = questionOption.questionId;
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.UPDATE_FAILED;
@@ -209,6 +214,27 @@ export class QuestionOptionService extends BaseService {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+
+    // Check isCorrect duplicate
+    const questionOptions = await this.questionOptionRepository.findByQuestiondId(questionOption.questionId);
+    let isMultipleChoice = false;
+    if (questionOptions) {
+      const isCorrects = questionOptions.filter((option) => option.isCorrect);
+      if (isCorrects.length > 1) {
+        isMultipleChoice = true;
+      }
+    }
+
+    // Check text duplicate
+    const texts = questionOptions.map((option) => option.text);
+    if (texts.length !== new Set(texts).size) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.TEXT_DUPLICATE;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return {
+      isMultipleChoice,
+    };
   }
 
   private async validateDelete(id: number, actorId: number) {

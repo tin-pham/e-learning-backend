@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 
-const { TEXT, DIFFICULTY_ID, IS_MULTIPLE_CHOICE } = UNPROCESSABLE_ENTITY_EXCEPTION.QUESTION;
+const { TEXT, DIFFICULTY_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.QUESTION;
 
 export class QuestionStoreOptionDTO {
   @ApiProperty()
@@ -32,14 +32,6 @@ export class QuestionStoreDTO {
   })
   difficultyId: number;
 
-  @ApiProperty()
-  @IsBoolean()
-  @Type(() => Boolean)
-  @IsNotEmpty({
-    message: IS_MULTIPLE_CHOICE.IS_NOT_EMPTY,
-  })
-  isMultipleChoice: boolean = false;
-
   @ApiProperty({ example: [1] })
   @IsNumber({}, { each: true })
   @IsArray()
@@ -54,7 +46,13 @@ export class QuestionStoreDTO {
   options?: QuestionStoreOptionDTO[];
 }
 
-export class QuestionGetListDTO extends PaginateDTO {}
+export class QuestionGetListDTO extends PaginateDTO {
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  questionCategoryId?: number;
+}
 
 export class QuestionUpdateDTO {
   @ApiPropertyOptional()
@@ -72,9 +70,4 @@ export class QuestionUpdateDTO {
   @IsArray()
   @IsOptional()
   questionCategoryIds?: number[];
-
-  @ApiPropertyOptional()
-  @IsBoolean()
-  @IsOptional()
-  isMultipleChoice?: boolean;
 }

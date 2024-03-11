@@ -29,4 +29,9 @@ export class QuestionOptionUpdateDTO {
   @IsString()
   @IsOptional()
   text?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  isCorrect?: boolean;
 }

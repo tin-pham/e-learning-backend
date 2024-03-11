@@ -142,4 +142,14 @@ export class QuestionOptionRepository {
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
   }
+
+  findByQuestiondId(questionId: number) {
+    return this.database
+      .selectFrom('questionOption')
+      .select(['id', 'text', 'questionId', 'isCorrect'])
+      .where('deletedAt', 'is', null)
+      .where('questionId', '=', questionId)
+      .orderBy('id', 'asc')
+      .execute();
+  }
 }

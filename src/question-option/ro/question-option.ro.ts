@@ -74,6 +74,10 @@ export class QuestionOptionUpdateRO {
 
   @ApiProperty()
   @Expose()
+  isCorrect: boolean;
+
+  @ApiProperty()
+  @Expose()
   questionId: number;
 }
 
