@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 
-const { TEXT, DIFFICULTY_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.QUESTION;
+const { TEXT, DIFFICULTY_ID, OPTIONS } = UNPROCESSABLE_ENTITY_EXCEPTION.QUESTION;
 
 export class QuestionStoreOptionDTO {
   @ApiProperty()
@@ -39,7 +39,7 @@ export class QuestionStoreDTO {
   questionCategoryIds?: number[];
 
   @ApiProperty({ type: [QuestionStoreOptionDTO] })
-  @ArrayMinSize(1)
+  @ArrayMinSize(2, { message: OPTIONS.AT_LEAST_TWO_OPTION_IS_REQUIRED })
   @IsArray()
   @Type(() => QuestionStoreOptionDTO)
   @IsOptional()

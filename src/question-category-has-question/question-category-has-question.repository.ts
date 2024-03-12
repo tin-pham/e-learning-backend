@@ -1,10 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { Transaction } from 'src/database';
+import { DatabaseService, Transaction } from '../database';
 import { QuestionCategoryHasQuestionEntity } from './question-category-has-question.entity';
 import { sql } from 'kysely';
 
 @Injectable()
 export class QuestionCategoryHasQuestionRepository {
+  constructor(private readonly database: DatabaseService) {}
+
+  getCategoryIdsByQuestionId(questionId: number) {
+    return this.database
+      .selectFrom('questionCategoryHasQuestion')
+      .select('questionCategoryId')
+      .where('questionCategoryHasQuestion.deletedAt', 'is', null)
+      .where('questionId', '=', questionId)
+      .execute();
+  }
+
+  async countByQuestionTextAndCategoryIdsExceptId(text: string, questionCategoryIds: number[], id: number) {
+    const { count } = await this.database
+      .selectFrom('questionCategoryHasQuestion')
+      .where('questionCategoryHasQuestion.deletedAt', 'is', null)
+      .where('questionCategoryHasQuestion.id', '!=', id)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .innerJoin('question', 'question.id', 'questionCategoryHasQuestion.questionId')
+      .where('question.text', '=', text)
+      .where('question.deletedAt', 'is', null)
+      .innerJoin('questionCategory', 'questionCategory.id', 'questionCategoryHasQuestion.questionCategoryId')
+      .where('questionCategory.id', 'in', questionCategoryIds)
+      .where('questionCategory.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByQuestionTextAndCategoryIds(questionText: string, questionCategoryIds: number[]) {
+    const { count } = await this.database
+      .selectFrom('questionCategoryHasQuestion')
+      .where('questionCategoryHasQuestion.deletedAt', 'is', null)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .innerJoin('question', 'question.id', 'questionCategoryHasQuestion.questionId')
+      .where('question.text', '=', questionText)
+      .where('question.deletedAt', 'is', null)
+      .innerJoin('questionCategory', 'questionCategory.id', 'questionCategoryHasQuestion.questionCategoryId')
+      .where('questionCategory.id', 'in', questionCategoryIds)
+      .where('questionCategory.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   insertMultipleWithTransaction(transaction: Transaction, entities: QuestionCategoryHasQuestionEntity[]) {
     return transaction.insertInto('questionCategoryHasQuestion').values(entities).execute();
   }

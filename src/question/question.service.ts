@@ -51,7 +51,6 @@ export class QuestionService extends BaseService {
             questionId: question.id,
           });
         });
-        console.log(questionOptionData);
         await this.questionOptionRepository.insertMultipleWithTransaction(transaction, questionOptionData);
 
         if (dto.questionCategoryIds) {
@@ -227,15 +226,18 @@ export class QuestionService extends BaseService {
     }
 
     // Check duplicate isCorrect
-    const isCorrects = dto.options.filter((option) => option.isCorrect);
+    const isCorrects = dto.options.map((option) => option.isCorrect);
     let isMultipleChoice = false;
     if (isCorrects.length > 1) {
       isMultipleChoice = true;
     }
 
-    // Should contain at least 1 isCorrect
-    if (isCorrects.length === 0) {
-      const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_TRUE_REQUIRED;
+    // Should contain both true and false
+    const allTrue = isCorrects.every((value) => value === true);
+    const allFalse = isCorrects.every((value) => value === false);
+    console.log(allFalse);
+    if (allTrue || allFalse) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_DIVERSITY_REQUIRED;
       this.throwException({ code, status, message, actorId });
     }
 
@@ -244,6 +246,18 @@ export class QuestionService extends BaseService {
     if (texts.length !== new Set(texts).size) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.TEXT_DUPLICATE;
       this.throwException({ code, status, message, actorId });
+    }
+
+    // Check question unique in same category
+    if (dto.questionCategoryIds) {
+      const questionCount = await this.questionCategoryHasQuestionRepository.countByQuestionTextAndCategoryIds(
+        dto.text,
+        dto.questionCategoryIds,
+      );
+      if (questionCount) {
+        const { code, status, message } = EXCEPTION.QUESTION.ALREADY_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
 
     return { isMultipleChoice };
@@ -283,8 +297,6 @@ export class QuestionService extends BaseService {
       remainingOptions.push(...dto.options);
     }
 
-    console.log(remainingOptions);
-
     // Check text unique in same question
     const texts = remainingOptions.map((option) => option.text);
     if (texts.length !== new Set(texts).size) {
@@ -298,6 +310,21 @@ export class QuestionService extends BaseService {
     const allFalse = isCorrects.every((value) => value === false);
     if (allTrue || allFalse) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_DIVERSITY_REQUIRED;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check question unique in same category
+    const questionCategoryHasCategories = await this.questionCategoryHasQuestionRepository.getCategoryIdsByQuestionId(id);
+    const questionCategoryIds = questionCategoryHasCategories.map(
+      (questionCategoryHasQuestion) => questionCategoryHasQuestion.questionCategoryId,
+    );
+    const questionCountByQuestionText = await this.questionCategoryHasQuestionRepository.countByQuestionTextAndCategoryIdsExceptId(
+      dto.text,
+      questionCategoryIds,
+      id,
+    );
+    if (questionCountByQuestionText) {
+      const { code, status, message } = EXCEPTION.QUESTION.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 

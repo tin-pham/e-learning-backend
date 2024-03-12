@@ -289,6 +289,11 @@ export const EXCEPTION = {
     },
   },
   QUESTION: {
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Question already exist',
+      code: 'QUESTION.ALREADY_EXIST',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Question does not exist',
