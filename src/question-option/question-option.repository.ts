@@ -8,7 +8,32 @@ import { QuestionOptionGetListDTO } from './dto/question-option.dto';
 export class QuestionOptionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  findByIds(ids: number[]) {
+    return this.database
+      .selectFrom('questionOption')
+      .select(['id', 'text', 'questionId', 'isCorrect'])
+      .where('id', 'in', ids)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
+  deleteByIdsWithTransaction(transaction: Transaction, ids: number[], actorId: number) {
+    return transaction.updateTable('questionOption').set({ deletedAt: new Date(), deletedBy: actorId }).where('id', 'in', ids).execute();
+  }
+
+  async countByIdsAndQuestionId(ids: number[], questionId: number) {
+    const { count } = await this.database
+      .selectFrom('questionOption')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('id', 'in', ids)
+      .where('questionId', '=', questionId)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   insertMultipleWithTransaction(transaction: Transaction, options: QuestionOptionEntity[]) {
+    console.log(options);
     return transaction.insertInto('questionOption').values(options).execute();
   }
 
@@ -143,7 +168,7 @@ export class QuestionOptionRepository {
       .executeTakeFirst();
   }
 
-  findByQuestiondId(questionId: number) {
+  findByQuestionId(questionId: number) {
     return this.database
       .selectFrom('questionOption')
       .select(['id', 'text', 'questionId', 'isCorrect'])

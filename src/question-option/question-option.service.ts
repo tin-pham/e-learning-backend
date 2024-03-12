@@ -216,7 +216,7 @@ export class QuestionOptionService extends BaseService {
     }
 
     // Check isCorrect duplicate
-    const questionOptions = await this.questionOptionRepository.findByQuestiondId(questionOption.questionId);
+    const questionOptions = await this.questionOptionRepository.findByQuestionId(questionOption.questionId);
     let isMultipleChoice = false;
     if (questionOptions) {
       const isCorrects = questionOptions.filter((option) => option.isCorrect);

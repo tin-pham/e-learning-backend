@@ -83,9 +83,35 @@ export class QuestionRepository {
   findOneById(id: number) {
     return this.database
       .selectFrom('question')
-      .select(['id', 'text', 'difficultyId', 'isMultipleChoice'])
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
+      .where('question.id', '=', id)
+      .where('question.deletedAt', 'is', null)
+      .innerJoin('difficulty', 'difficulty.id', 'question.difficultyId')
+      .where('difficulty.deletedAt', 'is', null)
+      .leftJoin('questionOption', (join) =>
+        join.onRef('question.id', '=', 'questionOption.questionId').on('questionOption.deletedAt', 'is', null),
+      )
+      .groupBy(['question.id', 'question.text', 'question.difficultyId', 'difficulty.name', 'question.isMultipleChoice'])
+      .select(({ fn, ref }) => [
+        'question.id',
+        'question.text',
+        'question.difficultyId',
+        'difficulty.name as diffulltyName',
+        'question.isMultipleChoice',
+        fn
+          .coalesce(
+            fn
+              .jsonAgg(
+                jsonBuildObject({
+                  id: ref('questionOption.id'),
+                  text: ref('questionOption.text'),
+                  isCorrect: ref('questionOption.isCorrect'),
+                }),
+              )
+              .filterWhere('questionOption.id', 'is not', null),
+            sql`'[]'`,
+          )
+          .as('options'),
+      ])
       .executeTakeFirst();
   }
 

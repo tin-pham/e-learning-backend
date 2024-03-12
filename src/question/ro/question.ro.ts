@@ -68,6 +68,20 @@ export class QuestionGetListRO extends PaginateRO<QuestionGetListDataRO> {
   data: QuestionGetListDataRO[];
 }
 
+export class QuestioNGetDetailOptionRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  text: string;
+
+  @ApiProperty()
+  @Expose()
+  isCorrect: boolean;
+}
+
 export class QuestionGetDetailRO {
   @ApiProperty()
   @Expose()
@@ -84,6 +98,11 @@ export class QuestionGetDetailRO {
   @ApiProperty()
   @Expose()
   isMultipleChoice: boolean;
+
+  @ApiProperty({ type: [QuestioNGetDetailOptionRO] })
+  @Type(() => QuestioNGetDetailOptionRO)
+  @Expose()
+  options: QuestioNGetDetailOptionRO[];
 }
 
 export class QuestionUpdateRO {

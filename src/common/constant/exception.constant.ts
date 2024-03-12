@@ -326,6 +326,16 @@ export const EXCEPTION = {
     },
   },
   QUESTION_OPTION: {
+    IS_CORRECT_TRUE_REQUIRED: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Question option is correct true required',
+      code: 'QUESTION_OPTION.IS_CORRECT_TRUE_REQUIRED',
+    },
+    IS_CORRECT_DIVERSITY_REQUIRED: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Question option is correct diversity required',
+      code: 'QUESTION_OPTION.IS_CORRECT_DIVERSITY_REQUIRED',
+    },
     TEXT_DUPLICATE: {
       status: HttpStatus.CONFLICT,
       message: 'Question option text duplicate',

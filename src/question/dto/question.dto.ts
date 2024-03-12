@@ -54,6 +54,23 @@ export class QuestionGetListDTO extends PaginateDTO {
   questionCategoryId?: number;
 }
 
+export class QuestionUpdateOptionDTO {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  text?: string;
+}
+
+export class QuestionUpdateOptionRO {
+  @ApiPropertyOptional()
+  @IsBoolean()
+  isCorrect: boolean;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  text: string;
+}
+
 export class QuestionUpdateDTO {
   @ApiPropertyOptional()
   @IsString()
@@ -65,9 +82,15 @@ export class QuestionUpdateDTO {
   @IsOptional()
   difficultyId?: number;
 
-  @ApiProperty({ example: [1] })
+  @ApiPropertyOptional({ type: [QuestionUpdateOptionDTO] })
+  @IsArray()
+  @IsOptional()
+  @Type(() => QuestionUpdateOptionDTO)
+  options: QuestionUpdateOptionRO[];
+
+  @ApiPropertyOptional({ example: [1] })
   @IsNumber({}, { each: true })
   @IsArray()
   @IsOptional()
-  questionCategoryIds?: number[];
+  removeOptionIds: number[];
 }

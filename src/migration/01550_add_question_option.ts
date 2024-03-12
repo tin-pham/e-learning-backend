@@ -3,7 +3,7 @@ import { DATABASE_TABLE } from '../common';
 import { DatabaseService } from '../database';
 
 const { NAME, SCHEMA } = DATABASE_TABLE.QUESTION_OPTION;
-const { NAME: DIFFICULTY_NAME, SCHEMA: DIFFICULTY_SCHEMA } = DATABASE_TABLE.DIFFICULTY;
+const { NAME: QUESTION_NAME, SCHEMA: QUESTION_SCHEMA } = DATABASE_TABLE.QUESTION;
 const { NAME: USER_NAME, SCHEMA: USER_SCHEMA } = DATABASE_TABLE.USERS;
 
 export async function up(database: DatabaseService): Promise<void> {
@@ -12,7 +12,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.TEXT, 'varchar(255)', (column) => column.notNull())
     .addColumn(SCHEMA.IS_CORRECT, 'boolean', (column) => column.notNull())
-    .addColumn(SCHEMA.QUESTION_ID, 'integer', (column) => column.notNull().references(`${DIFFICULTY_NAME}.${DIFFICULTY_SCHEMA.ID}`))
+    .addColumn(SCHEMA.QUESTION_ID, 'integer', (column) => column.notNull().references(`${QUESTION_NAME}.${QUESTION_SCHEMA.ID}`))
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')
