@@ -85,7 +85,12 @@ export class QuestionService extends BaseService {
     const actorId = decoded.userId;
 
     try {
-      const response = await this.questionRepository.find(dto);
+      let response: any;
+      if (dto.questionCategoryId) {
+        response = await this.questionRepository.find(dto);
+      } else if (dto.exerciseId) {
+        response = await this.questionRepository.findByExerciseId(dto);
+      }
 
       return this.success({
         classRO: QuestionGetListRO,

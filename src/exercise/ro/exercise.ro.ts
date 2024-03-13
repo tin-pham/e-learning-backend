@@ -53,45 +53,6 @@ export class ExerciseGetListRO extends PaginateRO<ExerciseGetListDataRO> {
   data: ExerciseGetListDataRO[];
 }
 
-export class ExerciseGetDetailQuestionOptionRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  text: string;
-
-  @ApiProperty()
-  @Expose()
-  isCorrect: boolean;
-}
-
-export class ExerciseGetDetailQuestionRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  text: string;
-
-  @ApiProperty({ type: [ExerciseGetDetailQuestionOptionRO] })
-  @Type(() => ExerciseGetDetailQuestionOptionRO)
-  @Expose()
-  options: ExerciseGetDetailQuestionOptionRO[];
-}
-
-export class ExerciseGetDetailDifficultyRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  name: string;
-}
-
 export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
@@ -101,15 +62,13 @@ export class ExerciseGetDetailRO {
   @Expose()
   name: string;
 
-  @ApiProperty({ type: ExerciseGetDetailDifficultyRO })
-  @Type(() => ExerciseGetDetailDifficultyRO)
+  @ApiProperty()
   @Expose()
-  difficulty: ExerciseGetDetailDifficultyRO;
+  difficultyName: string;
 
-  @ApiProperty({ type: [ExerciseGetDetailQuestionRO] })
-  @Type(() => ExerciseGetDetailQuestionRO)
+  @ApiProperty()
   @Expose()
-  questions: ExerciseGetDetailQuestionRO[];
+  difficultyId: number;
 }
 
 export class ExerciseUpdateRO {

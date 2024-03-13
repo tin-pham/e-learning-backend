@@ -24,9 +24,10 @@ export class QuestionRepository {
   }
 
   find(dto: QuestionGetListDTO) {
-    const { page, limit, questionCategoryId } = dto;
+    const { page, limit, questionCategoryId, excludeExerciseId } = dto;
 
     const byCategory = Boolean(questionCategoryId);
+    const byExcludeExercise = Boolean(excludeExerciseId);
 
     const query = this.database
       .selectFrom('question')
@@ -50,6 +51,16 @@ export class QuestionRepository {
               .on('questionCategory.deletedAt', 'is', null),
           )
           .where('questionCategory.id', '=', questionCategoryId),
+      )
+      .$if(byExcludeExercise, (qb) =>
+        qb
+          .leftJoin('exerciseQuestion', (join) =>
+            join.onRef('question.id', '=', 'exerciseQuestion.questionId').on('exerciseQuestion.deletedAt', 'is', null),
+          )
+          .where('exerciseQuestion.id', 'is', null)
+          .leftJoin('exercise', (join) =>
+            join.onRef('exerciseQuestion.exerciseId', '=', 'exercise.id').on('exercise.deletedAt', 'is', null),
+          ),
       )
       .select(({ fn, ref }) => [
         'question.id',
@@ -78,6 +89,43 @@ export class QuestionRepository {
       page,
       limit,
     });
+  }
+
+  findByExerciseId(dto: QuestionGetListDTO) {
+    const { limit, page, exerciseId } = dto;
+    const query = this.database
+      .selectFrom('question')
+      .where('question.deletedAt', 'is', null)
+      .innerJoin('difficulty', 'difficulty.id', 'question.difficultyId')
+      .where('difficulty.deletedAt', 'is', null)
+      .innerJoin('exerciseQuestion', 'exerciseQuestion.questionId', 'question.id')
+      .where('exerciseQuestion.deletedAt', 'is', null)
+      .where('exerciseQuestion.exerciseId', '=', exerciseId)
+      .innerJoin('questionOption', 'questionOption.questionId', 'question.id')
+      .where('questionOption.deletedAt', 'is', null)
+      .groupBy(['question.id', 'question.text', 'question.difficultyId', 'difficulty.name', 'question.isMultipleChoice'])
+      .select(({ fn, ref }) => [
+        'question.id',
+        'question.text',
+        'question.difficultyId',
+        'difficulty.name as diffulltyName',
+        'question.isMultipleChoice',
+        fn
+          .coalesce(
+            fn
+              .jsonAgg(
+                jsonBuildObject({
+                  id: ref('questionOption.id'),
+                  text: ref('questionOption.text'),
+                  isCorrect: ref('questionOption.isCorrect'),
+                }),
+              )
+              .filterWhere('questionOption.id', 'is not', null),
+            sql`'[]'`,
+          )
+          .as('options'),
+      ]);
+    return paginate(query, { limit, page });
   }
 
   findOneById(id: number) {

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+import { Type } from 'class-transformer';
 
 const { NAME } = UNPROCESSABLE_ENTITY_EXCEPTION.QUESTION_CATEGORY;
 
@@ -14,7 +15,13 @@ export class QuestionCategoryStoreDTO {
   name: string;
 }
 
-export class QuestionCategoryGetListDTO extends PaginateDTO {}
+export class QuestionCategoryGetListDTO extends PaginateDTO {
+  @ApiProperty({ example: 1 })
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  excludeByExerciseId?: number;
+}
 
 export class QuestionCategoryUpdateDTO {
   @ApiProperty()

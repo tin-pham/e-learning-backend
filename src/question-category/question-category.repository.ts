@@ -13,7 +13,10 @@ export class QuestionCategoryRepository {
   }
 
   find(dto: QuestionCategoryGetListDTO) {
-    const { page, limit } = dto;
+    const { page, limit, excludeByExerciseId } = dto;
+
+    const withExcludeByExerciseId = Boolean(excludeByExerciseId);
+
     const query = this.database
       .selectFrom('questionCategory')
       .where('questionCategory.deletedAt', 'is', null)
@@ -26,7 +29,17 @@ export class QuestionCategoryRepository {
         join.onRef('questionCategoryHasQuestion.questionId', '=', 'question.id').on('question.deletedAt', 'is', null),
       )
       .groupBy('questionCategory.id')
-      .select(({ fn }) => ['questionCategory.id as id', 'questionCategory.name as name', fn.count('question.id').as('questionCount')]);
+      .select(({ fn }) => ['questionCategory.id as id', 'questionCategory.name as name', fn.count('question.id').as('questionCount')])
+      .$if(withExcludeByExerciseId, (qb) =>
+        qb
+          .leftJoin('exerciseQuestion', (join) =>
+            join.onRef('question.id', '=', 'exerciseQuestion.questionId').on('exerciseQuestion.deletedAt', 'is', null),
+          )
+          .where('exerciseQuestion.id', 'is', null)
+          .leftJoin('exercise', (join) =>
+            join.onRef('exerciseQuestion.exerciseId', '=', 'exercise.id').on('exercise.deletedAt', 'is', null),
+          ),
+      );
     return paginate(query, { page, limit });
   }
 

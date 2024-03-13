@@ -52,6 +52,18 @@ export class QuestionGetListDTO extends PaginateDTO {
   @Type(() => Number)
   @IsOptional()
   questionCategoryId?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  exerciseId?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  excludeExerciseId?: number;
 }
 
 export class QuestionUpdateOptionDTO {
