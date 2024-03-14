@@ -66,6 +66,14 @@ export class QuestionGetListDTO extends PaginateDTO {
   excludeExerciseId?: number;
 }
 
+export class QuestionStudentGetListDTO extends PaginateDTO {
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  exerciseId?: number;
+}
+
 export class QuestionUpdateOptionDTO {
   @ApiPropertyOptional()
   @IsString()

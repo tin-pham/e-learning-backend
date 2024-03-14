@@ -10,8 +10,15 @@ import { QuestionCategoryRepository } from '../question-category/question-catego
 import { QuestionOptionRepository } from '../question-option/question-option.repository';
 import { QuestionOptionEntity } from '../question-option/question-option.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
-import { QuestionDeleteRO, QuestionGetDetailRO, QuestionGetListRO, QuestionStoreRO, QuestionUpdateRO } from './ro/question.ro';
+import { QuestionStudentGetListDTO, QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
+import {
+  QuestionDeleteRO,
+  QuestionGetDetailRO,
+  QuestionStudentGetListRO,
+  QuestionGetListRO,
+  QuestionStoreRO,
+  QuestionUpdateRO,
+} from './ro/question.ro';
 
 @Injectable()
 export class QuestionService extends BaseService {
@@ -94,6 +101,24 @@ export class QuestionService extends BaseService {
 
       return this.success({
         classRO: QuestionGetListRO,
+        response,
+        message: 'Get list question successfully',
+        actorId,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.QUESTION.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  async studentGetList(dto: QuestionStudentGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+
+    try {
+      const response = await this.questionRepository.findByExerciseId(dto);
+      return this.success({
+        classRO: QuestionStudentGetListRO,
         response,
         message: 'Get list question successfully',
         actorId,
@@ -231,18 +256,19 @@ export class QuestionService extends BaseService {
 
     // Check duplicate isCorrect
     const isCorrects = dto.options.map((option) => option.isCorrect);
-    let isMultipleChoice = false;
-    if (isCorrects.length > 1) {
-      isMultipleChoice = true;
-    }
 
     // Should contain both true and false
     const allTrue = isCorrects.every((value) => value === true);
     const allFalse = isCorrects.every((value) => value === false);
-    console.log(allFalse);
     if (allTrue || allFalse) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_DIVERSITY_REQUIRED;
       this.throwException({ code, status, message, actorId });
+    }
+
+    const trueCount = isCorrects.filter((value) => value === true).length;
+    let isMultipleChoice = false;
+    if (trueCount > 1) {
+      isMultipleChoice = true;
     }
 
     // Check text unique in same question
@@ -333,8 +359,9 @@ export class QuestionService extends BaseService {
     }
 
     // It should adjust isMultipleChoice
+    const trueCount = isCorrects.filter((value) => value === true).length;
     let isMultipleChoice = false;
-    if (isCorrects.length > 1) {
+    if (trueCount > 1) {
       isMultipleChoice = true;
     }
 

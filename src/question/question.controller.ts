@@ -19,10 +19,17 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { QuestionService } from './question.service';
-import { QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
-import { QuestionDeleteRO, QuestionGetDetailRO, QuestionGetListRO, QuestionStoreRO, QuestionUpdateRO } from './ro/question.ro';
+import { QuestionStudentGetListDTO, QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
+import {
+  QuestionDeleteRO,
+  QuestionGetDetailRO,
+  QuestionStudentGetListRO,
+  QuestionGetListRO,
+  QuestionStoreRO,
+  QuestionUpdateRO,
+} from './ro/question.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.QUESTION;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, STUDENT_GET_LIST } = API.QUESTION;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -59,6 +66,20 @@ export class QuestionController {
     return this.questionService.getList(dto, decoded);
   }
 
+  @ApiOperation({ summary: STUDENT_GET_LIST.OPERATION })
+  @ApiOkResponse({ type: QuestionStudentGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(STUDENT_GET_LIST.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  studentGetList(@Query() dto: QuestionStudentGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.questionService.studentGetList(dto, decoded);
+  }
+
   @ApiOperation({ summary: GET_DETAIL.OPERATION })
   @ApiOkResponse({ type: QuestionGetDetailRO })
   @ApiNotFoundResponse({ type: HttpExceptionRO })
@@ -67,7 +88,7 @@ export class QuestionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.questionService.getDetail(id, decoded);

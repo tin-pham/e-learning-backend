@@ -38,7 +38,7 @@ export class CourseRepository {
           .leftJoin('assignmentSubmit', (join) =>
             join.onRef('assignmentSubmit.assignmentId', '=', 'assignment.id').on('assignmentSubmit.deletedAt', 'is', null),
           )
-          .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'course.hours'])
+          .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'course.hours', 'level.id'])
           .select(({ fn }) => fn.count('assignment.id').filterWhere('assignmentSubmit.id', 'is', null).as('unsubmittedPendingCount'))
           .orderBy('unsubmittedPendingCount', 'desc'),
       )

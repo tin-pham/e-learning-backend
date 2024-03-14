@@ -61,6 +61,7 @@ export class QuestionCategoryService extends BaseService {
 
     try {
       const response = await this.questionCategoryRepository.find(dto);
+      console.log(response);
 
       return this.success({
         classRO: QuestionCategoryGetListRO,

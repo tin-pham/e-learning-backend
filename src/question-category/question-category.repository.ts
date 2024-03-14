@@ -16,6 +16,7 @@ export class QuestionCategoryRepository {
     const { page, limit, excludeByExerciseId } = dto;
 
     const withExcludeByExerciseId = Boolean(excludeByExerciseId);
+    console.log(excludeByExerciseId);
 
     const query = this.database
       .selectFrom('questionCategory')
@@ -29,17 +30,17 @@ export class QuestionCategoryRepository {
         join.onRef('questionCategoryHasQuestion.questionId', '=', 'question.id').on('question.deletedAt', 'is', null),
       )
       .groupBy('questionCategory.id')
-      .select(({ fn }) => ['questionCategory.id as id', 'questionCategory.name as name', fn.count('question.id').as('questionCount')])
       .$if(withExcludeByExerciseId, (qb) =>
         qb
           .leftJoin('exerciseQuestion', (join) =>
-            join.onRef('question.id', '=', 'exerciseQuestion.questionId').on('exerciseQuestion.deletedAt', 'is', null),
+            join
+              .onRef('question.id', '=', 'exerciseQuestion.questionId')
+              .on('exerciseQuestion.deletedAt', 'is', null)
+              .on('exerciseQuestion.exerciseId', '=', excludeByExerciseId),
           )
-          .where('exerciseQuestion.id', 'is', null)
-          .leftJoin('exercise', (join) =>
-            join.onRef('exerciseQuestion.exerciseId', '=', 'exercise.id').on('exercise.deletedAt', 'is', null),
-          ),
-      );
+          .where('exerciseQuestion.id', 'is', null),
+      )
+      .select(({ fn }) => ['questionCategory.id as id', 'questionCategory.name as name', fn.count('question.id').as('questionCount')]);
     return paginate(query, { page, limit });
   }
 

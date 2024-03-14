@@ -55,12 +55,12 @@ export class QuestionRepository {
       .$if(byExcludeExercise, (qb) =>
         qb
           .leftJoin('exerciseQuestion', (join) =>
-            join.onRef('question.id', '=', 'exerciseQuestion.questionId').on('exerciseQuestion.deletedAt', 'is', null),
+            join
+              .onRef('question.id', '=', 'exerciseQuestion.questionId')
+              .on('exerciseQuestion.deletedAt', 'is', null)
+              .on('exerciseQuestion.exerciseId', '=', excludeExerciseId),
           )
-          .where('exerciseQuestion.id', 'is', null)
-          .leftJoin('exercise', (join) =>
-            join.onRef('exerciseQuestion.exerciseId', '=', 'exercise.id').on('exercise.deletedAt', 'is', null),
-          ),
+          .where('exerciseQuestion.id', 'is', null),
       )
       .select(({ fn, ref }) => [
         'question.id',

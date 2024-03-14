@@ -314,6 +314,11 @@ export const EXCEPTION = {
       message: 'Failed to get list question',
       code: 'QUESTION.GET_LIST_FAILED',
     },
+    STUDENT_GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list question for student',
+      code: 'QUESTION.STUDENT_GET_LIST_FAILED',
+    },
     GET_DETAIL_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get detail question',
