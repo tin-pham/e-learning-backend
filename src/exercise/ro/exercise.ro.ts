@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
@@ -18,6 +18,14 @@ export class ExerciseStoreRO {
   @ApiProperty()
   @Expose()
   lessonId: number;
+
+  @ApiProperty()
+  @Expose()
+  time: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  dueDate: Date;
 
   constructor(data?: ExerciseStoreRO) {
     Object.assign(this, data);
@@ -69,6 +77,22 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   difficultyId: number;
+
+  @ApiProperty()
+  @Expose()
+  isActive: number;
+
+  @ApiProperty()
+  @Expose()
+  activatedAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  time: number;
+
+  @ApiProperty()
+  @Expose()
+  dueDate: Date;
 }
 
 export class ExerciseUpdateRO {
@@ -79,6 +103,22 @@ export class ExerciseUpdateRO {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty()
+  @Expose()
+  isActive: boolean;
+
+  @ApiProperty()
+  @Expose()
+  activatedAt: Date;
+
+  @ApiPropertyOptional()
+  @Expose()
+  time?: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  dueDate?: Date;
 }
 
 export class ExerciseDeleteRO {

@@ -67,7 +67,6 @@ export class ExerciseQuestionService extends BaseService {
   }
 
   private async validateBulkStore(dto: ExerciseQuestionBulkStoreDTO, actorId: number) {
-    console.log(dto);
     // Check exercise exist
     const exerciseCount = await this.exerciseRepository.countByIds(dto.exerciseIds);
     if (exerciseCount !== dto.exerciseIds.length) {

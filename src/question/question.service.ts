@@ -153,7 +153,6 @@ export class QuestionService extends BaseService {
       await this.database.transaction().execute(async (transaction) => {
         const question = await this.questionRepository.updateWithTransaction(transaction, id, questionData);
 
-        console.log(dto);
         if (dto.removeOptionIds && dto.removeOptionIds.length) {
           await this.questionOptionRepository.deleteByIdsWithTransaction(transaction, dto.removeOptionIds, actorId);
         }

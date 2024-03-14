@@ -531,6 +531,18 @@ export const API = {
       OPERATION: 'Delete exercise submit mark',
     },
   },
+  STUDENT_EXERCISE_GRADE: {
+    TAGS: 'StudentExerciseGrade',
+    CONTROLLER: 'student-exercise-grade',
+    CALCULATE: {
+      ROUTE: '',
+      OPERATION: 'Calculate student exercise grade',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete student exercise grade',
+    },
+  },
   ASSIGNMENT_EXERCISE: {
     TAGS: 'AssignmentExercise',
     CONTROLLER: 'assignment-exercise',
@@ -649,6 +661,22 @@ export const API = {
     GET_LIST: {
       ROUTE: '',
       OPERATION: 'Get list levels',
+    },
+  },
+  STUDENT_EXERCISE: {
+    TAGS: 'StudentExercise',
+    CONTROLLER: 'student-exercise',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store student exercise',
+    },
+    SUBMIT: {
+      ROUTE: 'submit/:id',
+      OPERATION: 'Submit student exercise',
+    },
+    GET_SUBMITTED_LIST: {
+      ROUTE: 'submit',
+      OPERATION: 'Get submitted list student exercise',
     },
   },
 };

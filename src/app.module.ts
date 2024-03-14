@@ -38,6 +38,8 @@ import { NotificationModule } from './notification/notification.module';
 import { UserNotificationModule } from './user-notification/user-notification.module';
 import { LevelModule } from './level/level.module';
 import { QuestionCategoryModule } from './question-category/question-category.module';
+import { StudentExerciseModule } from './student-exercise/student-exercise.module';
+import { StudentExerciseGradeModule } from './student-exercise-grade/student-exercise-grade.module';
 
 @Module({
   imports: [
@@ -81,6 +83,8 @@ import { QuestionCategoryModule } from './question-category/question-category.mo
     NotificationModule,
     UserNotificationModule,
     LevelModule,
+    StudentExerciseModule,
+    StudentExerciseGradeModule,
   ],
   providers: [...appProviders],
 })

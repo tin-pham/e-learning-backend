@@ -41,6 +41,11 @@ import { CommentNotificationEntity } from '../comment-notification/comment-notif
 import { LevelEntity } from '../level/level.entity';
 import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity';
 import { QuestionCategoryHasQuestionEntity } from '../question-category-has-question/question-category-has-question.entity';
+import { StudentExerciseEntity } from '../student-exercise/student-exercise.entity';
+import { ExerciseQuestionSnapshotEntity } from '../exercise-question-snapshot/exercise-question-snapshot.entity';
+import { ExerciseQuestionOptionSnapshotEntity } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.entity';
+import { StudentExerciseOptionEntity } from 'src/student-exercise-option/student-exercise-option.entity';
+import { StudentExerciseGradeEntity } from 'src/student-exercise-grade/student-exercise-grade.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -85,6 +90,11 @@ export interface KyselyTables {
   commentNotification: CommentNotificationEntity;
   level: LevelEntity;
   questionCategoryHasQuestion: QuestionCategoryHasQuestionEntity;
+  exerciseQuestionSnapshot: ExerciseQuestionSnapshotEntity;
+  exerciseQuestionOptionSnapshot: ExerciseQuestionOptionSnapshotEntity;
+  studentExercise: StudentExerciseEntity;
+  studentExerciseOption: StudentExerciseOptionEntity;
+  studentExerciseGrade: StudentExerciseGradeEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

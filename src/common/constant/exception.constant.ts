@@ -496,6 +496,11 @@ export const EXCEPTION = {
     },
   },
   EXERCISE: {
+    CANNOT_UPDATE_ACTIVATED_EXERCISE: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Cannot update activated exercise',
+      code: 'EXERCISE.CANNOT_UPDATE_ACTIVATED_EXERCISE',
+    },
     STORE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to store exercise',
@@ -814,6 +819,28 @@ export const EXCEPTION = {
       code: 'EXERCISE_SUBMIT_OPTION.INSERT_FAILED',
     },
   },
+  STUDENT_EXERCISE_GRADE: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Exercise submit grade does not exist',
+      code: 'EXERCISE_SUBMIT_GRADE.DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Exercise submit grade already exist',
+      code: 'EXERCISE_SUBMIT_GRADE.ALREADY_EXIST',
+    },
+    CALCULATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to calculate exercise submit grade',
+      code: 'EXERCISE_SUBMIT_GRADE.CALCULATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete exercise submit grade',
+      code: 'EXERCISE_SUBMIT_GRADE.DELETE_FAILED',
+    },
+  },
   EXERCISE_SUBMIT_MARK: {
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
@@ -1118,6 +1145,62 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get list level',
       code: 'LEVEL.GET_LIST_FAILED',
+    },
+  },
+  STUDENT_EXERCISE: {
+    NOT_SUBMITTED: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Student exercise not submitted',
+      code: 'STUDENT_EXERCISE.NOT_SUBMITTED',
+    },
+    GET_SUBMITTED_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get submitted list student exercise',
+      code: 'STUDENT_EXERCISE.GET_SUBMITTED_LIST_FAILED',
+    },
+    ALREADY_SUBMITTED: {
+      status: HttpStatus.CONFLICT,
+      message: 'Student exercise already submitted',
+      code: 'STUDENT_EXERCISE.ALREADY_SUBMITTED',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Student exercise already exist',
+      code: 'STUDENT_EXERCISE.ALREADY_EXIST',
+    },
+    SUBMIT_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to submit student exercise',
+      code: 'STUDENT_EXERCISE.SUBMIT_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Student exercise does not exist',
+      code: 'STUDENT_EXERCISE.DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store student exercise',
+      code: 'STUDENT_EXERCISE.STORE_FAILED',
+    },
+    CANNOT_START_INACTIVE_EXERCISE: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Cannot start inactive exercise',
+      code: 'STUDENT_EXERCISE.CANNOT_START_INACTIVE_EXERCISE',
+    },
+  },
+  EXERCISE_QUESTION_SNAPSHOT: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Exercise question snapshot does not exist',
+      code: 'EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST',
+    },
+  },
+  EXERCISE_QUESTION_OPTION_SNAPSHOT: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Exercise question option snapshot does not exist',
+      code: 'EXERCISE_QUESTION_OPTION_SNAPSHOT.DOES_NOT_EXIST',
     },
   },
 };

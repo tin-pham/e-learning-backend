@@ -6,10 +6,14 @@ import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity'
 import { ExerciseRepository } from './exercise.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { LessonExerciseRepository } from '../lesson-exercise/lesson-exercise.repository';
+import { ExerciseQuestionRepository } from '../exercise-question/exercise-question.repository';
+import { QuestionOptionRepository } from '../question-option/question-option.repository';
+import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseDeleteRO, ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ExerciseEntity } from './exercise.entity';
+import { ExerciseQuestionSnapshotRepository } from 'src/exercise-question-snapshot/exercise-question-snapshot.repository';
 
 @Injectable()
 export class ExerciseService extends BaseService {
@@ -21,6 +25,10 @@ export class ExerciseService extends BaseService {
     private readonly exerciseRepository: ExerciseRepository,
     private readonly lessonExerciseRepository: LessonExerciseRepository,
     private readonly lessonRepository: LessonRepository,
+    private readonly exerciseQuestionRepository: ExerciseQuestionRepository,
+    private readonly exerciseQuestionSnapshotRepository: ExerciseQuestionSnapshotRepository,
+    private readonly questionOptionRepository: QuestionOptionRepository,
+    private readonly exerciseQuestionOptionSnapshotRepository: ExerciseQuestionOptionSnapshotRepository,
   ) {
     super(elasticLogger);
   }
@@ -34,11 +42,12 @@ export class ExerciseService extends BaseService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Store exercise
-        const exerciseData = new ExerciseEntity({
-          name: dto.name,
-          difficultyId: dto.difficultyId,
-          createdBy: actorId,
-        });
+        const exerciseData = new ExerciseEntity();
+        exerciseData.name = dto.name;
+        exerciseData.difficultyId = dto.difficultyId;
+        exerciseData.createdBy = actorId;
+        exerciseData.dueDate = dto.dueDate;
+        exerciseData.time = dto.time;
         const exercise = await this.exerciseRepository.insertWithTransaction(transaction, exerciseData);
 
         // Store lesson exercise
@@ -57,6 +66,8 @@ export class ExerciseService extends BaseService {
           name: exercise.name,
           difficultyId: exercise.difficultyId,
           lessonId: lessonExercise?.lessonId,
+          time: exercise.time,
+          dueDate: exercise.dueDate,
         });
       });
     } catch (error) {
@@ -128,10 +139,48 @@ export class ExerciseService extends BaseService {
         exerciseData.name = dto.name;
       }
 
-      const exercise = await this.exerciseRepository.update(id, exerciseData);
+      if (dto.time) {
+        exerciseData.time = dto.time;
+      }
 
-      response.id = exercise.id;
-      response.name = exercise.name;
+      if (dto.dueDate) {
+        exerciseData.dueDate = dto.dueDate;
+      }
+
+      if (dto.isActive) {
+        exerciseData.isActive = dto.isActive;
+        exerciseData.activatedAt = new Date();
+      }
+
+      await this.database.transaction().execute(async (transaction) => {
+        // Update exercise
+        const exercise = await this.exerciseRepository.updateWithTransaction(transaction, id, exerciseData);
+
+        // Create an exercise snapshot
+        if (exercise.isActive) {
+          // Question snapshot
+          const questions = await this.exerciseQuestionRepository.getQuestionIdsByExerciseId(exercise.id);
+          const questionIds = questions.map((question) => question.questionId);
+          if (questionIds.length > 0) {
+            await this.exerciseQuestionSnapshotRepository.insertMultipleByQuestionIdsWithTransaction(transaction, questionIds, exercise.id);
+
+            // Question option snapshot
+            const options = await this.questionOptionRepository.getIdsByQuestionIds(questionIds);
+            const optionIds = options.map((option) => option.id);
+
+            if (optionIds.length > 0) {
+              await this.exerciseQuestionOptionSnapshotRepository.insertMultipleByOptionIdsWithTransaction(transaction, optionIds);
+            }
+          }
+        }
+
+        response.id = exercise.id;
+        response.name = exercise.name;
+        response.isActive = exercise.isActive;
+        response.activatedAt = exercise.activatedAt;
+        response.dueDate = exercise.dueDate;
+        response.time = exercise.time;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.UPDATE_FAILED;
       this.logger.error(error);
@@ -153,9 +202,17 @@ export class ExerciseService extends BaseService {
     const response = new ExerciseDeleteRO();
 
     try {
-      const exercise = await this.exerciseRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        // Delete exercise
+        const exercise = await this.exerciseRepository.deleteWithTransaction(transaction, id, actorId);
 
-      response.id = exercise.id;
+        // Delete question snapshot
+        await this.exerciseQuestionSnapshotRepository.deleteByExerciseIdWithTransaction(transaction, exercise.id);
+        // Delete option snapshot
+        await this.exerciseQuestionOptionSnapshotRepository.deleteByExerciseIdWithTransaction(transaction, exercise.id);
+
+        response.id = exercise.id;
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.DELETE_FAILED;
       this.logger.error(error);
@@ -183,9 +240,15 @@ export class ExerciseService extends BaseService {
 
   private async validateUpdate(id: number, actorId: number) {
     // Check exist
-    const exerciseCount = await this.exerciseRepository.countById(id);
-    if (!exerciseCount) {
+    const exercise = await this.exerciseRepository.findOneById(id);
+    if (!exercise) {
       const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // If active => can't update
+    if (exercise.isActive) {
+      const { code, status, message } = EXCEPTION.EXERCISE.CANNOT_UPDATE_ACTIVATED_EXERCISE;
       this.throwException({ code, status, message, actorId });
     }
   }

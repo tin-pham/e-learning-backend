@@ -8,6 +8,15 @@ import { QuestionOptionGetListDTO } from './dto/question-option.dto';
 export class QuestionOptionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getIdsByQuestionIds(questionIds: number[]) {
+    return this.database
+      .selectFrom('questionOption')
+      .select(['id'])
+      .where('deletedAt', 'is', null)
+      .where('questionId', 'in', questionIds)
+      .execute();
+  }
+
   findByIds(ids: number[]) {
     return this.database
       .selectFrom('questionOption')

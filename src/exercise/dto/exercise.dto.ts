@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, MaxDate, MinDate } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 
-const { NAME, DIFFICULTY_ID, LESSON_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.EXERCISE;
+const { NAME, DIFFICULTY_ID, LESSON_ID, DUE_DATE } = UNPROCESSABLE_ENTITY_EXCEPTION.EXERCISE;
 
 export class ExerciseStoreDTO {
   @ApiProperty()
@@ -21,12 +21,33 @@ export class ExerciseStoreDTO {
   })
   difficultyId: number;
 
-  @ApiPropertyOptional({ example: 1 })
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @IsNotEmpty({
     message: LESSON_ID.IS_NOT_EMPTY,
   })
   lessonId: number;
+
+  @ApiPropertyOptional({ example: 1 })
+  @IsNumber()
+  @IsOptional()
+  time?: number;
+
+  @ApiPropertyOptional()
+  @MinDate(new Date('2010-01-01'))
+  @MaxDate(new Date('2500-01-01'))
+  @IsDate()
+  @IsNotEmpty({
+    message: DUE_DATE.IS_NOT_EMPTY,
+  })
+  @IsOptional()
+  @Transform(({ value }) => new Date(value))
+  dueDate?: Date;
+
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  @IsNotEmpty()
+  instantMark: boolean;
 }
 
 export class ExerciseGetListDTO extends PaginateDTO {
@@ -42,4 +63,25 @@ export class ExerciseUpdateDTO {
   @IsString()
   @IsOptional()
   name: string;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  isActive: boolean;
+
+  @ApiPropertyOptional({ example: 1 })
+  @IsNumber()
+  @IsOptional()
+  time?: number;
+
+  @ApiPropertyOptional()
+  @MinDate(new Date('2010-01-01'))
+  @MaxDate(new Date('2500-01-01'))
+  @IsDate()
+  @IsNotEmpty({
+    message: DUE_DATE.IS_NOT_EMPTY,
+  })
+  @IsOptional()
+  @Transform(({ value }) => new Date(value))
+  dueDate?: Date;
 }

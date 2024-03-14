@@ -6,6 +6,15 @@ import { ExerciseQuestionEntity } from './exercise-question.entity';
 export class ExerciseQuestionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getQuestionIdsByExerciseId(exerciseId: number) {
+    return this.database
+      .selectFrom('exerciseQuestion')
+      .select('questionId')
+      .where('exerciseId', '=', exerciseId)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
   insertMultiple(entities: ExerciseQuestionEntity[]) {
     return this.database.insertInto('exerciseQuestion').values(entities).execute();
   }

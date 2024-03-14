@@ -9,7 +9,11 @@ export class ExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertWithTransaction(transaction: Transaction, entity: ExerciseEntity) {
-    return transaction.insertInto('exercise').values(entity).returning(['id', 'name', 'difficultyId']).executeTakeFirst();
+    return transaction
+      .insertInto('exercise')
+      .values(entity)
+      .returning(['id', 'name', 'difficultyId', 'dueDate', 'time'])
+      .executeTakeFirst();
   }
 
   find(dto: ExerciseGetListDTO) {
@@ -44,13 +48,13 @@ export class ExerciseRepository {
     return paginate(query, { limit, page });
   }
 
-  update(id: number, entity: ExerciseEntity) {
-    return this.database
+  updateWithTransaction(transaction: Transaction, id: number, entity: ExerciseEntity) {
+    return transaction
       .updateTable('exercise')
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name'])
+      .returning(['id', 'name', 'isActive', 'activatedAt', 'difficultyId', 'dueDate', 'time'])
       .executeTakeFirst();
   }
 
@@ -61,7 +65,16 @@ export class ExerciseRepository {
       .where('exercise.id', '=', id)
       .innerJoin('difficulty', 'difficulty.id', 'exercise.difficultyId')
       .where('difficulty.deletedAt', 'is', null)
-      .select(['exercise.id', 'exercise.name', 'exercise.difficultyId', 'difficulty.name as difficultyName'])
+      .select([
+        'exercise.id',
+        'exercise.name',
+        'exercise.difficultyId',
+        'difficulty.name as difficultyName',
+        'exercise.isActive',
+        'exercise.activatedAt',
+        'exercise.dueDate',
+        'exercise.time',
+      ])
       .executeTakeFirst();
     // return this.database
     //   .with('exercise_data', (qb) =>
@@ -130,8 +143,8 @@ export class ExerciseRepository {
     //   .executeTakeFirst();
   }
 
-  delete(id: number, actorId: number) {
-    return this.database
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction
       .updateTable('exercise')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)
