@@ -88,7 +88,8 @@ export class ExerciseService extends BaseService {
   async getList(dto: ExerciseGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     try {
-      const response = await this.exerciseRepository.find(dto);
+      const response = await this.exerciseRepository.find(dto, actorId);
+      console.log(response);
       return this.success({
         classRO: ExerciseGetListRO,
         response,

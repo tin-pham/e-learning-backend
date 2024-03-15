@@ -18,7 +18,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ExerciseService } from './exercise.service';
 import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
-import { ExerciseDeleteRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
+import { ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ResultRO } from 'src/common/ro/result.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, ACTIVATE } = API.EXERCISE;
@@ -100,7 +100,7 @@ export class ExerciseController {
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })
-  @ApiOkResponse({ type: ExerciseDeleteRO })
+  @ApiOkResponse({ type: ResultRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })

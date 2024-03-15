@@ -56,6 +56,16 @@ export class ExerciseGetListDTO extends PaginateDTO {
   @Type(() => Number)
   @IsOptional()
   lessonId?: number;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsOptional()
+  isActive?: boolean;
 }
 
 export class ExerciseUpdateDTO {

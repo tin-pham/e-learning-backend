@@ -77,6 +77,8 @@ export class StudentExerciseService extends BaseService {
             transaction,
           });
         }
+
+        // Auto mark if it intant mark
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.SUBMIT_FAILED;
@@ -134,7 +136,7 @@ export class StudentExerciseService extends BaseService {
   }
 
   private async validateSubmit(id: number, dto: StudentExerciseSubmitDTO, actorId: number) {
-    // Get exercise by id
+    // Get student exercise by id
     const studentExercise = await this.studentExerciseRepository.findOneById(id);
     if (!studentExercise) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.DOES_NOT_EXIST;

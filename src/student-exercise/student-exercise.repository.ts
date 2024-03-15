@@ -30,6 +30,7 @@ export class StudentExerciseRepository {
         'studentExercise.isLate',
         'exercise.name as exerciseName',
         'exercise.dueDate as exerciseDueDate',
+        'exercise.instantMark as exerciseInstantMark',
       ])
       .executeTakeFirst();
   }

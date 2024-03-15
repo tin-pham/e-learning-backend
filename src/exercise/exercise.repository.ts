@@ -16,8 +16,8 @@ export class ExerciseRepository {
       .executeTakeFirst();
   }
 
-  find(dto: ExerciseGetListDTO) {
-    const { limit, page, lessonId } = dto;
+  find(dto: ExerciseGetListDTO, userId: number) {
+    const { limit, page, lessonId, isActive } = dto;
 
     const withLesson = Boolean(lessonId);
 
@@ -26,19 +26,24 @@ export class ExerciseRepository {
       .where('exercise.deletedAt', 'is', null)
       .innerJoin('difficulty', 'difficulty.id', 'exercise.difficultyId')
       .where('difficulty.deletedAt', 'is', null)
-      .leftJoin('exerciseSubmit', (join) =>
-        join.onRef('exerciseSubmit.exerciseId', '=', 'exercise.id').on('exerciseSubmit.deletedAt', 'is', null),
+      .leftJoin('studentExercise', (join) =>
+        join
+          .onRef('studentExercise.exerciseId', '=', 'exercise.id')
+          .on('studentExercise.deletedAt', 'is', null)
+          .on('studentExercise.updatedBy', '=', userId),
       )
       .select([
         'exercise.id',
         'exercise.name',
         'exercise.difficultyId',
         'difficulty.name as difficultyName',
-        'exerciseSubmit.id as submissionId',
         'exercise.isActive',
         'exercise.activatedAt',
         'exercise.dueDate',
         'exercise.time',
+        'studentExercise.isSubmitted',
+        'studentExercise.submittedAt as submissionDate',
+        'studentExercise.isLate as isSubmissionLate',
       ])
       .$if(withLesson, (qb) =>
         qb
@@ -47,7 +52,8 @@ export class ExerciseRepository {
           .innerJoin('lesson', 'lesson.id', 'lessonExercise.lessonId')
           .where('lesson.id', '=', dto.lessonId)
           .where('lesson.deletedAt', 'is', null),
-      );
+      )
+      .$if(isActive !== undefined, (qb) => qb.where('exercise.isActive', '=', isActive));
 
     return paginate(query, { limit, page });
   }
@@ -69,6 +75,11 @@ export class ExerciseRepository {
       .where('exercise.id', '=', id)
       .innerJoin('difficulty', 'difficulty.id', 'exercise.difficultyId')
       .where('difficulty.deletedAt', 'is', null)
+      .leftJoin('studentExercise', (join) =>
+        join.onRef('studentExercise.exerciseId', '=', 'exercise.id').on('studentExercise.deletedAt', 'is', null),
+      )
+      .leftJoin('student', (join) => join.onRef('student.id', '=', 'studentExercise.studentId'))
+      .leftJoin('users', (join) => join.onRef('users.id', '=', 'student.userId').on('users.deletedAt', 'is', null))
       .select([
         'exercise.id',
         'exercise.name',
@@ -78,6 +89,11 @@ export class ExerciseRepository {
         'exercise.activatedAt',
         'exercise.dueDate',
         'exercise.time',
+        'studentExercise.studentId',
+        'studentExercise.id as studentExerciseId',
+        'studentExercise.isSubmitted',
+        'studentExercise.submittedAt as submissionDate',
+        'studentExercise.isLate as isSubmissionLate',
       ])
       .executeTakeFirst();
     // return this.database

@@ -10,7 +10,7 @@ interface Exception {
   error?: Error;
 }
 
-interface Success {
+export interface Success {
   classRO: { new (...args: any[]): any };
   response: any;
   message?: string;
@@ -40,7 +40,7 @@ export class BaseService {
   }
 
   // success
-  protected success(obj: Success) {
+  protected success(obj: Partial<Success>) {
     const { classRO: classFn, response: data, message, actorId } = obj;
 
     if (message) {

@@ -51,7 +51,15 @@ export class ExerciseGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  submissionId: number;
+  isSubmitted: boolean;
+
+  @ApiProperty()
+  @Expose()
+  submissionDate: Date;
+
+  @ApiProperty()
+  @Expose()
+  isSubmissionLate: boolean;
 
   @ApiProperty()
   @Expose()
@@ -109,6 +117,14 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   dueDate: Date;
+
+  @ApiProperty()
+  @Expose()
+  studentId: string;
+
+  @ApiProperty()
+  @Expose()
+  studentExerciseId: number;
 }
 
 export class ExerciseUpdateRO {
