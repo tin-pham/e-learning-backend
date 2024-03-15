@@ -35,6 +35,10 @@ export class ExerciseRepository {
         'exercise.difficultyId',
         'difficulty.name as difficultyName',
         'exerciseSubmit.id as submissionId',
+        'exercise.isActive',
+        'exercise.activatedAt',
+        'exercise.dueDate',
+        'exercise.time',
       ])
       .$if(withLesson, (qb) =>
         qb

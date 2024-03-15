@@ -52,6 +52,22 @@ export class ExerciseGetListDataRO {
   @ApiProperty()
   @Expose()
   submissionId: number;
+
+  @ApiProperty()
+  @Expose()
+  isActive: number;
+
+  @ApiProperty()
+  @Expose()
+  activatedAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  time: number;
+
+  @ApiProperty()
+  @Expose()
+  dueDate: Date;
 }
 
 export class ExerciseGetListRO extends PaginateRO<ExerciseGetListDataRO> {
@@ -119,10 +135,4 @@ export class ExerciseUpdateRO {
   @ApiPropertyOptional()
   @Expose()
   dueDate?: Date;
-}
-
-export class ExerciseDeleteRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
 }

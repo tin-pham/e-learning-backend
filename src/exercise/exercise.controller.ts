@@ -19,8 +19,9 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ExerciseService } from './exercise.service';
 import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseDeleteRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
+import { ResultRO } from 'src/common/ro/result.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.EXERCISE;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, ACTIVATE } = API.EXERCISE;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -82,6 +83,20 @@ export class ExerciseController {
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: ExerciseUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.exerciseService.update(id, dto, decoded);
+  }
+
+  @ApiOperation({ summary: ACTIVATE.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Patch(ACTIVATE.ROUTE)
+  @Roles(ROLE.ADMIN)
+  @UseGuards(JwtGuard, RoleGuard)
+  activate(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.exerciseService.activate(id, decoded);
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })

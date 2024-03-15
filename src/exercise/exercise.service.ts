@@ -11,9 +11,10 @@ import { QuestionOptionRepository } from '../question-option/question-option.rep
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
-import { ExerciseDeleteRO, ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
+import { ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ExerciseEntity } from './exercise.entity';
 import { ExerciseQuestionSnapshotRepository } from 'src/exercise-question-snapshot/exercise-question-snapshot.repository';
+import { ResultRO } from 'src/common/ro/result.ro';
 
 @Injectable()
 export class ExerciseService extends BaseService {
@@ -147,32 +148,9 @@ export class ExerciseService extends BaseService {
         exerciseData.dueDate = dto.dueDate;
       }
 
-      if (dto.isActive) {
-        exerciseData.isActive = dto.isActive;
-        exerciseData.activatedAt = new Date();
-      }
-
       await this.database.transaction().execute(async (transaction) => {
         // Update exercise
         const exercise = await this.exerciseRepository.updateWithTransaction(transaction, id, exerciseData);
-
-        // Create an exercise snapshot
-        if (exercise.isActive) {
-          // Question snapshot
-          const questions = await this.exerciseQuestionRepository.getQuestionIdsByExerciseId(exercise.id);
-          const questionIds = questions.map((question) => question.questionId);
-          if (questionIds.length > 0) {
-            await this.exerciseQuestionSnapshotRepository.insertMultipleByQuestionIdsWithTransaction(transaction, questionIds, exercise.id);
-
-            // Question option snapshot
-            const options = await this.questionOptionRepository.getIdsByQuestionIds(questionIds);
-            const optionIds = options.map((option) => option.id);
-
-            if (optionIds.length > 0) {
-              await this.exerciseQuestionOptionSnapshotRepository.insertMultipleByOptionIdsWithTransaction(transaction, optionIds);
-            }
-          }
-        }
 
         response.id = exercise.id;
         response.name = exercise.name;
@@ -195,11 +173,51 @@ export class ExerciseService extends BaseService {
     });
   }
 
+  async activate(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateActivate(id, actorId);
+
+    try {
+      const exerciseData = new ExerciseEntity();
+      exerciseData.isActive = true;
+      exerciseData.activatedAt = new Date();
+
+      await this.database.transaction().execute(async (transaction) => {
+        // Update exercise
+        const exercise = await this.exerciseRepository.updateWithTransaction(transaction, id, exerciseData);
+
+        // Question snapshot
+        const questions = await this.exerciseQuestionRepository.getQuestionIdsByExerciseId(exercise.id);
+        const questionIds = questions.map((question) => question.questionId);
+        if (questionIds.length > 0) {
+          await this.exerciseQuestionSnapshotRepository.insertMultipleByQuestionIdsWithTransaction(transaction, questionIds, exercise.id);
+
+          // Question option snapshot
+          const options = await this.questionOptionRepository.getIdsByQuestionIds(questionIds);
+          const optionIds = options.map((option) => option.id);
+
+          if (optionIds.length > 0) {
+            await this.exerciseQuestionOptionSnapshotRepository.insertMultipleByOptionIdsWithTransaction(transaction, optionIds);
+          }
+        }
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.EXERCISE.ACTIVATE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Exercise activated successfully',
+      actorId,
+    });
+  }
+
   async delete(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateDelete(id, actorId);
-
-    const response = new ExerciseDeleteRO();
 
     try {
       await this.database.transaction().execute(async (transaction) => {
@@ -207,11 +225,9 @@ export class ExerciseService extends BaseService {
         const exercise = await this.exerciseRepository.deleteWithTransaction(transaction, id, actorId);
 
         // Delete question snapshot
-        await this.exerciseQuestionSnapshotRepository.deleteByExerciseIdWithTransaction(transaction, exercise.id);
+        await this.exerciseQuestionSnapshotRepository.deleteByExerciseIdWithTransaction(transaction, exercise.id, actorId);
         // Delete option snapshot
-        await this.exerciseQuestionOptionSnapshotRepository.deleteByExerciseIdWithTransaction(transaction, exercise.id);
-
-        response.id = exercise.id;
+        await this.exerciseQuestionOptionSnapshotRepository.deleteByExerciseIdWithTransaction(transaction, exercise.id, actorId);
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.DELETE_FAILED;
@@ -220,8 +236,8 @@ export class ExerciseService extends BaseService {
     }
 
     return this.success({
-      classRO: ExerciseDeleteRO,
-      response,
+      classRO: ResultRO,
+      response: { result: true },
       message: 'Exercise deleted successfully',
       actorId,
     });
@@ -258,6 +274,28 @@ export class ExerciseService extends BaseService {
     const exerciseCount = await this.exerciseRepository.countById(id);
     if (!exerciseCount) {
       const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateActivate(id: number, actorId: number) {
+    // Check exist
+    const exercise = await this.exerciseRepository.findOneById(id);
+    if (!exercise) {
+      const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check isActive is false
+    if (exercise.isActive) {
+      const { code, status, message } = EXCEPTION.EXERCISE.ALREADY_ACTIVATED;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Activate at least 1 question
+    const questionCount = await this.exerciseQuestionRepository.countByExerciseId(id);
+    if (questionCount < 1) {
+      const { code, status, message } = EXCEPTION.EXERCISE.CANNOT_ACTIVATE_WITHOUT_QUESTION;
       this.throwException({ code, status, message, actorId });
     }
   }

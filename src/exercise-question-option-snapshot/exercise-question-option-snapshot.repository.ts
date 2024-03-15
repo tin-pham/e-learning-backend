@@ -25,11 +25,11 @@ export class ExerciseQuestionOptionSnapshotRepository {
       .execute();
   }
 
-  deleteByExerciseIdWithTransaction(transaction: Transaction, exerciseId: number) {
+  deleteByExerciseIdWithTransaction(transaction: Transaction, exerciseId: number, actorId: number) {
     return transaction
-      .deleteFrom('exerciseQuestionOptionSnapshot')
+      .updateTable('exerciseQuestionOptionSnapshot')
       .where('exerciseId', '=', exerciseId)
-      .where('deletedAt', 'is', null)
+      .set({ deletedAt: new Date(), deletedBy: actorId })
       .execute();
   }
 

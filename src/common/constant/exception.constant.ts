@@ -501,6 +501,21 @@ export const EXCEPTION = {
     },
   },
   EXERCISE: {
+    CANNOT_ACTIVATE_WITHOUT_QUESTION: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Cannot activate exercise without question',
+      code: 'EXERCISE.CANNOT_ACTIVATE_WITHOUT_QUESTION',
+    },
+    ALREADY_ACTIVATED: {
+      status: HttpStatus.CONFLICT,
+      message: 'Exercise already activated',
+      code: 'EXERCISE.ALREADY_ACTIVATED',
+    },
+    ACTIVATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to activate exercise',
+      code: 'EXERCISE.ACTIVATE_FAILED',
+    },
     CANNOT_UPDATE_ACTIVATED_EXERCISE: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Cannot update activated exercise',

@@ -64,11 +64,6 @@ export class ExerciseUpdateDTO {
   @IsOptional()
   name: string;
 
-  @ApiPropertyOptional()
-  @IsBoolean()
-  @IsOptional()
-  isActive: boolean;
-
   @ApiPropertyOptional({ example: 1 })
   @IsNumber()
   @IsOptional()

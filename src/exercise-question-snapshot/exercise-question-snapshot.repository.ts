@@ -25,8 +25,12 @@ export class ExerciseQuestionSnapshotRepository {
       .execute();
   }
 
-  deleteByExerciseIdWithTransaction(transaction: Transaction, exerciseId: number) {
-    return transaction.deleteFrom('exerciseQuestionSnapshot').where('exerciseId', '=', exerciseId).where('deletedAt', 'is', null).execute();
+  deleteByExerciseIdWithTransaction(transaction: Transaction, exerciseId: number, actorId: number) {
+    return transaction
+      .updateTable('exerciseQuestionSnapshot')
+      .where('exerciseId', '=', exerciseId)
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .execute();
   }
 
   insertMultipleByQuestionIdsWithTransaction(transaction: Transaction, questionIds: number[], exerciseId: number) {

@@ -294,6 +294,10 @@ export const API = {
       ROUTE: ':id',
       OPERATION: 'Update exercise',
     },
+    ACTIVATE: {
+      ROUTE: ':id/activate',
+      OPERATION: 'Activate exercise',
+    },
     DELETE: {
       ROUTE: ':id',
       OPERATION: 'Delete exercise',
