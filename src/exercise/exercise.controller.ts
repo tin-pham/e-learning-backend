@@ -17,7 +17,7 @@ import { ROLE } from '../role/enum/role.enum';
 import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ExerciseService } from './exercise.service';
-import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
+import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ResultRO } from 'src/common/ro/result.ro';
 
@@ -67,8 +67,8 @@ export class ExerciseController {
   @Get(GET_DETAIL.ROUTE)
   @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
-  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
-    return this.exerciseService.getDetail(id, decoded);
+  getDetail(@Param('id', ParseIntPipe) id: number, @Query() dto: ExerciseGetDetailDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.exerciseService.getDetail(id, dto, decoded);
   }
 
   @ApiOperation({ summary: UPDATE.OPERATION })

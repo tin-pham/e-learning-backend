@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { ExerciseEntity } from './exercise.entity';
-import { ExerciseGetListDTO } from './dto/exercise.dto';
+import { ExerciseGetDetailDTO, ExerciseGetListDTO } from './dto/exercise.dto';
 import { paginate } from '../common/function/paginate';
 
 @Injectable()
@@ -68,7 +68,9 @@ export class ExerciseRepository {
       .executeTakeFirst();
   }
 
-  async findOneById(id: number) {
+  async findOneById(id: number, dto?: ExerciseGetDetailDTO) {
+    const { includeGrade } = dto;
+    console.log(includeGrade);
     return this.database
       .selectFrom('exercise')
       .where('exercise.deletedAt', 'is', null)
@@ -95,6 +97,20 @@ export class ExerciseRepository {
         'studentExercise.submittedAt as submissionDate',
         'studentExercise.isLate as isSubmissionLate',
       ])
+      .$if(includeGrade, (qb) =>
+        qb
+          .leftJoin('studentExerciseGrade', (join) =>
+            join
+              .onRef('studentExerciseGrade.studentExerciseId', '=', 'studentExercise.id')
+              .on('studentExerciseGrade.deletedAt', 'is', null),
+          )
+          .select([
+            'studentExerciseGrade.id as studentExerciseGradeId',
+            'studentExerciseGrade.point',
+            'studentExerciseGrade.correctCount',
+            'studentExerciseGrade.totalCount',
+          ]),
+      )
       .executeTakeFirst();
     // return this.database
     //   .with('exercise_data', (qb) =>

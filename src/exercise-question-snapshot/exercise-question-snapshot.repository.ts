@@ -1,10 +1,126 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from 'kysely';
 import { DatabaseService, Transaction } from '../database';
+import { ExerciseQuestionSnapshotGetListDTO } from './dto/exercise-question-snapshot.dto';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
+import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class ExerciseQuestionSnapshotRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  findWithoutOption(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
+    const { page, limit } = dto;
+
+    const query = this.database
+      .selectFrom('exerciseQuestionSnapshot')
+      .where('exerciseQuestionSnapshot.deletedAt', 'is', null)
+      .innerJoin('difficulty', 'difficulty.id', 'exerciseQuestionSnapshot.difficultyId')
+      .where('difficulty.deletedAt', 'is', null)
+      .innerJoin('exercise', 'exercise.id', 'exerciseQuestionSnapshot.exerciseId')
+      .where('exercise.deletedAt', 'is', null)
+      .innerJoin('studentExercise', 'studentExercise.exerciseId', 'exercise.id')
+      .where('studentExercise.deletedAt', 'is', null)
+      .where('studentExercise.id', '=', studentExerciseId)
+      .leftJoin('exerciseQuestionOptionSnapshot', (join) =>
+        join
+          .onRef('exerciseQuestionSnapshot.id', '=', 'exerciseQuestionOptionSnapshot.questionId')
+          .on('exerciseQuestionOptionSnapshot.deletedAt', 'is', null),
+      )
+      .groupBy([
+        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.text',
+        'exerciseQuestionSnapshot.difficultyId',
+        'difficulty.name',
+        'exerciseQuestionSnapshot.isMultipleChoice',
+      ])
+      .select(({ fn, ref }) => [
+        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.text',
+        'exerciseQuestionSnapshot.difficultyId',
+        'difficulty.name as diffulltyName',
+        'exerciseQuestionSnapshot.isMultipleChoice',
+        fn
+          .coalesce(
+            fn
+              .jsonAgg(
+                jsonBuildObject({
+                  id: ref('exerciseQuestionOptionSnapshot.id'),
+                  text: ref('exerciseQuestionOptionSnapshot.text'),
+                }),
+              )
+              .filterWhere('exerciseQuestionOptionSnapshot.id', 'is not', null),
+            sql`'[]'`,
+          )
+          .as('options'),
+      ])
+      .orderBy('exerciseQuestionSnapshot.createdAt', 'desc');
+
+    return paginate(query, {
+      page,
+      limit,
+    });
+  }
+
+  find(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
+    const { page, limit } = dto;
+
+    const query = this.database
+      .selectFrom('exerciseQuestionSnapshot')
+      .where('exerciseQuestionSnapshot.deletedAt', 'is', null)
+      .innerJoin('difficulty', 'difficulty.id', 'exerciseQuestionSnapshot.difficultyId')
+      .where('difficulty.deletedAt', 'is', null)
+      .innerJoin('exercise', 'exercise.id', 'exerciseQuestionSnapshot.exerciseId')
+      .where('exercise.deletedAt', 'is', null)
+      .innerJoin('studentExercise', 'studentExercise.exerciseId', 'exercise.id')
+      .where('studentExercise.deletedAt', 'is', null)
+      .where('studentExercise.id', '=', studentExerciseId)
+      .leftJoin('exerciseQuestionOptionSnapshot', (join) =>
+        join
+          .onRef('exerciseQuestionSnapshot.id', '=', 'exerciseQuestionOptionSnapshot.questionId')
+          .on('exerciseQuestionOptionSnapshot.deletedAt', 'is', null),
+      )
+      .leftJoin('studentExerciseOption', (join) =>
+        join
+          .onRef('exerciseQuestionOptionSnapshot.id', '=', 'studentExerciseOption.questionOptionSnapshotId')
+          .on('studentExerciseOption.deletedAt', 'is', null),
+      )
+      .groupBy([
+        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.text',
+        'exerciseQuestionSnapshot.difficultyId',
+        'difficulty.name',
+        'exerciseQuestionSnapshot.isMultipleChoice',
+      ])
+      .select(({ fn, ref }) => [
+        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.text',
+        'exerciseQuestionSnapshot.difficultyId',
+        'difficulty.name as diffulltyName',
+        'exerciseQuestionSnapshot.isMultipleChoice',
+        fn
+          .coalesce(
+            fn
+              .jsonAgg(
+                jsonBuildObject({
+                  id: ref('exerciseQuestionOptionSnapshot.id'),
+                  text: ref('exerciseQuestionOptionSnapshot.text'),
+                  isCorrect: ref('exerciseQuestionOptionSnapshot.isCorrect'),
+                  isChosen: ref('studentExerciseOption.id'), // Make this boolean
+                }),
+              )
+              .filterWhere('exerciseQuestionOptionSnapshot.id', 'is not', null),
+            sql`'[]'`,
+          )
+          .as('options'),
+      ])
+      .orderBy('exerciseQuestionSnapshot.createdAt', 'desc');
+
+    return paginate(query, {
+      page,
+      limit,
+    });
+  }
 
   async countByIds(ids: number[]) {
     const { count } = await this.database

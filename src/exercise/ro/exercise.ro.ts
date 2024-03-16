@@ -125,6 +125,26 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   studentExerciseId: number;
+
+  @ApiProperty()
+  @Expose()
+  isSubmitted: boolean;
+
+  @ApiProperty()
+  @Expose()
+  studentExerciseGradeId: number;
+
+  @ApiProperty()
+  @Expose()
+  point?: number;
+
+  @ApiProperty()
+  @Expose()
+  totalCount?: number;
+
+  @ApiProperty()
+  @Expose()
+  correctCount?: number;
 }
 
 export class ExerciseUpdateRO {

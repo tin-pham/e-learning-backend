@@ -6,6 +6,15 @@ import { ExerciseQuestionEntity } from './exercise-question.entity';
 export class ExerciseQuestionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getIdByExerciseId(exerciseId: number) {
+    return this.database
+      .selectFrom('exerciseQuestion')
+      .select('id')
+      .where('exerciseId', '=', exerciseId)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
   async countByExerciseId(exerciseId: number) {
     const { count } = await this.database
       .selectFrom('exerciseQuestion')

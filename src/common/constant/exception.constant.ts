@@ -1210,6 +1210,11 @@ export const EXCEPTION = {
     },
   },
   EXERCISE_QUESTION_SNAPSHOT: {
+    STUDENT_GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list exercise question snapshot for student',
+      code: 'EXERCISE_QUESTION_SNAPSHOT.STUDENT_GET_LIST_FAILED',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Exercise question snapshot does not exist',

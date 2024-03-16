@@ -68,50 +68,6 @@ export class QuestionGetListRO extends PaginateRO<QuestionGetListDataRO> {
   data: QuestionGetListDataRO[];
 }
 
-export class QuestionStudentGetListDataOptionRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  text: string;
-}
-
-export class QuestionStudentGetListDataRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  text: string;
-
-  @ApiProperty()
-  @Expose()
-  difficultyId: number;
-
-  @ApiProperty()
-  @Expose()
-  difficultyName: string;
-
-  @ApiProperty()
-  @Expose()
-  isMultipleChoice: boolean;
-
-  @ApiProperty({ type: [QuestionStudentGetListDataOptionRO] })
-  @Type(() => QuestionStudentGetListDataOptionRO)
-  @Expose()
-  options: QuestionStudentGetListDataOptionRO[];
-}
-
-export class QuestionStudentGetListRO extends PaginateRO<QuestionStudentGetListDataRO> {
-  @ApiProperty({ type: [QuestionStudentGetListDataRO] })
-  @Type(() => QuestionStudentGetListDataRO)
-  @Expose()
-  data: QuestionStudentGetListDataRO[];
-}
-
 export class QuestionGetDetailOptionRO {
   @ApiProperty()
   @Expose()

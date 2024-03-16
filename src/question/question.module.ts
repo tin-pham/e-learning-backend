@@ -6,7 +6,6 @@ import { QuestionCategoryHasQuestionRepository } from '../question-category-has-
 import { QuestionCategoryRepository } from '../question-category/question-category.repository';
 import { QuestionOptionRepository } from '../question-option/question-option.repository';
 import { QuestionService } from './question.service';
-import { StudentExerciseGradeRepository } from 'src/student-exercise-grade/student-exercise-grade.repository';
 
 @Module({
   controllers: [QuestionController],
@@ -17,7 +16,6 @@ import { StudentExerciseGradeRepository } from 'src/student-exercise-grade/stude
     QuestionCategoryHasQuestionRepository,
     QuestionCategoryRepository,
     QuestionOptionRepository,
-    StudentExerciseGradeRepository,
   ],
 })
 export class QuestionModule {}

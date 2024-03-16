@@ -186,10 +186,6 @@ export const API = {
       ROUTE: '',
       OPERATION: 'Get list questions',
     },
-    STUDENT_GET_LIST: {
-      ROUTE: 'student',
-      OPERATION: 'Get list questions',
-    },
     GET_DETAIL: {
       ROUTE: ':id',
       OPERATION: 'Get question detail',
@@ -685,6 +681,14 @@ export const API = {
     GET_SUBMITTED_LIST: {
       ROUTE: 'submit',
       OPERATION: 'Get submitted list student exercise',
+    },
+  },
+  EXERCISE_QUESTION_SNAPSHOT: {
+    TAGS: 'ExerciseQuestionSnapshot',
+    CONTROLLER: 'exercise-question-snapshot',
+    STUDENT_GET_LIST: {
+      ROUTE: 'student',
+      OPERATION: 'Get list exercise question snapshot',
     },
   },
 };

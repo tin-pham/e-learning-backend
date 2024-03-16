@@ -40,6 +40,7 @@ import { LevelModule } from './level/level.module';
 import { QuestionCategoryModule } from './question-category/question-category.module';
 import { StudentExerciseModule } from './student-exercise/student-exercise.module';
 import { StudentExerciseGradeModule } from './student-exercise-grade/student-exercise-grade.module';
+import { ExerciseQuestionSnapshotModule } from './exercise-question-snapshot/exercise-question-snapshot.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { StudentExerciseGradeModule } from './student-exercise-grade/student-exe
     LevelModule,
     StudentExerciseModule,
     StudentExerciseGradeModule,
+    ExerciseQuestionSnapshotModule,
   ],
   providers: [...appProviders],
 })

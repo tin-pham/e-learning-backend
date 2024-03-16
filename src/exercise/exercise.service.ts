@@ -10,7 +10,7 @@ import { ExerciseQuestionRepository } from '../exercise-question/exercise-questi
 import { QuestionOptionRepository } from '../question-option/question-option.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
+import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ExerciseEntity } from './exercise.entity';
 import { ExerciseQuestionSnapshotRepository } from 'src/exercise-question-snapshot/exercise-question-snapshot.repository';
@@ -103,13 +103,13 @@ export class ExerciseService extends BaseService {
     }
   }
 
-  async getDetail(id: number, decoded: IJwtPayload) {
+  async getDetail(id: number, dto: ExerciseGetDetailDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
     let response: any;
 
     try {
-      response = await this.exerciseRepository.findOneById(id);
+      response = await this.exerciseRepository.findOneById(id, dto);
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.GET_DETAIL_FAILED;
       this.logger.error(error);

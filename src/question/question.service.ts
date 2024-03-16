@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { BaseService, Success } from '../base';
+import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { QuestionEntity } from './question.entity';
@@ -8,18 +8,10 @@ import { DifficultyRepository } from '../difficulty/difficulty.repository';
 import { QuestionCategoryHasQuestionRepository } from '../question-category-has-question/question-category-has-question.repository';
 import { QuestionCategoryRepository } from '../question-category/question-category.repository';
 import { QuestionOptionRepository } from '../question-option/question-option.repository';
-import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
 import { QuestionOptionEntity } from '../question-option/question-option.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { QuestionStudentGetListDTO, QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
-import {
-  QuestionDeleteRO,
-  QuestionGetDetailRO,
-  QuestionStudentGetListRO,
-  QuestionGetListRO,
-  QuestionStoreRO,
-  QuestionUpdateRO,
-} from './ro/question.ro';
+import { QuestionGetListDTO, QuestionStoreDTO, QuestionUpdateDTO } from './dto/question.dto';
+import { QuestionDeleteRO, QuestionGetDetailRO, QuestionGetListRO, QuestionStoreRO, QuestionUpdateRO } from './ro/question.ro';
 
 @Injectable()
 export class QuestionService extends BaseService {
@@ -33,7 +25,6 @@ export class QuestionService extends BaseService {
     private readonly difficultyRepository: DifficultyRepository,
     private readonly questionCategoryRepository: QuestionCategoryRepository,
     private readonly questionCategoryHasQuestionRepository: QuestionCategoryHasQuestionRepository,
-    private readonly studentExerciseGradeRepository: StudentExerciseGradeRepository,
   ) {
     super(elasticLogger);
   }
@@ -107,34 +98,6 @@ export class QuestionService extends BaseService {
         message: 'Get list question successfully',
         actorId,
       });
-    } catch (error) {
-      const { code, status, message } = EXCEPTION.QUESTION.GET_LIST_FAILED;
-      this.logger.error(error);
-      this.throwException({ code, status, message, actorId });
-    }
-  }
-
-  async studentGetList(dto: QuestionStudentGetListDTO, decoded: IJwtPayload) {
-    const actorId = decoded.userId;
-
-    const { isGraded } = await this.validateStudentGetList(dto);
-
-    try {
-      const question = await this.questionRepository.findByExerciseId(dto);
-
-      const response: Partial<Success> = {
-        response: question,
-        message: 'Get list question successfully',
-        actorId,
-      };
-
-      if (isGraded) {
-        response.classRO = QuestionGetListRO;
-      } else {
-        response.classRO = QuestionStudentGetListRO;
-      }
-
-      return this.success(response);
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION.GET_LIST_FAILED;
       this.logger.error(error);
@@ -387,16 +350,5 @@ export class QuestionService extends BaseService {
       const { code, status, message } = EXCEPTION.QUESTION.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
-  }
-
-  private async validateStudentGetList(dto: QuestionStudentGetListDTO) {
-    // Is exercise graded
-    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(dto.studentExerciseId);
-    let isGraded = false;
-    if (!studentExerciseGradeCount) {
-      isGraded = true;
-    }
-
-    return { isGraded };
   }
 }
