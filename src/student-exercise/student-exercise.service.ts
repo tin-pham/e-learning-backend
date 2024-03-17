@@ -12,6 +12,7 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
 import { StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
 import { StudentExerciseEntity } from './student-exercise.entity';
 import { ResultRO } from '../common/ro/result.ro';
+import { StudentExerciseStoreRO } from './ro/student-exercise.ro';
 
 @Injectable()
 export class StudentExerciseService extends BaseService {
@@ -34,12 +35,16 @@ export class StudentExerciseService extends BaseService {
     const actorId = decoded.userId;
     const { student } = await this.validateStore(dto, actorId);
 
+    const response = new StudentExerciseStoreRO();
+
     try {
       const studentExerciseData = new StudentExerciseEntity();
       studentExerciseData.exerciseId = dto.exerciseId;
       studentExerciseData.studentId = student.id;
       studentExerciseData.createdBy = actorId;
-      await this.studentExerciseRepository.insert(studentExerciseData);
+      const studentExercise = await this.studentExerciseRepository.insert(studentExerciseData);
+
+      response.id = studentExercise.id;
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.STORE_FAILED;
       this.logger.error(error);
@@ -47,8 +52,10 @@ export class StudentExerciseService extends BaseService {
     }
 
     return this.success({
-      classRO: ResultRO,
-      response: { result: true },
+      classRO: StudentExerciseStoreRO,
+      response,
+      message: 'Store student exercise successfully',
+      actorId,
     });
   }
 

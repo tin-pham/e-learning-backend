@@ -17,7 +17,7 @@ export class ExerciseRepository {
   }
 
   find(dto: ExerciseGetListDTO, userId: number) {
-    const { limit, page, lessonId, isActive } = dto;
+    const { limit, page, lessonId, isActive, includeGrade } = dto;
 
     const withLesson = Boolean(lessonId);
 
@@ -53,7 +53,21 @@ export class ExerciseRepository {
           .where('lesson.id', '=', dto.lessonId)
           .where('lesson.deletedAt', 'is', null),
       )
-      .$if(isActive !== undefined, (qb) => qb.where('exercise.isActive', '=', isActive));
+      .$if(isActive !== undefined, (qb) => qb.where('exercise.isActive', '=', isActive))
+      .$if(includeGrade, (qb) =>
+        qb
+          .leftJoin('studentExerciseGrade', (join) =>
+            join
+              .onRef('studentExerciseGrade.studentExerciseId', '=', 'studentExercise.id')
+              .on('studentExerciseGrade.deletedAt', 'is', null),
+          )
+          .select([
+            'studentExerciseGrade.point',
+            'studentExerciseGrade.id as studentExerciseGradeId',
+            'studentExerciseGrade.totalCount',
+            'studentExerciseGrade.correctCount',
+          ]),
+      );
 
     return paginate(query, { limit, page });
   }
@@ -69,8 +83,6 @@ export class ExerciseRepository {
   }
 
   async findOneById(id: number, dto?: ExerciseGetDetailDTO) {
-    const { includeGrade } = dto;
-    console.log(includeGrade);
     return this.database
       .selectFrom('exercise')
       .where('exercise.deletedAt', 'is', null)
@@ -97,7 +109,7 @@ export class ExerciseRepository {
         'studentExercise.submittedAt as submissionDate',
         'studentExercise.isLate as isSubmissionLate',
       ])
-      .$if(includeGrade, (qb) =>
+      .$if(dto?.includeGrade, (qb) =>
         qb
           .leftJoin('studentExerciseGrade', (join) =>
             join

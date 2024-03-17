@@ -3,7 +3,7 @@ import { ExerciseQuestionSnapshotController } from './exercise-question-snapshot
 import { ExerciseQuestionSnapshotService } from './exercise-question-snapshot.service';
 import { ExerciseQuestionSnapshotRepository } from './exercise-question-snapshot.repository';
 import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
-import { ExerciseQuestionRepository } from '../exercise-question/exercise-question.repository';
+import { StudentExerciseRepository } from '../student-exercise/student-exercise.repository';
 
 @Module({
   controllers: [ExerciseQuestionSnapshotController],
@@ -11,7 +11,7 @@ import { ExerciseQuestionRepository } from '../exercise-question/exercise-questi
     ExerciseQuestionSnapshotService,
     ExerciseQuestionSnapshotRepository,
     StudentExerciseGradeRepository,
-    ExerciseQuestionRepository,
+    StudentExerciseRepository,
   ],
 })
 export class ExerciseQuestionSnapshotModule {}

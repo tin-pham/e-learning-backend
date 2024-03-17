@@ -4,7 +4,7 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseQuestionSnapshotRepository } from './exercise-question-snapshot.repository';
-import { ExerciseQuestionRepository } from '../exercise-question/exercise-question.repository';
+import { StudentExerciseRepository } from '../student-exercise/student-exercise.repository';
 import { ExerciseQuestionSnapshotGetListDTO } from './dto/exercise-question-snapshot.dto';
 import { ExerciseQuestionSnapshotGetListRO } from './ro/exercise-question-snapshot.ro';
 
@@ -15,22 +15,22 @@ export class ExerciseQuestionSnapshotService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly exerciseQuestionSnapshotRepository: ExerciseQuestionSnapshotRepository,
-    private readonly exerciseQuestionRepository: ExerciseQuestionRepository,
     private readonly studentExerciseGradeRepository: StudentExerciseGradeRepository,
+    private readonly studentExerciseRepository: StudentExerciseRepository,
   ) {
     super(elasticLogger);
   }
 
   async studentGetList(dto: ExerciseQuestionSnapshotGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const { isGraded, exerciseQuestion } = await this.validateStudentGetList(dto, actorId);
+    const { isGraded, studentExercise } = await this.validateStudentGetList(dto, actorId);
 
     try {
       let response: any;
       if (isGraded) {
-        response = await this.exerciseQuestionSnapshotRepository.find(dto, exerciseQuestion.id);
+        response = await this.exerciseQuestionSnapshotRepository.find(dto, studentExercise.id);
       } else {
-        response = await this.exerciseQuestionSnapshotRepository.findWithoutOption(dto, exerciseQuestion.id);
+        response = await this.exerciseQuestionSnapshotRepository.findWithoutOption(dto, studentExercise.id);
       }
 
       return this.success({
@@ -47,20 +47,20 @@ export class ExerciseQuestionSnapshotService extends BaseService {
   }
 
   private async validateStudentGetList(dto: ExerciseQuestionSnapshotGetListDTO, actorId: number) {
-    const exerciseQuestion = await this.exerciseQuestionRepository.getIdByExerciseId(dto.exerciseId);
+    const studentExercise = await this.studentExerciseRepository.getIdByExerciseId(dto.exerciseId);
 
-    if (!exerciseQuestion) {
-      const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
+    if (!studentExercise) {
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Is exercise graded
-    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(exerciseQuestion.id);
+    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(studentExercise.id);
     let isGraded = false;
     if (studentExerciseGradeCount) {
       isGraded = true;
     }
 
-    return { isGraded, exerciseQuestion };
+    return { isGraded, studentExercise };
   }
 }

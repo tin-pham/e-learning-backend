@@ -5,7 +5,7 @@ import { DatabaseService } from '../database';
 const { NAME, SCHEMA } = DATABASE_TABLE.EXERCISE_QUESTION_OPTION_SNAPSHOT;
 const { NAME: QUESTION_OPTION_NAME, SCHEMA: QUESTION_OPTION_SCHEMA } = DATABASE_TABLE.QUESTION_OPTION;
 const { NAME: EXERCISE_NAME, SCHEMA: EXERCISE_SCHEMA } = DATABASE_TABLE.EXERCISE;
-const { NAME: QUESTION_NAME, SCHEMA: QUESTION_SCHEMA } = DATABASE_TABLE.QUESTION;
+const { NAME: QUESTION_NAME, SCHEMA: QUESTION_SCHEMA } = DATABASE_TABLE.EXERCISE_QUESTION_SNAPSHOT;
 const { NAME: USER_NAME, SCHEMA: USER_SCHEMA } = DATABASE_TABLE.USERS;
 
 export async function up(database: DatabaseService): Promise<void> {
@@ -14,7 +14,9 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.TEXT, 'varchar(255)', (column) => column.notNull())
     .addColumn(SCHEMA.IS_CORRECT, 'boolean', (column) => column.notNull())
-    .addColumn(SCHEMA.QUESTION_ID, 'integer', (column) => column.notNull().references(`${QUESTION_NAME}.${QUESTION_SCHEMA.ID}`))
+    .addColumn(SCHEMA.EXERCISE_QUESTION_SNAPSHOT_ID, 'integer', (column) =>
+      column.notNull().references(`${QUESTION_NAME}.${QUESTION_SCHEMA.ID}`),
+    )
     .addColumn(SCHEMA.QUESTION_OPTION_ID, 'integer', (column) =>
       column.notNull().references(`${QUESTION_OPTION_NAME}.${QUESTION_OPTION_SCHEMA.ID}`),
     )

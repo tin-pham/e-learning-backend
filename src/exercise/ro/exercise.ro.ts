@@ -63,7 +63,7 @@ export class ExerciseGetListDataRO {
 
   @ApiProperty()
   @Expose()
-  isActive: number;
+  isActive: boolean;
 
   @ApiProperty()
   @Expose()
@@ -76,6 +76,22 @@ export class ExerciseGetListDataRO {
   @ApiProperty()
   @Expose()
   dueDate: Date;
+
+  @ApiProperty()
+  @Expose()
+  studentExerciseGradeId: number;
+
+  @ApiProperty()
+  @Expose()
+  point?: number;
+
+  @ApiProperty()
+  @Expose()
+  totalCount?: number;
+
+  @ApiProperty()
+  @Expose()
+  correctCount?: number;
 }
 
 export class ExerciseGetListRO extends PaginateRO<ExerciseGetListDataRO> {

@@ -22,17 +22,19 @@ export class ExerciseQuestionSnapshotRepository {
       .innerJoin('studentExercise', 'studentExercise.exerciseId', 'exercise.id')
       .where('studentExercise.deletedAt', 'is', null)
       .where('studentExercise.id', '=', studentExerciseId)
-      .leftJoin('exerciseQuestionOptionSnapshot', (join) =>
-        join
-          .onRef('exerciseQuestionSnapshot.id', '=', 'exerciseQuestionOptionSnapshot.questionId')
-          .on('exerciseQuestionOptionSnapshot.deletedAt', 'is', null),
+      .innerJoin(
+        'exerciseQuestionOptionSnapshot',
+        'exerciseQuestionOptionSnapshot.exerciseQuestionSnapshotId',
+        'exerciseQuestionSnapshot.id',
       )
+      .where('exerciseQuestionOptionSnapshot.deletedAt', 'is', null)
       .groupBy([
         'exerciseQuestionSnapshot.id',
         'exerciseQuestionSnapshot.text',
         'exerciseQuestionSnapshot.difficultyId',
         'difficulty.name',
         'exerciseQuestionSnapshot.isMultipleChoice',
+        'exerciseQuestionSnapshot.exerciseId',
       ])
       .select(({ fn, ref }) => [
         'exerciseQuestionSnapshot.id',
@@ -65,26 +67,23 @@ export class ExerciseQuestionSnapshotRepository {
   find(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
     const { page, limit } = dto;
 
+    console.log(studentExerciseId);
     const query = this.database
       .selectFrom('exerciseQuestionSnapshot')
       .where('exerciseQuestionSnapshot.deletedAt', 'is', null)
-      .innerJoin('difficulty', 'difficulty.id', 'exerciseQuestionSnapshot.difficultyId')
-      .where('difficulty.deletedAt', 'is', null)
       .innerJoin('exercise', 'exercise.id', 'exerciseQuestionSnapshot.exerciseId')
       .where('exercise.deletedAt', 'is', null)
+      .innerJoin('difficulty', 'difficulty.id', 'exerciseQuestionSnapshot.difficultyId')
+      .where('difficulty.deletedAt', 'is', null)
+      .innerJoin(
+        'exerciseQuestionOptionSnapshot',
+        'exerciseQuestionOptionSnapshot.exerciseQuestionSnapshotId',
+        'exerciseQuestionSnapshot.id',
+      )
+      .where('exerciseQuestionOptionSnapshot.deletedAt', 'is', null)
       .innerJoin('studentExercise', 'studentExercise.exerciseId', 'exercise.id')
       .where('studentExercise.deletedAt', 'is', null)
       .where('studentExercise.id', '=', studentExerciseId)
-      .leftJoin('exerciseQuestionOptionSnapshot', (join) =>
-        join
-          .onRef('exerciseQuestionSnapshot.id', '=', 'exerciseQuestionOptionSnapshot.questionId')
-          .on('exerciseQuestionOptionSnapshot.deletedAt', 'is', null),
-      )
-      .leftJoin('studentExerciseOption', (join) =>
-        join
-          .onRef('exerciseQuestionOptionSnapshot.id', '=', 'studentExerciseOption.questionOptionSnapshotId')
-          .on('studentExerciseOption.deletedAt', 'is', null),
-      )
       .groupBy([
         'exerciseQuestionSnapshot.id',
         'exerciseQuestionSnapshot.text',
@@ -106,15 +105,13 @@ export class ExerciseQuestionSnapshotRepository {
                   id: ref('exerciseQuestionOptionSnapshot.id'),
                   text: ref('exerciseQuestionOptionSnapshot.text'),
                   isCorrect: ref('exerciseQuestionOptionSnapshot.isCorrect'),
-                  isChosen: ref('studentExerciseOption.id'), // Make this boolean
                 }),
               )
               .filterWhere('exerciseQuestionOptionSnapshot.id', 'is not', null),
             sql`'[]'`,
           )
           .as('options'),
-      ])
-      .orderBy('exerciseQuestionSnapshot.createdAt', 'desc');
+      ]);
 
     return paginate(query, {
       page,
@@ -149,28 +146,49 @@ export class ExerciseQuestionSnapshotRepository {
       .execute();
   }
 
-  insertMultipleByQuestionIdsWithTransaction(transaction: Transaction, questionIds: number[], exerciseId: number) {
+  async insertMultipleByQuestionIdsAndExerciseIdWithTransaction(transaction: Transaction, questionIds: number[], exerciseId: number) {
+    // return transaction
+    //   .with('question_data', (qb) =>
+    //     qb
+    //       .selectFrom('question')
+    //       .select(['text', 'difficultyId', 'isMultipleChoice', 'id'])
+    //       .where('id', 'in', questionIds)
+    //       .where('deletedAt', 'is', null),
+    //   )
+    //   .insertInto('exerciseQuestionSnapshot')
+    //   .columns(['questionId', 'text', 'difficultyId', 'isMultipleChoice', 'exerciseId'])
+    //   .expression((eb) =>
+    //     eb
+    //       .selectFrom('question_data')
+    //       .select(({ ref }) => [
+    //         ref('id').as('questionId'),
+    //         ref('text').as('text'),
+    //         ref('difficultyId').as('difficultyId'),
+    //         ref('isMultipleChoice').as('isMultipleChoice'),
+    //         sql`${exerciseId}`.as('exerciseId'),
+    //       ]),
+    //   )
+    //   .execute();
+
+    const questionData = await transaction
+      .selectFrom('question')
+      .select(['text', 'difficultyId', 'isMultipleChoice', 'id'])
+      .where('id', 'in', questionIds)
+      .where('deletedAt', 'is', null)
+      .execute();
+
     return transaction
-      .with('question_data', (qb) =>
-        qb
-          .selectFrom('question')
-          .select(['text', 'difficultyId', 'isMultipleChoice', 'id'])
-          .where('id', 'in', questionIds)
-          .where('deletedAt', 'is', null),
-      )
       .insertInto('exerciseQuestionSnapshot')
-      .columns(['questionId', 'text', 'difficultyId', 'isMultipleChoice', 'exerciseId'])
-      .expression((eb) =>
-        eb
-          .selectFrom('question_data')
-          .select(({ ref }) => [
-            ref('id').as('questionId'),
-            ref('text').as('text'),
-            ref('difficultyId').as('difficultyId'),
-            ref('isMultipleChoice').as('isMultipleChoice'),
-            sql`${exerciseId}`.as('exerciseId'),
-          ]),
+      .values(
+        questionData.map((question) => ({
+          questionId: question.id,
+          text: question.text,
+          difficultyId: question.difficultyId,
+          isMultipleChoice: question.isMultipleChoice,
+          exerciseId,
+        })),
       )
+      .returning(['id'])
       .execute();
   }
 }

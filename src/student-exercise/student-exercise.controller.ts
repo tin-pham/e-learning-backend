@@ -20,6 +20,7 @@ import { ROLE } from '../role/enum/role.enum';
 import { StudentExerciseService } from './student-exercise.service';
 import { StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
 import { ResultRO } from '../common/ro/result.ro';
+import { StudentExerciseStoreRO } from './ro/student-exercise.ro';
 
 const { TAGS, CONTROLLER, STORE, SUBMIT, GET_SUBMITTED_LIST } = API.STUDENT_EXERCISE;
 
@@ -29,7 +30,7 @@ export class StudentExerciseController {
   constructor(private readonly studentExerciseService: StudentExerciseService) {}
 
   @ApiOperation({ summary: STORE.OPERATION })
-  @ApiCreatedResponse({ type: ResultRO })
+  @ApiCreatedResponse({ type: StudentExerciseStoreRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })

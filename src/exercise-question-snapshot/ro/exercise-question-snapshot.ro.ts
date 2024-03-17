@@ -16,7 +16,16 @@ export class ExerciseQuestionSnapshotGetListOptionRO {
   isCorrect: boolean;
 
   @ApiProperty()
-  @Transform(({ value }) => (value === null ? false : true))
+  @Transform(({ value }) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    if (value === null) {
+      return false;
+    }
+    return true;
+  })
   @Expose()
   isChosen: boolean;
 }

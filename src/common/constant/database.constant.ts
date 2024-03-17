@@ -194,7 +194,7 @@ export const DATABASE_TABLE = {
       ID: 'id',
       TEXT: 'text',
       IS_CORRECT: 'is_correct',
-      QUESTION_ID: 'question_id',
+      EXERCISE_QUESTION_SNAPSHOT_ID: 'exercise_question_snapshot_id',
       EXERCISE_ID: 'exercise_id',
       QUESTION_OPTION_ID: 'question_option_id',
       CAPTURED_AT: 'captured_at',

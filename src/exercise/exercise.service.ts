@@ -89,7 +89,6 @@ export class ExerciseService extends BaseService {
     const actorId = decoded.userId;
     try {
       const response = await this.exerciseRepository.find(dto, actorId);
-      console.log(response);
       return this.success({
         classRO: ExerciseGetListRO,
         response,
@@ -190,15 +189,24 @@ export class ExerciseService extends BaseService {
         // Question snapshot
         const questions = await this.exerciseQuestionRepository.getQuestionIdsByExerciseId(exercise.id);
         const questionIds = questions.map((question) => question.questionId);
+
         if (questionIds.length > 0) {
-          await this.exerciseQuestionSnapshotRepository.insertMultipleByQuestionIdsWithTransaction(transaction, questionIds, exercise.id);
+          await this.exerciseQuestionSnapshotRepository.insertMultipleByQuestionIdsAndExerciseIdWithTransaction(
+            transaction,
+            questionIds,
+            exercise.id,
+          );
 
           // Question option snapshot
           const options = await this.questionOptionRepository.getIdsByQuestionIds(questionIds);
           const optionIds = options.map((option) => option.id);
 
           if (optionIds.length > 0) {
-            await this.exerciseQuestionOptionSnapshotRepository.insertMultipleByOptionIdsWithTransaction(transaction, optionIds);
+            await this.exerciseQuestionOptionSnapshotRepository.insertMultipleByOptionIdsAndExerciseIdWithTransaction(
+              transaction,
+              optionIds,
+              exercise.id,
+            );
           }
         }
       });
@@ -281,6 +289,7 @@ export class ExerciseService extends BaseService {
 
   private async validateActivate(id: number, actorId: number) {
     // Check exist
+    console.log('one');
     const exercise = await this.exerciseRepository.findOneById(id);
     if (!exercise) {
       const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
@@ -288,12 +297,14 @@ export class ExerciseService extends BaseService {
     }
 
     // Check isActive is false
+    console.log('two');
     if (exercise.isActive) {
       const { code, status, message } = EXCEPTION.EXERCISE.ALREADY_ACTIVATED;
       this.throwException({ code, status, message, actorId });
     }
 
     // Activate at least 1 question
+    console.log('three');
     const questionCount = await this.exerciseQuestionRepository.countByExerciseId(id);
     if (questionCount < 1) {
       const { code, status, message } = EXCEPTION.EXERCISE.CANNOT_ACTIVATE_WITHOUT_QUESTION;

@@ -15,12 +15,12 @@ export class ExerciseQuestionOptionSnapshotRepository {
     return Number(count);
   }
 
-  getCorrectIdByQuestionId(questionId: number) {
+  getCorrectIdByQuestionId(exerciseQuestionSnapshotId: number) {
     return this.database
       .selectFrom('exerciseQuestionOptionSnapshot')
       .select(['id'])
       .where('deletedAt', 'is', null)
-      .where('questionId', '=', questionId)
+      .where('exerciseQuestionSnapshotId', '=', exerciseQuestionSnapshotId)
       .where('isCorrect', '=', true)
       .execute();
   }
@@ -33,29 +33,28 @@ export class ExerciseQuestionOptionSnapshotRepository {
       .execute();
   }
 
-  insertMultipleByOptionIdsWithTransaction(transaction: Transaction, optionIds: number[]) {
-    return transaction
-      .with('option_data', (qb) =>
-        qb
-          .selectFrom('questionOption')
-          .where('questionOption.id', 'in', optionIds)
-          .where('questionOption.deletedAt', 'is', null)
-          .innerJoin('question', 'question.id', 'questionOption.questionId')
-          .where('question.deletedAt', 'is', null)
-          .innerJoin('exerciseQuestion', 'exerciseQuestion.questionId', 'question.id')
-          .where('exerciseQuestion.deletedAt', 'is', null)
-          .innerJoin('exercise', 'exercise.id', 'exerciseQuestion.exerciseId')
-          .select([
-            'questionOption.id as questionOptionId',
-            'questionOption.text',
-            'questionOption.isCorrect',
-            'questionOption.questionId',
-            'exercise.id as exerciseId',
-          ]),
-      )
-      .insertInto('exerciseQuestionOptionSnapshot')
-      .columns(['questionOptionId', 'text', 'isCorrect', 'questionId', 'exerciseId'])
-      .expression((eb) => eb.selectFrom('option_data').select(['questionOptionId', 'text', 'isCorrect', 'questionId', 'exerciseId']))
+  async insertMultipleByOptionIdsAndExerciseIdWithTransaction(transaction: Transaction, optionIds: number[], exerciseId: number) {
+    const optionData = await transaction
+      .selectFrom('questionOption')
+      .where('questionOption.id', 'in', optionIds)
+      .where('questionOption.deletedAt', 'is', null)
+      .innerJoin('question', 'question.id', 'questionOption.questionId')
+      .where('question.deletedAt', 'is', null)
+      .innerJoin('exerciseQuestionSnapshot', 'exerciseQuestionSnapshot.questionId', 'question.id')
+      .where('exerciseQuestionSnapshot.deletedAt', 'is', null)
+      .innerJoin('exercise', 'exercise.id', 'exerciseQuestionSnapshot.exerciseId')
+      .where('exercise.deletedAt', 'is', null)
+      .where('exercise.id', '=', exerciseId)
+      .select([
+        'questionOption.id as questionOptionId',
+        'questionOption.text',
+        'questionOption.isCorrect',
+        'exerciseQuestionSnapshot.id as exerciseQuestionSnapshotId',
+        'exercise.id as exerciseId',
+      ])
+      .distinctOn(['questionOption.id'])
       .execute();
+
+    return transaction.insertInto('exerciseQuestionOptionSnapshot').values(optionData).execute();
   }
 }

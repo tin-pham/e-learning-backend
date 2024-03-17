@@ -6,6 +6,15 @@ import { StudentExerciseEntity } from './student-exercise.entity';
 export class StudentExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getIdByExerciseId(exerciseId: number) {
+    return this.database
+      .selectFrom('studentExercise')
+      .select('id')
+      .where('exerciseId', '=', exerciseId)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
   findBySubmitted() {
     return this.database
       .selectFrom('studentExercise')
@@ -55,6 +64,6 @@ export class StudentExerciseRepository {
   }
 
   insert(entity: StudentExerciseEntity) {
-    return this.database.insertInto('studentExercise').values(entity).execute();
+    return this.database.insertInto('studentExercise').values(entity).returning('id').executeTakeFirst();
   }
 }
