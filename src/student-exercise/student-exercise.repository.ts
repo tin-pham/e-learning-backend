@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { StudentExerciseEntity } from './student-exercise.entity';
+import { StudentExerciseGetListSubmittedDTO } from './dto/student-exercise.dto';
+import { paginate } from 'src/common/function/paginate';
 
 @Injectable()
 export class StudentExerciseRepository {
@@ -15,12 +17,37 @@ export class StudentExerciseRepository {
       .executeTakeFirst();
   }
 
-  findBySubmitted() {
-    return this.database
+  find(dto: StudentExerciseGetListSubmittedDTO) {
+    const { page, limit, exerciseId } = dto;
+
+    const query = this.database
       .selectFrom('studentExercise')
-      .where('isSubmitted', '=', true)
-      .select(['id', 'studentId', 'exerciseId', 'isSubmitted', 'submittedAt', 'isLate'])
-      .execute();
+      .where('studentExercise.exerciseId', '=', exerciseId)
+      .where('studentExercise.deletedAt', 'is', null)
+      .where('studentExercise.isSubmitted', '=', true)
+      .innerJoin('student', 'student.id', 'studentExercise.studentId')
+      .innerJoin('users', 'users.id', 'student.userId')
+      .where('users.deletedAt', 'is', null)
+      .leftJoin('userImage', (join) => join.onRef('users.id', '=', 'userImage.userId').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
+      .leftJoin('studentExerciseGrade', (join) =>
+        join.onRef('studentExerciseGrade.studentExerciseId', '=', 'studentExercise.id').on('studentExerciseGrade.deletedAt', 'is', null),
+      )
+      .select([
+        'studentExercise.id',
+        'studentExercise.studentId',
+        'studentExercise.exerciseId',
+        'studentExercise.isSubmitted',
+        'studentExercise.submittedAt',
+        'studentExercise.isLate',
+        'users.displayName as userDisplayName',
+        'image.url as userImageUrl',
+        'studentExerciseGrade.point',
+        'studentExerciseGrade.totalCount',
+        'studentExerciseGrade.correctCount',
+      ]);
+
+    return paginate(query, { limit, page });
   }
 
   findOneById(id: number) {

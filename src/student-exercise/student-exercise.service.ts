@@ -9,10 +9,10 @@ import { StudentExerciseOptionRepository } from '../student-exercise-option/stud
 import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapshot/exercise-question-snapshot.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
+import { StudentExerciseGetListSubmittedDTO, StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
 import { StudentExerciseEntity } from './student-exercise.entity';
 import { ResultRO } from '../common/ro/result.ro';
-import { StudentExerciseStoreRO } from './ro/student-exercise.ro';
+import { StudentExerciseGetListSubmittedRO, StudentExerciseStoreRO } from './ro/student-exercise.ro';
 
 @Injectable()
 export class StudentExerciseService extends BaseService {
@@ -100,13 +100,16 @@ export class StudentExerciseService extends BaseService {
     });
   }
 
-  // TODO: RO
-  async getListSubmitted(decoded: IJwtPayload) {
+  async getListSubmitted(dto: StudentExerciseGetListSubmittedDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
 
     try {
-      const studentExercises = await this.studentExerciseRepository.findBySubmitted();
-      return studentExercises;
+      const studentExercises = await this.studentExerciseRepository.find(dto);
+
+      return this.success({
+        classRO: StudentExerciseGetListSubmittedRO,
+        response: studentExercises,
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.GET_SUBMITTED_LIST_FAILED;
       this.logger.error(error);

@@ -76,6 +76,36 @@ export class ExerciseGetListDTO extends PaginateDTO {
   })
   @IsOptional()
   includeGrade?: boolean;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsOptional()
+  isSubmitted?: boolean;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsOptional()
+  isMissing?: boolean;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsOptional()
+  isLate?: boolean;
 }
 
 export class ExerciseUpdateDTO {

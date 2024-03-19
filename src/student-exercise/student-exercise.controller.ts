@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -18,7 +18,7 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { StudentExerciseService } from './student-exercise.service';
-import { StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
+import { StudentExerciseGetListSubmittedDTO, StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
 import { ResultRO } from '../common/ro/result.ro';
 import { StudentExerciseStoreRO } from './ro/student-exercise.ro';
 
@@ -69,7 +69,7 @@ export class StudentExerciseController {
   @Get(GET_SUBMITTED_LIST.ROUTE)
   @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard)
-  getSubmittedList(@JwtPayload() decoded: IJwtPayload) {
-    return this.studentExerciseService.getListSubmitted(decoded);
+  getSubmittedList(@Query() dto: StudentExerciseGetListSubmittedDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.studentExerciseService.getListSubmitted(dto, decoded);
   }
 }

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
+import { PaginateDTO } from 'src/common/dto/paginate.dto';
 
 export class StudentExerciseStoreDTO {
   @ApiProperty({ example: 1 })
@@ -25,4 +26,12 @@ export class StudentExerciseSubmitDTO {
   @Type(() => StudentExerciseSubmitSnapshotQuestionDTO)
   @IsArray()
   snapshotQuestions: StudentExerciseSubmitSnapshotQuestionDTO[];
+}
+
+export class StudentExerciseGetListSubmittedDTO extends PaginateDTO {
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsNotEmpty()
+  exerciseId: number;
 }

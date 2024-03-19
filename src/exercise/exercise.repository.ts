@@ -17,7 +17,9 @@ export class ExerciseRepository {
   }
 
   find(dto: ExerciseGetListDTO, userId: number) {
-    const { limit, page, lessonId, isActive, includeGrade } = dto;
+    const { limit, page, lessonId, isActive, includeGrade, isSubmitted, isMissing, isLate } = dto;
+
+    console.log(dto);
 
     const withLesson = Boolean(lessonId);
 
@@ -70,8 +72,10 @@ export class ExerciseRepository {
             'studentExerciseGrade.totalCount',
             'studentExerciseGrade.correctCount',
           ]),
-      );
-
+      )
+      .$if(isSubmitted !== undefined, (qb) => qb.where('studentExercise.isSubmitted', '=', isSubmitted))
+      .$if(isLate !== undefined, (qb) => qb.where('studentExercise.isLate', '=', isLate))
+      .$if(isMissing !== undefined, (qb) => qb.where('studentExercise.id', 'is', null));
     return paginate(query, { limit, page });
   }
 
