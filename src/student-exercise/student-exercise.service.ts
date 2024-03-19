@@ -45,6 +45,7 @@ export class StudentExerciseService extends BaseService {
       const studentExercise = await this.studentExerciseRepository.insert(studentExerciseData);
 
       response.id = studentExercise.id;
+      response.startDoingAt = studentExercise.startDoingAt;
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.STORE_FAILED;
       this.logger.error(error);

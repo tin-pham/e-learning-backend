@@ -18,8 +18,9 @@ export class ExerciseQuestionSnapshotGetListOptionRO {
   @ApiProperty()
   @Transform(({ value }) => {
     if (value === undefined) {
-      return undefined;
+      return false;
     }
+    console.log(value);
 
     if (value === null) {
       return false;

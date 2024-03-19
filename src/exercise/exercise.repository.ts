@@ -30,7 +30,7 @@ export class ExerciseRepository {
         join
           .onRef('studentExercise.exerciseId', '=', 'exercise.id')
           .on('studentExercise.deletedAt', 'is', null)
-          .on('studentExercise.updatedBy', '=', userId),
+          .on('studentExercise.createdBy', '=', userId),
       )
       .select([
         'exercise.id',
@@ -41,6 +41,9 @@ export class ExerciseRepository {
         'exercise.activatedAt',
         'exercise.dueDate',
         'exercise.time',
+        'studentExercise.id as studentExerciseId',
+        'studentExercise.id as isStartDoing',
+        'studentExercise.createdAt as startDoingAt',
         'studentExercise.isSubmitted',
         'studentExercise.submittedAt as submissionDate',
         'studentExercise.isLate as isSubmissionLate',
@@ -103,8 +106,11 @@ export class ExerciseRepository {
         'exercise.activatedAt',
         'exercise.dueDate',
         'exercise.time',
+        'exercise.instantMark',
         'studentExercise.studentId',
         'studentExercise.id as studentExerciseId',
+        'studentExercise.id as isStartDoing',
+        'studentExercise.createdAt as startDoingAt',
         'studentExercise.isSubmitted',
         'studentExercise.submittedAt as submissionDate',
         'studentExercise.isLate as isSubmissionLate',

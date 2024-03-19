@@ -64,6 +64,6 @@ export class StudentExerciseRepository {
   }
 
   insert(entity: StudentExerciseEntity) {
-    return this.database.insertInto('studentExercise').values(entity).returning('id').executeTakeFirst();
+    return this.database.insertInto('studentExercise').values(entity).returning(['id', 'createdAt as startDoingAt']).executeTakeFirst();
   }
 }

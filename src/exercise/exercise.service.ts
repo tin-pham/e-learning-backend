@@ -49,6 +49,7 @@ export class ExerciseService extends BaseService {
         exerciseData.createdBy = actorId;
         exerciseData.dueDate = dto.dueDate;
         exerciseData.time = dto.time;
+        exerciseData.instantMark = dto.instantMark;
         const exercise = await this.exerciseRepository.insertWithTransaction(transaction, exerciseData);
 
         // Store lesson exercise

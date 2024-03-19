@@ -19,7 +19,7 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ExerciseService } from './exercise.service';
 import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, ACTIVATE } = API.EXERCISE;
 

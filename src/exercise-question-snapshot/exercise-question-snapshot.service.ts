@@ -27,6 +27,7 @@ export class ExerciseQuestionSnapshotService extends BaseService {
 
     try {
       let response: any;
+      console.log(isGraded);
       if (isGraded) {
         response = await this.exerciseQuestionSnapshotRepository.find(dto, studentExercise.id);
       } else {

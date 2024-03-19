@@ -67,7 +67,6 @@ export class ExerciseQuestionSnapshotRepository {
   find(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
     const { page, limit } = dto;
 
-    console.log(studentExerciseId);
     const query = this.database
       .selectFrom('exerciseQuestionSnapshot')
       .where('exerciseQuestionSnapshot.deletedAt', 'is', null)
@@ -84,13 +83,11 @@ export class ExerciseQuestionSnapshotRepository {
       .innerJoin('studentExercise', 'studentExercise.exerciseId', 'exercise.id')
       .where('studentExercise.deletedAt', 'is', null)
       .where('studentExercise.id', '=', studentExerciseId)
-      .groupBy([
-        'exerciseQuestionSnapshot.id',
-        'exerciseQuestionSnapshot.text',
-        'exerciseQuestionSnapshot.difficultyId',
-        'difficulty.name',
-        'exerciseQuestionSnapshot.isMultipleChoice',
-      ])
+      .leftJoin('studentExerciseOption', (join) =>
+        join
+          .onRef('studentExerciseOption.questionOptionSnapshotId', '=', 'exerciseQuestionOptionSnapshot.id')
+          .on('studentExerciseOption.deletedAt', 'is', null),
+      )
       .select(({ fn, ref }) => [
         'exerciseQuestionSnapshot.id',
         'exerciseQuestionSnapshot.text',
@@ -105,12 +102,20 @@ export class ExerciseQuestionSnapshotRepository {
                   id: ref('exerciseQuestionOptionSnapshot.id'),
                   text: ref('exerciseQuestionOptionSnapshot.text'),
                   isCorrect: ref('exerciseQuestionOptionSnapshot.isCorrect'),
+                  isChosen: ref('studentExerciseOption.id'),
                 }),
               )
               .filterWhere('exerciseQuestionOptionSnapshot.id', 'is not', null),
             sql`'[]'`,
           )
           .as('options'),
+      ])
+      .groupBy([
+        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.text',
+        'exerciseQuestionSnapshot.difficultyId',
+        'difficulty.name',
+        'exerciseQuestionSnapshot.isMultipleChoice',
       ]);
 
     return paginate(query, {

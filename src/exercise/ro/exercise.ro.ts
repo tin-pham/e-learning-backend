@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { PaginateRO } from '../../common/ro/paginate.ro';
 
 export class ExerciseStoreRO {
@@ -64,6 +64,25 @@ export class ExerciseGetListDataRO {
   @ApiProperty()
   @Expose()
   isActive: boolean;
+
+  @ApiProperty()
+  @Expose()
+  studentExerciseId: number;
+
+  @ApiProperty()
+  @Transform(({ value }) => {
+    if (value === null) {
+      return false;
+    } else {
+      return true;
+    }
+  })
+  @Expose()
+  isStartDoing: boolean;
+
+  @ApiProperty()
+  @Expose()
+  startDoingAt: Date;
 
   @ApiProperty()
   @Expose()
@@ -143,6 +162,21 @@ export class ExerciseGetDetailRO {
   studentExerciseId: number;
 
   @ApiProperty()
+  @Transform(({ value }) => {
+    if (value === null) {
+      return false;
+    } else {
+      return true;
+    }
+  })
+  @Expose()
+  isStartDoing: boolean;
+
+  @ApiProperty()
+  @Expose()
+  startDoingAt: Date;
+
+  @ApiProperty()
   @Expose()
   isSubmitted: boolean;
 
@@ -161,6 +195,10 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   correctCount?: number;
+
+  @ApiProperty()
+  @Expose()
+  instantMark?: boolean;
 }
 
 export class ExerciseUpdateRO {

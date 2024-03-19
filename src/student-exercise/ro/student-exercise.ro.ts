@@ -5,4 +5,8 @@ export class StudentExerciseStoreRO {
   @ApiProperty()
   @Expose()
   id: number;
+
+  @ApiProperty()
+  @Expose()
+  startDoingAt: Date;
 }

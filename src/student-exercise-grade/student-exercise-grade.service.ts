@@ -108,7 +108,7 @@ export class StudentExerciseGradeService extends BaseService {
 
   private async validateCalculate(dto: StudentExerciseGradeCalculateDTO, actorId: number) {
     // Check unique
-    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByExerciseId(dto.studentExerciseId);
+    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(dto.studentExerciseId);
     if (studentExerciseGradeCount) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
