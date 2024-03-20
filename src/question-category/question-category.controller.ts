@@ -44,7 +44,7 @@ export class QuestionCategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: QuestionCategoryStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -59,7 +59,7 @@ export class QuestionCategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: QuestionCategoryGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.questionCategoryService.getList(dto, decoded);
@@ -73,7 +73,7 @@ export class QuestionCategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.questionCategoryService.getDetail(id, decoded);
@@ -88,7 +88,7 @@ export class QuestionCategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: QuestionCategoryUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.questionCategoryService.update(id, dto, decoded);
@@ -102,7 +102,7 @@ export class QuestionCategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.questionCategoryService.delete(id, decoded);

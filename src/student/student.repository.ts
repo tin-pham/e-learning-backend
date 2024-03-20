@@ -10,11 +10,11 @@ export class StudentRepository {
   constructor(private readonly database: DatabaseService) {}
 
   insertWithTransaction(transaction: Transaction, entity: StudentEntity) {
-    return transaction.insertInto('student').values(entity).returning(['id']).executeTakeFirstOrThrow();
+    return transaction.insertInto('student').values(entity).returning(['id']).executeTakeFirst();
   }
 
   updateWithTransaction(transaction: Transaction, id: string, entity: StudentEntity) {
-    return transaction.updateTable('student').set(entity).where('id', '=', id).returning(['id']).executeTakeFirstOrThrow();
+    return transaction.updateTable('student').set(entity).where('id', '=', id).returning(['id']).executeTakeFirst();
   }
 
   find(dto: StudentGetListDTO) {
@@ -25,7 +25,9 @@ export class StudentRepository {
       .innerJoin('users', 'users.id', 'student.userId')
       .innerJoin('userRole', 'users.id', 'userRole.userId')
       .innerJoin('role', 'userRole.roleId', 'role.id')
-      .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'student.id'])
+      .leftJoin('userImage', (join) => join.onRef('users.id', '=', 'userImage.userId').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
+      .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'student.id', 'image.url as userImageUrl'])
       .where('role.name', '=', ROLE.STUDENT)
       .where('users.deletedAt', 'is', null);
 

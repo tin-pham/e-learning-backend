@@ -11,16 +11,7 @@ import { UserService } from '../user/user.service';
 import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { TeacherGetListDTO, TeacherStoreDTO, TeacherUpdateDTO } from './dto/teacher.dto';
-import {
-  TeacherDeleteRO,
-  TeacherGetDetailRO,
-  TeacherGetDetailUserRO,
-  TeacherGetListRO,
-  TeacherStoreRO,
-  TeacherStoreUserRO,
-  TeacherUpdateRO,
-  TeacherUpdateUserRO,
-} from './ro/teacher.ro';
+import { TeacherDeleteRO, TeacherGetDetailRO, TeacherGetListRO, TeacherStoreRO, TeacherUpdateRO } from './ro/teacher.ro';
 
 @Injectable()
 export class TeacherService extends UserService {
@@ -61,11 +52,10 @@ export class TeacherService extends UserService {
 
         // Set response
         response.id = id;
-        response.user = new TeacherStoreUserRO();
-        response.user.username = user.username;
-        response.user.email = user.email;
-        response.user.phone = user.phone;
-        response.user.displayName = user.displayName;
+        response.username = user.username;
+        response.email = user.email;
+        response.phone = user.phone;
+        response.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.STORE_FAILED;
@@ -105,11 +95,10 @@ export class TeacherService extends UserService {
       }
 
       response.id = id;
-      response.user = new TeacherGetDetailUserRO();
-      response.user.username = teacher.username;
-      response.user.email = teacher.email;
-      response.user.phone = teacher.phone;
-      response.user.displayName = teacher.displayName;
+      response.username = teacher.username;
+      response.email = teacher.email;
+      response.phone = teacher.phone;
+      response.displayName = teacher.displayName;
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.GET_DETAIL_FAILED;
       this.logger.error(error);
@@ -136,11 +125,10 @@ export class TeacherService extends UserService {
           throw new InternalServerErrorException();
         }
         response.id = teacherId;
-        response.user = new TeacherUpdateUserRO();
-        response.user.username = user.username;
-        response.user.email = user.email;
-        response.user.phone = user.phone;
-        response.user.displayName = user.displayName;
+        response.username = user.username;
+        response.email = user.email;
+        response.phone = user.phone;
+        response.displayName = user.displayName;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.TEACHER.UPDATE_FAILED;

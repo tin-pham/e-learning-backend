@@ -71,6 +71,8 @@ export class CourseGetListDTO extends PaginateDTO {
   withAssignmentCount?: boolean;
 }
 
+export class CourseTeacherGetListDTO extends PaginateDTO {}
+
 export class CourseGetDetailDTO {
   @ApiPropertyOptional()
   @Type(() => Boolean)

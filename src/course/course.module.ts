@@ -12,6 +12,7 @@ import { CourseStudentRepository } from '../course-student/course-student.reposi
 import { CourseImageRepository } from '../course-image/course-image.repository';
 import { ImageRepository } from '../image/image.repository';
 import { LevelRepository } from '../level/level.repository';
+import { TeacherRepository } from 'src/teacher/teacher.repository';
 
 @Module({
   controllers: [CourseController],
@@ -29,6 +30,7 @@ import { LevelRepository } from '../level/level.repository';
     ImageRepository,
     CourseRepository,
     LevelRepository,
+    TeacherRepository,
   ],
 })
 export class CourseModule {}

@@ -1,47 +1,12 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { PaginateRO } from '../../common/ro/paginate.ro';
-
-export class TeacherStoreUserRO {
-  @ApiProperty()
-  @Expose()
-  id: string;
-
-  @ApiProperty({ example: 'tinpham' })
-  @Expose()
-  username: string;
-
-  @ApiProperty({ required: false, example: 'tinpham@example.com' })
-  @Expose()
-  email?: string;
-
-  @ApiProperty({ required: false, example: '0987654321' })
-  @Expose()
-  phone?: string;
-
-  @ApiProperty({ example: 'Tin Pham' })
-  @Expose()
-  displayName: string;
-}
 
 export class TeacherStoreRO {
   @ApiProperty()
   @Expose()
   id: string;
 
-  @ApiProperty({ type: TeacherStoreUserRO })
-  @Type(() => TeacherStoreUserRO)
-  @Expose()
-  user: TeacherStoreUserRO;
-}
-
-export class TeacherGetListTeacherSubjectDataRO {
-  @ApiProperty()
-  @Expose()
-  id: string;
-}
-
-export class TeacherGetListDataUserRO {
   @ApiProperty({ example: 'tinpham' })
   @Expose()
   username: string;
@@ -60,25 +25,10 @@ export class TeacherGetListDataUserRO {
 }
 
 export class TeacherGetListDataRO {
-  @ApiProperty({ type: TeacherGetListDataUserRO })
-  @Type(() => TeacherGetListDataUserRO)
+  @ApiProperty({ example: 'tinpham' })
   @Expose()
-  user: TeacherGetListDataUserRO;
+  id: string;
 
-  @ApiPropertyOptional({ type: [TeacherGetListTeacherSubjectDataRO] })
-  @Type(() => TeacherGetListTeacherSubjectDataRO)
-  @Expose()
-  teacherSubjects: TeacherGetListTeacherSubjectDataRO[];
-}
-
-export class TeacherGetListRO extends PaginateRO<TeacherGetListDataRO> {
-  @ApiProperty({ type: [TeacherGetListDataRO] })
-  @Type(() => TeacherGetListDataRO)
-  @Expose()
-  data: TeacherGetListDataRO[];
-}
-
-export class TeacherGetDetailUserRO {
   @ApiProperty({ example: 'tinpham' })
   @Expose()
   username: string;
@@ -94,6 +44,17 @@ export class TeacherGetDetailUserRO {
   @ApiProperty({ example: 'Tin Pham' })
   @Expose()
   displayName: string;
+
+  @ApiProperty()
+  @Expose()
+  userImageUrl: string;
+}
+
+export class TeacherGetListRO extends PaginateRO<TeacherGetListDataRO> {
+  @ApiProperty({ type: [TeacherGetListDataRO] })
+  @Type(() => TeacherGetListDataRO)
+  @Expose()
+  data: TeacherGetListDataRO[];
 }
 
 export class TeacherGetDetailRO {
@@ -101,13 +62,6 @@ export class TeacherGetDetailRO {
   @Expose()
   id: string;
 
-  @ApiProperty({ type: TeacherGetDetailUserRO })
-  @Type(() => TeacherGetDetailUserRO)
-  @Expose()
-  user: TeacherGetDetailUserRO;
-}
-
-export class TeacherUpdateUserRO {
   @ApiProperty({ example: 'tinpham' })
   @Expose()
   username: string;
@@ -130,13 +84,6 @@ export class TeacherUpdateRO {
   @Expose()
   id: string;
 
-  @ApiProperty({ type: TeacherUpdateUserRO })
-  @Type(() => TeacherUpdateUserRO)
-  @Expose()
-  user: TeacherUpdateUserRO;
-}
-
-export class TeacherDeleteUserRO {
   @ApiProperty({ example: 'tinpham' })
   @Expose()
   username: string;
@@ -159,8 +106,19 @@ export class TeacherDeleteRO {
   @Expose()
   id: string;
 
-  @ApiProperty({ type: TeacherDeleteUserRO })
-  @Type(() => TeacherDeleteUserRO)
+  @ApiProperty({ example: 'tinpham' })
   @Expose()
-  user: TeacherDeleteUserRO;
+  username: string;
+
+  @ApiProperty({ required: false, example: 'tinpham@example.com' })
+  @Expose()
+  email?: string;
+
+  @ApiProperty({ required: false, example: '0987654321' })
+  @Expose()
+  phone?: string;
+
+  @ApiProperty({ example: 'Tin Pham' })
+  @Expose()
+  displayName: string;
 }

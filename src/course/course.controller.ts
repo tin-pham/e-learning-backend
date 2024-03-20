@@ -19,10 +19,10 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { CourseService } from './course.service';
-import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
-import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
+import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseTeacherGetListDTO, CourseUpdateDTO } from './dto/course.dto';
+import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseTeacherGetListRO, CourseUpdateRO } from './ro/course.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.COURSE;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, TEACHER_GET_LIST } = API.COURSE;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -38,11 +38,25 @@ export class CourseController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: CourseStoreDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.courseService.store(dto, decoded);
+  }
+
+  @ApiOperation({ summary: TEACHER_GET_LIST.OPERATION })
+  @ApiOkResponse({ type: CourseTeacherGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(TEACHER_GET_LIST.ROUTE)
+  @Roles(ROLE.TEACHER)
+  @UseGuards(JwtGuard, RoleGuard)
+  teacherGetList(@Query() dto: CourseTeacherGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.courseService.teacherGetList(dto, decoded);
   }
 
   @ApiOperation({ summary: GET_LIST.OPERATION })
@@ -82,7 +96,7 @@ export class CourseController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: CourseUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.courseService.update(id, dto, decoded);
@@ -96,7 +110,7 @@ export class CourseController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.courseService.delete(id, decoded);

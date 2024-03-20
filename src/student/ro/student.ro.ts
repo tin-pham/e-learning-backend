@@ -44,6 +44,10 @@ export class StudentGetListDataRO {
   @ApiProperty()
   @Expose()
   displayName: string;
+
+  @ApiProperty()
+  @Expose()
+  userImageUrl: string;
 }
 
 export class StudentGetListRO extends PaginateRO<StudentGetListDataRO> {

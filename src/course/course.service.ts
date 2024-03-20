@@ -15,8 +15,9 @@ import { LevelRepository } from '../level/level.repository';
 import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
-import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseUpdateDTO } from './dto/course.dto';
-import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseUpdateRO } from './ro/course.ro';
+import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseTeacherGetListDTO, CourseUpdateDTO } from './dto/course.dto';
+import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseTeacherGetListRO, CourseUpdateRO } from './ro/course.ro';
+import { TeacherRepository } from 'src/teacher/teacher.repository';
 
 @Injectable()
 export class CourseService extends BaseService {
@@ -36,6 +37,7 @@ export class CourseService extends BaseService {
     private readonly courseImageRepository: CourseImageRepository,
     private readonly imageRepository: ImageRepository,
     private readonly levelRepository: LevelRepository,
+    private readonly teacherRepository: TeacherRepository,
   ) {
     super(elasticLogger);
   }
@@ -109,6 +111,24 @@ export class CourseService extends BaseService {
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  async teacherGetList(dto: CourseTeacherGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const { teacher } = await this.validateTeacherGetList(actorId);
+
+    try {
+      const response = await this.courseRepository.findByTeacherId(teacher.id, dto);
+
+      return this.success({
+        classRO: CourseTeacherGetListRO,
+        response,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.COURSE.TEACHER_GET_LIST_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId });
     }
@@ -316,5 +336,16 @@ export class CourseService extends BaseService {
     }
 
     return { student };
+  }
+
+  private async validateTeacherGetList(actorId: number) {
+    // Check is user teacher
+    const teacher = await this.teacherRepository.getIdByUserId(actorId);
+    if (!teacher) {
+      const { code, status, message } = EXCEPTION.TEACHER.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return { teacher };
   }
 }

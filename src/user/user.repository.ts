@@ -122,10 +122,9 @@ export class UserRepository {
     return transaction
       .updateTable('users')
       .set(entity)
-      .where('id', '=', id)
-      .where('deletedAt', 'is', null)
-      .leftJoin('userImage', 'userImage.userId', 'users.id')
-      .returning(['users.id', 'users.username', 'users.email', 'users.phone', 'users.displayName', 'userImage.imageId'])
+      .where('users.id', '=', id)
+      .where('users.deletedAt', 'is', null)
+      .returning(['users.id', 'users.username', 'users.email', 'users.phone', 'users.displayName'])
       .executeTakeFirst();
   }
 

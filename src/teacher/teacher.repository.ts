@@ -21,7 +21,9 @@ export class TeacherRepository {
       .innerJoin('users', 'users.id', 'teacher.userId')
       .innerJoin('userRole', 'users.id', 'userRole.userId')
       .innerJoin('role', 'userRole.roleId', 'role.id')
-      .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'teacher.id'])
+      .leftJoin('userImage', (join) => join.onRef('users.id', '=', 'userImage.userId').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
+      .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'teacher.id', 'image.url as userImageUrl'])
       .where('role.name', '=', ROLE.TEACHER)
       .where('users.deletedAt', 'is', null);
 

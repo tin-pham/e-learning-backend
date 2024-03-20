@@ -225,6 +225,11 @@ export const EXCEPTION = {
       message: 'Failed to get list course',
       code: 'COURSE.GET_LIST_FAILED',
     },
+    TEACHER_GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list course for teacher',
+      code: 'COURSE.TEACHER_GET_LIST_FAILED',
+    },
     GET_DETAIL_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get detail course',

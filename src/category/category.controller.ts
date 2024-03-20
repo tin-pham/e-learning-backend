@@ -39,7 +39,7 @@ export class CategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: CategoryStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -83,7 +83,7 @@ export class CategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: CategoryUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.categoryService.update(id, dto, decoded);
@@ -97,7 +97,7 @@ export class CategoryController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.categoryService.delete(id, decoded);

@@ -1,6 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+
+const { PHONE } = UNPROCESSABLE_ENTITY_EXCEPTION.USER;
 
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
@@ -21,7 +24,9 @@ export class UserStoreDTO {
   email?: string;
 
   @ApiPropertyOptional({ example: '0987654321' })
-  @IsPhoneNumber('VN')
+  @IsPhoneNumber('VN', {
+    message: PHONE.FORMAT_IS_NOT_VALID,
+  })
   @IsNotEmpty()
   @IsNumberString()
   @IsOptional()

@@ -101,6 +101,10 @@ export class CourseGetDetailRO {
   @ApiProperty()
   @Expose()
   lessonCount: number;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
 }
 
 export class CourseUpdateRO {
@@ -129,4 +133,41 @@ export class CourseDeleteRO {
   @ApiProperty()
   @Expose()
   id: number;
+}
+
+export class CourseTeacherGetListDataRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+
+  @ApiProperty()
+  @Expose()
+  description: string;
+
+  @ApiProperty()
+  @Expose()
+  imageUrl: string;
+
+  @ApiProperty()
+  @Expose()
+  levelName: string;
+
+  @ApiProperty()
+  @Expose()
+  levelId: number;
+
+  @ApiProperty()
+  @Expose()
+  hours: number;
+}
+
+export class CourseTeacherGetListRO extends PaginateRO<CourseTeacherGetListDataRO> {
+  @ApiProperty({ type: [CourseTeacherGetListDataRO] })
+  @Type(() => CourseTeacherGetListDataRO)
+  @Expose()
+  data: CourseTeacherGetListDataRO[];
 }

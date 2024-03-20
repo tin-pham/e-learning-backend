@@ -3,7 +3,7 @@ import { sql } from 'kysely';
 import { paginate } from '../common/function/paginate';
 import { DatabaseService, Transaction } from '../database';
 import { CourseEntity } from './course.entity';
-import { CourseGetDetailDTO, CourseGetListDTO } from './dto/course.dto';
+import { CourseGetDetailDTO, CourseGetListDTO, CourseTeacherGetListDTO } from './dto/course.dto';
 
 @Injectable()
 export class CourseRepository {
@@ -42,6 +42,34 @@ export class CourseRepository {
           .select(({ fn }) => fn.count('assignment.id').filterWhere('assignmentSubmit.id', 'is', null).as('unsubmittedPendingCount'))
           .orderBy('unsubmittedPendingCount', 'desc'),
       )
+      .select([
+        'course.id',
+        'course.name',
+        'course.description',
+        'image.url as imageUrl',
+        'level.name as levelName',
+        'level.id as levelId',
+        'course.hours',
+      ]);
+
+    return paginate(query, { limit, page });
+  }
+
+  findByTeacherId(teacherId: string, dto: CourseTeacherGetListDTO) {
+    const { limit, page } = dto;
+
+    const query = this.database
+      .selectFrom('course')
+      .distinct()
+      .where('course.deletedAt', 'is', null)
+      .innerJoin('level', 'level.id', 'course.levelId')
+      .where('level.deletedAt', 'is', null)
+      .innerJoin('users', 'users.id', 'course.createdBy')
+      .where('users.deletedAt', 'is', null)
+      .innerJoin('teacher', 'teacher.userId', 'users.id')
+      .where('teacher.id', '=', teacherId)
+      .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
       .select([
         'course.id',
         'course.name',
@@ -138,6 +166,7 @@ export class CourseRepository {
         'level.name as levelName',
         'level.id as levelId',
         'course.hours',
+        'course.createdBy',
         fn.count('lesson.id').as('lessonCount'),
       ])
       .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'level.id', 'course.hours'])

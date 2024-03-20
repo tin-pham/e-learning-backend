@@ -127,6 +127,7 @@ export class StudentService extends UserService {
 
         // Update student
         const studentData = new StudentEntity();
+        studentData.userId = user.id;
         const student = await this.studentRepository.updateWithTransaction(transaction, id, studentData);
 
         // Set response
@@ -137,6 +138,7 @@ export class StudentService extends UserService {
         response.displayName = user.displayName;
       });
     } catch (error) {
+      console.log(error);
       const { code, status, message } = EXCEPTION.STUDENT.UPDATE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });

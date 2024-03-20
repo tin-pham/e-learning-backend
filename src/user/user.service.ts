@@ -145,7 +145,7 @@ export class UserService extends BaseService {
   }
 
   protected async updateWithTransaction(transaction: Transaction, id: number, dto: UserUpdateDTO, actorId: number) {
-    await this._validateUpdate(dto, actorId);
+    await this._validateUpdate(dto, id);
     // Set data
     const userData = new UserEntity();
     userData.updatedBy = actorId;
