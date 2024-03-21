@@ -1233,4 +1233,31 @@ export const EXCEPTION = {
       code: 'EXERCISE_QUESTION_OPTION_SNAPSHOT.DOES_NOT_EXIST',
     },
   },
+  COURSE_OUTCOME: {
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Course outcome does not exist',
+      code: 'COURSE_OUTCOME.DOES_NOT_EXIST',
+    },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Course outcome already exist',
+      code: 'COURSE_OUTCOME.ALREADY_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store course outcome',
+      code: 'COURSE_OUTCOME.STORE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update course outcome',
+      code: 'COURSE_OUTCOME.UPDATE_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete course outcome',
+      code: 'COURSE_OUTCOME.DELETE_FAILED',
+    },
+  },
 };

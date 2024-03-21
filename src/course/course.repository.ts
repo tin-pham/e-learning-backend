@@ -96,6 +96,7 @@ export class CourseRepository {
       .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
       .orderBy('course.createdAt', 'desc')
+      .leftJoin('courseStudent', (join) => join.onRef('courseStudent.courseId', '=', 'course.id').on('courseStudent.deletedAt', 'is', null))
       .$if(byCategory, (qb) =>
         qb
           .innerJoin('categoryCourse', 'categoryCourse.courseId', 'course.id')
@@ -122,15 +123,18 @@ export class CourseRepository {
           .groupBy('course.id')
           .select(({ fn }) => fn.countAll().as('assignmentCount')),
       )
-      .select([
+      .select(({ fn }) => [
         'course.id',
         'course.name',
         'course.description',
         'image.url as imageUrl',
-        'level.id as levelId',
         'level.name as levelName',
+        'level.id as levelId',
         'course.hours',
-      ]);
+        fn.count('courseStudent.id').as('studentCount'),
+      ])
+      .groupBy(['course.id', 'course.name', 'course.description', 'image.url', 'level.name', 'level.id', 'course.hours']);
+
     return paginate(query, { limit, page });
   }
 
@@ -168,6 +172,7 @@ export class CourseRepository {
         'course.hours',
         'course.createdBy',
         fn.count('lesson.id').as('lessonCount'),
+        fn.count('section.id').as('sectionCount'),
       ])
       .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'level.id', 'course.hours'])
       .executeTakeFirst();

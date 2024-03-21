@@ -695,4 +695,20 @@ export const API = {
       OPERATION: 'Get list exercise question snapshot',
     },
   },
+  COURSE_OUTCOME: {
+    TAGS: 'CourseOutcome',
+    CONTROLLER: 'course-outcome',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store course outcome',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update course outcome',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete course outcome',
+    },
+  },
 };

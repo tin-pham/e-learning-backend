@@ -41,6 +41,7 @@ import { QuestionCategoryModule } from './question-category/question-category.mo
 import { StudentExerciseModule } from './student-exercise/student-exercise.module';
 import { StudentExerciseGradeModule } from './student-exercise-grade/student-exercise-grade.module';
 import { ExerciseQuestionSnapshotModule } from './exercise-question-snapshot/exercise-question-snapshot.module';
+import { CourseOutcomeModule } from './course-outcome/course-outcome.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { ExerciseQuestionSnapshotModule } from './exercise-question-snapshot/exe
     StudentExerciseModule,
     StudentExerciseGradeModule,
     ExerciseQuestionSnapshotModule,
+    CourseOutcomeModule,
   ],
   providers: [...appProviders],
 })

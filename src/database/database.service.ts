@@ -46,6 +46,7 @@ import { ExerciseQuestionSnapshotEntity } from '../exercise-question-snapshot/ex
 import { ExerciseQuestionOptionSnapshotEntity } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.entity';
 import { StudentExerciseOptionEntity } from 'src/student-exercise-option/student-exercise-option.entity';
 import { StudentExerciseGradeEntity } from 'src/student-exercise-grade/student-exercise-grade.entity';
+import { CourseOutcomeEntity } from 'src/course-outcome/course-outcome.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -95,6 +96,7 @@ export interface KyselyTables {
   studentExercise: StudentExerciseEntity;
   studentExerciseOption: StudentExerciseOptionEntity;
   studentExerciseGrade: StudentExerciseGradeEntity;
+  courseOutcome: CourseOutcomeEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

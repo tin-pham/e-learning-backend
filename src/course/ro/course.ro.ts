@@ -56,6 +56,10 @@ export class CourseGetListDataRO {
   @ApiProperty()
   @Expose()
   hours: number;
+
+  @ApiProperty()
+  @Expose()
+  studentCount: number;
 }
 
 export class CourseGetListRO extends PaginateRO<CourseGetListDataRO> {
@@ -101,6 +105,10 @@ export class CourseGetDetailRO {
   @ApiProperty()
   @Expose()
   lessonCount: number;
+
+  @ApiProperty()
+  @Expose()
+  sectionCount: number;
 
   @ApiProperty()
   @Expose()
@@ -163,6 +171,10 @@ export class CourseTeacherGetListDataRO {
   @ApiProperty()
   @Expose()
   hours: number;
+
+  @ApiProperty()
+  @Expose()
+  studentCount: number;
 }
 
 export class CourseTeacherGetListRO extends PaginateRO<CourseTeacherGetListDataRO> {
