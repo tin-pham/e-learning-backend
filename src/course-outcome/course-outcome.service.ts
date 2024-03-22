@@ -4,10 +4,9 @@ import { EXCEPTION, IJwtPayload } from '../common';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { CourseOutcomeRepository } from './course-outcome.repository';
 import { CourseRepository } from '../course/course.repository';
-import { CourseOutcomeStoreDTO, CourseOutcomeUpdateDTO } from './dto/course-outcome.dto';
-import { CourseOutcomeStoreRO, CourseOutcomeUpdateRO } from './ro/course-outcome.ro';
+import { CourseOutcomeGetListDTO, CourseOutcomeStoreDTO, CourseOutcomeUpdateDTO } from './dto/course-outcome.dto';
+import { CourseOutcomeDeleteRO, CourseOutcomeGetListRO, CourseOutcomeStoreRO, CourseOutcomeUpdateRO } from './ro/course-outcome.ro';
 import { CourseOutcomeEntity } from './course-outcome.entity';
-import { ResultRO } from 'src/common/ro/result.ro';
 
 @Injectable()
 export class CourseOutcomeService extends BaseService {
@@ -19,6 +18,24 @@ export class CourseOutcomeService extends BaseService {
     private readonly _courseRepository: CourseRepository,
   ) {
     super(elasticLogger);
+  }
+
+  async getList(dto: CourseOutcomeGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    let courseOutcomeList: any;
+    try {
+      courseOutcomeList = await this._courseOutcomeRepository.findByCourseId(dto);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.COURSE_OUTCOME.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ status, message, code, actorId });
+    }
+    return this.success({
+      classRO: CourseOutcomeGetListRO,
+      response: { data: courseOutcomeList },
+      message: 'Course outcome list has been fetched successfully',
+      actorId,
+    });
   }
 
   async store(dto: CourseOutcomeStoreDTO, decoded: IJwtPayload) {
@@ -87,8 +104,12 @@ export class CourseOutcomeService extends BaseService {
     const actorId = decoded.userId;
     await this.validateDelete(id, actorId);
 
+    const response = new CourseOutcomeDeleteRO();
+
     try {
-      await this._courseOutcomeRepository.delete(id, actorId);
+      const courseOutcome = await this._courseOutcomeRepository.delete(id, actorId);
+
+      response.id = courseOutcome.id;
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE_OUTCOME.DELETE_FAILED;
       this.logger.error(error);
@@ -96,8 +117,8 @@ export class CourseOutcomeService extends BaseService {
     }
 
     return this.success({
-      classRO: ResultRO,
-      response: { result: true },
+      classRO: CourseOutcomeDeleteRO,
+      response,
       message: 'Course outcome has been deleted successfully',
       actorId,
     });

@@ -34,12 +34,13 @@ export class SectionRepository {
       .$if(withLesson, (qb) =>
         qb
           .leftJoin('lesson', (join) => join.onRef('lesson.sectionId', '=', 'section.id').on('lesson.deletedAt', 'is', null))
+          .leftJoin('video', (join) => join.onRef('lesson.videoId', '=', 'video.id').on('video.deletedAt', 'is', null))
           .select(({ fn, ref }) => [
             fn
               .coalesce(
-                sql`json_agg(json_build_object('id', ${ref('lesson.id')}, 'title', ${ref('lesson.title')}) ORDER BY ${ref(
-                  'lesson.id',
-                )} ) FILTER (WHERE ${ref('lesson.id')} is not null) `,
+                sql`json_agg(json_build_object('id', ${ref('lesson.id')}, 'title', ${ref('lesson.title')}, 'videoDuration', ${ref(
+                  'video.duration',
+                )}) ORDER BY ${ref('lesson.id')} ) FILTER (WHERE ${ref('lesson.id')} is not null) `,
                 sql`'[]'`,
               )
               .as('lessons'),

@@ -29,8 +29,8 @@ export class LessonRepository {
       .execute();
   }
 
-  insert(entity: LessonEntity) {
-    return this.database.insertInto('lesson').values(entity).returning(['id', 'body', 'title', 'sectionId', 'videoUrl']).executeTakeFirst();
+  insertWithTransaction(transaction: Transaction, entity: LessonEntity) {
+    return transaction.insertInto('lesson').values(entity).returning(['id', 'title', 'sectionId', 'videoId']).executeTakeFirst();
   }
 
   find(dto: LessonGetListDTO) {
@@ -62,25 +62,26 @@ export class LessonRepository {
       .where('section.deletedAt', 'is', null)
       .innerJoin('course', 'course.id', 'section.courseId')
       .where('course.deletedAt', 'is', null)
+      .leftJoin('video', (join) => join.onRef('lesson.videoId', '=', 'video.id').on('video.deletedAt', 'is', null))
       .select([
         'lesson.id',
         'lesson.title',
         'lesson.body',
         'lesson.sectionId',
-        'lesson.videoUrl',
+        'video.url as videoUrl',
         'lesson.createdBy',
         'course.id as courseId',
       ])
       .executeTakeFirst();
   }
 
-  update(id: number, entity: LessonEntity) {
-    return this.database
+  updateWithTransaction(transaction: Transaction, id: number, entity: LessonEntity) {
+    return transaction
       .updateTable('lesson')
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'title', 'body', 'videoUrl'])
+      .returning(['id', 'title', 'videoId'])
       .executeTakeFirst();
   }
 

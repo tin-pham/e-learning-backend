@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -18,11 +18,10 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { CourseOutcomeService } from './course-outcome.service';
-import { CourseOutcomeStoreRO, CourseOutcomeUpdateRO } from './ro/course-outcome.ro';
-import { CourseOutcomeStoreDTO, CourseOutcomeUpdateDTO } from './dto/course-outcome.dto';
-import { ResultRO } from '../common/ro/result.ro';
+import { CourseOutcomeDeleteRO, CourseOutcomeGetListRO, CourseOutcomeStoreRO, CourseOutcomeUpdateRO } from './ro/course-outcome.ro';
+import { CourseOutcomeGetListDTO, CourseOutcomeStoreDTO, CourseOutcomeUpdateDTO } from './dto/course-outcome.dto';
 
-const { TAGS, CONTROLLER, STORE, UPDATE, DELETE } = API.COURSE_OUTCOME;
+const { TAGS, CONTROLLER, STORE, UPDATE, DELETE, GET_LIST } = API.COURSE_OUTCOME;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -45,6 +44,20 @@ export class CourseOutcomeController {
     return this.courseOutcomeService.store(dto, decoded);
   }
 
+  @ApiOperation({ summary: GET_LIST.OPERATION })
+  @ApiOkResponse({ type: CourseOutcomeGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  getList(@Query() dto: CourseOutcomeGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.courseOutcomeService.getList(dto, decoded);
+  }
+
   @ApiOperation({ summary: UPDATE.OPERATION })
   @ApiOkResponse({ type: CourseOutcomeUpdateRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
@@ -61,7 +74,7 @@ export class CourseOutcomeController {
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })
-  @ApiOkResponse({ type: ResultRO })
+  @ApiOkResponse({ type: CourseOutcomeDeleteRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })

@@ -1,5 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+
+export class CourseOutcomeGetListDataRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+}
+
+export class CourseOutcomeGetListRO {
+  @ApiProperty({ type: [CourseOutcomeGetListDataRO] })
+  @Type(() => CourseOutcomeGetListDataRO)
+  @Expose()
+  data: CourseOutcomeGetListDataRO[];
+}
 
 export class CourseOutcomeStoreRO {
   @ApiProperty()
@@ -27,4 +44,10 @@ export class CourseOutcomeUpdateRO {
   @ApiProperty()
   @Expose()
   courseId: number;
+}
+
+export class CourseOutcomeDeleteRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
 }

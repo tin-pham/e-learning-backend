@@ -1234,6 +1234,11 @@ export const EXCEPTION = {
     },
   },
   COURSE_OUTCOME: {
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list course outcome',
+      code: 'COURSE_OUTCOME.GET_LIST_FAILED',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Course outcome does not exist',

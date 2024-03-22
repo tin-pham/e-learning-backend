@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUrl } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
@@ -17,11 +17,11 @@ export class LessonStoreDTO {
   title: string;
 
   @ApiPropertyOptional()
-  @IsString({
+  @IsObject({
     message: BODY.FORMAT_IS_NOT_VALID,
   })
   @IsOptional()
-  body?: string;
+  body?: object;
 
   @ApiProperty({ example: 1 })
   @IsNumber(
@@ -61,9 +61,9 @@ export class LessonUpdateDTO {
   title?: string;
 
   @ApiPropertyOptional()
-  @IsString({ message: BODY.FORMAT_IS_NOT_VALID })
+  @IsObject({ message: BODY.FORMAT_IS_NOT_VALID })
   @IsOptional()
-  body?: string;
+  body?: object;
 
   @ApiProperty()
   @IsUrl({}, { message: VIDEO_URL.FORMAT_IS_NOT_VALID })

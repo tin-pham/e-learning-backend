@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
+export class CourseOutcomeGetListDTO {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  courseId: number;
+}
+
 export class CourseOutcomeStoreDTO {
   @ApiProperty()
   @IsString()

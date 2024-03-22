@@ -13,10 +13,6 @@ export class LessonStoreRO {
 
   @ApiProperty()
   @Expose()
-  body: string;
-
-  @ApiProperty()
-  @Expose()
   sectionId: number;
 
   @ApiProperty()
@@ -32,10 +28,6 @@ export class LessonGetListDataRO {
   @ApiProperty()
   @Expose()
   title: string;
-
-  @ApiProperty()
-  @Expose()
-  body: string;
 }
 
 export class LessonGetListRO extends PaginateRO<LessonGetListDataRO> {
@@ -56,7 +48,7 @@ export class LessonGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  body: string;
+  body: object;
 
   @ApiProperty()
   @Expose()

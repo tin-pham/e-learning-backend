@@ -1,15 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
+import { durationParser } from '../common/function/youtube-video-duration-parser';
 import { BaseService } from '../base';
 import { ROLE } from '../role/enum/role.enum';
+import { DatabaseService } from '../database';
+import { getVideoId } from '../common/function/get-youtube-video-id';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { LessonEntity } from './lesson.entity';
+import { VideoEntity } from '../video/video.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { LessonRepository } from './lesson.repository';
 import { SectionRepository } from '../section/section.repository';
 import { StudentRepository } from '../student/student.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { VideoRepository } from '../video/video.repository';
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
-import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
+import { LessonDeleteRO,  LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
 
 @Injectable()
 export class LessonService extends BaseService {
@@ -17,10 +25,14 @@ export class LessonService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly http: HttpService,
+    private readonly database: DatabaseService,
+    private readonly configService: ConfigService,
     private readonly lessonRepository: LessonRepository,
     private readonly sectionRepository: SectionRepository,
     private readonly studentRepository: StudentRepository,
     private readonly courseStudentRepository: CourseStudentRepository,
+    private readonly videoRepository: VideoRepository,
   ) {
     super(elasticLogger);
   }
@@ -35,17 +47,38 @@ export class LessonService extends BaseService {
         title: dto.title,
         body: dto.body,
         sectionId: dto.sectionId,
-        videoUrl: dto.videoUrl,
         createdBy: actorId,
       });
 
-      const lesson = await this.lessonRepository.insert(lessonData);
+      let videoData: VideoEntity;
+      if (dto.videoUrl) {
+        videoData = new VideoEntity();
+        videoData.url = dto.videoUrl;
 
-      response.id = lesson.id;
-      response.title = lesson.title;
-      response.body = lesson.body;
-      response.sectionId = lesson.sectionId;
-      response.videoUrl = lesson.videoUrl;
+        const YOUTUBE_API_KEY = this.configService.get('YOUTUBE_API_KEY');
+        const videoId = getVideoId(dto.videoUrl);
+        const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${YOUTUBE_API_KEY}&part=contentDetails`;
+
+        const response = await firstValueFrom(this.http.get(url));
+        videoData.duration = durationParser(response.data.items[0].contentDetails.duration);
+      }
+
+      await this.database.transaction().execute(async (transaction) => {
+        // Store video
+        let video: VideoEntity;
+        if (videoData) {
+          video = await this.videoRepository.insertWithTransaction(transaction, videoData);
+        }
+
+        // Store lesson
+        lessonData.videoId = video?.id;
+        const lesson = await this.lessonRepository.insertWithTransaction(transaction, lessonData);
+
+        response.id = lesson.id;
+        response.title = lesson.title;
+        response.sectionId = lesson.sectionId;
+        response.videoUrl = video?.url;
+      });
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.STORE_FAILED;
       this.logger.error(error);
@@ -66,12 +99,7 @@ export class LessonService extends BaseService {
     try {
       const response = await this.lessonRepository.find(dto);
 
-      return this.success({
-        classRO: LessonGetListRO,
-        response,
-        message: 'Get lesson list successfully',
-        actorId,
-      });
+      return response;
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.GET_LIST_FAILED;
       this.logger.error(error);
@@ -108,12 +136,7 @@ export class LessonService extends BaseService {
       this.throwException({ status, message, code, actorId });
     }
 
-    return this.success({
-      classRO: LessonGetDetailRO,
-      response,
-      message: 'Get lesson detail successfully',
-      actorId,
-    });
+    return response;
   }
 
   async update(id: number, dto: LessonUpdateDTO, decoded: IJwtPayload) {
@@ -123,26 +146,42 @@ export class LessonService extends BaseService {
     const response = new LessonUpdateRO();
 
     try {
-      const lessonData = new LessonEntity();
-      lessonData.updatedBy = actorId;
-      if (dto.title) {
-        lessonData.title = dto.title;
-      }
+      await this.database.transaction().execute(async (transaction) => {
+        const lessonData = new LessonEntity();
+        lessonData.updatedBy = actorId;
+        if (dto.title) {
+          lessonData.title = dto.title;
+        }
 
-      if (dto.body) {
-        lessonData.body = dto.body;
-      }
+        if (dto.body) {
+          lessonData.body = dto.body;
+        }
 
-      if (dto.videoUrl) {
-        lessonData.videoUrl = dto.videoUrl;
-      }
+        let videoData;
+        if (dto.videoUrl) {
+          videoData = new VideoEntity();
+          videoData.videoUrl = dto.videoUrl;
 
-      const lesson = await this.lessonRepository.update(id, lessonData);
+          // New metadata
+          const YOUTUBE_API_KEY = this.configService.get('YOUTUBE_API_KEY');
+          const videoId = getVideoId(dto.videoUrl);
+          const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${YOUTUBE_API_KEY}&part=contentDetails`;
 
-      response.id = lesson.id;
-      response.title = lesson.title;
-      response.body = lesson.body;
-      response.videoUrl = lesson.videoUrl;
+          const response = await firstValueFrom(this.http.get(url));
+          videoData.duration = durationParser(response.data.items[0].contentDetails.duration);
+        }
+
+        const lesson = await this.lessonRepository.updateWithTransaction(transaction, id, lessonData);
+
+        let video: VideoEntity;
+        if (videoData) {
+          video = await this.videoRepository.updateWithTransaction(transaction, lesson.videoId, videoData);
+        }
+
+        response.id = lesson.id;
+        response.title = lesson.title;
+        response.videoUrl = video.url;
+      });
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.UPDATE_FAILED;
       this.logger.error(error);

@@ -1,10 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database';
 import { CourseOutcomeEntity } from './course-outcome.entity';
+import { CourseOutcomeGetListDTO } from './dto/course-outcome.dto';
 
 @Injectable()
 export class CourseOutcomeRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  findByCourseId(dto: CourseOutcomeGetListDTO) {
+    const { courseId } = dto;
+    return this.database
+      .selectFrom('courseOutcome')
+      .select(['id', 'name', 'courseId'])
+      .where('deletedAt', 'is', null)
+      .where('courseId', '=', courseId)
+      .execute();
+  }
 
   insert(entity: CourseOutcomeEntity) {
     return this.database.insertInto('courseOutcome').values(entity).returning(['id', 'name', 'courseId']).executeTakeFirst();
@@ -26,7 +37,7 @@ export class CourseOutcomeRepository {
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name', 'courseId'])
+      .returning(['id'])
       .executeTakeFirst();
   }
 

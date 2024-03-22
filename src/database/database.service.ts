@@ -44,9 +44,10 @@ import { QuestionCategoryHasQuestionEntity } from '../question-category-has-ques
 import { StudentExerciseEntity } from '../student-exercise/student-exercise.entity';
 import { ExerciseQuestionSnapshotEntity } from '../exercise-question-snapshot/exercise-question-snapshot.entity';
 import { ExerciseQuestionOptionSnapshotEntity } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.entity';
-import { StudentExerciseOptionEntity } from 'src/student-exercise-option/student-exercise-option.entity';
-import { StudentExerciseGradeEntity } from 'src/student-exercise-grade/student-exercise-grade.entity';
-import { CourseOutcomeEntity } from 'src/course-outcome/course-outcome.entity';
+import { StudentExerciseOptionEntity } from '../student-exercise-option/student-exercise-option.entity';
+import { StudentExerciseGradeEntity } from '../student-exercise-grade/student-exercise-grade.entity';
+import { CourseOutcomeEntity } from '../course-outcome/course-outcome.entity';
+import { VideoEntity } from '../video/video.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -97,6 +98,7 @@ export interface KyselyTables {
   studentExerciseOption: StudentExerciseOptionEntity;
   studentExerciseGrade: StudentExerciseGradeEntity;
   courseOutcome: CourseOutcomeEntity;
+  video: VideoEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

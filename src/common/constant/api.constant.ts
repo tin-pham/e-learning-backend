@@ -698,6 +698,10 @@ export const API = {
   COURSE_OUTCOME: {
     TAGS: 'CourseOutcome',
     CONTROLLER: 'course-outcome',
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list course outcomes',
+    },
     STORE: {
       ROUTE: '',
       OPERATION: 'Store course outcome',

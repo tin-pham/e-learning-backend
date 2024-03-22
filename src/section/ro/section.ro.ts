@@ -24,6 +24,10 @@ export class SectionGetListDataLessonRO {
   @ApiProperty()
   @Expose()
   title: string;
+
+  @ApiProperty()
+  @Expose()
+  videoDuration: string;
 }
 
 export class SectionGetListDataRO {

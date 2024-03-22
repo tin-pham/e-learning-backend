@@ -28,6 +28,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.485.0",
     "@elastic/elasticsearch": "^7.17.13",
+    "@nestjs/axios": "^3.0.2",
     "@nestjs/cache-manager": "^2.1.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
@@ -40,6 +41,7 @@
     "@nestjs/terminus": "^10.2.0",
     "@nestjs/throttler": "^5.0.1",
     "@types/passport-jwt": "^3.0.13",
+    "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "cache-manager": "^5.3.1",
     "cache-manager-memcached-store": "^5.0.0",
