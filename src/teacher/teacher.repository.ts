@@ -14,9 +14,9 @@ export class TeacherRepository {
   }
 
   find(dto: TeacherGetListDTO) {
-    const { limit, page } = dto;
+    const { limit, page, search } = dto;
 
-    const query = this.database
+    let query = this.database
       .selectFrom('teacher')
       .innerJoin('users', 'users.id', 'teacher.userId')
       .innerJoin('userRole', 'users.id', 'userRole.userId')
@@ -26,6 +26,17 @@ export class TeacherRepository {
       .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'teacher.id', 'image.url as userImageUrl'])
       .where('role.name', '=', ROLE.TEACHER)
       .where('users.deletedAt', 'is', null);
+
+    if (search) {
+      query = query.where((eb) =>
+        eb.or([
+          eb('users.username', 'like', `%${search}%`),
+          eb('users.email', 'like', `%${search}%`),
+          eb('users.phone', 'like', `%${search}%`),
+          eb('users.displayName', 'like', `%${search}%`),
+        ]),
+      );
+    }
 
     return paginate(query, {
       limit,

@@ -3,11 +3,11 @@ import { BaseEntity } from '../base/base.entity';
 export class ImageEntity extends BaseEntity {
   url: string;
 
-  name: string;
+  name?: string;
 
-  type: string;
+  type?: string;
 
-  size: string;
+  size?: string;
 
   constructor(data?: ImageEntity) {
     super(data);

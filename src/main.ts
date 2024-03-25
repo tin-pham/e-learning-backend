@@ -6,6 +6,7 @@ import { getLogLevels } from './logger/get-log-levels.util';
 import { HttpExceptionFilter } from './common';
 import { ElasticsearchLoggerService } from './elastic-search-logger/elastic-search-logger.service';
 import { CustomValidationPipe } from './common/pipe/validation.pipe';
+import { TrimStringsPipe } from './common/pipe/trim.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -66,6 +67,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       stopAtFirstError: true,
     }),
+    new TrimStringsPipe(),
   );
 
   const elasticLogger = app.get<ElasticsearchLoggerService>(ElasticsearchLoggerService);

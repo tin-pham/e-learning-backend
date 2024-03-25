@@ -70,7 +70,9 @@ export class CourseRepository {
       .where('teacher.id', '=', teacherId)
       .leftJoin('courseImage', (join) => join.onRef('courseImage.courseId', '=', 'course.id').on('courseImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
-      .select([
+      .leftJoin('courseStudent', (join) => join.onRef('courseStudent.courseId', '=', 'course.id').on('courseStudent.deletedAt', 'is', null))
+      .groupBy(['course.id', 'course.name', 'course.description', 'image.id', 'image.url', 'level.name', 'course.hours', 'level.id'])
+      .select(({ fn }) => [
         'course.id',
         'course.name',
         'course.description',
@@ -78,6 +80,7 @@ export class CourseRepository {
         'level.name as levelName',
         'level.id as levelId',
         'course.hours',
+        fn.count('courseStudent.id').as('studentCount'),
       ]);
 
     return paginate(query, { limit, page });

@@ -33,7 +33,7 @@ export class DifficultyController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@JwtPayload() decoded: IJwtPayload) {
     return this.difficultyService.getList(decoded);

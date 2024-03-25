@@ -17,7 +17,7 @@ import { StudentRepository } from '../student/student.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { VideoRepository } from '../video/video.repository';
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
-import { LessonDeleteRO,  LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
+import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
 
 @Injectable()
 export class LessonService extends BaseService {
@@ -99,7 +99,10 @@ export class LessonService extends BaseService {
     try {
       const response = await this.lessonRepository.find(dto);
 
-      return response;
+      return this.success({
+        classRO: LessonGetListRO,
+        response,
+      });
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.GET_LIST_FAILED;
       this.logger.error(error);
@@ -136,7 +139,10 @@ export class LessonService extends BaseService {
       this.throwException({ status, message, code, actorId });
     }
 
-    return response;
+    return this.success({
+      classRO: LessonGetDetailRO,
+      response,
+    });
   }
 
   async update(id: number, dto: LessonUpdateDTO, decoded: IJwtPayload) {

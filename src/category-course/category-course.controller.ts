@@ -34,7 +34,7 @@ export class CategoryCourseController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Query() dto: CategoryCourseDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.categoryCourseService.delete(dto, decoded);

@@ -3,37 +3,26 @@ import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from '
 import { Transform, Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
+import { IsNotBlank } from 'src/common/decorator/validator/is-not-blank.validator';
 
 const { NAME, DESCRIPTION, CATEGORY_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
 
 export class CourseStoreDTO {
   @ApiProperty()
-  @IsString({
-    message: NAME.FORMAT_IS_NOT_VALID,
-  })
-  @IsNotEmpty({ message: NAME.IS_NOT_EMPTY })
+  @IsString({ message: NAME.FORMAT_IS_NOT_VALID })
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   name: string;
 
   @ApiPropertyOptional()
-  @IsString({
-    message: DESCRIPTION.FORMAT_IS_NOT_VALID,
-  })
+  @IsString({ message: DESCRIPTION.FORMAT_IS_NOT_VALID })
   @IsOptional()
   description?: string;
 
   @ApiPropertyOptional({
     example: [1, 2, 3],
   })
-  @IsNumber(
-    {},
-    {
-      each: true,
-      message: CATEGORY_ID.FORMAT_IS_NOT_VALID,
-    },
-  )
-  @IsArray({
-    message: CATEGORY_ID.FORMAT_IS_NOT_VALID,
-  })
+  @IsNumber({}, { each: true, message: CATEGORY_ID.FORMAT_IS_NOT_VALID })
+  @IsArray({ message: CATEGORY_ID.FORMAT_IS_NOT_VALID })
   @IsOptional()
   categoryIds?: number[];
 
@@ -82,19 +71,13 @@ export class CourseGetDetailDTO {
 
 export class CourseUpdateDTO {
   @ApiPropertyOptional()
-  @IsString({
-    message: NAME.FORMAT_IS_NOT_VALID,
-  })
-  @IsNotEmpty({
-    message: NAME.IS_NOT_EMPTY,
-  })
+  @IsString({ message: NAME.FORMAT_IS_NOT_VALID })
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   @IsOptional()
   name?: string;
 
   @ApiPropertyOptional()
-  @IsString({
-    message: DESCRIPTION.FORMAT_IS_NOT_VALID,
-  })
+  @IsString({ message: DESCRIPTION.FORMAT_IS_NOT_VALID })
   @IsOptional()
   description?: string;
 

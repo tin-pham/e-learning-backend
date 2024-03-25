@@ -61,6 +61,10 @@ export class LessonGetDetailRO {
   @ApiProperty()
   @Expose()
   courseId: number;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
 }
 
 export class LessonUpdateRO {

@@ -24,12 +24,12 @@ export class QuestionRepository {
   }
 
   find(dto: QuestionGetListDTO) {
-    const { page, limit, questionCategoryId, excludeExerciseId } = dto;
+    const { page, limit, questionCategoryId, excludeExerciseId, search } = dto;
 
     const byCategory = Boolean(questionCategoryId);
     const byExcludeExercise = Boolean(excludeExerciseId);
 
-    const query = this.database
+    let query = this.database
       .selectFrom('question')
       .where('question.deletedAt', 'is', null)
       .innerJoin('difficulty', 'difficulty.id', 'question.difficultyId')
@@ -84,6 +84,10 @@ export class QuestionRepository {
           .as('options'),
       ])
       .orderBy('question.createdAt', 'desc');
+
+    if (search) {
+      query = query.where((eb) => eb.or([eb('question.text', 'ilike', `%${search}%`)]));
+    }
 
     return paginate(query, {
       page,

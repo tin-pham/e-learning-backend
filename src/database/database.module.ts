@@ -36,7 +36,7 @@ import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-sea
               const { sql, parameters } = event.query;
               elasticLogger.query({
                 sql,
-                parameters: parameters as unknown[],
+                parameters: parameters.map((p) => JSON.stringify(p)),
               });
             }
           },

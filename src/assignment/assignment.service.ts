@@ -24,7 +24,6 @@ import {
   AssignmentDeleteRO,
   AssignmentGetDetailRO,
   AssignmentGetListRO,
-  AssignmentGetMyListRO,
   AssignmentGetSubmissionRO,
   AssignmentStoreRO,
   AssignmentUpdateRO,
@@ -95,7 +94,7 @@ export class AssignmentService extends BaseService {
         const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
 
         await this.courseNotificationRepository.insertWithTransaction(transaction, {
-          courseId: dto.courseId,
+          courseId: courseFromLesson?.courseId || dto.courseId,
           notificationId: notification.id,
         });
 
@@ -120,7 +119,6 @@ export class AssignmentService extends BaseService {
         response = new AssignmentStoreRO({
           id: assignment.id,
           name: assignment.name,
-          description: assignment.description,
           dueDate: assignment.dueDate,
         });
       });
@@ -196,7 +194,6 @@ export class AssignmentService extends BaseService {
       response = new AssignmentUpdateRO({
         id: assignment.id,
         name: assignment.name,
-        description: assignment.description,
         dueDate: assignment.dueDate,
       });
     } catch (error) {
@@ -264,10 +261,7 @@ export class AssignmentService extends BaseService {
     try {
       const response = await this.assignmentRepository.findByStudentId(student.id, dto);
 
-      return this.success({
-        classRO: AssignmentGetMyListRO,
-        response,
-      });
+      return response;
     } catch (error) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.GET_MY_LIST_FAILED;
       this.logger.error(error);

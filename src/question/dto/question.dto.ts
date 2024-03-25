@@ -3,12 +3,15 @@ import { ArrayMinSize, IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsS
 import { Transform, Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
+import { IsNotBlank } from 'src/common/decorator/validator/is-not-blank.validator';
 
 const { TEXT, DIFFICULTY_ID, OPTIONS } = UNPROCESSABLE_ENTITY_EXCEPTION.QUESTION;
+const { TEXT: OPTION_TEXT } = UNPROCESSABLE_ENTITY_EXCEPTION.QUESTION_OPTION;
 
 export class QuestionStoreOptionDTO {
   @ApiProperty()
   @IsString()
+  @IsNotBlank({}, { message: OPTION_TEXT.IS_NOT_EMPTY })
   text: string;
 
   @ApiProperty()
@@ -20,16 +23,12 @@ export class QuestionStoreOptionDTO {
 export class QuestionStoreDTO {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty({
-    message: TEXT.IS_NOT_EMPTY,
-  })
+  @IsNotBlank({ message: TEXT.IS_NOT_EMPTY })
   text: string;
 
   @ApiProperty({ example: 1 })
   @IsNumber()
-  @IsNotEmpty({
-    message: DIFFICULTY_ID.IS_NOT_EMPTY,
-  })
+  @IsNotEmpty({ message: DIFFICULTY_ID.IS_NOT_EMPTY })
   difficultyId: number;
 
   @ApiProperty({ example: [1] })
@@ -103,13 +102,15 @@ export class QuestionUpdateOptionRO {
   isCorrect: boolean;
 
   @ApiPropertyOptional()
-  @IsBoolean()
+  @IsString()
+  @IsNotBlank({}, { message: OPTION_TEXT.IS_NOT_EMPTY })
   text: string;
 }
 
 export class QuestionUpdateDTO {
   @ApiPropertyOptional()
   @IsString()
+  @IsNotBlank({}, { message: TEXT.IS_NOT_EMPTY })
   @IsOptional()
   text?: string;
 

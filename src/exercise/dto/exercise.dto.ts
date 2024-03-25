@@ -1,31 +1,26 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, MaxDate, MinDate } from 'class-validator';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
+import { IsNotBlank } from '../../common/decorator/validator/is-not-blank.validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { Transform, Type } from 'class-transformer';
-import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 
 const { NAME, DIFFICULTY_ID, LESSON_ID, DUE_DATE } = UNPROCESSABLE_ENTITY_EXCEPTION.EXERCISE;
 
 export class ExerciseStoreDTO {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty({
-    message: NAME.IS_NOT_EMPTY,
-  })
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   name: string;
 
   @ApiProperty({ example: 1 })
   @IsNumber()
-  @IsNotEmpty({
-    message: DIFFICULTY_ID.IS_NOT_EMPTY,
-  })
+  @IsNotEmpty({ message: DIFFICULTY_ID.IS_NOT_EMPTY })
   difficultyId: number;
 
   @ApiProperty({ example: 1 })
   @IsNumber()
-  @IsNotEmpty({
-    message: LESSON_ID.IS_NOT_EMPTY,
-  })
+  @IsNotEmpty({ message: LESSON_ID.IS_NOT_EMPTY })
   lessonId: number;
 
   @ApiPropertyOptional({ example: 1 })
@@ -37,9 +32,7 @@ export class ExerciseStoreDTO {
   @MinDate(new Date('2010-01-01'))
   @MaxDate(new Date('2500-01-01'))
   @IsDate()
-  @IsNotEmpty({
-    message: DUE_DATE.IS_NOT_EMPTY,
-  })
+  @IsNotEmpty({ message: DUE_DATE.IS_NOT_EMPTY })
   @IsOptional()
   @Transform(({ value }) => new Date(value))
   dueDate?: Date;
@@ -111,6 +104,7 @@ export class ExerciseGetListDTO extends PaginateDTO {
 export class ExerciseUpdateDTO {
   @ApiPropertyOptional()
   @IsString()
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   @IsOptional()
   name: string;
 
@@ -123,9 +117,7 @@ export class ExerciseUpdateDTO {
   @MinDate(new Date('2010-01-01'))
   @MaxDate(new Date('2500-01-01'))
   @IsDate()
-  @IsNotEmpty({
-    message: DUE_DATE.IS_NOT_EMPTY,
-  })
+  @IsNotEmpty({ message: DUE_DATE.IS_NOT_EMPTY })
   @IsOptional()
   @Transform(({ value }) => new Date(value))
   dueDate?: Date;

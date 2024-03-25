@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotBlank } from '../../common/decorator/validator/is-not-blank.validator';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+
+const { NAME } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE_OUTCOME;
 
 export class CourseOutcomeGetListDTO {
   @ApiProperty()
@@ -11,7 +15,7 @@ export class CourseOutcomeGetListDTO {
 export class CourseOutcomeStoreDTO {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   name: string;
 
   @ApiProperty()
@@ -23,6 +27,6 @@ export class CourseOutcomeStoreDTO {
 export class CourseOutcomeUpdateDTO {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   name: string;
 }

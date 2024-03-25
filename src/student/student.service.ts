@@ -115,7 +115,8 @@ export class StudentService extends UserService {
 
   async update(id: string, dto: StudentUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateUpdate(id, actorId);
+    const { student } = await this.validateUpdate(id, actorId);
+    await this._validateUpdate(dto, student.userId);
 
     const response = new StudentUpdateRO();
 
@@ -138,7 +139,6 @@ export class StudentService extends UserService {
         response.displayName = user.displayName;
       });
     } catch (error) {
-      console.log(error);
       const { code, status, message } = EXCEPTION.STUDENT.UPDATE_FAILED;
       this.logger.error(error);
       this.throwException({ code, status, message, actorId, error });
@@ -180,6 +180,7 @@ export class StudentService extends UserService {
 
   private async validateUpdate(id: string, actorId: number) {
     // Check id exists
+
     const student = await this.studentRepository.findOneById(id);
     if (!student) {
       const { code, status, message } = EXCEPTION.STUDENT.DOES_NOT_EXIST;

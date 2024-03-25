@@ -44,7 +44,7 @@ export class AssignmentRepository {
   }
 
   insertWithTransaction(transaction: Transaction, assignment: AssignmentEntity) {
-    return transaction.insertInto('assignment').values(assignment).returning(['id', 'name', 'dueDate', 'description']).executeTakeFirst();
+    return transaction.insertInto('assignment').values(assignment).returning(['id', 'name', 'dueDate']).executeTakeFirst();
   }
 
   find(dto: AssignmentGetListDTO) {
@@ -124,7 +124,7 @@ export class AssignmentRepository {
       .set(assignment)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name', 'dueDate', 'description'])
+      .returning(['id', 'name', 'dueDate'])
       .executeTakeFirst();
   }
 

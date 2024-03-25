@@ -3,13 +3,14 @@ import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-val
 import { Transform, Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { IsNotBlank } from 'src/common/decorator/validator/is-not-blank.validator';
 
 const { NAME, COURSE_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.SECTION;
 
 export class SectionStoreDTO {
   @ApiProperty()
   @IsString({ message: NAME.FORMAT_IS_NOT_VALID })
-  @IsNotEmpty({ message: NAME.IS_NOT_EMPTY })
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   name: string;
 
   @ApiProperty({ example: 1 })
@@ -52,7 +53,7 @@ export class SectionGetDetailDTO {
 export class SectionUpdateDTO {
   @ApiPropertyOptional()
   @IsString({ message: NAME.FORMAT_IS_NOT_VALID })
-  @IsNotEmpty({ message: NAME.IS_NOT_EMPTY })
+  @IsNotBlank({}, { message: NAME.IS_NOT_EMPTY })
   @IsOptional()
   name?: string;
 }

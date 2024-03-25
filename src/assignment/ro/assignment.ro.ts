@@ -13,10 +13,6 @@ export class AssignmentStoreRO {
 
   @ApiProperty()
   @Expose()
-  description: string;
-
-  @ApiProperty()
-  @Expose()
   dueDate: Date;
 
   constructor(data?: AssignmentStoreRO) {
@@ -35,10 +31,6 @@ export class AssignmentUpdateRO {
 
   @ApiProperty()
   @Expose()
-  description: string;
-
-  @ApiProperty()
-  @Expose()
   dueDate: Date;
 
   constructor(data?: AssignmentStoreRO) {
@@ -54,10 +46,6 @@ export class AssignmentGetListDataRO {
   @ApiProperty()
   @Expose()
   name: string;
-
-  @ApiProperty()
-  @Expose()
-  description: string;
 
   @ApiProperty()
   @Expose()
@@ -94,7 +82,7 @@ export class AssignmentGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  description: string;
+  description: object;
 
   @ApiProperty()
   @Expose()
@@ -161,10 +149,6 @@ export class AssignmentGetMyListDataRO {
   @ApiProperty()
   @Expose()
   name: string;
-
-  @ApiProperty()
-  @Expose()
-  description: string;
 
   @ApiProperty()
   @Expose()

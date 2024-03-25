@@ -68,6 +68,7 @@ export class LessonRepository {
         'lesson.title',
         'lesson.body',
         'lesson.sectionId',
+        'lesson.createdBy',
         'video.url as videoUrl',
         'lesson.createdBy',
         'course.id as courseId',

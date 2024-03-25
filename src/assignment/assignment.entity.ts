@@ -3,7 +3,7 @@ import { BaseEntity } from '../base/base.entity';
 export class AssignmentEntity extends BaseEntity {
   name: string;
 
-  description: string;
+  description: object;
 
   dueDate: Date;
 

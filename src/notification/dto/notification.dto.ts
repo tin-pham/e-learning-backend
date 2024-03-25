@@ -2,16 +2,20 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { IsNotBlank } from '../../common/decorator/validator/is-not-blank.validator';
+import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
+
+const { TITLE, CONTENT } = UNPROCESSABLE_ENTITY_EXCEPTION.NOTIFICATION;
 
 export class NotificationStoreDTO {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsNotBlank({}, { message: TITLE.IS_NOT_EMPTY })
   title: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsNotBlank({}, { message: CONTENT.IS_NOT_EMPTY })
   content: string;
 
   @ApiProperty({ example: 1 })
