@@ -52,6 +52,7 @@ export class AssignmentRepository {
 
     const byLesson = Boolean(lessonId);
     const byCourse = Boolean(courseId);
+    console.log({ byLesson, byCourse });
 
     const query = this.database
       .selectFrom('assignment')

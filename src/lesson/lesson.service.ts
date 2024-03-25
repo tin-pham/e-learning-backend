@@ -115,17 +115,6 @@ export class LessonService extends BaseService {
 
     let response: any;
 
-    // Is student register to this course
-    if (roles.includes(ROLE.STUDENT)) {
-      const student = await this.studentRepository.getStudentIdByUserId(actorId);
-      const courseStudent = await this.courseStudentRepository.countByCourseIdAndStudentId(id, student.id);
-
-      if (!courseStudent) {
-        const { status, message, code } = EXCEPTION.COURSE_STUDENT.NOT_REGISTERED;
-        this.throwException({ status, message, code, actorId });
-      }
-    }
-
     try {
       response = await this.lessonRepository.findOneById(id);
     } catch (error) {
@@ -137,6 +126,19 @@ export class LessonService extends BaseService {
     if (!response) {
       const { status, message, code } = EXCEPTION.LESSON.NOT_FOUND;
       this.throwException({ status, message, code, actorId });
+    }
+
+    // Is student register to this course
+    if (roles.includes(ROLE.STUDENT)) {
+      const lesson = await this.lessonRepository.getCourseIdById(id);
+      const student = await this.studentRepository.getStudentIdByUserId(actorId);
+      const courseStudent = await this.courseStudentRepository.countByCourseIdAndStudentId(lesson.courseId, student.id);
+      console.log({ courseStudent });
+
+      if (!courseStudent) {
+        const { status, message, code } = EXCEPTION.COURSE_STUDENT.NOT_REGISTERED;
+        this.throwException({ status, message, code, actorId });
+      }
     }
 
     return this.success({

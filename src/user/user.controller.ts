@@ -36,7 +36,7 @@ export class UserController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_PROFILE.ROUTE)
-  @Roles(ROLE.STUDENT, ROLE.ADMIN, ROLE.TEACHER)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getProfile(@JwtPayload() decoded: IJwtPayload) {
     return this.userService.getProfile(decoded);
@@ -51,7 +51,7 @@ export class UserController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.ADMIN, ROLE.STAFF)
+  @Roles(ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   update(@Body() dto: UserUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.userService.updateProfile(dto, decoded);

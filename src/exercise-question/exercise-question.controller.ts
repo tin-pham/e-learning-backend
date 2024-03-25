@@ -37,7 +37,7 @@ export class ExerciseQuestionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(BULK_STORE.ROUTE)
-  @Roles(ROLE.ADMIN, ROLE.STAFF)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   bulkStore(@Body() dto: ExerciseQuestionBulkStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -52,7 +52,7 @@ export class ExerciseQuestionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(BULK_DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   bulkDelele(@Query() dto: ExerciseQuestionBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.exerciseQuestionService.bulkDelete(dto, decoded);

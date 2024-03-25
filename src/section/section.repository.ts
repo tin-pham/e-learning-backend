@@ -107,11 +107,12 @@ export class SectionRepository {
       .executeTakeFirst();
   }
 
-  async countByName(name: string) {
+  async countByNameAndCourseId(name: string, courseId: number) {
     const { count } = await this.database
       .selectFrom('section')
       .select(({ fn }) => fn.countAll().as('count'))
       .where('section.name', '=', name)
+      .where('section.courseId', '=', courseId)
       .where('section.deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);

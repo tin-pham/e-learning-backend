@@ -162,8 +162,8 @@ export class SectionService extends BaseService {
   }
 
   private async validateStore(dto: SectionStoreDTO, actorId: number) {
-    // Check name exist
-    const nameCount = await this.sectionRepository.countByName(dto.name);
+    // Check name exist same course
+    const nameCount = await this.sectionRepository.countByNameAndCourseId(dto.name, dto.courseId);
     if (nameCount) {
       const { code, status, message } = EXCEPTION.SECTION.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });
