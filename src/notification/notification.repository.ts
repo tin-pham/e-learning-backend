@@ -110,6 +110,10 @@ export class NotificationRepository {
           .onRef('studentExerciseNotification.notificationId', '=', 'notification.id')
           .on('studentExerciseNotification.deletedAt', 'is', null),
       )
+      .leftJoin('studentExercise', (join) =>
+        join.onRef('studentExercise.id', '=', 'studentExerciseNotification.studentExerciseId').on('studentExercise.deletedAt', 'is', null),
+      )
+      .leftJoin('exercise', (join) => join.onRef('exercise.id', '=', 'studentExercise.exerciseId').on('exercise.deletedAt', 'is', null))
       .innerJoin('userNotification', 'userNotification.notificationId', 'notification.id')
       .where('userNotification.userId', '=', userId)
       .where('userNotification.deletedAt', 'is', null)
@@ -128,6 +132,7 @@ export class NotificationRepository {
         'commentOwner.displayName as commentOwnerDisplayName',
         'image.url as commentOwnerImageUrl',
         'studentExerciseNotification.id as studentExerciseNotificationId',
+        'exercise.id as exerciseId',
       ])
       .orderBy('notification.createdAt', 'desc');
 
