@@ -66,6 +66,12 @@ export class QuestionGetListDTO extends PaginateDTO {
 
   @ApiPropertyOptional()
   @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  difficultyId: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
   @Transform(({ value }) => {
     if (value === 'true') return true;
     if (value === 'false') return false;

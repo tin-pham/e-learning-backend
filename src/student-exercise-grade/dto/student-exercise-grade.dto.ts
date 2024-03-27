@@ -10,3 +10,13 @@ export class StudentExerciseGradeCalculateDTO {
   @IsNumber()
   basePoint: number;
 }
+
+export class StudentExerciseGradeBulkCalculateDTO {
+  @ApiProperty()
+  @IsNumber()
+  basePoint: number;
+
+  @ApiProperty()
+  @IsNumber()
+  exerciseId: number;
+}

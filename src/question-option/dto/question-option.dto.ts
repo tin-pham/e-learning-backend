@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { IsNotBlank } from '../../common/decorator/validator/is-not-blank.validator';
@@ -40,4 +40,24 @@ export class QuestionOptionUpdateDTO {
   @IsBoolean()
   @IsOptional()
   isCorrect?: boolean;
+}
+
+export class QuestionOptionBulkUpdateDataDTO {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+
+  @ApiProperty({ type: QuestionOptionUpdateDTO })
+  @IsNotEmpty()
+  @Type(() => QuestionOptionUpdateDTO)
+  dto: QuestionOptionUpdateDTO;
+}
+
+export class QuestionOptionBulkUpdateDTO {
+  @ApiProperty({ type: [QuestionOptionBulkUpdateDataDTO] })
+  @IsArray()
+  @ArrayMinSize(1)
+  @Type(() => QuestionOptionBulkUpdateDataDTO)
+  data: QuestionOptionBulkUpdateDataDTO[];
 }

@@ -1,15 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService, Transaction } from '../database';
 import { StudentExerciseGradeEntity } from './student-exercise-grade.entity';
+import { UserNotificationEntity } from '../user-notification/user-notification.entity';
+import { NotificationEntity } from '../notification/notification.entity';
+import { StudentExerciseNotificationEntity } from '../student-exercise-notification/student-exercise-notification.entity';
 import { StudentExerciseGradeRepository } from './student-exercise-grade.repository';
 import { StudentExerciseRepository } from '../student-exercise/student-exercise.repository';
 import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapshot/exercise-question-snapshot.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
-import { StudentExerciseOptionRepository } from 'src/student-exercise-option/student-exercise-option.repository';
+import { StudentExerciseOptionRepository } from '../student-exercise-option/student-exercise-option.repository';
+import { ExerciseRepository } from '../exercise/exercise.repository';
+import { StudentRepository } from '../student/student.repository';
+import { UserNotificationRepository } from '../user-notification/user-notification.repository';
+import { NotificationRepository } from '../notification/notification.repository';
+import { StudentExerciseNotificationRepository } from '../student-exercise-notification/student-exercise-notification.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { StudentExerciseGradeCalculateDTO } from './dto/student-exercise-grade.dto';
+import { StudentExerciseGradeBulkCalculateDTO, StudentExerciseGradeCalculateDTO } from './dto/student-exercise-grade.dto';
 import { StudentExerciseGradeCalculateRO, StudentExerciseGradeDeleteRO } from './ro/student-exercise-grade.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class StudentExerciseGradeService extends BaseService {
@@ -17,16 +27,22 @@ export class StudentExerciseGradeService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly studentExerciseGradeRepository: StudentExerciseGradeRepository,
     private readonly studentExerciseRepository: StudentExerciseRepository,
     private readonly exerciseQuestionSnapshotRepository: ExerciseQuestionSnapshotRepository,
     private readonly exerciseQuestionOptionSnapshotRepository: ExerciseQuestionOptionSnapshotRepository,
     private readonly studentExerciseOptionRepository: StudentExerciseOptionRepository,
+    private readonly exerciseRepository: ExerciseRepository,
+    private readonly studentRepository: StudentRepository,
+    private readonly userNotificationRepository: UserNotificationRepository,
+    private readonly notificationRepository: NotificationRepository,
+    private readonly studentExerciseNotificationRepository: StudentExerciseNotificationRepository,
   ) {
     super(elasticLogger);
   }
 
-  async calculate(dto: StudentExerciseGradeCalculateDTO, decoded: IJwtPayload) {
+  async calculate(dto: StudentExerciseGradeCalculateDTO, decoded: IJwtPayload, transaction?: Transaction) {
     const actorId = decoded.userId;
     const { studentExercise, questionIds } = await this.validateCalculate(dto, actorId);
     let response: StudentExerciseGradeCalculateRO;
@@ -57,7 +73,12 @@ export class StudentExerciseGradeService extends BaseService {
 
       studentExerciseGradeData.point = (studentExerciseGradeData.correctCount / studentExerciseGradeData.totalCount) * dto.basePoint;
 
-      const studentExerciseGrade = await this.studentExerciseGradeRepository.insert(studentExerciseGradeData);
+      let studentExerciseGrade = null;
+      if (transaction) {
+        studentExerciseGrade = await this.studentExerciseGradeRepository.insertWithTransaciton(transaction, studentExerciseGradeData);
+      } else {
+        studentExerciseGrade = await this.studentExerciseGradeRepository.insert(studentExerciseGradeData);
+      }
 
       response = new StudentExerciseGradeCalculateRO({
         id: studentExerciseGrade.id,
@@ -76,6 +97,65 @@ export class StudentExerciseGradeService extends BaseService {
       classRO: StudentExerciseGradeCalculateRO,
       response,
       message: 'Calculate success',
+      actorId,
+    });
+  }
+
+  async bulkCalculate(dto: StudentExerciseGradeBulkCalculateDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const { studentExercises, exercise } = await this.validateBulkCalculate(dto, decoded.userId);
+
+    try {
+      await this.database.transaction().execute(async (transaction) => {
+        for (const studentExercise of studentExercises) {
+          await this.calculate(
+            {
+              studentExerciseId: studentExercise.id,
+              basePoint: dto.basePoint,
+            },
+            decoded,
+            transaction,
+          );
+        }
+
+        // // Store notification
+        const notificationData = new NotificationEntity({
+          title: 'ĐÃ CHẤM ĐIỂM',
+          content: `Bài tập ${exercise.name} đã được chấm điểm`,
+        });
+        const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+
+        const studentExerciseNotificationData = studentExercises.map(
+          (studentExercise) =>
+            new StudentExerciseNotificationEntity({ studentExerciseId: studentExercise.id, notificationId: notification.id }),
+        );
+        await this.studentExerciseNotificationRepository.insertMultipleWithTransaction(transaction, studentExerciseNotificationData);
+
+        // Notify student exercise
+        let users: { id: number }[] = [];
+        const studentIds = studentExercises.map((studentExercise) => studentExercise.studentId);
+        users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
+
+        const userNotificationData = users.map(
+          (user) =>
+            new UserNotificationEntity({
+              userId: user.id,
+              notificationId: notification.id,
+            }),
+        );
+
+        await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.BULK_CALCULATE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Bulk calculate success',
       actorId,
     });
   }
@@ -145,5 +225,34 @@ export class StudentExerciseGradeService extends BaseService {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+  }
+
+  private async validateBulkCalculate(dto: StudentExerciseGradeBulkCalculateDTO, actorId: number) {
+    // Check exercise exist
+    const exerciseCount = await this.exerciseRepository.countById(dto.exerciseId);
+    if (!exerciseCount) {
+      const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Get student exercise list
+    const studentExercises = await this.studentExerciseRepository.findByExerciseIdNotGraded(dto.exerciseId);
+
+    if (!studentExercises.length) {
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.NO_SUBMISSION;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Get exercise
+    const exercise = await this.exerciseRepository.getNameById(dto.exerciseId);
+    if (!exercise) {
+      const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return {
+      studentExercises,
+      exercise,
+    };
   }
 }

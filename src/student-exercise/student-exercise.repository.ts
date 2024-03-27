@@ -2,11 +2,31 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
 import { StudentExerciseEntity } from './student-exercise.entity';
 import { StudentExerciseGetListSubmittedDTO } from './dto/student-exercise.dto';
-import { paginate } from 'src/common/function/paginate';
+import { paginate } from '../common/function/paginate';
 
 @Injectable()
 export class StudentExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  findByExerciseIdNotGraded(exerciseId: number) {
+    return this.database
+      .selectFrom('studentExercise')
+      .where('studentExercise.exerciseId', '=', exerciseId)
+      .where('studentExercise.deletedAt', 'is', null)
+      .leftJoin('studentExerciseGrade', (join) =>
+        join.onRef('studentExerciseGrade.studentExerciseId', '=', 'studentExercise.id').on('studentExerciseGrade.deletedAt', 'is', null),
+      )
+      .where('studentExerciseGrade.id', 'is', null)
+      .select([
+        'studentExercise.id',
+        'studentExercise.studentId',
+        'studentExercise.exerciseId',
+        'studentExercise.isSubmitted',
+        'studentExercise.submittedAt',
+        'studentExercise.isLate',
+      ])
+      .execute();
+  }
 
   getIdByExerciseId(exerciseId: number) {
     return this.database

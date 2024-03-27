@@ -48,6 +48,7 @@ import { StudentExerciseOptionEntity } from '../student-exercise-option/student-
 import { StudentExerciseGradeEntity } from '../student-exercise-grade/student-exercise-grade.entity';
 import { CourseOutcomeEntity } from '../course-outcome/course-outcome.entity';
 import { VideoEntity } from '../video/video.entity';
+import { StudentExerciseNotificationEntity } from '../student-exercise-notification/student-exercise-notification.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -99,6 +100,7 @@ export interface KyselyTables {
   studentExerciseGrade: StudentExerciseGradeEntity;
   courseOutcome: CourseOutcomeEntity;
   video: VideoEntity;
+  studentExerciseNotification: StudentExerciseNotificationEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

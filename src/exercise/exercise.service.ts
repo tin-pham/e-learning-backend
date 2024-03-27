@@ -90,6 +90,7 @@ export class ExerciseService extends BaseService {
     const actorId = decoded.userId;
     try {
       const response = await this.exerciseRepository.find(dto, actorId);
+      console.log(response);
       return this.success({
         classRO: ExerciseGetListRO,
         response,

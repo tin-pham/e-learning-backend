@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { StudentExerciseGradeEntity } from './student-exercise-grade.entity';
 
 @Injectable()
@@ -8,6 +8,14 @@ export class StudentExerciseGradeRepository {
 
   insert(entity: StudentExerciseGradeEntity) {
     return this.database
+      .insertInto('studentExerciseGrade')
+      .values(entity)
+      .returning(['id', 'point', 'correctCount', 'totalCount', 'studentExerciseId'])
+      .executeTakeFirst();
+  }
+
+  insertWithTransaciton(transaction: Transaction, entity: StudentExerciseGradeEntity) {
+    return transaction
       .insertInto('studentExerciseGrade')
       .values(entity)
       .returning(['id', 'point', 'correctCount', 'totalCount', 'studentExerciseId'])

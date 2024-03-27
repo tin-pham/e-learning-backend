@@ -1,18 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { QuestionOptionEntity } from './question-option.entity';
 import { QuestionOptionRepository } from './question-option.repository';
 import { QuestionRepository } from '../question/question.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { QuestionOptionGetListDTO, QuestionOptionStoreDTO, QuestionOptionUpdateDTO } from './dto/question-option.dto';
-import {
-  QuestionOptionDeleteRO,
-  QuestionOptionGetDetailRO,
-  QuestionOptionGetListRO,
-  QuestionOptionStoreRO,
-  QuestionOptionUpdateRO,
-} from './ro/question-option.ro';
+import { QuestionOptionGetListDTO, QuestionOptionStoreDTO, QuestionOptionBulkUpdateDTO } from './dto/question-option.dto';
+import { QuestionOptionDeleteRO, QuestionOptionGetDetailRO, QuestionOptionGetListRO, QuestionOptionStoreRO } from './ro/question-option.ro';
+import { ResultRO } from 'src/common/ro/result.ro';
 
 @Injectable()
 export class QuestionOptionService extends BaseService {
@@ -20,6 +16,7 @@ export class QuestionOptionService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly questionOptionRepository: QuestionOptionRepository,
     private readonly questionRepository: QuestionRepository,
   ) {
@@ -110,43 +107,6 @@ export class QuestionOptionService extends BaseService {
     });
   }
 
-  async update(id: number, dto: QuestionOptionUpdateDTO, decoded: IJwtPayload) {
-    const actorId = decoded.userId;
-    await this.validateUpdate(id, dto, actorId);
-
-    const response = new QuestionOptionUpdateRO();
-    try {
-      const questionOptionData = new QuestionOptionEntity();
-      questionOptionData.updatedBy = actorId;
-      questionOptionData.updatedAt = new Date();
-      if (dto.text) {
-        questionOptionData.text = dto.text;
-      }
-
-      if (dto.isCorrect) {
-        questionOptionData.isCorrect = dto.isCorrect;
-      }
-
-      const questionOption = await this.questionOptionRepository.update(id, questionOptionData);
-
-      response.id = questionOption.id;
-      response.text = questionOption.text;
-      response.isCorrect = questionOption.isCorrect;
-      response.questionId = questionOption.questionId;
-    } catch (error) {
-      const { code, status, message } = EXCEPTION.QUESTION_OPTION.UPDATE_FAILED;
-      this.logger.error(error);
-      this.throwException({ code, status, message, actorId });
-    }
-
-    return this.success({
-      classRO: QuestionOptionUpdateRO,
-      response,
-      message: 'Update question option successfully',
-      actorId,
-    });
-  }
-
   async delete(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateDelete(id, actorId);
@@ -167,6 +127,35 @@ export class QuestionOptionService extends BaseService {
       classRO: QuestionOptionDeleteRO,
       response,
       message: 'Delete question option successfully',
+      actorId,
+    });
+  }
+
+  async bulkUpdate(dto: QuestionOptionBulkUpdateDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateBulkUpdate(dto, actorId);
+
+    try {
+      for (const data of dto.data) {
+        const option = new QuestionOptionEntity();
+        option.id = data.id;
+        option.text = data.dto.text;
+        option.isCorrect = data.dto.isCorrect;
+
+        await this.database.transaction().execute(async (transaction) => {
+          await this.questionOptionRepository.updateWithTransaction(transaction, option.id, option);
+        });
+      }
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.BULK_UPDATE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Bulk update question option successfully',
       actorId,
     });
   }
@@ -196,47 +185,6 @@ export class QuestionOptionService extends BaseService {
     }
   }
 
-  private async validateUpdate(id: number, dto: QuestionOptionUpdateDTO, actorId: number) {
-    // Check exist
-    const questionOption = await this.questionOptionRepository.findOneById(id);
-    if (!questionOption) {
-      const { code, status, message } = EXCEPTION.QUESTION_OPTION.DOES_NOT_EXIST;
-      this.throwException({ code, status, message, actorId });
-    }
-
-    // Check text unique in same question except current id
-    const questionOptionCount = await this.questionOptionRepository.countByQuestionIdAndTextExceptId(
-      questionOption.questionId,
-      dto.text,
-      id,
-    );
-    if (questionOptionCount) {
-      const { code, status, message } = EXCEPTION.QUESTION_OPTION.ALREADY_EXIST;
-      this.throwException({ code, status, message, actorId });
-    }
-
-    // Check isCorrect duplicate
-    const questionOptions = await this.questionOptionRepository.findByQuestionId(questionOption.questionId);
-    let isMultipleChoice = false;
-    if (questionOptions) {
-      const isCorrects = questionOptions.filter((option) => option.isCorrect);
-      if (isCorrects.length > 1) {
-        isMultipleChoice = true;
-      }
-    }
-
-    // Check text duplicate
-    const texts = questionOptions.map((option) => option.text);
-    if (texts.length !== new Set(texts).size) {
-      const { code, status, message } = EXCEPTION.QUESTION_OPTION.TEXT_DUPLICATE;
-      this.throwException({ code, status, message, actorId });
-    }
-
-    return {
-      isMultipleChoice,
-    };
-  }
-
   private async validateDelete(id: number, actorId: number) {
     // Check exist
     const questionCount = await this.questionOptionRepository.countById(id);
@@ -244,5 +192,43 @@ export class QuestionOptionService extends BaseService {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+  }
+
+  private async validateBulkUpdate(dto: QuestionOptionBulkUpdateDTO, actorId: number) {
+    // Check exist
+    const ids = dto.data.map((data) => data.id);
+    const questionCount = await this.questionOptionRepository.countByIds(ids);
+    if (!questionCount) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check text duplicate
+    const texts = dto.data.map((data) => data.dto.text);
+    if (texts.length !== new Set(texts).size) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.TEXT_DUPLICATE;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    //  It should contain both true and false
+    const isCorrects = dto.data.map((option) => option.dto.isCorrect);
+    const allTrue = isCorrects.every((value) => value === true);
+    const allFalse = isCorrects.every((value) => value === false);
+
+    console.log(allTrue, allFalse);
+
+    if (allTrue || allFalse) {
+      const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_DIVERSITY_REQUIRED;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // It should adjust isMultipleChoice
+    const trueCount = isCorrects.filter((value) => value === true).length;
+    let isMultipleChoice = false;
+    if (trueCount > 1) {
+      isMultipleChoice = true;
+    }
+
+    return { ids, isMultipleChoice };
   }
 }

@@ -63,24 +63,6 @@ export class QuestionOptionGetDetailRO {
   questionId: number;
 }
 
-export class QuestionOptionUpdateRO {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
-  @ApiProperty()
-  @Expose()
-  text: string;
-
-  @ApiProperty()
-  @Expose()
-  isCorrect: boolean;
-
-  @ApiProperty()
-  @Expose()
-  questionId: number;
-}
-
 export class QuestionOptionDeleteRO {
   @ApiProperty()
   @Expose()

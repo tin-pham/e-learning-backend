@@ -52,7 +52,7 @@ export class ExerciseSubmitController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard)
   getList(@Query() dto: ExerciseSubmitGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.exerciseSubmitService.getList(dto, decoded);

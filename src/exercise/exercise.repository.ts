@@ -89,6 +89,15 @@ export class ExerciseRepository {
       .executeTakeFirst();
   }
 
+  async getNameById(id: number) {
+    return this.database
+      .selectFrom('exercise')
+      .where('exercise.deletedAt', 'is', null)
+      .where('exercise.id', '=', id)
+      .select(['name'])
+      .executeTakeFirst();
+  }
+
   async findOneById(id: number, dto?: ExerciseGetDetailDTO) {
     return this.database
       .selectFrom('exercise')

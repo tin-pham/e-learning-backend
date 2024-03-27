@@ -105,6 +105,11 @@ export class NotificationRepository {
       )
       .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'commentOwner.id').on('userImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
+      .leftJoin('studentExerciseNotification', (join) =>
+        join
+          .onRef('studentExerciseNotification.notificationId', '=', 'notification.id')
+          .on('studentExerciseNotification.deletedAt', 'is', null),
+      )
       .innerJoin('userNotification', 'userNotification.notificationId', 'notification.id')
       .where('userNotification.userId', '=', userId)
       .where('userNotification.deletedAt', 'is', null)
@@ -122,6 +127,7 @@ export class NotificationRepository {
         'commentOwner.id as commentOwnerId',
         'commentOwner.displayName as commentOwnerDisplayName',
         'image.url as commentOwnerImageUrl',
+        'studentExerciseNotification.id as studentExerciseNotificationId',
       ])
       .orderBy('notification.createdAt', 'desc');
 

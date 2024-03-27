@@ -341,6 +341,11 @@ export const EXCEPTION = {
     },
   },
   QUESTION_OPTION: {
+    BULK_UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk update question option',
+      code: 'QUESTION_OPTION.BULK_UPDATE_FAILED',
+    },
     IS_CORRECT_TRUE_REQUIRED: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Question option is correct true required',
@@ -845,6 +850,16 @@ export const EXCEPTION = {
     },
   },
   STUDENT_EXERCISE_GRADE: {
+    BULK_CALCULATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk calculate student exercise grade',
+      code: 'STUDENT_EXERCISE_GRADE.BULK_CALCULATE_FAILED',
+    },
+    NO_SUBMISSION: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'No submission',
+      code: 'STUDENT_EXERCISE_GRADE.NO_SUBMISSION',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Exercise submit grade does not exist',

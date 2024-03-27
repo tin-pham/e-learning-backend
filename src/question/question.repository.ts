@@ -24,7 +24,7 @@ export class QuestionRepository {
   }
 
   find(dto: QuestionGetListDTO) {
-    const { page, limit, questionCategoryId, excludeExerciseId, search } = dto;
+    const { page, limit, questionCategoryId, excludeExerciseId, search, difficultyId } = dto;
 
     const byCategory = Boolean(questionCategoryId);
     const byExcludeExercise = Boolean(excludeExerciseId);
@@ -62,11 +62,12 @@ export class QuestionRepository {
           )
           .where('exerciseQuestion.id', 'is', null),
       )
+      .$if(difficultyId !== undefined, (qb) => qb.where('question.difficultyId', '=', difficultyId))
       .select(({ fn, ref }) => [
         'question.id',
         'question.text',
         'question.difficultyId',
-        'difficulty.name as diffulltyName',
+        'difficulty.name as difficultyName',
         'question.isMultipleChoice',
         fn
           .coalesce(

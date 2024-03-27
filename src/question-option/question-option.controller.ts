@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -19,16 +19,11 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { QuestionOptionService } from './question-option.service';
-import { QuestionOptionGetListDTO, QuestionOptionStoreDTO, QuestionOptionUpdateDTO } from './dto/question-option.dto';
-import {
-  QuestionOptionDeleteRO,
-  QuestionOptionGetDetailRO,
-  QuestionOptionGetListRO,
-  QuestionOptionStoreRO,
-  QuestionOptionUpdateRO,
-} from './ro/question-option.ro';
+import { QuestionOptionBulkUpdateDTO, QuestionOptionGetListDTO, QuestionOptionStoreDTO } from './dto/question-option.dto';
+import { QuestionOptionDeleteRO, QuestionOptionGetDetailRO, QuestionOptionGetListRO, QuestionOptionStoreRO } from './ro/question-option.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE } = API.QUESTION_OPTION;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, DELETE, BULK_UPDATE } = API.QUESTION_OPTION;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -44,7 +39,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Post(STORE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   store(@Body() dto: QuestionOptionStoreDTO, @JwtPayload() decoded: IJwtPayload) {
@@ -59,7 +54,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_LIST.ROUTE)
-  @Roles(ROLE.ADMIN, ROLE.STUDENT)
+  @Roles(ROLE.TEACHER, ROLE.STUDENT)
   @UseGuards(JwtGuard, RoleGuard)
   getList(@Query() dto: QuestionOptionGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.getList(dto, decoded);
@@ -73,25 +68,25 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Get(GET_DETAIL.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.getDetail(id, decoded);
   }
 
-  @ApiOperation({ summary: UPDATE.OPERATION })
-  @ApiOkResponse({ type: QuestionOptionUpdateRO })
+  @ApiOperation({ summary: BULK_UPDATE.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
   @ApiForbiddenResponse({ type: HttpExceptionRO })
   @ApiConflictResponse({ type: HttpExceptionRO })
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
-  @Patch(UPDATE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Post(BULK_UPDATE.ROUTE)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: QuestionOptionUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
-    return this.questionOptionService.update(id, dto, decoded);
+  bulkUpdate(@Body() dto: QuestionOptionBulkUpdateDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.questionOptionService.bulkUpdate(dto, decoded);
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })
@@ -102,7 +97,7 @@ export class QuestionOptionController {
   @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
   @ApiBearerAuth('Authorization')
   @Delete(DELETE.ROUTE)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.TEACHER)
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.questionOptionService.delete(id, decoded);

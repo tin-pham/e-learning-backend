@@ -72,6 +72,10 @@ export class NotificationGetListDataRO {
   @ApiPropertyOptional()
   @Expose()
   commentOwnerImageUrl?: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  studentExerciseNotificationId?: number;
 }
 
 export class NotificationGetListRO extends PaginateRO<NotificationGetListDataRO> {

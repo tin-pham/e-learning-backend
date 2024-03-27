@@ -218,9 +218,9 @@ export const API = {
       ROUTE: ':id',
       OPERATION: 'Get question option detail',
     },
-    UPDATE: {
-      ROUTE: ':id',
-      OPERATION: 'Update question option',
+    BULK_UPDATE: {
+      ROUTE: 'bulk-update',
+      OPERATION: 'Bulk update question option',
     },
     DELETE: {
       ROUTE: ':id',
@@ -545,6 +545,10 @@ export const API = {
     CALCULATE: {
       ROUTE: '',
       OPERATION: 'Calculate student exercise grade',
+    },
+    BULK_CALCULATE: {
+      ROUTE: 'bulk',
+      OPERATION: 'Bulk calculate student exercise grade',
     },
     DELETE: {
       ROUTE: ':id',
