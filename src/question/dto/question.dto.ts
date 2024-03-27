@@ -95,22 +95,40 @@ export class QuestionStudentGetListDTO extends PaginateDTO {
   studentExerciseId?: number;
 }
 
-export class QuestionUpdateOptionDTO {
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  text?: string;
-}
-
-export class QuestionUpdateOptionRO {
-  @ApiPropertyOptional()
+export class QuestionUpdateOptionCreateDTO {
+  @ApiProperty()
   @IsBoolean()
   isCorrect: boolean;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotBlank({}, { message: OPTION_TEXT.IS_NOT_EMPTY })
+  text: string;
+}
+
+export class QuestionUpdateOptionUpdateDataDTO {
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  isCorrect?: boolean;
 
   @ApiPropertyOptional()
   @IsString()
   @IsNotBlank({}, { message: OPTION_TEXT.IS_NOT_EMPTY })
-  text: string;
+  @IsOptional()
+  text?: string;
+}
+
+export class QuestionUpdateOptionUpdateDTO {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  id: number;
+
+  @ApiProperty({ type: QuestionUpdateOptionUpdateDataDTO })
+  @Type(() => QuestionUpdateOptionUpdateDataDTO)
+  @IsNotEmpty()
+  data: QuestionUpdateOptionUpdateDataDTO;
 }
 
 export class QuestionUpdateDTO {
@@ -125,15 +143,20 @@ export class QuestionUpdateDTO {
   @IsOptional()
   difficultyId?: number;
 
-  @ApiPropertyOptional({ type: [QuestionUpdateOptionDTO] })
+  @ApiPropertyOptional({ type: [QuestionUpdateOptionCreateDTO] })
   @IsArray()
   @IsOptional()
-  @Type(() => QuestionUpdateOptionDTO)
-  options: QuestionUpdateOptionRO[];
+  @Type(() => QuestionUpdateOptionCreateDTO)
+  createOptions: QuestionUpdateOptionCreateDTO[];
 
   @ApiPropertyOptional({ example: [1] })
   @IsNumber({}, { each: true })
   @IsArray()
   @IsOptional()
   removeOptionIds: number[];
+
+  @ApiProperty({ type: QuestionUpdateOptionUpdateDataDTO })
+  @Type(() => QuestionUpdateOptionUpdateDataDTO)
+  @IsNotEmpty()
+  updateOptions: QuestionUpdateOptionUpdateDTO[];
 }

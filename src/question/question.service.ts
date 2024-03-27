@@ -157,8 +157,8 @@ export class QuestionService extends BaseService {
           await this.questionOptionRepository.deleteByIdsWithTransaction(transaction, dto.removeOptionIds, actorId);
         }
 
-        if (dto.options && dto.options.length) {
-          const questionOptionData = dto.options.map(
+        if (dto.createOptions && dto.createOptions.length) {
+          const questionOptionData = dto.createOptions.map(
             (option) =>
               new QuestionOptionEntity({
                 text: option.text,
@@ -167,6 +167,15 @@ export class QuestionService extends BaseService {
               }),
           );
           await this.questionOptionRepository.insertMultipleWithTransaction(transaction, questionOptionData);
+        }
+
+        if (dto.updateOptions && dto.updateOptions.length) {
+          for (const option of dto.updateOptions) {
+            await this.questionOptionRepository.updateWithTransaction(transaction, option.id, {
+              text: option.data.text,
+              isCorrect: option.data.isCorrect,
+            });
+          }
         }
 
         response.id = question.id;
@@ -292,14 +301,51 @@ export class QuestionService extends BaseService {
       }
     }
 
+    // Check update option id exist with question
+    if (dto.updateOptions && dto.updateOptions.length) {
+      const updateOptionsCount = await this.questionOptionRepository.countByIdsAndQuestionId(
+        dto.updateOptions.map((option) => option.id),
+        id,
+      );
+      if (!updateOptionsCount) {
+        const { code, status, message } = EXCEPTION.QUESTION_OPTION.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
+    }
+
+    // Check update and remove distinct
+    const isIntersect = dto.removeOptionIds.some((optionId) => dto.updateOptions.some((option) => option.id === optionId));
+    if (isIntersect) {
+      const { code, status, message } = EXCEPTION.QUESTION.REMOVE_AND_UPDATE_OPTIONS_NOT_DISTINCT;
+      this.throwException({ code, status, message, actorId });
+    }
+
     const currentOptions = await this.questionOptionRepository.findByQuestionId(id);
     let remainingOptions: Partial<QuestionOptionEntity>[] = currentOptions;
     if (dto.removeOptionIds && dto.removeOptionIds.length) {
       remainingOptions = currentOptions.filter((option) => !dto.removeOptionIds.includes(option.id));
     }
 
-    if (dto.options && dto.options.length) {
-      remainingOptions.push(...dto.options);
+    if (dto.createOptions && dto.createOptions.length) {
+      remainingOptions.push(...dto.createOptions);
+    }
+
+    if (dto.updateOptions && dto.updateOptions.length) {
+      dto.updateOptions.forEach((updateOptionDto) => {
+        const optionIndex = remainingOptions.findIndex((option) => option.id === updateOptionDto.id);
+
+        if (optionIndex !== -1) {
+          const updatedOption = {
+            ...remainingOptions[optionIndex],
+            ...updateOptionDto.data,
+          };
+
+          remainingOptions[optionIndex] = updatedOption;
+        } else {
+          const { code, status, message } = EXCEPTION.QUESTION_OPTION.DOES_NOT_EXIST;
+          this.throwException({ code, status, message, actorId });
+        }
+      });
     }
 
     // Check text unique in same question

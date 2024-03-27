@@ -52,7 +52,6 @@ export class QuestionOptionRepository {
   }
 
   insertMultipleWithTransaction(transaction: Transaction, options: QuestionOptionEntity[]) {
-    console.log(options);
     return transaction.insertInto('questionOption').values(options).execute();
   }
 

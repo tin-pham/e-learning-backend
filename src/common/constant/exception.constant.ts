@@ -294,6 +294,11 @@ export const EXCEPTION = {
     },
   },
   QUESTION: {
+    REMOVE_AND_UPDATE_OPTIONS_NOT_DISTINCT: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Remove and update options not distinct',
+      code: 'QUESTION.REMOVE_AND_UPDATE_OPTIONS_NOT_DISTINCT',
+    },
     ALREADY_EXIST: {
       status: HttpStatus.CONFLICT,
       message: 'Question already exist',
