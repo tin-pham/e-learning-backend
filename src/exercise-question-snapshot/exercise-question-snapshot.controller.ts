@@ -19,7 +19,7 @@ import { ExerciseQuestionSnapshotService } from './exercise-question-snapshot.se
 import { ExerciseQuestionSnapshotGetListDTO } from './dto/exercise-question-snapshot.dto';
 import { ExerciseQuestionSnapshotGetListRO } from './ro/exercise-question-snapshot.ro';
 
-const { TAGS, CONTROLLER, STUDENT_GET_LIST } = API.EXERCISE_QUESTION_SNAPSHOT;
+const { TAGS, CONTROLLER, STUDENT_GET_LIST, GET_LIST } = API.EXERCISE_QUESTION_SNAPSHOT;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -38,5 +38,19 @@ export class ExerciseQuestionSnapshotController {
   @UseGuards(JwtGuard, RoleGuard)
   studentGetList(@Query() dto: ExerciseQuestionSnapshotGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.exerciseQuestionSnapshotService.studentGetList(dto, decoded);
+  }
+
+  @ApiOperation({ summary: GET_LIST.OPERATION })
+  @ApiOkResponse({ type: ExerciseQuestionSnapshotGetListRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_LIST.ROUTE)
+  @Roles(ROLE.TEACHER)
+  @UseGuards(JwtGuard, RoleGuard)
+  getList(@Query() dto: ExerciseQuestionSnapshotGetListDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.exerciseQuestionSnapshotService.getList(dto, decoded);
   }
 }

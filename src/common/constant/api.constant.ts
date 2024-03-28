@@ -698,6 +698,10 @@ export const API = {
       ROUTE: 'student',
       OPERATION: 'Get list exercise question snapshot',
     },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list exercise question snapshot',
+    },
   },
   COURSE_OUTCOME: {
     TAGS: 'CourseOutcome',

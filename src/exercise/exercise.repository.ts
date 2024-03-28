@@ -137,6 +137,7 @@ export class ExerciseRepository {
           )
           .select([
             'studentExerciseGrade.id as studentExerciseGradeId',
+            'studentExerciseGrade.id as isGraded',
             'studentExerciseGrade.point',
             'studentExerciseGrade.correctCount',
             'studentExerciseGrade.totalCount',

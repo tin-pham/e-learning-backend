@@ -21,6 +21,23 @@ export class ExerciseQuestionSnapshotService extends BaseService {
     super(elasticLogger);
   }
 
+  async getList(dto: ExerciseQuestionSnapshotGetListDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    try {
+      const response = await this.exerciseQuestionSnapshotRepository.find(dto);
+      return this.success({
+        classRO: ExerciseQuestionSnapshotGetListRO,
+        response,
+        message: 'Get list exercise question snapshot successfully',
+        actorId: decoded.userId,
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.GET_LIST_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
   async studentGetList(dto: ExerciseQuestionSnapshotGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     const { isGraded, studentExercise } = await this.validateStudentGetList(dto, actorId);
@@ -28,7 +45,7 @@ export class ExerciseQuestionSnapshotService extends BaseService {
     try {
       let response: any;
       if (isGraded) {
-        response = await this.exerciseQuestionSnapshotRepository.find(dto, studentExercise.id);
+        response = await this.exerciseQuestionSnapshotRepository.findByStudentExerciseId(dto, studentExercise.id);
       } else {
         response = await this.exerciseQuestionSnapshotRepository.findWithoutOption(dto, studentExercise.id);
       }

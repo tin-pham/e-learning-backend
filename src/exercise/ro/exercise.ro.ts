@@ -199,6 +199,17 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   instantMark?: boolean;
+
+  @ApiProperty()
+  @Expose()
+  @Transform(({ value }) => {
+    if (value === null) {
+      return false;
+    } else {
+      return true;
+    }
+  })
+  isGraded: boolean;
 }
 
 export class ExerciseUpdateRO {

@@ -1235,6 +1235,11 @@ export const EXCEPTION = {
     },
   },
   EXERCISE_QUESTION_SNAPSHOT: {
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list exercise question snapshot',
+      code: 'EXERCISE_QUESTION_SNAPSHOT.GET_LIST_FAILED',
+    },
     STUDENT_GET_LIST_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get list exercise question snapshot for student',

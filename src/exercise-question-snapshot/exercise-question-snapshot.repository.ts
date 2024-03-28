@@ -64,7 +64,58 @@ export class ExerciseQuestionSnapshotRepository {
     });
   }
 
-  find(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
+  find(dto: ExerciseQuestionSnapshotGetListDTO) {
+    const { page, limit } = dto;
+
+    const query = this.database
+      .selectFrom('exerciseQuestionSnapshot')
+      .where('exerciseQuestionSnapshot.deletedAt', 'is', null)
+      .innerJoin('exercise', 'exercise.id', 'exerciseQuestionSnapshot.exerciseId')
+      .where('exercise.deletedAt', 'is', null)
+      .innerJoin('difficulty', 'difficulty.id', 'exerciseQuestionSnapshot.difficultyId')
+      .where('difficulty.deletedAt', 'is', null)
+      .innerJoin(
+        'exerciseQuestionOptionSnapshot',
+        'exerciseQuestionOptionSnapshot.exerciseQuestionSnapshotId',
+        'exerciseQuestionSnapshot.id',
+      )
+      .where('exerciseQuestionOptionSnapshot.deletedAt', 'is', null)
+      .select(({ fn, ref }) => [
+        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.text',
+        'exerciseQuestionSnapshot.difficultyId',
+        'difficulty.name as diffulltyName',
+        'exerciseQuestionSnapshot.isMultipleChoice',
+        fn
+          .coalesce(
+            fn
+              .jsonAgg(
+                jsonBuildObject({
+                  id: ref('exerciseQuestionOptionSnapshot.id'),
+                  text: ref('exerciseQuestionOptionSnapshot.text'),
+                  isCorrect: ref('exerciseQuestionOptionSnapshot.isCorrect'),
+                }),
+              )
+              .filterWhere('exerciseQuestionOptionSnapshot.id', 'is not', null),
+            sql`'[]'`,
+          )
+          .as('options'),
+      ])
+      .groupBy([
+        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.text',
+        'exerciseQuestionSnapshot.difficultyId',
+        'difficulty.name',
+        'exerciseQuestionSnapshot.isMultipleChoice',
+      ]);
+
+    return paginate(query, {
+      page,
+      limit,
+    });
+  }
+
+  findByStudentExerciseId(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
     const { page, limit } = dto;
 
     const query = this.database
