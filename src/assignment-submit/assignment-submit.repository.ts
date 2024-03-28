@@ -129,6 +129,9 @@ export class AssignmentSubmitRepository {
       .innerJoin('student', 'student.id', 'assignmentSubmit.studentId')
       .innerJoin('users', 'users.id', 'student.userId')
       .where('users.deletedAt', 'is', null)
+      .leftJoin('userImage', (join) => join.onRef('users.id', '=', 'userImage.userId').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
+      .leftJoin('assignmentSubmitGrade', join => join.onRef('assignmentSubmit.id', '=', 'assignmentSubmitGrade.assignmentSubmitId').on('assignmentSubmitGrade.deletedAt', 'is', null))
       .select([
         'assignmentSubmit.id',
         'attachment.url as attachmentUrl',
@@ -136,6 +139,8 @@ export class AssignmentSubmitRepository {
         'attachment.createdAt as attachmentCreatedAt',
         'attachment.createdBy as attachmentCreatedBy',
         'users.displayName as studentName',
+        'image.url as userImageUrl',
+        'assignmentSubmitGrade.grade as grade',
       ]);
 
     return paginate(query, { limit, page });

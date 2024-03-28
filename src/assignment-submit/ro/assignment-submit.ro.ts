@@ -26,6 +26,14 @@ export class AssignmentSubmitGetListDataRO {
   @ApiProperty()
   @Expose()
   studentName: string;
+
+  @ApiProperty()
+  @Expose()
+  userImageUrl: string;
+
+  @ApiProperty()
+  @Expose()
+  grade: number;
 }
 
 export class AssignmentSubmitGetListRO extends PaginateRO<AssignmentSubmitGetListDataRO> {

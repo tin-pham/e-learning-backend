@@ -4,9 +4,8 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { AssignmentEntity } from './assignment.entity';
-import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { CourseAssignmentEntity } from '../course-assignment/course-assignment.entity';
-import { NotificationEntity } from '../notification/notification.entity';
+//import { NotificationEntity } from '../notification/notification.entity';
 import { AssignmentRepository } from './assignment.repository';
 import { AssignmentExerciseRepository } from '../assignment-exercise/assignment-exercise.repository';
 import { StudentRepository } from '../student/student.repository';
@@ -14,10 +13,10 @@ import { AssignmentSubmitRepository } from '../assignment-submit/assignment-subm
 import { LessonRepository } from '../lesson/lesson.repository';
 import { CourseRepository } from '../course/course.repository';
 import { CourseAssignmentRepository } from '../course-assignment/course-assignment.repository';
-import { CourseStudentRepository } from '../course-student/course-student.repository';
-import { UserNotificationRepository } from '../user-notification/user-notification.repository';
-import { NotificationRepository } from '../notification/notification.repository';
-import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
+// import { CourseStudentRepository } from '../course-student/course-student.repository';
+// import { UserNotificationRepository } from '../user-notification/user-notification.repository';
+// import { NotificationRepository } from '../notification/notification.repository';
+// import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { AssignmentGetListDTO, AssignmentGetMyListDTO, AssignmentStoreDTO, AssignmentUpdateDTO } from './dto/assignment.dto';
 import {
@@ -43,17 +42,17 @@ export class AssignmentService extends BaseService {
     private readonly assignmentSubmitRepository: AssignmentSubmitRepository,
     private readonly courseRepository: CourseRepository,
     private readonly courseAssignmentRepository: CourseAssignmentRepository,
-    private readonly notificationRepository: NotificationRepository,
-    private readonly courseStudentRepository: CourseStudentRepository,
-    private readonly userNotificationRepository: UserNotificationRepository,
-    private readonly courseNotificationRepository: CourseNotificationRepository,
+    // private readonly notificationRepository: NotificationRepository,
+    // private readonly courseStudentRepository: CourseStudentRepository,
+    // private readonly userNotificationRepository: UserNotificationRepository,
+    // private readonly courseNotificationRepository: CourseNotificationRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: AssignmentStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const { courseFromLesson } = await this.validateStore(dto, actorId);
+    await this.validateStore(dto, actorId);
 
     let response: AssignmentStoreRO;
     try {
@@ -87,34 +86,34 @@ export class AssignmentService extends BaseService {
         }
 
         // Store notification
-        const notificationData = new NotificationEntity({
-          title: 'BÀI TẬP',
-          content: `Bài tập ${assignment.name} vừa tạo`,
-        });
-        const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
-
-        await this.courseNotificationRepository.insertWithTransaction(transaction, {
-          courseId: courseFromLesson?.courseId || dto.courseId,
-          notificationId: notification.id,
-        });
-
-        // Notify to student
-        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(courseFromLesson?.courseId || dto.courseId);
-
-        let users: { id: number }[] = [];
-        if (courseStudents.length) {
-          const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
-          users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
-
-          const userNotificationData = users.map(
-            (user) =>
-              new UserNotificationEntity({
-                userId: user.id,
-                notificationId: notification.id,
-              }),
-          );
-          await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
-        }
+        // const notificationData = new NotificationEntity({
+        //   title: 'BÀI TẬP',
+        //   content: `Bài tập ${assignment.name} vừa tạo`,
+        // });
+        // const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+        //
+        // await this.courseNotificationRepository.insertWithTransaction(transaction, {
+        //   courseId: courseFromLesson?.courseId || dto.courseId,
+        //   notificationId: notification.id,
+        // });
+        //
+        // // Notify to student
+        // const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(courseFromLesson?.courseId || dto.courseId);
+        //
+        // let users: { id: number }[] = [];
+        // if (courseStudents.length) {
+        //   const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
+        //   users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
+        //
+        //   const userNotificationData = users.map(
+        //     (user) =>
+        //       new UserNotificationEntity({
+        //         userId: user.id,
+        //         notificationId: notification.id,
+        //       }),
+        //   );
+        //   await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
+        // }
 
         response = new AssignmentStoreRO({
           id: assignment.id,
