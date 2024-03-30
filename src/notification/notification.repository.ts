@@ -107,7 +107,9 @@ export class NotificationRepository {
       .leftJoin('studentExercise', (join) =>
         join.onRef('studentExercise.id', '=', 'studentExerciseNotification.studentExerciseId').on('studentExercise.deletedAt', 'is', null),
       )
-      .leftJoin('exercise', (join) => join.onRef('exercise.id', '=', 'studentExercise.exerciseId').on('exercise.deletedAt', 'is', null))
+      .leftJoin('exercise as exerciseSubmit', (join) =>
+        join.onRef('exerciseSubmit.id', '=', 'studentExercise.exerciseId').on('exerciseSubmit.deletedAt', 'is', null),
+      )
       .leftJoin('assignmentSubmitNotification', (join) =>
         join
           .onRef('assignmentSubmitNotification.notificationId', '=', 'notification.id')
@@ -129,6 +131,12 @@ export class NotificationRepository {
       .leftJoin('assignment', (join) =>
         join.onRef('assignment.id', '=', 'assignmentNotification.assignmentId').on('assignment.deletedAt', 'is', null),
       )
+      .leftJoin('exerciseNotification', (join) =>
+        join.onRef('exerciseNotification.notificationId', '=', 'notification.id').on('exerciseNotification.deletedAt', 'is', null),
+      )
+      .leftJoin('exercise', (join) =>
+        join.onRef('exercise.id', '=', 'exerciseNotification.exerciseId').on('exercise.deletedAt', 'is', null),
+      )
       .innerJoin('userNotification', 'userNotification.notificationId', 'notification.id')
       .where('userNotification.userId', '=', userId)
       .where('userNotification.deletedAt', 'is', null)
@@ -146,13 +154,15 @@ export class NotificationRepository {
         'commentOwner.displayName as commentOwnerDisplayName',
         'image.url as commentOwnerImageUrl',
         'studentExerciseNotification.id as studentExerciseNotificationId',
-        'exercise.id as exerciseId',
+        'exerciseSubmit.id as exerciseSubmitId',
         'assignmentSubmitNotification.id as assignmentSubmitNotificationId',
         'assignment.id as assignmentId',
         'assignment.name as assignmentName',
         'lessonNotification.lessonId',
         'section.id as sectionId',
         'assignmentNotification.id as assignmentNotificationId',
+        'exercise.id as exerciseId',
+        'exercise.name as exerciseName',
       ])
       .orderBy('notification.createdAt', 'desc');
 

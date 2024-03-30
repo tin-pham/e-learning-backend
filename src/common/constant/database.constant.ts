@@ -754,4 +754,18 @@ export const DATABASE_TABLE = {
       DELETED_BY: 'deleted_by',
     },
   },
+  EXERCISE_NOTIFICATION: {
+    NAME: 'exercise_notification',
+    SCHEMA: {
+      ID: 'id',
+      EXERCISE_ID: 'exercise_id',
+      NOTIFICATION_ID: 'notification_id',
+      CREATED_AT: 'created_at',
+      CREATED_BY: 'created_by',
+      UPDATED_AT: 'updated_at',
+      UPDATED_BY: 'updated_by',
+      DELETED_AT: 'deleted_at',
+      DELETED_BY: 'deleted_by',
+    },
+  },
 };

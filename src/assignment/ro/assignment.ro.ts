@@ -104,6 +104,22 @@ export class AssignmentGetDetailRO {
   @Expose()
   submissionGrade?: number;
 
+  @ApiProperty()
+  @Expose()
+  lessonId?: number;
+
+  @ApiProperty()
+  @Expose()
+  lessonTitle?: string;
+
+  @ApiProperty()
+  @Expose()
+  sectionId?: number;
+
+  @ApiProperty()
+  @Expose()
+  courseId?: number;
+
   constructor(data?: AssignmentGetDetailRO) {
     Object.assign(this, data);
   }

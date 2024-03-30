@@ -105,6 +105,9 @@ export class AssignmentRepository {
           .onRef('assignmentSubmitGrade.assignmentSubmitId', '=', 'assignmentSubmit.id')
           .on('assignmentSubmitGrade.deletedAt', 'is', null),
       )
+      .leftJoin('lesson', (join) => join.onRef('lesson.id', '=', 'assignment.lessonId').on('lesson.deletedAt', 'is', null))
+      .leftJoin('section', (join) => join.onRef('section.id', '=', 'lesson.sectionId').on('section.deletedAt', 'is', null))
+      .leftJoin('course', (join) => join.onRef('course.id', '=', 'section.courseId').on('course.deletedAt', 'is', null))
       .select([
         'assignment.id',
         'assignment.name',
@@ -115,6 +118,10 @@ export class AssignmentRepository {
         'assignmentSubmit.id as submissionId',
         'assignmentSubmit.createdAt as submissionDate',
         'assignmentSubmitGrade.grade as submissionGrade',
+        'lesson.id as lessonId',
+        'lesson.title as lessonTitle',
+        'section.id as sectionId',
+        'course.id as courseId',
       ])
       .executeTakeFirst();
   }
