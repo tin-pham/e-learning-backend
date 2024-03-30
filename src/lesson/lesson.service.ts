@@ -10,14 +10,20 @@ import { getVideoId } from '../common/function/get-youtube-video-id';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { LessonEntity } from './lesson.entity';
 import { VideoEntity } from '../video/video.entity';
+import { NotificationEntity } from '../notification/notification.entity';
+import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { LessonRepository } from './lesson.repository';
 import { SectionRepository } from '../section/section.repository';
 import { StudentRepository } from '../student/student.repository';
+import { NotificationRepository } from '../notification/notification.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { VideoRepository } from '../video/video.repository';
+import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
+import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
+import { LessonNotificationRepository } from '../lesson-notification/lesson-notification.repository';
 
 @Injectable()
 export class LessonService extends BaseService {
@@ -33,13 +39,17 @@ export class LessonService extends BaseService {
     private readonly studentRepository: StudentRepository,
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly videoRepository: VideoRepository,
+    private readonly notificationRepository: NotificationRepository,
+    private readonly courseNotificationRepository: CourseNotificationRepository,
+    private readonly userNotificationRepository: UserNotificationRepository,
+    private readonly lessonNotificationRepository: LessonNotificationRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: LessonStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateStore(dto, actorId);
+    const { section } = await this.validateStore(dto, actorId);
     const response = new LessonStoreRO();
 
     try {
@@ -73,6 +83,43 @@ export class LessonService extends BaseService {
         // Store lesson
         lessonData.videoId = video?.id;
         const lesson = await this.lessonRepository.insertWithTransaction(transaction, lessonData);
+
+        // Store notification
+        const notificationData = new NotificationEntity({
+          title: 'BÀI HỌC MỚI',
+          content: `Khóa học ${section.courseName} vừa tạo bài học mới: ${lesson.title}`,
+        });
+        const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+
+        // Notify for who inside the course
+        await this.courseNotificationRepository.insertWithTransaction(transaction, {
+          courseId: section.courseId,
+          notificationId: notification.id,
+        });
+
+        // Keep lesson id for direction
+        await this.lessonNotificationRepository.insertWithTransaction(transaction, {
+          lessonId: lesson.id,
+          notificationId: notification.id,
+        });
+
+        // Keep is read for each user
+        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(section.courseId);
+
+        let users: { id: number }[] = [];
+        if (courseStudents.length) {
+          const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
+          users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
+
+          const userNotificationData = users.map(
+            (user) =>
+              new UserNotificationEntity({
+                userId: user.id,
+                notificationId: notification.id,
+              }),
+          );
+          await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
+        }
 
         response.id = lesson.id;
         response.title = lesson.title;
@@ -229,11 +276,13 @@ export class LessonService extends BaseService {
 
   private async validateStore(dto: LessonStoreDTO, actorId: number) {
     // Check section exist
-    const sectionCount = await this.sectionRepository.countById(dto.sectionId);
-    if (!sectionCount) {
+    const section = await this.sectionRepository.getCourseNameById(dto.sectionId);
+    if (!section) {
       const { status, message, code } = EXCEPTION.SECTION.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
+
+    return { section };
   }
 
   private async validateUpdate(id: number, actorId: number) {

@@ -138,4 +138,15 @@ export class SectionRepository {
       .executeTakeFirst();
     return Number(count);
   }
+
+  getCourseNameById(id: number) {
+    return this.database
+      .selectFrom('section')
+      .where('section.id', '=', id)
+      .where('section.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'section.courseId')
+      .where('course.deletedAt', 'is', null)
+      .select(['course.id as courseId', 'course.name as courseName'])
+      .executeTakeFirst();
+  }
 }

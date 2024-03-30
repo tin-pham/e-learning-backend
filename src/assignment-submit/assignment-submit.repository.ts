@@ -110,6 +110,17 @@ export class AssignmentSubmitRepository {
     return Number(count);
   }
 
+  getAssignmentNameById(id: number) {
+    return this.database
+      .selectFrom('assignmentSubmit')
+      .where('assignmentSubmit.id', '=', id)
+      .where('assignmentSubmit.deletedAt', 'is', null)
+      .innerJoin('assignment', 'assignment.id', 'assignmentSubmit.assignmentId')
+      .where('assignment.deletedAt', 'is', null)
+      .select(['assignment.name as assignmentName', 'assignmentSubmit.id', 'assignmentSubmit.createdBy'])
+      .executeTakeFirst();
+  }
+
   insertWithTransaction(transaction: Transaction, entity: AssignmentSubmitEntity) {
     return transaction
       .insertInto('assignmentSubmit')
@@ -131,7 +142,11 @@ export class AssignmentSubmitRepository {
       .where('users.deletedAt', 'is', null)
       .leftJoin('userImage', (join) => join.onRef('users.id', '=', 'userImage.userId').on('userImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
-      .leftJoin('assignmentSubmitGrade', join => join.onRef('assignmentSubmit.id', '=', 'assignmentSubmitGrade.assignmentSubmitId').on('assignmentSubmitGrade.deletedAt', 'is', null))
+      .leftJoin('assignmentSubmitGrade', (join) =>
+        join
+          .onRef('assignmentSubmit.id', '=', 'assignmentSubmitGrade.assignmentSubmitId')
+          .on('assignmentSubmitGrade.deletedAt', 'is', null),
+      )
       .select([
         'assignmentSubmit.id',
         'attachment.url as attachmentUrl',

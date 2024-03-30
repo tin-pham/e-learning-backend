@@ -88,12 +88,6 @@ export class NotificationRepository {
         join.onRef('courseNotification.notificationId', '=', 'notification.id').on('courseNotification.deletedAt', 'is', null),
       )
       .leftJoin('course', (join) => join.onRef('course.id', '=', 'courseNotification.courseId').on('course.deletedAt', 'is', null))
-      .leftJoin('courseAssignment', (join) =>
-        join.onRef('courseAssignment.courseId', '=', 'course.id').on('courseAssignment.deletedAt', 'is', null),
-      )
-      .leftJoin('assignment', (join) =>
-        join.onRef('assignment.id', '=', 'courseAssignment.assignmentId').on('assignment.deletedAt', 'is', null),
-      )
       .leftJoin('commentNotification', (join) =>
         join.onRef('commentNotification.notificationId', '=', 'notification.id').on('commentNotification.deletedAt', 'is', null),
       )
@@ -114,6 +108,27 @@ export class NotificationRepository {
         join.onRef('studentExercise.id', '=', 'studentExerciseNotification.studentExerciseId').on('studentExercise.deletedAt', 'is', null),
       )
       .leftJoin('exercise', (join) => join.onRef('exercise.id', '=', 'studentExercise.exerciseId').on('exercise.deletedAt', 'is', null))
+      .leftJoin('assignmentSubmitNotification', (join) =>
+        join
+          .onRef('assignmentSubmitNotification.notificationId', '=', 'notification.id')
+          .on('assignmentSubmitNotification.deletedAt', 'is', null),
+      )
+      .leftJoin('assignmentSubmit', (join) =>
+        join
+          .onRef('assignmentSubmit.id', '=', 'assignmentSubmitNotification.assignmentSubmitId')
+          .on('assignmentSubmit.deletedAt', 'is', null),
+      )
+      .leftJoin('lessonNotification', (join) =>
+        join.onRef('lessonNotification.notificationId', '=', 'notification.id').on('lessonNotification.deletedAt', 'is', null),
+      )
+      .leftJoin('lesson', (join) => join.onRef('lesson.id', '=', 'lessonNotification.lessonId').on('lesson.deletedAt', 'is', null))
+      .leftJoin('section', (join) => join.onRef('section.id', '=', 'lesson.sectionId').on('section.deletedAt', 'is', null))
+      .leftJoin('assignmentNotification', (join) =>
+        join.onRef('assignmentNotification.notificationId', '=', 'notification.id').on('assignmentNotification.deletedAt', 'is', null),
+      )
+      .leftJoin('assignment', (join) =>
+        join.onRef('assignment.id', '=', 'assignmentNotification.assignmentId').on('assignment.deletedAt', 'is', null),
+      )
       .innerJoin('userNotification', 'userNotification.notificationId', 'notification.id')
       .where('userNotification.userId', '=', userId)
       .where('userNotification.deletedAt', 'is', null)
@@ -125,7 +140,6 @@ export class NotificationRepository {
         'notification.createdAt',
         'course.id as courseId',
         'course.name as courseName',
-        'assignment.id as assignmentId',
         'lessonComment.id as commentId',
         'lessonComment.parentId as commentParentId',
         'commentOwner.id as commentOwnerId',
@@ -133,6 +147,12 @@ export class NotificationRepository {
         'image.url as commentOwnerImageUrl',
         'studentExerciseNotification.id as studentExerciseNotificationId',
         'exercise.id as exerciseId',
+        'assignmentSubmitNotification.id as assignmentSubmitNotificationId',
+        'assignment.id as assignmentId',
+        'assignment.name as assignmentName',
+        'lessonNotification.lessonId',
+        'section.id as sectionId',
+        'assignmentNotification.id as assignmentNotificationId',
       ])
       .orderBy('notification.createdAt', 'desc');
 

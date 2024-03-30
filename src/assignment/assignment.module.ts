@@ -12,6 +12,7 @@ import { NotificationRepository } from '../notification/notification.repository'
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
+import { AssignmentNotificationRepository } from '../assignment-notification/assignment-notification.repository';
 
 @Module({
   controllers: [AssignmentController],
@@ -28,6 +29,7 @@ import { CourseNotificationRepository } from '../course-notification/course-noti
     CourseStudentRepository,
     UserNotificationRepository,
     CourseNotificationRepository,
+    AssignmentNotificationRepository,
   ],
 })
 export class AssignmentModule {}

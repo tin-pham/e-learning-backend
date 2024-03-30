@@ -49,6 +49,10 @@ import { StudentExerciseGradeEntity } from '../student-exercise-grade/student-ex
 import { CourseOutcomeEntity } from '../course-outcome/course-outcome.entity';
 import { VideoEntity } from '../video/video.entity';
 import { StudentExerciseNotificationEntity } from '../student-exercise-notification/student-exercise-notification.entity';
+import { AssignmentSubmitNotificationEntity } from '../assignment-submit-notification/assignment-submit-notification.entity';
+import { AssignmentNotificationEntity } from '../assignment-notification/assignment-notification.entity';
+import { LessonNotificationEntity } from '../lesson-notification/lesson-notification.entity';
+import { ExerciseNotificationEntity } from '../exercise-notification/exercise-notification.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -101,6 +105,10 @@ export interface KyselyTables {
   courseOutcome: CourseOutcomeEntity;
   video: VideoEntity;
   studentExerciseNotification: StudentExerciseNotificationEntity;
+  assignmentSubmitNotification: AssignmentSubmitNotificationEntity;
+  assignmentNotification: AssignmentNotificationEntity;
+  lessonNotification: LessonNotificationEntity;
+  exerciseNotification: ExerciseNotificationEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

@@ -17,7 +17,7 @@ export class LessonRepository {
       .where('section.deletedAt', 'is', null)
       .innerJoin('course', 'course.id', 'section.courseId')
       .where('course.deletedAt', 'is', null)
-      .select(['course.id as courseId'])
+      .select(['course.id as courseId', 'lesson.id'])
       .executeTakeFirst();
   }
 

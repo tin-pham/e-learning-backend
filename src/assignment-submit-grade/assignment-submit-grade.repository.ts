@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { AssignmentSubmitGradeEntity } from './assignment-submit-grade.entity';
 
 @Injectable()
@@ -35,8 +35,8 @@ export class AssignmentSubmitGradeRepository {
     return Number(count);
   }
 
-  insert(entity: AssignmentSubmitGradeEntity) {
-    return this.database
+  insertWithTransaction(transaction: Transaction, entity: AssignmentSubmitGradeEntity) {
+    return transaction
       .insertInto('assignmentSubmitGrade')
       .values(entity)
       .returning(['id', 'grade', 'message', 'assignmentSubmitId'])

@@ -2,19 +2,27 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
+import { NotificationEntity } from '../notification/notification.entity';
 import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity';
+import { ExerciseEntity } from './exercise.entity';
+import { UserNotificationEntity } from 'src/user-notification/user-notification.entity';
 import { ExerciseRepository } from './exercise.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { LessonExerciseRepository } from '../lesson-exercise/lesson-exercise.repository';
 import { ExerciseQuestionRepository } from '../exercise-question/exercise-question.repository';
+import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapshot/exercise-question-snapshot.repository';
 import { QuestionOptionRepository } from '../question-option/question-option.repository';
+import { NotificationRepository } from '../notification/notification.repository';
+import { CourseStudentRepository } from '../course-student/course-student.repository';
+import { UserNotificationRepository } from '../user-notification/user-notification.repository';
+import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
+import { ExerciseNotificationRepository } from '../exercise-notification/exercise-notification.repository';
+import { StudentRepository } from '../student/student.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
-import { ExerciseEntity } from './exercise.entity';
-import { ExerciseQuestionSnapshotRepository } from 'src/exercise-question-snapshot/exercise-question-snapshot.repository';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class ExerciseService extends BaseService {
@@ -30,13 +38,19 @@ export class ExerciseService extends BaseService {
     private readonly exerciseQuestionSnapshotRepository: ExerciseQuestionSnapshotRepository,
     private readonly questionOptionRepository: QuestionOptionRepository,
     private readonly exerciseQuestionOptionSnapshotRepository: ExerciseQuestionOptionSnapshotRepository,
+    private readonly notificationRepository: NotificationRepository,
+    private readonly userNotificationRepository: UserNotificationRepository,
+    private readonly courseNotificationRepository: CourseNotificationRepository,
+    private readonly exerciseNotificationRepository: ExerciseNotificationRepository,
+    private readonly courseStudentRepository: CourseStudentRepository,
+    private readonly studentRepository: StudentRepository,
   ) {
     super(elasticLogger);
   }
 
   async store(dto: ExerciseStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateStore(dto, actorId);
+    const { lesson } = await this.validateStore(dto, actorId);
 
     let response: ExerciseStoreRO;
 
@@ -61,6 +75,43 @@ export class ExerciseService extends BaseService {
             createdBy: actorId,
           });
           lessonExercise = await this.lessonExerciseRepository.insertWithTransaction(transaction, lessonExerciseData);
+        }
+
+        // Store notification
+        const notificationData = new NotificationEntity({
+          title: 'BÀI TẬP MỚI',
+          content: `${dto.name}`,
+        });
+        const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+
+        // Notify for who inside the course
+        await this.courseNotificationRepository.insertWithTransaction(transaction, {
+          courseId: lesson.courseId,
+          notificationId: notification.id,
+        });
+
+        // Keep exercise id for direction
+        await this.exerciseNotificationRepository.insertWithTransaction(transaction, {
+          exerciseId: exercise.id,
+          notificationId: notification.id,
+        });
+
+        // Keep is read for each user
+        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(lesson.courseId);
+
+        let users: { id: number }[] = [];
+        if (courseStudents.length) {
+          const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
+          users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
+
+          const userNotificationData = users.map(
+            (user) =>
+              new UserNotificationEntity({
+                userId: user.id,
+                notificationId: notification.id,
+              }),
+          );
+          await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
         }
 
         response = new ExerciseStoreRO({
@@ -256,13 +307,16 @@ export class ExerciseService extends BaseService {
 
   private async validateStore(dto: ExerciseStoreDTO, actorId: number) {
     // Check lesson exist
+    let lesson: any;
     if (dto.lessonId) {
-      const lessonCount = await this.lessonRepository.countById(dto.lessonId);
-      if (!lessonCount) {
+      lesson = await this.lessonRepository.getCourseIdById(dto.lessonId);
+      if (!lesson) {
         const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
     }
+
+    return { lesson };
   }
 
   private async validateUpdate(id: number, actorId: number) {
