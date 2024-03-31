@@ -110,14 +110,20 @@ export class AssignmentSubmitRepository {
     return Number(count);
   }
 
-  getAssignmentNameById(id: number) {
+  getAssignmentById(id: number) {
     return this.database
       .selectFrom('assignmentSubmit')
       .where('assignmentSubmit.id', '=', id)
       .where('assignmentSubmit.deletedAt', 'is', null)
       .innerJoin('assignment', 'assignment.id', 'assignmentSubmit.assignmentId')
       .where('assignment.deletedAt', 'is', null)
-      .select(['assignment.name as assignmentName', 'assignmentSubmit.id', 'assignmentSubmit.createdBy'])
+      .select([
+        'assignment.name as assignmentName',
+        'assignmentSubmit.id',
+        'assignmentSubmit.createdBy',
+        'assignment.id as assignmentId',
+        'assignment.lessonId as assignmentLessonId',
+      ])
       .executeTakeFirst();
   }
 

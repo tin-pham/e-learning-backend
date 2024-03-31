@@ -5,7 +5,7 @@ import { DatabaseService } from '../database';
 import { NotificationEntity } from '../notification/notification.entity';
 import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity';
 import { ExerciseEntity } from './exercise.entity';
-import { UserNotificationEntity } from 'src/user-notification/user-notification.entity';
+import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { ExerciseRepository } from './exercise.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { LessonExerciseRepository } from '../lesson-exercise/lesson-exercise.repository';
@@ -50,7 +50,7 @@ export class ExerciseService extends BaseService {
 
   async store(dto: ExerciseStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const { lesson } = await this.validateStore(dto, actorId);
+    await this.validateStore(dto, actorId);
 
     let response: ExerciseStoreRO;
 
@@ -75,43 +75,6 @@ export class ExerciseService extends BaseService {
             createdBy: actorId,
           });
           lessonExercise = await this.lessonExerciseRepository.insertWithTransaction(transaction, lessonExerciseData);
-        }
-
-        // Store notification
-        const notificationData = new NotificationEntity({
-          title: 'BÀI TẬP MỚI',
-          content: `${dto.name}`,
-        });
-        const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
-
-        // Notify for who inside the course
-        await this.courseNotificationRepository.insertWithTransaction(transaction, {
-          courseId: lesson.courseId,
-          notificationId: notification.id,
-        });
-
-        // Keep exercise id for direction
-        await this.exerciseNotificationRepository.insertWithTransaction(transaction, {
-          exerciseId: exercise.id,
-          notificationId: notification.id,
-        });
-
-        // Keep is read for each user
-        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(lesson.courseId);
-
-        let users: { id: number }[] = [];
-        if (courseStudents.length) {
-          const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
-          users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
-
-          const userNotificationData = users.map(
-            (user) =>
-              new UserNotificationEntity({
-                userId: user.id,
-                notificationId: notification.id,
-              }),
-          );
-          await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
         }
 
         response = new ExerciseStoreRO({
@@ -228,7 +191,7 @@ export class ExerciseService extends BaseService {
 
   async activate(id: number, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateActivate(id, actorId);
+    const { lesson } = await this.validateActivate(id, actorId);
 
     try {
       const exerciseData = new ExerciseEntity();
@@ -261,6 +224,43 @@ export class ExerciseService extends BaseService {
               exercise.id,
             );
           }
+        }
+
+        // Store notification
+        const notificationData = new NotificationEntity({
+          title: 'BÀI TẬP MỚI',
+          content: `${lesson.courseName} đã tạo bài tập mới: ${exercise.name}`,
+        });
+        const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
+
+        // Notify for who inside the course
+        await this.courseNotificationRepository.insertWithTransaction(transaction, {
+          courseId: lesson.courseId,
+          notificationId: notification.id,
+        });
+
+        // Keep exercise id for direction
+        await this.exerciseNotificationRepository.insertWithTransaction(transaction, {
+          exerciseId: exercise.id,
+          notificationId: notification.id,
+        });
+
+        // Keep is read for each user
+        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(lesson.courseId);
+
+        let users: { id: number }[] = [];
+        if (courseStudents.length) {
+          const studentIds = courseStudents.map((courseStudent) => courseStudent.studentId);
+          users = await this.studentRepository.getUserIdsByStudentIds(studentIds);
+
+          const userNotificationData = users.map(
+            (user) =>
+              new UserNotificationEntity({
+                userId: user.id,
+                notificationId: notification.id,
+              }),
+          );
+          await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
         }
       });
     } catch (error) {
@@ -307,16 +307,13 @@ export class ExerciseService extends BaseService {
 
   private async validateStore(dto: ExerciseStoreDTO, actorId: number) {
     // Check lesson exist
-    let lesson: any;
     if (dto.lessonId) {
-      lesson = await this.lessonRepository.getCourseIdById(dto.lessonId);
-      if (!lesson) {
+      const lessonCount = await this.lessonRepository.countById(dto.lessonId);
+      if (!lessonCount) {
         const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
     }
-
-    return { lesson };
   }
 
   private async validateUpdate(id: number, actorId: number) {
@@ -345,26 +342,31 @@ export class ExerciseService extends BaseService {
 
   private async validateActivate(id: number, actorId: number) {
     // Check exist
-    console.log('one');
-    const exercise = await this.exerciseRepository.findOneById(id);
+    const exercise = await this.exerciseRepository.getLessonIdAndIsActiveById(id);
     if (!exercise) {
       const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
     // Check isActive is false
-    console.log('two');
     if (exercise.isActive) {
       const { code, status, message } = EXCEPTION.EXERCISE.ALREADY_ACTIVATED;
       this.throwException({ code, status, message, actorId });
     }
 
     // Activate at least 1 question
-    console.log('three');
     const questionCount = await this.exerciseQuestionRepository.countByExerciseId(id);
     if (questionCount < 1) {
       const { code, status, message } = EXCEPTION.EXERCISE.CANNOT_ACTIVATE_WITHOUT_QUESTION;
       this.throwException({ code, status, message, actorId });
     }
+
+    // Get lesson
+    const lesson = await this.lessonRepository.getCourseNameById(exercise.lessonId);
+    if (!lesson) {
+      const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+    return { lesson };
   }
 }

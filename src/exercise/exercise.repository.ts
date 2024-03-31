@@ -8,6 +8,15 @@ import { paginate } from '../common/function/paginate';
 export class ExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getLessonIdAndIsActiveById(id: number) {
+    return this.database
+      .selectFrom('exercise')
+      .innerJoin('lessonExercise', 'lessonExercise.exerciseId', 'exercise.id')
+      .where('exercise.id', '=', id)
+      .select(['lessonExercise.lessonId', 'exercise.id', 'exercise.isActive'])
+      .executeTakeFirst();
+  }
+
   insertWithTransaction(transaction: Transaction, entity: ExerciseEntity) {
     return transaction
       .insertInto('exercise')

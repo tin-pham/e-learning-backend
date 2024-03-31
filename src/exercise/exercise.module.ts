@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ExerciseController } from './exercise.controller';
 import { ExerciseRepository } from './exercise.repository';
-import { SectionRepository } from '../section/section.repository';
 import { LessonExerciseRepository } from '../lesson-exercise/lesson-exercise.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { ExerciseQuestionRepository } from '../exercise-question/exercise-question.repository';
@@ -21,7 +20,6 @@ import { StudentRepository } from '../student/student.repository';
   providers: [
     ExerciseService,
     ExerciseRepository,
-    SectionRepository,
     LessonExerciseRepository,
     LessonRepository,
     ExerciseQuestionRepository,

@@ -9,6 +9,15 @@ import { CourseGetDetailDTO, CourseGetListDTO, CourseTeacherGetListDTO } from '.
 export class CourseRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getNameById(id: number) {
+    return this.database
+      .selectFrom('course')
+      .select(['name', 'id'])
+      .where('course.deletedAt', 'is', null)
+      .where('course.id', '=', id)
+      .executeTakeFirst();
+  }
+
   insertWithTransaction(transaction: Transaction, entity: CourseEntity) {
     return transaction.insertInto('course').values(entity).returning(['id', 'name', 'description', 'levelId', 'hours']).executeTakeFirst();
   }

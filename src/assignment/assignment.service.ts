@@ -55,7 +55,7 @@ export class AssignmentService extends BaseService {
 
   async store(dto: AssignmentStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const { courseFromLesson } = await this.validateStore(dto, actorId);
+    const { lesson } = await this.validateStore(dto, actorId);
 
     let response: AssignmentStoreRO;
     try {
@@ -91,13 +91,13 @@ export class AssignmentService extends BaseService {
         // Store notification
         const notificationData = new NotificationEntity({
           title: 'Assignment cho bạn',
-          content: `${assignment.name}`,
+          content: `${lesson.courseName} đã tạo assignment mới: ${assignment.name}`,
         });
         const notification = await this.notificationRepository.insertWithTransaction(transaction, notificationData);
 
         // Notify to who inside the course
         await this.courseNotificationRepository.insertWithTransaction(transaction, {
-          courseId: courseFromLesson.courseId,
+          courseId: lesson.courseId,
           notificationId: notification.id,
         });
 
@@ -108,7 +108,7 @@ export class AssignmentService extends BaseService {
         });
 
         // Keep is read for each user
-        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(courseFromLesson?.courseId || dto.courseId);
+        const courseStudents = await this.courseStudentRepository.getStudentIdsByCourseId(lesson.courseId || dto.courseId);
 
         let users: { id: number }[] = [];
         if (courseStudents.length) {
@@ -279,11 +279,11 @@ export class AssignmentService extends BaseService {
   }
 
   private async validateStore(dto: AssignmentStoreDTO, actorId: number) {
-    let courseFromLesson: any;
     // Check lesson exist
+    let lesson: any;
     if (dto.lessonId) {
-      courseFromLesson = await this.lessonRepository.getCourseIdById(dto.lessonId);
-      if (!courseFromLesson) {
+      lesson = await this.lessonRepository.getCourseNameById(dto.lessonId);
+      if (!lesson) {
         const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
@@ -298,7 +298,7 @@ export class AssignmentService extends BaseService {
       }
     }
 
-    return { courseFromLesson };
+    return { lesson };
   }
 
   private async validateUpdate(id: number, actorId: number) {

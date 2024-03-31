@@ -8,6 +8,28 @@ import { LessonGetListDTO } from './dto/lesson.dto';
 export class LessonRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getTitleById(id: number) {
+    return this.database
+      .selectFrom('lesson')
+      .where('lesson.id', '=', id)
+      .where('lesson.deletedAt', 'is', null)
+      .select(['lesson.title', 'lesson.id', 'lesson.sectionId'])
+      .executeTakeFirst();
+  }
+
+  getCourseNameById(id: number) {
+    return this.database
+      .selectFrom('lesson')
+      .where('lesson.id', '=', id)
+      .where('lesson.deletedAt', 'is', null)
+      .innerJoin('section', 'section.id', 'lesson.sectionId')
+      .where('section.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'section.courseId')
+      .where('course.deletedAt', 'is', null)
+      .select(['course.name as courseName', 'lesson.id', 'course.id as courseId'])
+      .executeTakeFirst();
+  }
+
   getCourseIdById(id: number) {
     return this.database
       .selectFrom('lesson')
@@ -69,6 +91,7 @@ export class LessonRepository {
         'lesson.body',
         'lesson.sectionId',
         'lesson.createdBy',
+        'lesson.sectionId',
         'video.url as videoUrl',
         'lesson.createdBy',
         'course.id as courseId',

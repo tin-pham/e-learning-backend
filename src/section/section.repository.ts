@@ -10,6 +10,15 @@ import { sql } from 'kysely';
 export class SectionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getNameById(id: number) {
+    return this.database
+      .selectFrom('section')
+      .where('section.id', '=', id)
+      .where('section.deletedAt', 'is', null)
+      .select(['section.id', 'section.name', 'section.courseId'])
+      .executeTakeFirst();
+  }
+
   insert(entity: SectionEntity) {
     return this.database.insertInto('section').values(entity).returning(['id', 'name', 'courseId']).executeTakeFirst();
   }

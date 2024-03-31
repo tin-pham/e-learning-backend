@@ -13,7 +13,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.NAME, 'varchar(255)', (column) => column.notNull())
     .addColumn(SCHEMA.DESCRIPTION, 'json')
-    .addColumn(SCHEMA.DUE_DATE, 'date', (column) => column.notNull())
+    .addColumn(SCHEMA.DUE_DATE, 'timestamptz', (column) => column.notNull())
     .addColumn(SCHEMA.COURSE_ID, 'integer', (column) => column.references(`${COURSE_NAME}.${COURSE_SCHEMA.ID}`))
     .addColumn(SCHEMA.LESSON_ID, 'integer', (column) => column.references(`${LESSON_NAME}.${LESSON_SCHEMA.ID}`))
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))

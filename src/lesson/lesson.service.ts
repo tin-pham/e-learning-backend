@@ -21,9 +21,9 @@ import { CourseStudentRepository } from '../course-student/course-student.reposi
 import { VideoRepository } from '../video/video.repository';
 import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
+import { LessonNotificationRepository } from '../lesson-notification/lesson-notification.repository';
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
-import { LessonNotificationRepository } from '../lesson-notification/lesson-notification.repository';
 
 @Injectable()
 export class LessonService extends BaseService {

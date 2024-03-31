@@ -115,7 +115,7 @@ export class AssignmentSubmitGradeService extends BaseService {
 
   private async validateStore(dto: AssignmentSubmitGradeStoreDTO, actorId: number) {
     // Check assignment submit exist
-    const assignmentSubmit = await this.assignmentSubmitRepository.getAssignmentNameById(dto.assignmentSubmitId);
+    const assignmentSubmit = await this.assignmentSubmitRepository.getAssignmentById(dto.assignmentSubmitId);
     if (!assignmentSubmit) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT_SUBMIT.DOES_NOT_EXIST;
       this.logger.error({ actorId, code, status, message });
@@ -129,8 +129,6 @@ export class AssignmentSubmitGradeService extends BaseService {
       this.logger.error({ actorId, code, status, message });
       this.throwException({ code, status, message, actorId });
     }
-
-    // Get assignmentName
 
     return { assignmentSubmit };
   }
