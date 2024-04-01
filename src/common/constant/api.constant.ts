@@ -723,4 +723,36 @@ export const API = {
       OPERATION: 'Delete course outcome',
     },
   },
+  POST: {
+    TAGS: 'Post',
+    CONTROLLER: 'post',
+    STORE: {
+      ROUTE: '',
+      OPERATION: 'Store post',
+    },
+    UPDATE: {
+      ROUTE: ':id',
+      OPERATION: 'Update post',
+    },
+    DELETE: {
+      ROUTE: ':id',
+      OPERATION: 'Delete post',
+    },
+    GET_LIST: {
+      ROUTE: '',
+      OPERATION: 'Get list posts',
+    },
+  },
+  POST_ATTACHMENT: {
+    TAGS: 'PostAttachment',
+    CONTROLLER: 'post-attachment',
+    BULK_STORE: {
+      ROUTE: '',
+      OPERATION: 'Bulk store post attachment',
+    },
+    BULK_DELETE: {
+      ROUTE: '',
+      OPERATION: 'Bulk delete post attachment',
+    },
+  },
 };

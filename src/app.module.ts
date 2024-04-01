@@ -42,6 +42,8 @@ import { StudentExerciseModule } from './student-exercise/student-exercise.modul
 import { StudentExerciseGradeModule } from './student-exercise-grade/student-exercise-grade.module';
 import { ExerciseQuestionSnapshotModule } from './exercise-question-snapshot/exercise-question-snapshot.module';
 import { CourseOutcomeModule } from './course-outcome/course-outcome.module';
+import { PostModule } from './post/post.module';
+import { PostAttachmentModule } from './post-attachment/post-attachment.module';
 
 @Module({
   imports: [
@@ -89,6 +91,8 @@ import { CourseOutcomeModule } from './course-outcome/course-outcome.module';
     StudentExerciseGradeModule,
     ExerciseQuestionSnapshotModule,
     CourseOutcomeModule,
+    PostModule,
+    PostAttachmentModule,
   ],
   providers: [...appProviders],
 })

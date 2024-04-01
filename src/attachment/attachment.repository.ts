@@ -8,6 +8,15 @@ import { AttachmentGetListDTO } from './dto/attachment.dto';
 export class AttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  deleteMultipleWithTransaction(transaction: Transaction, ids: number[], actorId: number) {
+    return transaction
+      .updateTable('attachment')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('id', 'in', ids)
+      .returning(['url'])
+      .execute();
+  }
+
   deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
     return transaction.updateTable('attachment').set({ deletedAt: new Date(), deletedBy: actorId }).where('id', '=', id).execute();
   }
@@ -115,7 +124,7 @@ export class AttachmentRepository {
   }
 
   insertMultiple(entities: AttachmentEntity[]) {
-    return this.database.insertInto('attachment').values(entities).execute();
+    return this.database.insertInto('attachment').values(entities).returning(['id']).execute();
   }
 
   deleteMultipleByIds(ids: number[], actorId: number) {

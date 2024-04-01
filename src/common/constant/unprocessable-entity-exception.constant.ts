@@ -149,4 +149,9 @@ export const UNPROCESSABLE_ENTITY_EXCEPTION = {
       IS_NOT_EMPTY: 'NOTIFICATION.CONTENT.IS_NOT_EMPTY',
     },
   },
+  POST: {
+    CONTENT: {
+      IS_NOT_EMPTY: 'POST.CONTENT.IS_NOT_EMPTY',
+    },
+  },
 };

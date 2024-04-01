@@ -53,6 +53,9 @@ import { AssignmentSubmitNotificationEntity } from '../assignment-submit-notific
 import { AssignmentNotificationEntity } from '../assignment-notification/assignment-notification.entity';
 import { LessonNotificationEntity } from '../lesson-notification/lesson-notification.entity';
 import { ExerciseNotificationEntity } from '../exercise-notification/exercise-notification.entity';
+import { PostEntity } from '../post/post.entity';
+import { PostNotificationEntity } from '../post-notification/post-notification.entity';
+import { PostAttachmentEntity } from '../post-attachment/post-attachment.entity';
 
 export interface KyselyTables {
   users: UserEntity;
@@ -109,6 +112,9 @@ export interface KyselyTables {
   assignmentNotification: AssignmentNotificationEntity;
   lessonNotification: LessonNotificationEntity;
   exerciseNotification: ExerciseNotificationEntity;
+  post: PostEntity;
+  postNotification: PostNotificationEntity;
+  postAttachment: PostAttachmentEntity;
 }
 
 export type Transaction = KyselyTransaction<KyselyTables>;

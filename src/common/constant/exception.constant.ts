@@ -1290,4 +1290,53 @@ export const EXCEPTION = {
       code: 'COURSE_OUTCOME.DELETE_FAILED',
     },
   },
+  POST: {
+    NOT_FOUND: {
+      status: HttpStatus.NOT_FOUND,
+      message: 'Post not found',
+      code: 'POST.NOT_FOUND',
+    },
+    GET_DETAIL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get detail post',
+      code: 'POST.GET_DETAIL_FAILED',
+    },
+    GET_LIST_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to get list post',
+      code: 'POST.GET_LIST_FAILED',
+    },
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete post',
+      code: 'POST.DELETE_FAILED',
+    },
+    UPDATE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update post',
+      code: 'POST.UPDATE_FAILED',
+    },
+    DOES_NOT_EXIST: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Post does not exist',
+      code: 'POST.DOES_NOT_EXIST',
+    },
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store post',
+      code: 'POST.STORE_FAILED',
+    },
+  },
+  POST_ATTACHMENT: {
+    BULK_STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk store post attachment',
+      code: 'POST_ATTACHMENT.BULK_STORE_FAILED',
+    },
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete post attachment',
+      code: 'POST_ATTACHMENT.BULK_DELETE_FAILED',
+    },
+  },
 };

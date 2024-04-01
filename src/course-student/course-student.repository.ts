@@ -6,6 +6,16 @@ import { CourseStudentEntity } from './course-student.entity';
 export class CourseStudentRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async countByCourseId(courseId: number) {
+    const { count } = await this.database
+      .selectFrom('courseStudent')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('courseId', '=', courseId)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   getStudentIdsByCourseId(courseId: number) {
     return this.database
       .selectFrom('courseStudent')
