@@ -3,9 +3,11 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { PostEntity } from './post.entity';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { NotificationEntity } from '../notification/notification.entity';
 import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
+import { S3Service } from '../s3/s3.service';
 import { PostRepository } from './post.repository';
 import { NotificationRepository } from '../notification/notification.repository';
 import { CourseRepository } from '../course/course.repository';
@@ -15,8 +17,10 @@ import { CourseStudentRepository } from '../course-student/course-student.reposi
 import { StudentRepository } from '../student/student.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { PostGetListDTO, PostStoreDTO, PostUpdateDTO } from './dto/post.dto';
-import { PostGetListRO, PostStoreRO } from './ro/post.ro';
+import { PostGetDetailRO, PostGetListRO, PostStoreRO } from './ro/post.ro';
 import { ResultRO } from '../common/ro/result.ro';
+import { PostAttachmentRepository } from '../post-attachment/post-attachment.repository';
+import { AttachmentRepository } from '../attachment/attachment.repository';
 
 @Injectable()
 export class PostService extends BaseService {
@@ -25,6 +29,8 @@ export class PostService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
+    private readonly s3Service: S3Service,
+    private readonly notificationGateway: NotificationGateway,
     private readonly postRepository: PostRepository,
     private readonly courseRepository: CourseRepository,
     private readonly notificationRepository: NotificationRepository,
@@ -33,6 +39,8 @@ export class PostService extends BaseService {
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly studentRepository: StudentRepository,
     private readonly userNotificationRepository: UserNotificationRepository,
+    private readonly postAttachmentRepository: PostAttachmentRepository,
+    private readonly attachmentRepository: AttachmentRepository,
   ) {
     super(elasticLogger);
   }
@@ -90,6 +98,8 @@ export class PostService extends BaseService {
           await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
         }
 
+        this.notificationGateway.sendNotification();
+
         response.id = post.id;
         response.courseId = post.courseId;
       });
@@ -139,7 +149,23 @@ export class PostService extends BaseService {
     await this.validateDelete(id, actorId);
 
     try {
-      await this.postRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        // Delete post
+        await this.postRepository.deleteWithTransaction(transaction, id, actorId);
+
+        // Delete post attachment
+        const postAttachments = await this.postAttachmentRepository.deleteMultipleByPostIdWithTransaction(transaction, id, actorId);
+
+        // Delete attachment
+        if (postAttachments && postAttachments.length) {
+          const attachmentIds = postAttachments.map((postAttachment) => postAttachment.attachmentId);
+          const attachments = await this.attachmentRepository.deleteMultipleWithTransaction(transaction, attachmentIds, actorId);
+
+          // Delete s3
+          const urls = attachments.map((attachment) => attachment.url);
+          await this.s3Service.bulkDelete({ urls }, decoded);
+        }
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.POST.DELETE_FAILED;
       this.logger.error(error);

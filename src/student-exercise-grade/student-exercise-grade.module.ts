@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { StudentExerciseRepository } from '../student-exercise/student-exercise.repository';
 import { StudentExerciseGradeRepository } from './student-exercise-grade.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
@@ -11,6 +12,7 @@ import { StudentRepository } from '../student/student.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { NotificationRepository } from '../notification/notification.repository';
 import { StudentExerciseNotificationRepository } from '../student-exercise-notification/student-exercise-notification.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
   controllers: [StudentExerciseGradeController],
@@ -26,6 +28,9 @@ import { StudentExerciseNotificationRepository } from '../student-exercise-notif
     UserNotificationRepository,
     NotificationRepository,
     StudentExerciseNotificationRepository,
+
+    NotificationGateway,
+    UserRepository,
   ],
 })
 export class StudentExerciseGradeModule {}

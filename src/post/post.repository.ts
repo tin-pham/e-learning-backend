@@ -25,6 +25,7 @@ export class PostRepository {
       .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
       .groupBy(['post.id', 'post.courseId', 'users.displayName', 'image.url'])
+      .orderBy(['post.updatedAt desc', 'post.createdAt desc'])
       .select(({ fn, ref }) => [
         'post.id',
         'post.content',
@@ -38,6 +39,7 @@ export class PostRepository {
             fn
               .jsonAgg(
                 jsonBuildObject({
+                  id: ref('attachment.id'),
                   url: ref('attachment.url'),
                   name: ref('attachment.name'),
                   type: ref('attachment.type'),
@@ -61,6 +63,12 @@ export class PostRepository {
       .leftJoin('attachment', (join) =>
         join.onRef('attachment.id', '=', 'postAttachment.attachmentId').on('attachment.deletedAt', 'is', null),
       )
+      .innerJoin('users', 'users.id', 'post.createdBy')
+      .where('users.deletedAt', 'is', null)
+      .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
+      .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
+      .groupBy(['post.id', 'post.courseId', 'users.displayName', 'image.url'])
+      .orderBy(['post.createdAt desc', 'post.updatedAt desc', ])
       .groupBy(['post.id', 'post.courseId'])
       .select(({ fn, ref }) => [
         'post.id',
@@ -68,11 +76,14 @@ export class PostRepository {
         'post.createdBy',
         'post.createdAt',
         'post.updatedAt',
+        'users.displayName as createdByDisplayName',
+        'image.url as createdByImageUrl',
         fn
           .coalesce(
             fn
               .jsonAgg(
                 jsonBuildObject({
+                  id: ref('attachment.id'),
                   url: ref('attachment.url'),
                   name: ref('attachment.name'),
                   type: ref('attachment.type'),
@@ -90,8 +101,8 @@ export class PostRepository {
     return this.database.updateTable('post').set(entity).where('post.id', '=', id).where('post.deletedAt', 'is', null).execute();
   }
 
-  delete(id: number, actorId: number) {
-    return this.database
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction
       .updateTable('post')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('post.id', '=', id)

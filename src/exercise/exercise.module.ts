@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { ExerciseController } from './exercise.controller';
 import { ExerciseRepository } from './exercise.repository';
 import { LessonExerciseRepository } from '../lesson-exercise/lesson-exercise.repository';
@@ -14,6 +15,7 @@ import { CourseNotificationRepository } from '../course-notification/course-noti
 import { ExerciseNotificationRepository } from '../exercise-notification/exercise-notification.repository';
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { StudentRepository } from '../student/student.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
   controllers: [ExerciseController],
@@ -32,6 +34,9 @@ import { StudentRepository } from '../student/student.repository';
     ExerciseNotificationRepository,
     CourseStudentRepository,
     StudentRepository,
+
+    NotificationGateway,
+    UserRepository,
   ],
 })
 export class ExerciseModule {}

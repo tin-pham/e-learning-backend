@@ -108,6 +108,14 @@ export class NotificationGetListDataRO {
   @ApiPropertyOptional()
   @Expose()
   exerciseName: string;
+
+  @ApiPropertyOptional()
+  @Expose()
+  postNotificationId: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  postId: number;
 }
 
 export class NotificationGetListRO extends PaginateRO<NotificationGetListDataRO> {

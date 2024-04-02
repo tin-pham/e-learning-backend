@@ -5,6 +5,7 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -18,10 +19,10 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { PostService } from './post.service';
 import { PostGetListDTO, PostStoreDTO, PostUpdateDTO } from './dto/post.dto';
-import { PostGetListRO, PostStoreRO } from './ro/post.ro';
+import { PostGetDetailRO, PostGetListRO, PostStoreRO } from './ro/post.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, STORE, UPDATE, DELETE, GET_LIST } = API.POST;
+const { TAGS, CONTROLLER, STORE, UPDATE, DELETE, GET_LIST, GET_DETAIL } = API.POST;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -83,5 +84,20 @@ export class PostController {
   @UseGuards(JwtGuard)
   getList(@Query() dto: PostGetListDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.postService.getList(dto, decoded);
+  }
+
+  @ApiOperation({ summary: GET_DETAIL.OPERATION })
+  @ApiOkResponse({ type: PostGetDetailRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiNotFoundResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Get(GET_DETAIL.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  getDetail(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.postService.getDetail(id, decoded);
   }
 }

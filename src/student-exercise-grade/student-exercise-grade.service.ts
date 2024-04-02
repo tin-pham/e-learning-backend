@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService, Transaction } from '../database';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { StudentExerciseGradeEntity } from './student-exercise-grade.entity';
 import { UserNotificationEntity } from '../user-notification/user-notification.entity';
 import { NotificationEntity } from '../notification/notification.entity';
@@ -28,6 +29,7 @@ export class StudentExerciseGradeService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
+    private readonly notificationGateway: NotificationGateway,
     private readonly studentExerciseGradeRepository: StudentExerciseGradeRepository,
     private readonly studentExerciseRepository: StudentExerciseRepository,
     private readonly exerciseQuestionSnapshotRepository: ExerciseQuestionSnapshotRepository,
@@ -143,6 +145,8 @@ export class StudentExerciseGradeService extends BaseService {
               notificationId: notification.id,
             }),
         );
+
+        this.notificationGateway.sendNotification();
 
         await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
       });

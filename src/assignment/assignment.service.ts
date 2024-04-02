@@ -3,6 +3,7 @@ import { sql } from 'kysely';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { AssignmentEntity } from './assignment.entity';
 import { CourseAssignmentEntity } from '../course-assignment/course-assignment.entity';
 import { NotificationEntity } from '../notification/notification.entity';
@@ -37,6 +38,7 @@ export class AssignmentService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
+    private readonly notificationGateway: NotificationGateway,
     private readonly assignmentRepository: AssignmentRepository,
     private readonly assignmentExerciseRepository: AssignmentExerciseRepository,
     private readonly lessonRepository: LessonRepository,
@@ -124,6 +126,9 @@ export class AssignmentService extends BaseService {
           );
           await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
         }
+
+        // Send notification
+        this.notificationGateway.sendNotification();
 
         response = new AssignmentStoreRO({
           id: assignment.id,

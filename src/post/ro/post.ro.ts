@@ -15,6 +15,10 @@ export class PostStoreRO {
 export class PostGetListDataAttachmentRO {
   @ApiProperty()
   @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
   url: string;
 
   @ApiProperty()
@@ -66,4 +70,57 @@ export class PostGetListRO extends PaginateRO<PostGetListDataRO> {
   @Type(() => PostGetListDataRO)
   @Expose()
   data: PostGetListDataRO[];
+}
+
+export class PostGetDetailAttachmentRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  url: string;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+
+  @ApiProperty()
+  @Expose()
+  type: string;
+}
+
+export class PostGetDetailRO {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  content: object;
+
+  @ApiProperty({ type: [PostGetDetailAttachmentRO] })
+  @Type(() => PostGetDetailAttachmentRO)
+  @Expose()
+  attachments: PostGetDetailAttachmentRO[];
+
+  @ApiProperty()
+  @Expose()
+  createdByDisplayName: string;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
+
+  @ApiProperty()
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  updatedAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  createdByImageUrl: string;
 }

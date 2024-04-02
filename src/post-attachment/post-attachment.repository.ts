@@ -8,6 +8,16 @@ export class PostAttachmentRepository {
     return transaction.insertInto('postAttachment').values(data).execute();
   }
 
+  deleteMultipleByPostIdWithTransaction(transaction: Transaction, postId: number, actorId: number) {
+    return transaction
+      .updateTable('postAttachment')
+      .where('postId', '=', postId)
+      .where('deletedAt', 'is', null)
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .returning(['id', 'attachmentId'])
+      .execute();
+  }
+
   deleteMultipleByAttachmentIdsWithTransaction(transaction: Transaction, attachmentIds: number[], actorId: number) {
     return transaction
       .updateTable('postAttachment')

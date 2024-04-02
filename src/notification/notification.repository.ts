@@ -137,6 +137,9 @@ export class NotificationRepository {
       .leftJoin('exercise', (join) =>
         join.onRef('exercise.id', '=', 'exerciseNotification.exerciseId').on('exercise.deletedAt', 'is', null),
       )
+      .leftJoin('postNotification', (join) =>
+        join.onRef('postNotification.notificationId', '=', 'notification.id').on('postNotification.deletedAt', 'is', null),
+      )
       .innerJoin('userNotification', 'userNotification.notificationId', 'notification.id')
       .where('userNotification.userId', '=', userId)
       .where('userNotification.deletedAt', 'is', null)
@@ -163,6 +166,8 @@ export class NotificationRepository {
         'assignmentNotification.id as assignmentNotificationId',
         'exercise.id as exerciseId',
         'exercise.name as exerciseName',
+        'postNotification.id as postNotificationId',
+        'postNotification.postId as postId',
       ])
       .orderBy('notification.createdAt', 'desc');
 

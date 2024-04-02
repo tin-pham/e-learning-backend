@@ -726,6 +726,10 @@ export const API = {
   POST: {
     TAGS: 'Post',
     CONTROLLER: 'post',
+    GET_DETAIL: {
+      ROUTE: ':id',
+      OPERATION: 'Get post detail',
+    },
     STORE: {
       ROUTE: '',
       OPERATION: 'Store post',

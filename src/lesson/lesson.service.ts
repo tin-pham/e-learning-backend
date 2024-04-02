@@ -24,6 +24,7 @@ import { UserNotificationRepository } from '../user-notification/user-notificati
 import { LessonNotificationRepository } from '../lesson-notification/lesson-notification.repository';
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
+import { NotificationGateway } from 'src/socket/notification.gateway';
 
 @Injectable()
 export class LessonService extends BaseService {
@@ -33,6 +34,7 @@ export class LessonService extends BaseService {
     elasticLogger: ElasticsearchLoggerService,
     private readonly http: HttpService,
     private readonly database: DatabaseService,
+    private readonly notificationGateway: NotificationGateway,
     private readonly configService: ConfigService,
     private readonly lessonRepository: LessonRepository,
     private readonly sectionRepository: SectionRepository,
@@ -121,7 +123,8 @@ export class LessonService extends BaseService {
           await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
         }
 
-        response.id = lesson.id;
+        this.notificationGateway.sendNotification();
+
         response.title = lesson.title;
         response.sectionId = lesson.sectionId;
         response.videoUrl = video?.url;

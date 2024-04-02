@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { NotificationEntity } from '../notification/notification.entity';
 import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity';
 import { ExerciseEntity } from './exercise.entity';
@@ -31,6 +32,7 @@ export class ExerciseService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
+    private readonly notificationGateway: NotificationGateway,
     private readonly exerciseRepository: ExerciseRepository,
     private readonly lessonExerciseRepository: LessonExerciseRepository,
     private readonly lessonRepository: LessonRepository,
@@ -262,6 +264,8 @@ export class ExerciseService extends BaseService {
           );
           await this.userNotificationRepository.insertMultipleWithTransaction(transaction, userNotificationData);
         }
+
+        this.notificationGateway.sendNotification();
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.ACTIVATE_FAILED;

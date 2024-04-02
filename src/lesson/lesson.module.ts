@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { LessonController } from './lesson.controller';
 import { LessonService } from './lesson.service';
 import { LessonRepository } from './lesson.repository';
@@ -11,6 +12,7 @@ import { NotificationRepository } from '../notification/notification.repository'
 import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { LessonNotificationRepository } from '../lesson-notification/lesson-notification.repository';
+import { UserRepository } from 'src/user/user.repository';
 
 @Module({
   imports: [HttpModule],
@@ -26,6 +28,9 @@ import { LessonNotificationRepository } from '../lesson-notification/lesson-noti
     CourseNotificationRepository,
     UserNotificationRepository,
     LessonNotificationRepository,
+
+    NotificationGateway,
+    UserRepository,
   ],
 })
 export class LessonModule {}

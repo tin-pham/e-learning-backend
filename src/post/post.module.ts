@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { PostRepository } from './post.repository';
@@ -9,10 +11,16 @@ import { CourseStudentRepository } from '../course-student/course-student.reposi
 import { PostNotificationRepository } from '../post-notification/post-notification.repository';
 import { CourseNotificationRepository } from '../course-notification/course-notification.repository';
 import { CourseRepository } from '../course/course.repository';
+import { PostAttachmentRepository } from '../post-attachment/post-attachment.repository';
+import { S3Service } from '../s3/s3.service';
+import { AttachmentRepository } from '../attachment/attachment.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
+  imports: [NestjsFormDataModule.config({ storage: MemoryStoredFile })],
   controllers: [PostController],
   providers: [
+    S3Service,
     PostService,
     PostRepository,
     NotificationRepository,
@@ -22,6 +30,11 @@ import { CourseRepository } from '../course/course.repository';
     PostNotificationRepository,
     CourseNotificationRepository,
     CourseRepository,
+    PostAttachmentRepository,
+    AttachmentRepository,
+
+    NotificationGateway,
+    UserRepository,
   ],
 })
 export class PostModule {}
