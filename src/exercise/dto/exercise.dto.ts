@@ -41,6 +41,11 @@ export class ExerciseStoreDTO {
   @IsBoolean()
   @IsNotEmpty()
   instantMark: boolean;
+
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  @IsNotEmpty()
+  allowRedo: boolean;
 }
 
 export class ExerciseGetListDTO extends PaginateDTO {

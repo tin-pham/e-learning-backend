@@ -8,7 +8,7 @@ import { paginate } from '../common/function/paginate';
 export class StudentExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
-  findByExerciseIdNotGraded(exerciseId: number) {
+  findByExerciseId(exerciseId: number) {
     return this.database
       .selectFrom('studentExercise')
       .where('studentExercise.exerciseId', '=', exerciseId)
@@ -16,7 +16,6 @@ export class StudentExerciseRepository {
       .leftJoin('studentExerciseGrade', (join) =>
         join.onRef('studentExerciseGrade.studentExerciseId', '=', 'studentExercise.id').on('studentExerciseGrade.deletedAt', 'is', null),
       )
-      .where('studentExerciseGrade.id', 'is', null)
       .select([
         'studentExercise.id',
         'studentExercise.studentId',
@@ -24,6 +23,7 @@ export class StudentExerciseRepository {
         'studentExercise.isSubmitted',
         'studentExercise.submittedAt',
         'studentExercise.isLate',
+        'studentExerciseGrade.id as studentExerciseGradeId',
       ])
       .execute();
   }
@@ -112,5 +112,39 @@ export class StudentExerciseRepository {
 
   insert(entity: StudentExerciseEntity) {
     return this.database.insertInto('studentExercise').values(entity).returning(['id', 'createdAt as startDoingAt']).executeTakeFirst();
+  }
+
+  deleteWithTransaction(transaction: Transaction, id: number) {
+    return transaction.deleteFrom('studentExercise').where('id', '=', id).where('deletedAt', 'is', null).execute();
+  }
+
+  async countById(id: number) {
+    const { count } = await this.database
+      .selectFrom('studentExercise')
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  findGradedByExerciseId(exerciseId: number) {
+    return this.database
+      .selectFrom('studentExercise')
+      .where('studentExercise.exerciseId', '=', exerciseId)
+      .where('studentExercise.deletedAt', 'is', null)
+      .innerJoin('studentExerciseGrade', 'studentExerciseGrade.studentExerciseId', 'studentExercise.id')
+      .where('studentExerciseGrade.deletedAt', 'is', null)
+      .select([
+        'studentExercise.id',
+        'studentExercise.studentId',
+        'studentExercise.exerciseId',
+        'studentExercise.isSubmitted',
+        'studentExercise.submittedAt',
+        'studentExercise.isLate',
+        'studentExerciseGrade.id as studentExerciseGradeId',
+        //'studentExerciseGrade.basePoint as studentExerciseGradeBasePoint',
+      ])
+      .execute();
   }
 }

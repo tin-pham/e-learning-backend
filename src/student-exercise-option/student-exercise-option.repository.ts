@@ -37,4 +37,20 @@ export class StudentExerciseOptionRepository {
       )
       .execute();
   }
+
+  deleteByStudentExerciseIdWithTransaction(transaction: Transaction, studentExerciseId: number) {
+    return transaction
+      .deleteFrom('studentExerciseOption')
+      .where('studentExerciseId', '=', studentExerciseId)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
+  deleteByExerciseQuestionSnapshotIdsWithTransaction(transaction: Transaction, questionSnapshotIds: number[]) {
+    return transaction
+      .deleteFrom('studentExerciseOption')
+      .where('questionSnapshotId', 'in', questionSnapshotIds)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
 }

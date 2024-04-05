@@ -27,6 +27,14 @@ export class ExerciseStoreRO {
   @Expose()
   dueDate: Date;
 
+  @ApiPropertyOptional()
+  @Expose()
+  instantMark: boolean;
+
+  @ApiPropertyOptional()
+  @Expose()
+  allowRedo: boolean;
+
   constructor(data?: ExerciseStoreRO) {
     Object.assign(this, data);
   }
@@ -199,6 +207,10 @@ export class ExerciseGetDetailRO {
   @ApiProperty()
   @Expose()
   instantMark?: boolean;
+
+  @ApiProperty()
+  @Expose()
+  allowRedo?: boolean;
 
   @ApiProperty()
   @Expose()

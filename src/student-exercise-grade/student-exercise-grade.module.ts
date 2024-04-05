@@ -14,23 +14,25 @@ import { NotificationRepository } from '../notification/notification.repository'
 import { StudentExerciseNotificationRepository } from '../student-exercise-notification/student-exercise-notification.repository';
 import { UserRepository } from '../user/user.repository';
 
+export const STUDENT_EXERCISE_GRADE_PROVIDERS = [
+  StudentExerciseGradeService,
+  StudentExerciseRepository,
+  StudentExerciseGradeRepository,
+  ExerciseQuestionSnapshotRepository,
+  ExerciseQuestionOptionSnapshotRepository,
+  StudentExerciseOptionRepository,
+  ExerciseRepository,
+  StudentRepository,
+  UserNotificationRepository,
+  NotificationRepository,
+  StudentExerciseNotificationRepository,
+
+  NotificationGateway,
+  UserRepository,
+];
+
 @Module({
   controllers: [StudentExerciseGradeController],
-  providers: [
-    StudentExerciseGradeService,
-    StudentExerciseRepository,
-    StudentExerciseGradeRepository,
-    ExerciseQuestionSnapshotRepository,
-    ExerciseQuestionOptionSnapshotRepository,
-    StudentExerciseOptionRepository,
-    ExerciseRepository,
-    StudentRepository,
-    UserNotificationRepository,
-    NotificationRepository,
-    StudentExerciseNotificationRepository,
-
-    NotificationGateway,
-    UserRepository,
-  ],
+  providers: [...STUDENT_EXERCISE_GRADE_PROVIDERS],
 })
 export class StudentExerciseGradeModule {}

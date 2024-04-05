@@ -50,4 +50,16 @@ export class StudentExerciseGradeRepository {
       .executeTakeFirst();
     return Number(count);
   }
+
+  deleteByStudentExerciseIdWithTransaction(transaction: Transaction, studentExerciseId: number) {
+    return transaction
+      .deleteFrom('studentExerciseGrade')
+      .where('studentExerciseId', '=', studentExerciseId)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
+  deleteWithTransaction(transaction: Transaction, id: number) {
+    return transaction.deleteFrom('studentExerciseGrade').where('id', '=', id).where('deletedAt', 'is', null).execute();
+  }
 }

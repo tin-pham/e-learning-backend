@@ -21,7 +21,7 @@ import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpd
 import { ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, ACTIVATE } = API.EXERCISE;
+const { TAGS, CONTROLLER, STORE, GET_LIST, GET_DETAIL, UPDATE, DELETE, ACTIVATE, SYNC } = API.EXERCISE;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -111,5 +111,19 @@ export class ExerciseController {
   @UseGuards(JwtGuard, RoleGuard)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.exerciseService.delete(id, decoded);
+  }
+
+  @ApiOperation({ summary: SYNC.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(SYNC.ROUTE)
+  @Roles(ROLE.TEACHER)
+  @UseGuards(JwtGuard, RoleGuard)
+  sync(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.exerciseService.sync(id, decoded);
   }
 }

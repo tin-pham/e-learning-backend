@@ -96,11 +96,11 @@ export class CourseRepository {
   }
 
   find(dto: CourseGetListDTO) {
-    const { limit, page, categoryId, withAssignmentCount } = dto;
+    const { limit, page, categoryId, withAssignmentCount, search } = dto;
 
     const byCategory = Boolean(categoryId);
 
-    const query = this.database
+    let query = this.database
       .selectFrom('course')
       .where('course.deletedAt', 'is', null)
       .innerJoin('level', 'level.id', 'course.levelId')
@@ -146,6 +146,10 @@ export class CourseRepository {
         fn.count('courseStudent.id').as('studentCount'),
       ])
       .groupBy(['course.id', 'course.name', 'course.description', 'image.url', 'level.name', 'level.id', 'course.hours']);
+
+    if (search) {
+      query = query.where((eb) => eb.or([eb('course.name', 'ilike', `%${search}%`)]));
+    }
 
     return paginate(query, { limit, page });
   }

@@ -8,7 +8,7 @@ import { QuestionRepository } from '../question/question.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { QuestionOptionGetListDTO, QuestionOptionStoreDTO, QuestionOptionBulkUpdateDTO } from './dto/question-option.dto';
 import { QuestionOptionDeleteRO, QuestionOptionGetDetailRO, QuestionOptionGetListRO, QuestionOptionStoreRO } from './ro/question-option.ro';
-import { ResultRO } from 'src/common/ro/result.ro';
+import { ResultRO } from '../common/ro/result.ro';
 
 @Injectable()
 export class QuestionOptionService extends BaseService {
@@ -214,8 +214,6 @@ export class QuestionOptionService extends BaseService {
     const isCorrects = dto.data.map((option) => option.dto.isCorrect);
     const allTrue = isCorrects.every((value) => value === true);
     const allFalse = isCorrects.every((value) => value === false);
-
-    console.log(allTrue, allFalse);
 
     if (allTrue || allFalse) {
       const { code, status, message } = EXCEPTION.QUESTION_OPTION.IS_CORRECT_DIVERSITY_REQUIRED;

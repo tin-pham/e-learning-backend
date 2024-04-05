@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { sql } from 'kysely';
 import { DatabaseService, Transaction } from '../database';
+import { paginate } from '../common/function/paginate';
 import { ExerciseQuestionSnapshotGetListDTO } from './dto/exercise-question-snapshot.dto';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
-import { paginate } from 'src/common/function/paginate';
+import { ExerciseQuestionSnapshotEntity } from './exercise-question-snapshot.entity';
 
 @Injectable()
 export class ExerciseQuestionSnapshotRepository {
@@ -55,8 +56,7 @@ export class ExerciseQuestionSnapshotRepository {
             sql`'[]'`,
           )
           .as('options'),
-      ])
-      .orderBy('exerciseQuestionSnapshot.createdAt', 'desc');
+      ]);
 
     return paginate(query, {
       page,
@@ -81,7 +81,7 @@ export class ExerciseQuestionSnapshotRepository {
       )
       .where('exerciseQuestionOptionSnapshot.deletedAt', 'is', null)
       .select(({ fn, ref }) => [
-        'exerciseQuestionSnapshot.id',
+        'exerciseQuestionSnapshot.questionId as id',
         'exerciseQuestionSnapshot.text',
         'exerciseQuestionSnapshot.difficultyId',
         'difficulty.name as diffulltyName',
@@ -246,5 +246,34 @@ export class ExerciseQuestionSnapshotRepository {
       )
       .returning(['id'])
       .execute();
+  }
+
+  getIdByQuestionId(questionId: number) {
+    return this.database
+      .selectFrom('exerciseQuestionSnapshot')
+      .select(['id'])
+      .where('questionId', '=', questionId)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+  }
+
+  deleteByQuestionIdWithTransaction(transaction: Transaction, questionId: number, actorId: number) {
+    return transaction
+      .updateTable('exerciseQuestionSnapshot')
+      .where('questionId', '=', questionId)
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .execute();
+  }
+
+  updateWithTransaction(transaction: Transaction, id: number, data: Partial<ExerciseQuestionSnapshotEntity>) {
+    return transaction.updateTable('exerciseQuestionSnapshot').set(data).where('id', '=', id).where('deletedAt', 'is', null).execute();
+  }
+
+  insertWithTransaction(transaction: Transaction, data: Partial<ExerciseQuestionSnapshotEntity>) {
+    return transaction.insertInto('exerciseQuestionSnapshot').values(data).returning(['id']).executeTakeFirst();
+  }
+
+  deleteByQuestionIdsWithTransaction(transaction: Transaction, questionIds: number[]) {
+    return transaction.deleteFrom('exerciseQuestionSnapshot').where('questionId', 'in', questionIds).returning(['id']).execute();
   }
 }

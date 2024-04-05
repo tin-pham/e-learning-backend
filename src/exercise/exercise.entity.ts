@@ -8,6 +8,7 @@ export class ExerciseEntity extends BaseEntity {
   time?: number;
   dueDate?: Date;
   instantMark: boolean;
+  allowRedo: boolean;
 
   constructor(data?: ExerciseEntity) {
     super(data);

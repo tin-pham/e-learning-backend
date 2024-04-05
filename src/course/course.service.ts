@@ -12,12 +12,12 @@ import { CourseStudentRepository } from '../course-student/course-student.reposi
 import { CourseImageRepository } from '../course-image/course-image.repository';
 import { ImageRepository } from '../image/image.repository';
 import { LevelRepository } from '../level/level.repository';
+import { TeacherRepository } from '../teacher/teacher.repository';
 import { S3Service } from '../s3/s3.service';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { DatabaseService } from '../database/database.service';
 import { CourseGetDetailDTO, CourseGetListDTO, CourseStoreDTO, CourseTeacherGetListDTO, CourseUpdateDTO } from './dto/course.dto';
 import { CourseDeleteRO, CourseGetDetailRO, CourseGetListRO, CourseStoreRO, CourseTeacherGetListRO, CourseUpdateRO } from './ro/course.ro';
-import { TeacherRepository } from 'src/teacher/teacher.repository';
 
 @Injectable()
 export class CourseService extends BaseService {
@@ -239,6 +239,8 @@ export class CourseService extends BaseService {
           // Delete s3 image
           await this.s3Service.bulkDelete({ urls: [image.url] }, decoded);
         }
+        // Delete exercise
+
         // Set response
         response.id = course.id;
       });

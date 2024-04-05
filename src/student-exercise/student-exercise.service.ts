@@ -8,6 +8,7 @@ import { StudentExerciseRepository } from './student-exercise.repository';
 import { StudentExerciseOptionRepository } from '../student-exercise-option/student-exercise-option.repository';
 import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapshot/exercise-question-snapshot.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
+import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { StudentExerciseGetListSubmittedDTO, StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
 import { StudentExerciseEntity } from './student-exercise.entity';
@@ -27,6 +28,7 @@ export class StudentExerciseService extends BaseService {
     private readonly exerciseQuestionSnapshotRepository: ExerciseQuestionSnapshotRepository,
     private readonly exerciseQuestionOptionSnapshotRepository: ExerciseQuestionOptionSnapshotRepository,
     private readonly studentExerciseOptionRepository: StudentExerciseOptionRepository,
+    private readonly studentExerciseGradeRepository: StudentExerciseGradeRepository,
   ) {
     super(elasticLogger);
   }
@@ -117,6 +119,35 @@ export class StudentExerciseService extends BaseService {
     }
   }
 
+  async delete(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateDelete(id, actorId);
+
+    try {
+      await this.database.transaction().execute(async (transaction) => {
+        // Delete student exercise grade
+        await this.studentExerciseGradeRepository.deleteByStudentExerciseIdWithTransaction(transaction, id);
+
+        // Delete student exercise option
+        await this.studentExerciseOptionRepository.deleteByStudentExerciseIdWithTransaction(transaction, id);
+
+        // Delete student exercise
+        await this.studentExerciseRepository.deleteWithTransaction(transaction, id);
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Delete exercise student successfully',
+      actorId,
+    });
+  }
+
   private async validateStore(dto: StudentExerciseStoreDTO, actorId: number) {
     // Check exercise exist and active
     const exercise = await this.exerciseRepository.findOneById(dto.exerciseId);
@@ -181,5 +212,14 @@ export class StudentExerciseService extends BaseService {
     }
 
     return { studentExercise };
+  }
+
+  private async validateDelete(id: number, actorId: number) {
+    // Check exist
+    const studentExerciseCount = await this.studentExerciseRepository.countById(id);
+    if (!studentExerciseCount) {
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 }

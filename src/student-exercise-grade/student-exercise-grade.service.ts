@@ -105,11 +105,17 @@ export class StudentExerciseGradeService extends BaseService {
 
   async bulkCalculate(dto: StudentExerciseGradeBulkCalculateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
+    console.log('comeone');
     const { studentExercises, exercise } = await this.validateBulkCalculate(dto, decoded.userId);
 
     try {
       await this.database.transaction().execute(async (transaction) => {
         for (const studentExercise of studentExercises) {
+          // Delete old grade if exist
+          if (studentExercise.studentExerciseGradeId) {
+            await this.studentExerciseGradeRepository.deleteWithTransaction(transaction, studentExercise.studentExerciseGradeId);
+          }
+
           await this.calculate(
             {
               studentExerciseId: studentExercise.id,
@@ -192,12 +198,14 @@ export class StudentExerciseGradeService extends BaseService {
 
   private async validateCalculate(dto: StudentExerciseGradeCalculateDTO, actorId: number) {
     // Check unique
-    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(dto.studentExerciseId);
-    if (studentExerciseGradeCount) {
-      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.ALREADY_EXIST;
-      this.throwException({ code, status, message, actorId });
-    }
+    console.log(2);
+    // const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(dto.studentExerciseId);
+    // if (studentExerciseGradeCount) {
+    //   const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.ALREADY_EXIST;
+    //   this.throwException({ code, status, message, actorId });
+    // }
 
+    console.log(3);
     // Check student exercise exist and submitted
     const studentExercise = await this.studentExerciseRepository.findOneById(dto.studentExerciseId);
     if (!studentExercise) {
@@ -205,11 +213,13 @@ export class StudentExerciseGradeService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
+    console.log(4);
     if (!studentExercise.isSubmitted) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.NOT_SUBMITTED;
       this.throwException({ code, status, message, actorId });
     }
 
+    console.log(5);
     // Get question ids by exercise id
     const questions = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseId(studentExercise.exerciseId);
 
@@ -218,6 +228,7 @@ export class StudentExerciseGradeService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
     const questionIds = questions.map((question) => question.id);
+    console.log(6);
 
     return { studentExercise, questionIds };
   }
@@ -240,10 +251,10 @@ export class StudentExerciseGradeService extends BaseService {
     }
 
     // Get student exercise list
-    const studentExercises = await this.studentExerciseRepository.findByExerciseIdNotGraded(dto.exerciseId);
+    const studentExercises = await this.studentExerciseRepository.findByExerciseId(dto.exerciseId);
 
     if (!studentExercises.length) {
-      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.NO_SUBMISSION;
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 

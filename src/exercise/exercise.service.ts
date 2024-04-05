@@ -20,6 +20,7 @@ import { CourseNotificationRepository } from '../course-notification/course-noti
 import { ExerciseNotificationRepository } from '../exercise-notification/exercise-notification.repository';
 import { StudentRepository } from '../student/student.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
+import { StudentExerciseOptionRepository } from '../student-exercise-option/student-exercise-option.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
@@ -46,6 +47,7 @@ export class ExerciseService extends BaseService {
     private readonly exerciseNotificationRepository: ExerciseNotificationRepository,
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly studentRepository: StudentRepository,
+    private readonly studentExerciseOptionRepository: StudentExerciseOptionRepository,
   ) {
     super(elasticLogger);
   }
@@ -66,6 +68,7 @@ export class ExerciseService extends BaseService {
         exerciseData.dueDate = dto.dueDate;
         exerciseData.time = dto.time;
         exerciseData.instantMark = dto.instantMark;
+        exerciseData.allowRedo = dto.allowRedo;
         const exercise = await this.exerciseRepository.insertWithTransaction(transaction, exerciseData);
 
         // Store lesson exercise
@@ -86,6 +89,8 @@ export class ExerciseService extends BaseService {
           lessonId: lessonExercise?.lessonId,
           time: exercise.time,
           dueDate: exercise.dueDate,
+          instantMark: exercise.instantMark,
+          allowRedo: exercise.allowRedo,
         });
       });
     } catch (error) {
@@ -106,7 +111,6 @@ export class ExerciseService extends BaseService {
     const actorId = decoded.userId;
     try {
       const response = await this.exerciseRepository.find(dto, actorId);
-      console.log(response);
       return this.success({
         classRO: ExerciseGetListRO,
         response,
@@ -309,6 +313,123 @@ export class ExerciseService extends BaseService {
     });
   }
 
+  async sync(id: number, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateSync(id, actorId);
+
+    try {
+      await this.database.transaction().execute(async (transaction) => {
+        // Get current question belong to this exercise
+        const exerciseQuestions = await this.exerciseQuestionRepository.findQuestionsByExerciseId(id);
+
+        // Get deleted exercise question
+        const deletedExerciseQuestions = await this.exerciseQuestionRepository.findDeletedByExerciseId(id);
+
+        // Delete snapshot of deleted exercise question
+        if (deletedExerciseQuestions.length) {
+          const exerciseQuestionsSnapshot = await this.exerciseQuestionSnapshotRepository.deleteByQuestionIdsWithTransaction(
+            transaction,
+            deletedExerciseQuestions.map((question) => question.questionId),
+          );
+
+          // Delete options of these snapshot question
+          const questionOptionSnapshots =
+            await this.exerciseQuestionOptionSnapshotRepository.deleteByExerciseQuestionSnapshotIdsWithTransaction(
+              transaction,
+              exerciseQuestionsSnapshot.map((questionSnapshot) => questionSnapshot.id),
+            );
+
+          // Delete student options
+          const questionoptionSnapshotIds = questionOptionSnapshots.map((questionOptionSnapshot) => questionOptionSnapshot.id);
+          await this.studentExerciseOptionRepository.deleteByExerciseQuestionSnapshotIdsWithTransaction(
+            transaction,
+            questionoptionSnapshotIds,
+          );
+        }
+
+        // Update the current question in exercise
+        for (const exerciseQuestion of exerciseQuestions) {
+          // Update if question is exist
+          let questionSnapshot = await this.exerciseQuestionSnapshotRepository.getIdByQuestionId(exerciseQuestion.questionId);
+          const questionSnapshotData = {
+            text: exerciseQuestion.questionText,
+            capturedAt: new Date(),
+            exerciseId: id,
+            questionId: exerciseQuestion.questionId,
+            difficultyId: exerciseQuestion.questionDifficultyId,
+            isMultipleChoice: exerciseQuestion.questionIsMultipleChoice,
+          };
+          if (questionSnapshot) {
+            await this.exerciseQuestionSnapshotRepository.updateWithTransaction(transaction, questionSnapshot.id, {
+              ...questionSnapshotData,
+              updatedBy: actorId,
+              updatedAt: new Date(),
+            });
+          } else {
+            // Insert new question snapshot with new question
+            questionSnapshot = await this.exerciseQuestionSnapshotRepository.insertWithTransaction(transaction, {
+              ...questionSnapshotData,
+              createdBy: actorId,
+              createdAt: new Date(),
+            });
+          }
+
+          // Get options belong to question
+          const options = await this.questionOptionRepository.findByQuestionId(exerciseQuestion.questionId);
+          const deletedOptions = await this.questionOptionRepository.findDeletedByQuestionId(exerciseQuestion.questionId);
+
+          // Delete snapshot of deleted options
+          if (deletedOptions.length) {
+            await this.exerciseQuestionOptionSnapshotRepository.deleteByOptionIdsWithTransaction(
+              transaction,
+              deletedOptions.map((option) => option.id),
+            );
+          }
+
+          for (const option of options) {
+            // Update if option is exist
+            console.log(option);
+            const optionSnapshot = await this.exerciseQuestionOptionSnapshotRepository.getIdByOptionId(option.id);
+            const optionSnapshotData = {
+              text: option.text,
+              isCorrect: option.isCorrect,
+              capturedAt: new Date(),
+              exerciseId: id,
+              questionOptionId: option.id,
+              exerciseQuestionSnapshotId: questionSnapshot.id,
+            };
+
+            if (optionSnapshot) {
+              await this.exerciseQuestionOptionSnapshotRepository.updateWithTransaction(transaction, optionSnapshot.id, {
+                ...optionSnapshotData,
+                updatedBy: actorId,
+                updatedAt: new Date(),
+              });
+            } else {
+              // Insert new option snapshot with new option
+              await this.exerciseQuestionOptionSnapshotRepository.insertWithTransaction(transaction, {
+                ...optionSnapshotData,
+                createdBy: actorId,
+                createdAt: new Date(),
+              });
+            }
+          }
+        }
+      });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.EXERCISE.SYNC_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Exercise synced successfully',
+      actorId,
+    });
+  }
+
   private async validateStore(dto: ExerciseStoreDTO, actorId: number) {
     // Check lesson exist
     if (dto.lessonId) {
@@ -372,5 +493,14 @@ export class ExerciseService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
     return { lesson };
+  }
+
+  private async validateSync(id: number, actorId: number) {
+    // Check exist
+    const exerciseCount = await this.exerciseRepository.countById(id);
+    if (!exerciseCount) {
+      const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
   }
 }

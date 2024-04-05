@@ -16,6 +16,7 @@ import { ExerciseNotificationRepository } from '../exercise-notification/exercis
 import { CourseStudentRepository } from '../course-student/course-student.repository';
 import { StudentRepository } from '../student/student.repository';
 import { UserRepository } from '../user/user.repository';
+import { StudentExerciseOptionRepository } from 'src/student-exercise-option/student-exercise-option.repository';
 
 @Module({
   controllers: [ExerciseController],
@@ -37,6 +38,8 @@ import { UserRepository } from '../user/user.repository';
 
     NotificationGateway,
     UserRepository,
+
+    StudentExerciseOptionRepository,
   ],
 })
 export class ExerciseModule {}

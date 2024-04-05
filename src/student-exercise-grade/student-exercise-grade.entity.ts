@@ -5,6 +5,7 @@ export class StudentExerciseGradeEntity extends BaseEntity {
   point: number;
   totalCount: number;
   correctCount: number;
+  basePoint: number;
 
   constructor(data?: StudentExerciseGradeEntity) {
     super(data);

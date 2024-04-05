@@ -19,7 +19,7 @@ export class ExerciseQuestionRepository {
   getQuestionIdsByExerciseId(exerciseId: number) {
     return this.database
       .selectFrom('exerciseQuestion')
-      .select('questionId')
+      .select(['questionId', 'deletedAt'])
       .where('exerciseId', '=', exerciseId)
       .where('deletedAt', 'is', null)
       .execute();
@@ -48,5 +48,52 @@ export class ExerciseQuestionRepository {
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
+  }
+
+  findQuestionsByExerciseId(exerciseId: number) {
+    return this.database
+      .selectFrom('exerciseQuestion')
+      .where('exerciseQuestion.exerciseId', '=', exerciseId)
+      .where('exerciseQuestion.deletedAt', 'is', null)
+      .innerJoin('question', 'question.id', 'exerciseQuestion.questionId')
+      .where('question.deletedAt', 'is', null)
+      .select([
+        'question.id as questionId',
+        'question.text as questionText',
+        'question.difficultyId as questionDifficultyId',
+        'question.isMultipleChoice as questionIsMultipleChoice',
+        'question.deletedAt as questionDeletedAt',
+        'exerciseQuestion.deletedAt',
+      ])
+      .execute();
+  }
+
+  findDeletedByExerciseId(exerciseId: number) {
+    return this.database
+      .with('last_entries', (qb) =>
+        qb
+          .selectFrom('exerciseQuestion')
+          .select(({ fn }) => ['exerciseId', 'questionId', fn.max('createdAt').as('lastCreationTime')])
+          .where('exerciseId', '=', exerciseId)
+          .groupBy(['exerciseId', 'questionId']),
+      )
+      .selectFrom('exerciseQuestion')
+      .innerJoin('last_entries', (join) =>
+        join
+          .onRef('last_entries.exerciseId', '=', 'exerciseQuestion.exerciseId')
+          .onRef('last_entries.questionId', '=', 'exerciseQuestion.questionId'),
+      )
+      .where('exerciseQuestion.deletedAt', 'is not', null)
+      .whereRef('exerciseQuestion.createdAt', '=', 'last_entries.lastCreationTime')
+      .innerJoin('question', 'question.id', 'exerciseQuestion.questionId')
+      .select([
+        'question.id as questionId',
+        'question.text as questionText',
+        'question.difficultyId as questionDifficultyId',
+        'question.isMultipleChoice as questionIsMultipleChoice',
+        'question.deletedAt as questionDeletedAt',
+        'exerciseQuestion.deletedAt',
+      ])
+      .execute();
   }
 }

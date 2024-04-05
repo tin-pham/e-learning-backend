@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, Transaction } from '../database';
+import { ExerciseQuestionOptionSnapshotEntity } from './exercise-question-option-snapshot.entity';
 
 @Injectable()
 export class ExerciseQuestionOptionSnapshotRepository {
@@ -56,5 +57,71 @@ export class ExerciseQuestionOptionSnapshotRepository {
       .execute();
 
     return transaction.insertInto('exerciseQuestionOptionSnapshot').values(optionData).execute();
+  }
+
+  updateOneByOptionIdWithTransaction(transaction: Transaction, questionOptionId: number, entity: ExerciseQuestionOptionSnapshotEntity) {
+    return transaction
+      .updateTable('exerciseQuestionOptionSnapshot')
+      .set(entity)
+      .where('exerciseQuestionOptionSnapshot.deletedAt', 'is', null)
+      .where('exerciseQuestionOptionSnapshot.questionOptionId', '=', questionOptionId)
+      .execute();
+  }
+
+  countByOptionId(optionId: number) {
+    return this.database
+      .selectFrom('exerciseQuestionOptionSnapshot')
+      .where('deletedAt', 'is', null)
+      .where('questionOptionId', '=', optionId)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .executeTakeFirst();
+  }
+
+  insertWithTransaction(transaction: Transaction, entity: ExerciseQuestionOptionSnapshotEntity) {
+    return transaction.insertInto('exerciseQuestionOptionSnapshot').values(entity).execute();
+  }
+
+  deleteByOptionIdWithTransaction(transaction: Transaction, optionId: number, actorId: number) {
+    return transaction
+      .updateTable('exerciseQuestionOptionSnapshot')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('questionOptionId', '=', optionId)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
+  getIdByOptionId(optionId: number) {
+    return this.database
+      .selectFrom('exerciseQuestionOptionSnapshot')
+      .where('deletedAt', 'is', null)
+      .where('questionOptionId', '=', optionId)
+      .select(['id'])
+      .executeTakeFirst();
+  }
+
+  updateWithTransaction(transaction: Transaction, id: number, entity: ExerciseQuestionOptionSnapshotEntity) {
+    return transaction
+      .updateTable('exerciseQuestionOptionSnapshot')
+      .set(entity)
+      .where('deletedAt', 'is', null)
+      .where('id', '=', id)
+      .execute();
+  }
+
+  deleteByExerciseQuestionSnapshotIdsWithTransaction(transaction: Transaction, exerciseQuestionSnapshotIds: number[]) {
+    return transaction
+      .deleteFrom('exerciseQuestionOptionSnapshot')
+      .where('exerciseQuestionSnapshotId', 'in', exerciseQuestionSnapshotIds)
+      .where('deletedAt', 'is', null)
+      .returning(['id'])
+      .execute();
+  }
+
+  deleteByOptionIdsWithTransaction(transaction: Transaction, optionIds: number[]) {
+    return transaction
+      .deleteFrom('exerciseQuestionOptionSnapshot')
+      .where('questionOptionId', 'in', optionIds)
+      .where('deletedAt', 'is', null)
+      .execute();
   }
 }

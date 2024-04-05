@@ -189,10 +189,71 @@ export class QuestionOptionRepository {
   findByQuestionId(questionId: number) {
     return this.database
       .selectFrom('questionOption')
-      .select(['id', 'text', 'questionId', 'isCorrect'])
+      .select(['id', 'text', 'questionId', 'isCorrect', 'deletedAt'])
       .where('deletedAt', 'is', null)
       .where('questionId', '=', questionId)
       .orderBy('id', 'asc')
+      .execute();
+  }
+
+  // findDeletedByExerciseId(exerciseId: number) {
+  //   return this.database
+  //     .with('last_entries', (qb) =>
+  //       qb
+  //         .selectFrom('exerciseQuestion')
+  //         .select(({ fn }) => ['exerciseId', 'questionId', fn.max('createdAt').as('lastCreationTime')])
+  //         .where('exerciseId', '=', exerciseId)
+  //         .groupBy(['exerciseId', 'questionId']),
+  //     )
+  //     .selectFrom('exerciseQuestion')
+  //     .innerJoin('last_entries', (join) =>
+  //       join
+  //         .onRef('last_entries.exerciseId', '=', 'exerciseQuestion.exerciseId')
+  //         .onRef('last_entries.questionId', '=', 'exerciseQuestion.questionId'),
+  //     )
+  //     .where('exerciseQuestion.deletedAt', 'is not', null)
+  //     .whereRef('exerciseQuestion.createdAt', '=', 'last_entries.lastCreationTime')
+  //     .innerJoin('question', 'question.id', 'exerciseQuestion.questionId')
+  //     .select([
+  //       'question.id as questionId',
+  //       'question.text as questionText',
+  //       'question.difficultyId as questionDifficultyId',
+  //       'question.isMultipleChoice as questionIsMultipleChoice',
+  //       'question.deletedAt as questionDeletedAt',
+  //       'exerciseQuestion.deletedAt',
+  //     ])
+  //     .execute();
+  // }
+  //
+  findDeletedByQuestionId(questionId: number) {
+    // return this.database
+    //   .selectFrom('questionOption')
+    //   .select(['id', 'text', 'questionId', 'isCorrect', 'deletedAt'])
+    //   .where('questionId', '=', questionId)
+    //   .where('deletedAt', 'is not', null)
+    //   .orderBy('id', 'asc')
+    //   .execute();
+    return this.database
+      .with('last_entries', (qb) =>
+        qb
+          .selectFrom('questionOption')
+          .select(({ fn }) => ['id', 'questionId', fn.max('createdAt').as('lastCreationTime')])
+          .where('questionId', '=', questionId)
+          .groupBy(['id', 'questionId']),
+      )
+      .selectFrom('questionOption')
+      .innerJoin('last_entries', (join) =>
+        join.onRef('last_entries.questionId', '=', 'questionOption.questionId').onRef('last_entries.id', '=', 'questionOption.id'),
+      )
+      .where('questionOption.deletedAt', 'is not', null)
+      .whereRef('questionOption.createdAt', '=', 'last_entries.lastCreationTime')
+      .select([
+        'questionOption.id',
+        'questionOption.text',
+        'questionOption.questionId',
+        'questionOption.isCorrect',
+        'questionOption.deletedAt',
+      ])
       .execute();
   }
 }

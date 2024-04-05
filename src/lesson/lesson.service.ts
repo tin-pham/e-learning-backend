@@ -25,6 +25,7 @@ import { LessonNotificationRepository } from '../lesson-notification/lesson-noti
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
 import { NotificationGateway } from 'src/socket/notification.gateway';
+import { isValidYoutubeId } from 'src/common/function/is-valid-youtube-id';
 
 @Injectable()
 export class LessonService extends BaseService {
@@ -284,6 +285,19 @@ export class LessonService extends BaseService {
       const { status, message, code } = EXCEPTION.SECTION.DOES_NOT_EXIST;
       this.throwException({ status, message, code, actorId });
     }
+
+    const YOUTUBE_API_KEY = this.configService.get('YOUTUBE_API_KEY');
+    const videoId = getVideoId(dto.videoUrl);
+
+    if (!isValidYoutubeId(videoId)) {
+      const { status, message, code } = EXCEPTION.LESSON.INVALID_VIDEO_URL;
+      this.throwException({ status, message, code, actorId });
+    }
+
+    const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${YOUTUBE_API_KEY}&part=contentDetails`;
+
+    const response = await firstValueFrom(this.http.get(url));
+    console.log(response.data);
 
     return { section };
   }

@@ -435,6 +435,11 @@ export const EXCEPTION = {
     },
   },
   LESSON: {
+    INVALID_VIDEO_URL: {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Invalid video url',
+      code: 'LESSON.INVALID_VIDEO_URL',
+    },
     DOES_NOT_EXIST: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Lesson does not exist',
@@ -516,6 +521,11 @@ export const EXCEPTION = {
     },
   },
   EXERCISE: {
+    SYNC_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to sync exercise',
+      code: 'EXERCISE.SYNC_FAILED',
+    },
     CANNOT_ACTIVATE_WITHOUT_QUESTION: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Cannot activate exercise without question',
@@ -1193,6 +1203,11 @@ export const EXCEPTION = {
     },
   },
   STUDENT_EXERCISE: {
+    DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete student exercise',
+      code: 'STUDENT_EXERCISE.DELETE_FAILED',
+    },
     NOT_SUBMITTED: {
       status: HttpStatus.BAD_REQUEST,
       message: 'Student exercise not submitted',

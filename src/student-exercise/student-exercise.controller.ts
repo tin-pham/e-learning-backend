@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -22,7 +22,7 @@ import { StudentExerciseGetListSubmittedDTO, StudentExerciseStoreDTO, StudentExe
 import { ResultRO } from '../common/ro/result.ro';
 import { StudentExerciseStoreRO } from './ro/student-exercise.ro';
 
-const { TAGS, CONTROLLER, STORE, SUBMIT, GET_SUBMITTED_LIST } = API.STUDENT_EXERCISE;
+const { TAGS, CONTROLLER, STORE, SUBMIT, GET_SUBMITTED_LIST, DELETE } = API.STUDENT_EXERCISE;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -71,5 +71,20 @@ export class StudentExerciseController {
   @UseGuards(JwtGuard)
   getSubmittedList(@Query() dto: StudentExerciseGetListSubmittedDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentExerciseService.getListSubmitted(dto, decoded);
+  }
+
+  @ApiOperation({ summary: 'Delete student exercise' })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Delete(DELETE.ROUTE)
+  @Roles(ROLE.TEACHER)
+  @UseGuards(JwtGuard)
+  @HttpCode(HttpStatus.OK)
+  delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
+    return this.studentExerciseService.delete(id, decoded);
   }
 }

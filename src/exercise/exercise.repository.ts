@@ -21,14 +21,12 @@ export class ExerciseRepository {
     return transaction
       .insertInto('exercise')
       .values(entity)
-      .returning(['id', 'name', 'difficultyId', 'dueDate', 'time'])
+      .returning(['id', 'name', 'difficultyId', 'dueDate', 'time', 'instantMark', 'allowRedo'])
       .executeTakeFirst();
   }
 
   find(dto: ExerciseGetListDTO, userId: number) {
     const { limit, page, lessonId, isActive, includeGrade, isSubmitted, isMissing, isLate } = dto;
-
-    console.log(dto);
 
     const withLesson = Boolean(lessonId);
 
