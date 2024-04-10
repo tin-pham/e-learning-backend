@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsObject, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
-import { IsNotBlank } from 'src/common/decorator/validator/is-not-blank.validator';
+import { IsNotBlank } from '../../common/decorator/validator/is-not-blank.validator';
 
-const { NAME, DESCRIPTION } = UNPROCESSABLE_ENTITY_EXCEPTION.CATEGORY;
+const { NAME } = UNPROCESSABLE_ENTITY_EXCEPTION.CATEGORY;
 
 export class CategoryStoreDTO {
   @ApiProperty()
@@ -14,9 +14,9 @@ export class CategoryStoreDTO {
   name: string;
 
   @ApiPropertyOptional()
-  @IsString({ message: DESCRIPTION.FORMAT_IS_NOT_VALID })
+  @IsObject()
   @IsOptional()
-  description?: string;
+  description?: object;
 }
 
 export class CategoryGetListDTO extends PaginateDTO {
@@ -34,7 +34,7 @@ export class CategoryUpdateDTO {
   name: string;
 
   @ApiPropertyOptional()
-  @IsString({ message: DESCRIPTION.FORMAT_IS_NOT_VALID })
+  @IsObject()
   @IsOptional()
-  description: string;
+  description: object;
 }

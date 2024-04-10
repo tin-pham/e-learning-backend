@@ -11,10 +11,6 @@ export class CategoryStoreRO {
   @Expose()
   name: string;
 
-  @ApiProperty()
-  @Expose()
-  description: string;
-
   constructor(data?: CategoryStoreRO) {
     Object.assign(this, data);
   }
@@ -41,10 +37,6 @@ export class CategoryGetListDataCourseRO {
 
   @ApiProperty()
   @Expose()
-  description: string;
-
-  @ApiProperty()
-  @Expose()
   imageId: number;
 
   @ApiProperty({ type: CategoryGetListDataCourseImageRO })
@@ -61,10 +53,6 @@ export class CategoryGetListDataRO {
   @ApiProperty()
   @Expose()
   name: string;
-
-  @ApiProperty()
-  @Expose()
-  description: string;
 
   @ApiPropertyOptional({ type: [CategoryGetListDataCourseRO] })
   @Type(() => CategoryGetListDataCourseRO)
@@ -94,7 +82,8 @@ export class CategoryGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  description: string;
+  description: object;
+
   constructor(data?: CategoryGetDetailRO) {
     Object.assign(this, data);
   }
@@ -108,10 +97,6 @@ export class CategoryUpdateRO {
   @ApiProperty()
   @Expose()
   name: string;
-
-  @ApiProperty()
-  @Expose()
-  description: string;
 
   constructor(data?: CategoryUpdateRO) {
     Object.assign(this, data);

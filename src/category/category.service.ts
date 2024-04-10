@@ -41,7 +41,6 @@ export class CategoryService extends BaseService {
       response = new CategoryStoreRO({
         id: category.id,
         name: category.name,
-        description: category.description,
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.CATEGORY.STORE_FAILED;
@@ -114,7 +113,6 @@ export class CategoryService extends BaseService {
       response = new CategoryUpdateRO({
         id: category.id,
         name: category.name,
-        description: category.description,
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.CATEGORY.UPDATE_FAILED;

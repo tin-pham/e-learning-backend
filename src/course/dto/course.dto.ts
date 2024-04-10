@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from '../../common';
 import { IsNotBlank } from 'src/common/decorator/validator/is-not-blank.validator';
 
-const { NAME, DESCRIPTION, CATEGORY_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
+const { NAME, CATEGORY_ID } = UNPROCESSABLE_ENTITY_EXCEPTION.COURSE;
 
 export class CourseStoreDTO {
   @ApiProperty()
@@ -14,9 +14,9 @@ export class CourseStoreDTO {
   name: string;
 
   @ApiPropertyOptional()
-  @IsString({ message: DESCRIPTION.FORMAT_IS_NOT_VALID })
+  @IsObject()
   @IsOptional()
-  description?: string;
+  description?: object;
 
   @ApiPropertyOptional({
     example: [1, 2, 3],
@@ -77,9 +77,9 @@ export class CourseUpdateDTO {
   name?: string;
 
   @ApiPropertyOptional()
-  @IsString({ message: DESCRIPTION.FORMAT_IS_NOT_VALID })
+  @IsObject()
   @IsOptional()
-  description?: string;
+  description?: object;
 
   @ApiPropertyOptional({ example: [1] })
   @IsNumber({}, { each: true })

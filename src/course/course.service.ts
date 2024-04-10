@@ -72,7 +72,6 @@ export class CourseService extends BaseService {
 
         response.id = course.id;
         response.name = course.name;
-        response.description = course.description;
         response.levelId = course.levelId;
         response.hours = course.hours;
       });
@@ -191,7 +190,6 @@ export class CourseService extends BaseService {
 
         response.id = course.id;
         response.name = course.name;
-        response.description = course.description;
         response.levelId = course.levelId;
         response.hours = course.hours;
       });

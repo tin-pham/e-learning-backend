@@ -15,6 +15,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.IS_ACTIVE, 'boolean', (column) => column.defaultTo(false))
     .addColumn(SCHEMA.INSTANT_MARK, 'boolean')
     .addColumn(SCHEMA.DUE_DATE, 'timestamptz')
+    .addColumn(SCHEMA.ALLOW_REDO, 'boolean')
     .addColumn(SCHEMA.TIME, 'integer')
     .addColumn(SCHEMA.ACTIVATED_AT, 'timestamptz')
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))

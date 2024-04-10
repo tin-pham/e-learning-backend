@@ -10,7 +10,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .createTable(NAME)
     .addColumn(SCHEMA.ID, 'serial', (column) => column.primaryKey())
     .addColumn(SCHEMA.NAME, 'varchar', (column) => column.notNull())
-    .addColumn(SCHEMA.DESCRIPTION, 'text')
+    .addColumn(SCHEMA.DESCRIPTION, 'json')
     .addColumn(SCHEMA.CREATED_AT, 'timestamptz', (column) => column.defaultTo(sql`now()`))
     .addColumn(SCHEMA.CREATED_BY, 'integer', (column) => column.references(`${USER_NAME}.${USER_SCHEMA.ID}`))
     .addColumn(SCHEMA.UPDATED_AT, 'timestamptz')

@@ -13,6 +13,7 @@ export async function up(database: DatabaseService): Promise<void> {
     .addColumn(SCHEMA.POINT, 'decimal(5, 2)', (column) => column.notNull())
     .addColumn(SCHEMA.TOTAL_COUNT, 'integer', (column) => column.notNull())
     .addColumn(SCHEMA.CORRECT_COUNT, 'integer', (column) => column.notNull())
+    .addColumn(SCHEMA.BASE_POINT, 'integer', (column) => column.notNull())
     .addColumn(SCHEMA.STUDENT_EXERCISE, 'integer', (column) =>
       column.notNull().references(`${STUDENT_EXERCISE_NAME}.${STUDENT_EXERCISE_SCHEMA.ID}`),
     )

@@ -29,7 +29,8 @@ export class StudentRepository {
       .leftJoin('image', (join) => join.onRef('userImage.imageId', '=', 'image.id').on('image.deletedAt', 'is', null))
       .select(['users.username', 'users.email', 'users.phone', 'users.displayName', 'student.id', 'image.url as userImageUrl'])
       .where('role.name', '=', ROLE.STUDENT)
-      .where('users.deletedAt', 'is', null);
+      .where('users.deletedAt', 'is', null)
+      .orderBy('student.id', 'asc');
 
     if (search) {
       query = query.where((eb) =>

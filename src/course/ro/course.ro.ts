@@ -13,10 +13,6 @@ export class CourseStoreRO {
 
   @ApiProperty()
   @Expose()
-  description?: string;
-
-  @ApiProperty()
-  @Expose()
   levelId?: number;
 
   @ApiProperty()
@@ -32,10 +28,6 @@ export class CourseGetListDataRO {
   @ApiProperty()
   @Expose()
   name: string;
-
-  @ApiProperty()
-  @Expose()
-  description?: string;
 
   @ApiProperty()
   @Expose()
@@ -80,7 +72,7 @@ export class CourseGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  description?: string;
+  description?: object;
 
   @ApiProperty()
   @Expose()
@@ -126,10 +118,6 @@ export class CourseUpdateRO {
 
   @ApiProperty()
   @Expose()
-  description?: string;
-
-  @ApiProperty()
-  @Expose()
   levelId: number;
 
   @ApiProperty()
@@ -151,10 +139,6 @@ export class CourseTeacherGetListDataRO {
   @ApiProperty()
   @Expose()
   name: string;
-
-  @ApiProperty()
-  @Expose()
-  description: string;
 
   @ApiProperty()
   @Expose()
