@@ -172,7 +172,7 @@ export class CourseService extends BaseService {
           courseData.name = dto.name;
         }
 
-        if (dto.description) {
+        if (dto.hasOwnProperty('description')) {
           courseData.description = dto.description;
         }
 
@@ -180,7 +180,7 @@ export class CourseService extends BaseService {
           courseData.levelId = dto.levelId;
         }
 
-        if (dto.hours) {
+        if (dto.hasOwnProperty('hours')) {
           courseData.hours = dto.hours;
         }
 

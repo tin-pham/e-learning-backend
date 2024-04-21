@@ -222,7 +222,7 @@ export class PostService extends BaseService {
   }
 
   private async validateStore(dto: PostStoreDTO, actorId: number) {
-    // Check post exist
+    // Check course exist
     const course = await this.courseRepository.getNameById(dto.courseId);
     if (!course) {
       const { code, status, message } = EXCEPTION.COURSE.DOES_NOT_EXIST;

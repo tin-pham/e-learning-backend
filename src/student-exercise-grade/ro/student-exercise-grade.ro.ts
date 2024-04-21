@@ -12,6 +12,10 @@ export class StudentExerciseGradeCalculateRO {
 
   @ApiProperty()
   @Expose()
+  basePoint: number;
+
+  @ApiProperty()
+  @Expose()
   totalCount: number;
 
   @ApiProperty()

@@ -10,6 +10,10 @@ import { sql } from 'kysely';
 export class QuestionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  deleteByIdsWithTransaction(transaction: Transaction, ids: number[], actorId: number) {
+    return transaction.updateTable('question').set({ deletedAt: new Date(), deletedBy: actorId }).where('id', 'in', ids).execute();
+  }
+
   getIdsByExerciseId(exerciseId: number) {
     return this.database
       .selectFrom('question')

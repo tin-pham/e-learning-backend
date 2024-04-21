@@ -65,6 +65,7 @@ export class StudentExerciseService extends BaseService {
   async submit(id: number, dto: StudentExerciseSubmitDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     const { studentExercise } = await this.validateSubmit(id, dto, actorId);
+    console.log('wtf');
 
     try {
       await this.database.transaction().execute(async (transaction) => {
@@ -77,15 +78,19 @@ export class StudentExerciseService extends BaseService {
         if (studentExercise.exerciseDueDate < studentExerciseData.submittedAt) {
           studentExerciseData.isLate = true;
         }
+
         await this.studentExerciseRepository.updateWithTransaction(transaction, id, studentExerciseData);
 
         for (const questionSnapshot of dto.snapshotQuestions) {
-          await this.studentExerciseOptionRepository.insertMultipleQuestionOptionIdsWithTransaction({
-            questionSnapshotId: questionSnapshot.id,
-            questionOptionSnapshotIds: questionSnapshot.snapshotOptionIds,
-            studentExerciseId: id,
-            transaction,
-          });
+          console.log(questionSnapshot.snapshotOptionIds);
+          if (questionSnapshot.snapshotOptionIds.length) {
+            await this.studentExerciseOptionRepository.insertMultipleQuestionOptionIdsWithTransaction({
+              questionSnapshotId: questionSnapshot.id,
+              questionOptionSnapshotIds: questionSnapshot.snapshotOptionIds,
+              studentExerciseId: id,
+              transaction,
+            });
+          }
         }
 
         // Auto mark if it intant mark
@@ -198,17 +203,19 @@ export class StudentExerciseService extends BaseService {
       snapshotQuestionIds.push(question.id);
       snapshotOptionIds.push(...question.snapshotOptionIds);
     }
+
     const exerciseQuestionSnapshotCount = await this.exerciseQuestionSnapshotRepository.countByIds(snapshotQuestionIds);
     if (!exerciseQuestionSnapshotCount) {
       const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
-    // Check question options exist
-    const exerciseQuestionOptionSnapshotCount = await this.exerciseQuestionOptionSnapshotRepository.countByIds(snapshotOptionIds);
-    if (!exerciseQuestionOptionSnapshotCount) {
-      const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_OPTION_SNAPSHOT.DOES_NOT_EXIST;
-      this.throwException({ code, status, message, actorId });
+    if (snapshotOptionIds.length) {
+      const exerciseQuestionOptionSnapshotCount = await this.exerciseQuestionOptionSnapshotRepository.countByIds(snapshotOptionIds);
+      if (!exerciseQuestionOptionSnapshotCount) {
+        const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_OPTION_SNAPSHOT.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
 
     return { studentExercise };

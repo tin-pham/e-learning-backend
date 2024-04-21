@@ -33,6 +33,10 @@ export class LessonCommentStoreRO {
 
   @ApiProperty()
   @Expose()
+  username: string;
+
+  @ApiProperty()
+  @Expose()
   userDisplayName: string;
 
   @ApiPropertyOptional()
@@ -72,6 +76,10 @@ export class LessonCommentGetListDataRO {
   @ApiProperty()
   @Expose()
   userId: number;
+
+  @ApiProperty()
+  @Expose()
+  username: string;
 
   @ApiProperty()
   @Expose()

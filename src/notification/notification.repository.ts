@@ -155,6 +155,7 @@ export class NotificationRepository {
         'lessonComment.parentId as commentParentId',
         'commentOwner.id as commentOwnerId',
         'commentOwner.displayName as commentOwnerDisplayName',
+        'commentOwner.username as commentOwnerUsername',
         'image.url as commentOwnerImageUrl',
         'studentExerciseNotification.id as studentExerciseNotificationId',
         'exerciseSubmit.id as exerciseSubmitId',

@@ -74,6 +74,7 @@ export class StudentExerciseGradeService extends BaseService {
       }
 
       studentExerciseGradeData.point = (studentExerciseGradeData.correctCount / studentExerciseGradeData.totalCount) * dto.basePoint;
+      studentExerciseGradeData.basePoint = dto.basePoint;
 
       let studentExerciseGrade = null;
       if (transaction) {
@@ -88,6 +89,7 @@ export class StudentExerciseGradeService extends BaseService {
         correctCount: studentExerciseGrade.correctCount,
         totalCount: studentExerciseGrade.totalCount,
         studentExerciseId: studentExerciseGrade.studentExerciseId,
+        basePoint: dto.basePoint,
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.CALCULATE_FAILED;
@@ -105,7 +107,6 @@ export class StudentExerciseGradeService extends BaseService {
 
   async bulkCalculate(dto: StudentExerciseGradeBulkCalculateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    console.log('comeone');
     const { studentExercises, exercise } = await this.validateBulkCalculate(dto, decoded.userId);
 
     try {
@@ -198,14 +199,12 @@ export class StudentExerciseGradeService extends BaseService {
 
   private async validateCalculate(dto: StudentExerciseGradeCalculateDTO, actorId: number) {
     // Check unique
-    console.log(2);
     // const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(dto.studentExerciseId);
     // if (studentExerciseGradeCount) {
     //   const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.ALREADY_EXIST;
     //   this.throwException({ code, status, message, actorId });
     // }
 
-    console.log(3);
     // Check student exercise exist and submitted
     const studentExercise = await this.studentExerciseRepository.findOneById(dto.studentExerciseId);
     if (!studentExercise) {
@@ -213,13 +212,11 @@ export class StudentExerciseGradeService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
-    console.log(4);
     if (!studentExercise.isSubmitted) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.NOT_SUBMITTED;
       this.throwException({ code, status, message, actorId });
     }
 
-    console.log(5);
     // Get question ids by exercise id
     const questions = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseId(studentExercise.exerciseId);
 
@@ -228,7 +225,6 @@ export class StudentExerciseGradeService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
     const questionIds = questions.map((question) => question.id);
-    console.log(6);
 
     return { studentExercise, questionIds };
   }

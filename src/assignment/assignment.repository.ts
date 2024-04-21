@@ -52,7 +52,6 @@ export class AssignmentRepository {
 
     const byLesson = Boolean(lessonId);
     const byCourse = Boolean(courseId);
-    console.log({ byLesson, byCourse });
 
     const query = this.database
       .selectFrom('assignment')
@@ -162,6 +161,29 @@ export class AssignmentRepository {
       .select(({ fn }) => fn.countAll().as('count'))
       .where('id', 'in', ids)
       .where('deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByNameAndLessonId(name: string, lessonId: number) {
+    const { count } = await this.database
+      .selectFrom('assignment')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('assignment.name', '=', name)
+      .where('assignment.lessonId', '=', lessonId)
+      .where('assignment.deletedAt', 'is', null)
+      .executeTakeFirst();
+    return Number(count);
+  }
+
+  async countByNameAndLessonIdExceptId(name: string, lessonId: number, id: number) {
+    const { count } = await this.database
+      .selectFrom('assignment')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('assignment.name', '=', name)
+      .where('assignment.lessonId', '=', lessonId)
+      .where('assignment.id', '!=', id)
+      .where('assignment.deletedAt', 'is', null)
       .executeTakeFirst();
     return Number(count);
   }

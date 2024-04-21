@@ -6,6 +6,25 @@ import { UserNotificationEntity } from './user-notification.entity';
 export class UserNotificationRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  updateByUserId(userId: number, entity: Partial<UserNotificationEntity>) {
+    return this.database
+      .updateTable('userNotification')
+      .set(entity)
+      .where('userId', '=', userId)
+      .where('deletedAt', 'is', null)
+      .where('isRead', '!=', true)
+      .execute();
+  }
+
+  findUnreadByUserId(userId: number) {
+    return this.database
+      .selectFrom('userNotification')
+      .where('userId', '=', userId)
+      .where('isRead', '=', false)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
   deleteByNotificationIds(notificationIds: number[]) {
     return this.database.deleteFrom('userNotification').where('notificationId', 'in', notificationIds).execute();
   }

@@ -734,6 +734,11 @@ export const EXCEPTION = {
       message: 'Failed to delete assignment',
       code: 'ASSIGNMENT.DELETE_FAILED',
     },
+    ALREADY_EXIST: {
+      status: HttpStatus.CONFLICT,
+      message: 'Assignment already exist',
+      code: 'ASSIGNMENT.ALREADY_EXIST',
+    },
   },
   COURSE_ASSIGNMENT: {
     ALREADY_EXIST: {
@@ -1179,6 +1184,11 @@ export const EXCEPTION = {
     },
   },
   USER_NOTIFICATION: {
+    READ_ALL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to read all user notification',
+      code: 'USER_NOTIFICATION.READ_ALL_FAILED',
+    },
     BULK_DELETE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk delete user notification',
@@ -1352,6 +1362,13 @@ export const EXCEPTION = {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk delete post attachment',
       code: 'POST_ATTACHMENT.BULK_DELETE_FAILED',
+    },
+  },
+  STUDENT_EXERCISE_OPTION: {
+    STORE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to store student exercise option',
+      code: 'STUDENT_EXERCISE_OPTION.STORE_FAILED',
     },
   },
 };

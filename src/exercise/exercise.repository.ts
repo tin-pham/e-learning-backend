@@ -92,7 +92,7 @@ export class ExerciseRepository {
       .set(entity)
       .where('id', '=', id)
       .where('deletedAt', 'is', null)
-      .returning(['id', 'name', 'isActive', 'activatedAt', 'difficultyId', 'dueDate', 'time'])
+      .returning(['id', 'name', 'isActive', 'activatedAt', 'difficultyId', 'dueDate', 'time', 'instantMark', 'allowRedo'])
       .executeTakeFirst();
   }
 
@@ -105,7 +105,7 @@ export class ExerciseRepository {
       .executeTakeFirst();
   }
 
-  async findOneById(id: number, dto?: ExerciseGetDetailDTO) {
+  async findOneById(id: number, dto?: ExerciseGetDetailDTO, actorId?: number) {
     return this.database
       .selectFrom('exercise')
       .where('exercise.deletedAt', 'is', null)
@@ -127,6 +127,7 @@ export class ExerciseRepository {
         'exercise.dueDate',
         'exercise.time',
         'exercise.instantMark',
+        'exercise.allowRedo',
         'studentExercise.studentId',
         'studentExercise.id as studentExerciseId',
         'studentExercise.id as isStartDoing',
@@ -140,7 +141,8 @@ export class ExerciseRepository {
           .leftJoin('studentExerciseGrade', (join) =>
             join
               .onRef('studentExerciseGrade.studentExerciseId', '=', 'studentExercise.id')
-              .on('studentExerciseGrade.deletedAt', 'is', null),
+              .on('studentExerciseGrade.deletedAt', 'is', null)
+              .on('users.id', '=', actorId),
           )
           .select([
             'studentExerciseGrade.id as studentExerciseGradeId',
@@ -148,6 +150,7 @@ export class ExerciseRepository {
             'studentExerciseGrade.point',
             'studentExerciseGrade.correctCount',
             'studentExerciseGrade.totalCount',
+            'studentExerciseGrade.basePoint',
           ]),
       )
       .executeTakeFirst();

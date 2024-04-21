@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString, MinLength } from 'class-validator';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { UNPROCESSABLE_ENTITY_EXCEPTION } from 'src/common';
 import { IsNotBlank } from 'src/common/decorator/validator/is-not-blank.validator';
@@ -9,11 +9,13 @@ const { PHONE, EMAIL, USERNAME, PASSWORD, DISPLAY_NAME } = UNPROCESSABLE_ENTITY_
 export class UserStoreDTO {
   @ApiProperty({ example: 'tinpham' })
   @IsString()
+  @MinLength(5, { message: USERNAME.LENGTH_5 })
   @IsNotBlank({}, { message: USERNAME.IS_NOT_EMPTY })
   username: string;
 
   @ApiProperty({ example: '123456' })
   @IsString()
+  @MinLength(5, { message: PASSWORD.LENGTH_5 })
   @IsNotBlank({}, { message: PASSWORD.IS_NOT_EMPTY })
   password: string;
 
@@ -27,7 +29,12 @@ export class UserStoreDTO {
   @ApiPropertyOptional({ example: '0987654321' })
   @IsPhoneNumber('VN', { message: PHONE.FORMAT_IS_NOT_VALID })
   @IsNotEmpty()
-  @IsNumberString()
+  @IsNumberString(
+    {},
+    {
+      message: PHONE.FORMAT_IS_NOT_VALID,
+    },
+  )
   @IsOptional()
   phone?: string;
 

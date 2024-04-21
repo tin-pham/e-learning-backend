@@ -19,12 +19,26 @@ import { UserNotificationService } from './user-notification.service';
 import { ResultRO } from '../common/ro/result.ro';
 import { UserNotificationBulkDeleteDTO, UserNotificationBulkUpdateDTO } from './dto/user-notification.dto';
 
-const { TAGS, CONTROLLER, BULK_UPDATE, BULK_DELETE } = API.USER_NOTIFICATION;
+const { TAGS, CONTROLLER, BULK_UPDATE, BULK_DELETE, READ_ALL } = API.USER_NOTIFICATION;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
 export class UserNotificationController {
   constructor(private readonly userNotificationService: UserNotificationService) {}
+
+  @ApiOperation({ summary: READ_ALL.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(READ_ALL.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  readAll(@JwtPayload() decoded: IJwtPayload) {
+    return this.userNotificationService.readAll(decoded);
+  }
 
   @ApiOperation({ summary: BULK_UPDATE.OPERATION })
   @ApiOkResponse({ type: ResultRO })

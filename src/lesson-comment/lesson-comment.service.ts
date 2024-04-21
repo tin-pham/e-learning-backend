@@ -91,6 +91,7 @@ export class LessonCommentService extends BaseService {
           userId: comment.userId,
           userDisplayName: comment.userDisplayName,
           createdAt: comment.createdAt,
+          username: comment.username,
           userImageUrl: comment.userImageUrl,
         });
       });

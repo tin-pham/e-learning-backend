@@ -10,6 +10,16 @@ import { ExerciseQuestionSnapshotEntity } from './exercise-question-snapshot.ent
 export class ExerciseQuestionSnapshotRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async countById(id: number) {
+    const { count } = await this.database
+      .selectFrom('exerciseQuestionSnapshot')
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   findWithoutOption(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
     const { page, limit } = dto;
 

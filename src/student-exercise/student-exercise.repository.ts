@@ -8,6 +8,16 @@ import { paginate } from '../common/function/paginate';
 export class StudentExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getIdByIsSubmittedAndStudentId(isSubmitted: boolean, studentId: string) {
+    return this.database
+      .selectFrom('studentExercise')
+      .where('studentExercise.studentId', '=', studentId)
+      .where('studentExercise.isSubmitted', '=', isSubmitted)
+      .where('studentExercise.deletedAt', 'is', null)
+      .select(['studentExercise.id'])
+      .execute();
+  }
+
   findByExerciseId(exerciseId: number) {
     return this.database
       .selectFrom('studentExercise')

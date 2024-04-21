@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { LessonAttachmentEntity } from './lesson-attachment.entity';
 import { LessonAttachmentGetListDTO } from './dto/lesson-attachment.dto';
 import { paginate } from '../common/function/paginate';
@@ -7,6 +7,10 @@ import { paginate } from '../common/function/paginate';
 @Injectable()
 export class LessonAttachmentRepository {
   constructor(private readonly database: DatabaseService) {}
+
+  insertMultipleWithTransaction(transaction: Transaction, entities: LessonAttachmentEntity[]) {
+    return transaction.insertInto('lessonAttachment').values(entities).execute();
+  }
 
   findByLessonId(dto: LessonAttachmentGetListDTO) {
     const { lessonId, page, limit } = dto;

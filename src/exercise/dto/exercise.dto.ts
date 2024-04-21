@@ -126,6 +126,21 @@ export class ExerciseUpdateDTO {
   @IsOptional()
   @Transform(({ value }) => new Date(value))
   dueDate?: Date;
+
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @IsNotEmpty({ message: DIFFICULTY_ID.IS_NOT_EMPTY })
+  difficultyId: number;
+
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  @IsNotEmpty()
+  allowRedo: boolean;
+
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  @IsNotEmpty()
+  instantMark: boolean;
 }
 
 export class ExerciseGetDetailDTO {

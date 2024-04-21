@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { QuestionCategoryRepository } from './question-category.repository';
+import { QuestionCategoryHasQuestionRepository } from '../question-category-has-question/question-category-has-question.repository';
+import { QuestionRepository } from '../question/question.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { QuestionCategoryGetListDTO, QuestionCategoryStoreDTO, QuestionCategoryUpdateDTO } from './dto/question-category.dto';
 import { QuestionCategoryEntity } from './question-category.entity';
@@ -19,7 +22,10 @@ export class QuestionCategoryService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly questionCategoryRepository: QuestionCategoryRepository,
+    private readonly questionCategoryHasQuestionRepository: QuestionCategoryHasQuestionRepository,
+    private readonly questionRepository: QuestionRepository,
   ) {
     super(elasticLogger);
   }
@@ -133,10 +139,20 @@ export class QuestionCategoryService extends BaseService {
     let response: QuestionCategoryDeleteRO;
 
     try {
-      const questionCategory = await this.questionCategoryRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        const questionCategory = await this.questionCategoryRepository.deleteWithTransaction(transaction, id, actorId);
 
-      response = new QuestionCategoryDeleteRO({
-        id: questionCategory.id,
+        const questionCategoryHasQuestions =
+          await this.questionCategoryHasQuestionRepository.deleteMultipleByQuestionCategoryIdWithTransaction(transaction, id, actorId);
+
+        if (questionCategoryHasQuestions.length) {
+          const questionIds = questionCategoryHasQuestions.map((question) => question.questionId);
+          await this.questionRepository.deleteByIdsWithTransaction(transaction, questionIds, actorId);
+        }
+
+        response = new QuestionCategoryDeleteRO({
+          id: questionCategory.id,
+        });
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.QUESTION_CATEGORY.DELETE_FAILED;

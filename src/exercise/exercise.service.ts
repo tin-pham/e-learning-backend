@@ -7,7 +7,6 @@ import { NotificationEntity } from '../notification/notification.entity';
 import { LessonExerciseEntity } from '../lesson-exercise/lesson-exercise.entity';
 import { ExerciseEntity } from './exercise.entity';
 import { UserNotificationEntity } from '../user-notification/user-notification.entity';
-import { ExerciseRepository } from './exercise.repository';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { LessonExerciseRepository } from '../lesson-exercise/lesson-exercise.repository';
 import { ExerciseQuestionRepository } from '../exercise-question/exercise-question.repository';
@@ -21,6 +20,7 @@ import { ExerciseNotificationRepository } from '../exercise-notification/exercis
 import { StudentRepository } from '../student/student.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { StudentExerciseOptionRepository } from '../student-exercise-option/student-exercise-option.repository';
+import { ExerciseRepository } from './exercise.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
 import { ExerciseGetDetailRO, ExerciseGetListRO, ExerciseStoreRO, ExerciseUpdateRO } from './ro/exercise.ro';
@@ -130,7 +130,7 @@ export class ExerciseService extends BaseService {
     let response: any;
 
     try {
-      response = await this.exerciseRepository.findOneById(id, dto);
+      response = await this.exerciseRepository.findOneById(id, dto, actorId);
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.GET_DETAIL_FAILED;
       this.logger.error(error);
@@ -170,6 +170,18 @@ export class ExerciseService extends BaseService {
         exerciseData.dueDate = dto.dueDate;
       }
 
+      if (dto.instantMark) {
+        exerciseData.instantMark = dto.instantMark;
+      }
+
+      if (dto.allowRedo) {
+        exerciseData.allowRedo = dto.allowRedo;
+      }
+
+      if (dto.difficultyId) {
+        exerciseData.difficultyId = dto.difficultyId;
+      }
+
       await this.database.transaction().execute(async (transaction) => {
         // Update exercise
         const exercise = await this.exerciseRepository.updateWithTransaction(transaction, id, exerciseData);
@@ -180,6 +192,9 @@ export class ExerciseService extends BaseService {
         response.activatedAt = exercise.activatedAt;
         response.dueDate = exercise.dueDate;
         response.time = exercise.time;
+        response.instantMark = exercise.instantMark;
+        response.allowRedo = exercise.allowRedo;
+        response.difficultyId = exercise.difficultyId;
       });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE.UPDATE_FAILED;
@@ -388,7 +403,6 @@ export class ExerciseService extends BaseService {
 
           for (const option of options) {
             // Update if option is exist
-            console.log(option);
             const optionSnapshot = await this.exerciseQuestionOptionSnapshotRepository.getIdByOptionId(option.id);
             const optionSnapshotData = {
               text: option.text,
@@ -450,10 +464,10 @@ export class ExerciseService extends BaseService {
     }
 
     // If active => can't update
-    if (exercise.isActive) {
-      const { code, status, message } = EXCEPTION.EXERCISE.CANNOT_UPDATE_ACTIVATED_EXERCISE;
-      this.throwException({ code, status, message, actorId });
-    }
+    // if (exercise.isActive) {
+    //   const { code, status, message } = EXCEPTION.EXERCISE.CANNOT_UPDATE_ACTIVATED_EXERCISE;
+    //   this.throwException({ code, status, message, actorId });
+    // }
   }
 
   private async validateDelete(id: number, actorId: number) {

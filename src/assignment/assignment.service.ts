@@ -191,7 +191,7 @@ export class AssignmentService extends BaseService {
 
   async update(id: number, dto: AssignmentUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateUpdate(id, actorId);
+    await this.validateUpdate(id, dto, actorId);
 
     let response: AssignmentUpdateRO;
 
@@ -292,6 +292,13 @@ export class AssignmentService extends BaseService {
         const { code, status, message } = EXCEPTION.LESSON.DOES_NOT_EXIST;
         this.throwException({ code, status, message, actorId });
       }
+
+      // Check name exist same lesson
+      const nameCount = await this.assignmentRepository.countByNameAndLessonId(dto.name, dto.lessonId);
+      if (nameCount) {
+        const { code, status, message } = EXCEPTION.ASSIGNMENT.ALREADY_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
 
     // Check course exist
@@ -306,12 +313,21 @@ export class AssignmentService extends BaseService {
     return { lesson };
   }
 
-  private async validateUpdate(id: number, actorId: number) {
+  private async validateUpdate(id: number, dto: AssignmentUpdateDTO, actorId: number) {
     // Check exist
-    const assignmentCount = await this.assignmentRepository.countById(id);
-    if (!assignmentCount) {
+    const assignment = await this.assignmentRepository.findOneById(id);
+    if (!assignment) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
+    }
+
+    if (dto.name) {
+      // Check name exist except id
+      const nameCount = await this.assignmentRepository.countByNameAndLessonIdExceptId(dto.name, assignment.lessonId, id);
+      if (nameCount) {
+        const { code, status, message } = EXCEPTION.ASSIGNMENT.ALREADY_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
   }
 

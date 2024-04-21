@@ -670,6 +670,10 @@ export const API = {
       ROUTE: 'bulk-delete',
       OPERATION: 'Bulk delete user notification',
     },
+    READ_ALL: {
+      ROUTE: 'read-all',
+      OPERATION: 'Read all user notification',
+    },
   },
   LEVEL: {
     TAGS: 'Level',

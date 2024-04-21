@@ -170,6 +170,14 @@ export class ExerciseGetDetailRO {
   studentExerciseId: number;
 
   @ApiProperty()
+  @Expose()
+  allowRedo: boolean;
+
+  @ApiProperty()
+  @Expose()
+  basePoint: number;
+
+  @ApiProperty()
   @Transform(({ value }) => {
     if (value === null) {
       return false;
@@ -210,10 +218,6 @@ export class ExerciseGetDetailRO {
 
   @ApiProperty()
   @Expose()
-  allowRedo?: boolean;
-
-  @ApiProperty()
-  @Expose()
   @Transform(({ value }) => {
     if (value === null) {
       return false;
@@ -248,4 +252,16 @@ export class ExerciseUpdateRO {
   @ApiPropertyOptional()
   @Expose()
   dueDate?: Date;
+
+  @ApiPropertyOptional()
+  @Expose()
+  allowRedo?: boolean;
+
+  @ApiPropertyOptional()
+  @Expose()
+  instantMark?: boolean;
+
+  @ApiProperty()
+  @Expose()
+  difficultyId: number;
 }

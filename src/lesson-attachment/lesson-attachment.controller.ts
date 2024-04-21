@@ -19,7 +19,8 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { JwtPayload } from '../common/decorator';
 import { ResultRO } from '../common/ro/result.ro';
 import { LessonAttachmentService } from './lesson-attachment.service';
-import { LessonAttachmentBulkDeleteDTO, LessonAttachmentBulkStoreDTO, LessonAttachmentGetListDTO } from './dto/lesson-attachment.dto';
+import { LessonAttachmentBulkDeleteDTO, LessonAttachmentGetListDTO } from './dto/lesson-attachment.dto';
+import { LessonAttachmentBulkStoreDTO } from './dto/lesson-attachment.dto';
 import { LessonAttachmentGetListRO } from './ro/lesson-attachment.ro';
 
 const { TAGS, CONTROLLER, BULK_STORE, BULK_DELETE, GET_LIST } = API.LESSON_ATTACHMENT;

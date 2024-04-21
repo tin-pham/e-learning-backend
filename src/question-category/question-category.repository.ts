@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
 import { paginate } from '../common/function/paginate';
 import { QuestionCategoryEntity } from './question-category.entity';
 import { QuestionCategoryGetListDTO } from './dto/question-category.dto';
@@ -68,8 +68,8 @@ export class QuestionCategoryRepository {
       .executeTakeFirst();
   }
 
-  delete(id: number, actorId: number) {
-    return this.database
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction
       .updateTable('questionCategory')
       .set({ deletedAt: new Date(), deletedBy: actorId })
       .where('id', '=', id)

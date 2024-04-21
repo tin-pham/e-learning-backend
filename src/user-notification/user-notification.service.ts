@@ -20,6 +20,26 @@ export class UserNotificationService extends BaseService {
     super(elasticLogger);
   }
 
+  async readAll(decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+
+    try {
+      // Mark all as read
+      await this.userNotificationRepository.updateByUserId(actorId, { isRead: true });
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.USER_NOTIFICATION.READ_ALL_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Read all user notification successfully',
+      actorId,
+    });
+  }
+
   async bulkUpdate(dto: UserNotificationBulkUpdateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     await this.validateBulkUpdate(dto, actorId);

@@ -67,6 +67,10 @@ export class NotificationGetListDataRO {
 
   @ApiPropertyOptional()
   @Expose()
+  commentOwnerUsername?: string;
+
+  @ApiPropertyOptional()
+  @Expose()
   commentOwnerImageUrl?: string;
 
   @ApiPropertyOptional()

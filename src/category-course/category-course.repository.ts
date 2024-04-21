@@ -28,7 +28,7 @@ export class CategoryCourseRepository {
 
   async updateByCategoryIdsAndCourseIdWithTransaction(transaction: Transaction, categoryIds: number[], courseId: number, actorId: number) {
     if (categoryIds && categoryIds.length) {
-      await transaction.deleteFrom('categoryCourse').where('categoryId', 'not in', categoryIds).execute();
+      await transaction.deleteFrom('categoryCourse').where('courseId', '=', courseId).execute();
       return transaction
         .insertInto('categoryCourse')
         .columns(['categoryId', 'courseId', 'createdBy'])

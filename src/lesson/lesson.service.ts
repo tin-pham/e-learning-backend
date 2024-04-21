@@ -24,8 +24,8 @@ import { UserNotificationRepository } from '../user-notification/user-notificati
 import { LessonNotificationRepository } from '../lesson-notification/lesson-notification.repository';
 import { LessonGetListDTO, LessonStoreDTO, LessonUpdateDTO } from './dto/lesson.dto';
 import { LessonDeleteRO, LessonGetDetailRO, LessonGetListRO, LessonStoreRO, LessonUpdateRO } from './ro/lesson.ro';
-import { NotificationGateway } from 'src/socket/notification.gateway';
-import { isValidYoutubeId } from 'src/common/function/is-valid-youtube-id';
+import { NotificationGateway } from '../socket/notification.gateway';
+import { isValidYoutubeId } from '../common/function/is-valid-youtube-id';
 
 @Injectable()
 export class LessonService extends BaseService {
@@ -219,7 +219,7 @@ export class LessonService extends BaseService {
         let videoData;
         if (dto.videoUrl) {
           videoData = new VideoEntity();
-          videoData.videoUrl = dto.videoUrl;
+          videoData.url = dto.videoUrl;
 
           // New metadata
           const YOUTUBE_API_KEY = this.configService.get('YOUTUBE_API_KEY');
@@ -233,6 +233,7 @@ export class LessonService extends BaseService {
         const lesson = await this.lessonRepository.updateWithTransaction(transaction, id, lessonData);
 
         let video: VideoEntity;
+        console.log({ videoData });
         if (videoData) {
           video = await this.videoRepository.updateWithTransaction(transaction, lesson.videoId, videoData);
         }
@@ -286,19 +287,20 @@ export class LessonService extends BaseService {
       this.throwException({ status, message, code, actorId });
     }
 
-    const YOUTUBE_API_KEY = this.configService.get('YOUTUBE_API_KEY');
-    const videoId = getVideoId(dto.videoUrl);
+    if (dto.videoUrl) {
+      const YOUTUBE_API_KEY = this.configService.get('YOUTUBE_API_KEY');
+      const videoId = getVideoId(dto.videoUrl);
 
-    if (!isValidYoutubeId(videoId)) {
-      const { status, message, code } = EXCEPTION.LESSON.INVALID_VIDEO_URL;
-      this.throwException({ status, message, code, actorId });
+      if (!isValidYoutubeId(videoId)) {
+        const { status, message, code } = EXCEPTION.LESSON.INVALID_VIDEO_URL;
+        this.throwException({ status, message, code, actorId });
+      }
+
+      const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${YOUTUBE_API_KEY}&part=contentDetails`;
+
+      const response = await firstValueFrom(this.http.get(url));
+      console.log({ response });
     }
-
-    const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${YOUTUBE_API_KEY}&part=contentDetails`;
-
-    const response = await firstValueFrom(this.http.get(url));
-    console.log(response.data);
-
     return { section };
   }
 

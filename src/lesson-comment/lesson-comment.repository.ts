@@ -55,6 +55,7 @@ export class LessonCommentRepository {
         'commentData.createdAt',
         'commentData.createdBy',
         'users.id as userId',
+        'users.username as username',
         'users.displayName as userDisplayName',
         'image.url as userImageUrl',
       ])
@@ -87,6 +88,7 @@ export class LessonCommentRepository {
             'lessonComment.createdAt',
             'lessonComment.createdBy',
             'users.id as userId',
+            'users.username as username',
             'users.displayName as userDisplayName',
             'image.url as userImageUrl',
             sql`0`.as('depth'),
@@ -108,6 +110,7 @@ export class LessonCommentRepository {
                 'lessonComment.createdAt',
                 'lessonComment.createdBy',
                 'users.id as userId',
+                'users.username as username',
                 'users.displayName as userDisplayName',
                 'image.url as userImageUrl',
                 sql`comment_tree.depth + 1`.as('depth'),

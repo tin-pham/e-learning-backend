@@ -7,6 +7,16 @@ import { sql } from 'kysely';
 export class QuestionCategoryHasQuestionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  deleteMultipleByQuestionCategoryIdWithTransaction(transaction: Transaction, questionCategoryId: number, actorId: number) {
+    return transaction
+      .updateTable('questionCategoryHasQuestion')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('questionCategoryId', '=', questionCategoryId)
+      .where('deletedAt', 'is', null)
+      .returning(['questionId'])
+      .execute();
+  }
+
   getCategoryIdsByQuestionId(questionId: number) {
     return this.database
       .selectFrom('questionCategoryHasQuestion')

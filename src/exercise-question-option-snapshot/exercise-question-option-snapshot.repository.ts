@@ -6,6 +6,16 @@ import { ExerciseQuestionOptionSnapshotEntity } from './exercise-question-option
 export class ExerciseQuestionOptionSnapshotRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async countById(id: number) {
+    const { count } = await this.database
+      .selectFrom('exerciseQuestionOptionSnapshot')
+      .where('id', '=', id)
+      .where('deletedAt', 'is', null)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .executeTakeFirst();
+    return Number(count);
+  }
+
   async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('exerciseQuestionOptionSnapshot')
