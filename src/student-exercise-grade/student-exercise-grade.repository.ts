@@ -31,12 +31,17 @@ export class StudentExerciseGradeRepository {
       .executeTakeFirst();
   }
 
-  async countByStudentExerciseId(studentExerciseId: number) {
+  async countByStudentExerciseId(studentExerciseId: number, actorId: number) {
+    console.log(studentExerciseId);
+    console.log(actorId);
     const { count } = await this.database
       .selectFrom('studentExerciseGrade')
-      .select(({ fn }) => fn.countAll().as('count'))
-      .where('studentExerciseId', '=', studentExerciseId)
-      .where('deletedAt', 'is', null)
+      .where('studentExerciseGrade.studentExerciseId', '=', studentExerciseId)
+      .where('studentExerciseGrade.deletedAt', 'is', null)
+      .innerJoin('studentExercise', 'studentExercise.id', 'studentExerciseGrade.studentExerciseId')
+      .where('studentExercise.deletedAt', 'is', null)
+      .where('studentExercise.createdBy', '=', actorId)
+      .select(({ fn }) => fn.count('studentExerciseGrade.id').as('count'))
       .executeTakeFirst();
     return Number(count);
   }

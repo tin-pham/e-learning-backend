@@ -18,7 +18,7 @@ export class StudentExerciseSubmitSnapshotQuestionDTO {
   @ApiProperty({ type: [Number], example: [1] })
   @IsNumber({}, { each: true })
   @IsArray()
-  snapshotOptionIds: number[];
+  snapshotOptionIds?: number[];
 }
 
 export class StudentExerciseSubmitDTO {

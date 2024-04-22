@@ -44,11 +44,13 @@ import { ExerciseQuestionSnapshotModule } from './exercise-question-snapshot/exe
 import { CourseOutcomeModule } from './course-outcome/course-outcome.module';
 import { PostModule } from './post/post.module';
 import { PostAttachmentModule } from './post-attachment/post-attachment.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule.forRoot(databaseConfig),
+    ScheduleModule.forRoot(),
     ElasticsearchLoggerModule,
     AuthModule,
     HealthModule,

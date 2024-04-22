@@ -8,6 +8,17 @@ import { paginate } from '../common/function/paginate';
 export class ExerciseRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getInstantMarkByStudentExerciseId(studentExerciseId: number) {
+    return this.database
+      .selectFrom('exercise')
+      .where('exercise.deletedAt', 'is', null)
+      .innerJoin('studentExercise', 'studentExercise.exerciseId', 'exercise.id')
+      .where('studentExercise.deletedAt', 'is', null)
+      .where('studentExercise.id', '=', studentExerciseId)
+      .select(['exercise.id', 'exercise.instantMark'])
+      .executeTakeFirst();
+  }
+
   getLessonIdAndIsActiveById(id: number) {
     return this.database
       .selectFrom('exercise')
@@ -113,7 +124,10 @@ export class ExerciseRepository {
       .innerJoin('difficulty', 'difficulty.id', 'exercise.difficultyId')
       .where('difficulty.deletedAt', 'is', null)
       .leftJoin('studentExercise', (join) =>
-        join.onRef('studentExercise.exerciseId', '=', 'exercise.id').on('studentExercise.deletedAt', 'is', null),
+        join
+          .onRef('studentExercise.exerciseId', '=', 'exercise.id')
+          .on('studentExercise.deletedAt', 'is', null)
+          .on('studentExercise.createdBy', '=', actorId),
       )
       .leftJoin('student', (join) => join.onRef('student.id', '=', 'studentExercise.studentId'))
       .leftJoin('users', (join) => join.onRef('users.id', '=', 'student.userId').on('users.deletedAt', 'is', null))
@@ -141,8 +155,7 @@ export class ExerciseRepository {
           .leftJoin('studentExerciseGrade', (join) =>
             join
               .onRef('studentExerciseGrade.studentExerciseId', '=', 'studentExercise.id')
-              .on('studentExerciseGrade.deletedAt', 'is', null)
-              .on('users.id', '=', actorId),
+              .on('studentExerciseGrade.deletedAt', 'is', null),
           )
           .select([
             'studentExerciseGrade.id as studentExerciseGradeId',

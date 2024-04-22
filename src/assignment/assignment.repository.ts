@@ -47,7 +47,7 @@ export class AssignmentRepository {
     return transaction.insertInto('assignment').values(assignment).returning(['id', 'name', 'dueDate']).executeTakeFirst();
   }
 
-  find(dto: AssignmentGetListDTO) {
+  find(dto: AssignmentGetListDTO, actorId: number) {
     const { limit, page, lessonId, courseId, withSubmission } = dto;
 
     const byLesson = Boolean(lessonId);
@@ -72,7 +72,10 @@ export class AssignmentRepository {
       .$if(withSubmission, (qb) =>
         qb
           .leftJoin('assignmentSubmit', (join) =>
-            join.onRef('assignmentSubmit.assignmentId', '=', 'assignment.id').on('assignmentSubmit.deletedAt', 'is', null),
+            join
+              .onRef('assignmentSubmit.assignmentId', '=', 'assignment.id')
+              .on('assignmentSubmit.deletedAt', 'is', null)
+              .on('assignmentSubmit.createdBy', '=', actorId),
           )
           .leftJoin('assignmentSubmitGrade', (join) =>
             join
@@ -89,7 +92,7 @@ export class AssignmentRepository {
     return paginate(query, { limit, page });
   }
 
-  findOneById(id: number) {
+  findOneById(id: number, actorId?: number) {
     return this.database
       .selectFrom('assignment')
       .where('assignment.id', '=', id)
@@ -97,7 +100,10 @@ export class AssignmentRepository {
       .innerJoin('users', 'users.id', 'assignment.createdBy')
       .where('users.deletedAt', 'is', null)
       .leftJoin('assignmentSubmit', (join) =>
-        join.onRef('assignmentSubmit.assignmentId', '=', 'assignment.id').on('assignmentSubmit.deletedAt', 'is', null),
+        join
+          .onRef('assignmentSubmit.assignmentId', '=', 'assignment.id')
+          .on('assignmentSubmit.deletedAt', 'is', null)
+          .on('assignmentSubmit.createdBy', '=', actorId),
       )
       .leftJoin('assignmentSubmitGrade', (join) =>
         join

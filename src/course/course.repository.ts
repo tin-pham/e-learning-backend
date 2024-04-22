@@ -156,7 +156,6 @@ export class CourseRepository {
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'courseImage.imageId').on('image.deletedAt', 'is', null))
       .leftJoin('section', (join) => join.onRef('section.courseId', '=', 'course.id').on('section.deletedAt', 'is', null))
       .leftJoin('lesson', (join) => join.onRef('lesson.sectionId', '=', 'section.id').on('lesson.deletedAt', 'is', null))
-      .groupBy(['course.id', 'course.name', 'image.id', 'image.url', 'level.name', 'course.hours'])
       .$if(withCategoryIds, (query) =>
         query
           .leftJoin('categoryCourse', (join) =>
@@ -178,10 +177,17 @@ export class CourseRepository {
         'course.hours',
         'course.createdBy',
         fn.count('lesson.id').as('lessonCount'),
-        fn.count('section.id').as('sectionCount'),
+        fn.agg('count', ['section.id']).distinct().as('sectionCount'),
+        //fn.count('section.id').as('sectionCount'),
       ])
-      .groupBy(['course.id', 'course.name', 'image.id', 'image.url', 'level.name', 'level.id', 'course.hours'])
+      .groupBy(['course.id', 'level.id', 'image.url'])
       .executeTakeFirst();
+
+    // * db.selectFrom('person')
+    // *   .select(({ fn }) => [
+    // *     fn.agg<number>('rank').over().as('rank'),
+    // *     fn.agg<string>('group_concat', ['first_name']).distinct().as('first_names')
+    // *   ])
   }
 
   updateWithTransaction(transaction: Transaction, id: number, entity: CourseEntity) {

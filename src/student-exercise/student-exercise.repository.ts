@@ -38,12 +38,13 @@ export class StudentExerciseRepository {
       .execute();
   }
 
-  getIdByExerciseId(exerciseId: number) {
+  getIdByExerciseId(exerciseId: number, actorId: number) {
     return this.database
       .selectFrom('studentExercise')
       .select('id')
       .where('exerciseId', '=', exerciseId)
       .where('deletedAt', 'is', null)
+      .where('createdBy', '=', actorId)
       .executeTakeFirst();
   }
 
@@ -120,8 +121,8 @@ export class StudentExerciseRepository {
       .executeTakeFirst();
   }
 
-  insert(entity: StudentExerciseEntity) {
-    return this.database.insertInto('studentExercise').values(entity).returning(['id', 'createdAt as startDoingAt']).executeTakeFirst();
+  insertWithTransaction(transaction: Transaction, entity: StudentExerciseEntity) {
+    return transaction.insertInto('studentExercise').values(entity).returning(['id', 'createdAt as startDoingAt']).executeTakeFirst();
   }
 
   deleteWithTransaction(transaction: Transaction, id: number) {

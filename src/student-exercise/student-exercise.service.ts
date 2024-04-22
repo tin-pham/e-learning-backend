@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
-import { DatabaseService } from '../database';
+import { DatabaseService, Transaction } from '../database';
+import { StudentExerciseGradeEntity } from '../student-exercise-grade/student-exercise-grade.entity';
 import { ExerciseRepository } from '../exercise/exercise.repository';
 import { StudentRepository } from '../student/student.repository';
 import { StudentExerciseRepository } from './student-exercise.repository';
@@ -14,6 +15,8 @@ import { StudentExerciseGetListSubmittedDTO, StudentExerciseStoreDTO, StudentExe
 import { StudentExerciseEntity } from './student-exercise.entity';
 import { ResultRO } from '../common/ro/result.ro';
 import { StudentExerciseGetListSubmittedRO, StudentExerciseStoreRO } from './ro/student-exercise.ro';
+import { CronJob } from 'cron';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class StudentExerciseService extends BaseService {
@@ -22,6 +25,7 @@ export class StudentExerciseService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
+    private readonly schedulerRegistry: SchedulerRegistry,
     private readonly exerciseRepository: ExerciseRepository,
     private readonly studentRepository: StudentRepository,
     private readonly studentExerciseRepository: StudentExerciseRepository,
@@ -35,7 +39,7 @@ export class StudentExerciseService extends BaseService {
 
   async store(dto: StudentExerciseStoreDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    const { student } = await this.validateStore(dto, actorId);
+    const { student, exercise } = await this.validateStore(dto, actorId);
 
     const response = new StudentExerciseStoreRO();
 
@@ -44,7 +48,13 @@ export class StudentExerciseService extends BaseService {
       studentExerciseData.exerciseId = dto.exerciseId;
       studentExerciseData.studentId = student.id;
       studentExerciseData.createdBy = actorId;
-      const studentExercise = await this.studentExerciseRepository.insert(studentExerciseData);
+
+      let studentExercise: any;
+      await this.database.transaction().execute(async (transaction) => {
+        studentExercise = await this.studentExerciseRepository.insertWithTransaction(transaction, studentExerciseData);
+
+        this.scheduleExerciseSubmission(studentExercise.id, exercise.time, decoded);
+      });
 
       response.id = studentExercise.id;
       response.startDoingAt = studentExercise.startDoingAt;
@@ -62,13 +72,17 @@ export class StudentExerciseService extends BaseService {
     });
   }
 
-  async submit(id: number, dto: StudentExerciseSubmitDTO, decoded: IJwtPayload) {
+  async submit(id: number, dto: StudentExerciseSubmitDTO, decoded: IJwtPayload, trx?: Transaction) {
     const actorId = decoded.userId;
     const { studentExercise } = await this.validateSubmit(id, dto, actorId);
-    console.log('wtf');
 
     try {
       await this.database.transaction().execute(async (transaction) => {
+        // Stop cron job if it not run through by another service (cron job)
+        if (!trx) {
+          this.stopScheduleExerciseSubmission(id);
+        }
+
         const studentExerciseData = new StudentExerciseEntity();
         studentExerciseData.updatedBy = actorId;
         studentExerciseData.updatedAt = new Date();
@@ -79,7 +93,7 @@ export class StudentExerciseService extends BaseService {
           studentExerciseData.isLate = true;
         }
 
-        await this.studentExerciseRepository.updateWithTransaction(transaction, id, studentExerciseData);
+        await this.studentExerciseRepository.updateWithTransaction(trx || transaction, id, studentExerciseData);
 
         for (const questionSnapshot of dto.snapshotQuestions) {
           console.log(questionSnapshot.snapshotOptionIds);
@@ -88,7 +102,7 @@ export class StudentExerciseService extends BaseService {
               questionSnapshotId: questionSnapshot.id,
               questionOptionSnapshotIds: questionSnapshot.snapshotOptionIds,
               studentExerciseId: id,
-              transaction,
+              transaction: trx || transaction,
             });
           }
         }
@@ -179,7 +193,47 @@ export class StudentExerciseService extends BaseService {
       this.throwException({ code, status, message, actorId });
     }
 
-    return { student };
+    return { student, exercise };
+  }
+  private scheduleExerciseSubmission(studentExerciseId: number, duration: number, decoded: IJwtPayload) {
+    const jobName = `submit-exercise-${studentExerciseId}`;
+    const job = new CronJob(new Date(Date.now() + duration * 61000), async () => {
+      await this.submit(studentExerciseId, { snapshotQuestions: [] }, decoded);
+
+      // Check if exercise is instant grade => 0 since don't have any options
+      const exercise = await this.exerciseRepository.getInstantMarkByStudentExerciseId(studentExerciseId);
+
+      if (!exercise) {
+        const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId: decoded.userId });
+      }
+
+      if (exercise.instantMark) {
+        const studentExerciseGradeData = new StudentExerciseGradeEntity();
+        studentExerciseGradeData.basePoint = 100;
+        studentExerciseGradeData.createdBy = decoded.userId;
+        studentExerciseGradeData.studentExerciseId = studentExerciseId;
+        studentExerciseGradeData.correctCount = 0;
+        studentExerciseGradeData.totalCount = 0;
+        studentExerciseGradeData.point = 0;
+
+        await this.studentExerciseGradeRepository.insert(studentExerciseGradeData);
+      }
+    });
+
+    this.schedulerRegistry.addCronJob(jobName, job);
+    job.start();
+    this.logger.log(`Scheduled auto submission for Exercise ID ${studentExerciseId} in ${duration} minutes.`);
+  }
+
+  private async stopScheduleExerciseSubmission(studentExerciseId: number) {
+    const jobName = `submit-exercise-${studentExerciseId}`;
+    const job = this.schedulerRegistry.doesExist('cron', jobName) ? this.schedulerRegistry.getCronJob(jobName) : null;
+    if (job) {
+      job.stop();
+    }
+
+    this.logger.log(`Stop auto submission for Exercise ID ${studentExerciseId}.`);
   }
 
   private async validateSubmit(id: number, dto: StudentExerciseSubmitDTO, actorId: number) {
@@ -204,10 +258,12 @@ export class StudentExerciseService extends BaseService {
       snapshotOptionIds.push(...question.snapshotOptionIds);
     }
 
-    const exerciseQuestionSnapshotCount = await this.exerciseQuestionSnapshotRepository.countByIds(snapshotQuestionIds);
-    if (!exerciseQuestionSnapshotCount) {
-      const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
-      this.throwException({ code, status, message, actorId });
+    if (snapshotQuestionIds.length) {
+      const exerciseQuestionSnapshotCount = await this.exerciseQuestionSnapshotRepository.countByIds(snapshotQuestionIds);
+      if (!exerciseQuestionSnapshotCount) {
+        const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
+        this.throwException({ code, status, message, actorId });
+      }
     }
 
     if (snapshotOptionIds.length) {

@@ -64,7 +64,7 @@ export class ExerciseQuestionSnapshotService extends BaseService {
   }
 
   private async validateStudentGetList(dto: ExerciseQuestionSnapshotGetListDTO, actorId: number) {
-    const studentExercise = await this.studentExerciseRepository.getIdByExerciseId(dto.exerciseId);
+    const studentExercise = await this.studentExerciseRepository.getIdByExerciseId(dto.exerciseId, actorId);
 
     if (!studentExercise) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.DOES_NOT_EXIST;
@@ -72,7 +72,8 @@ export class ExerciseQuestionSnapshotService extends BaseService {
     }
 
     // Is exercise graded
-    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(studentExercise.id);
+    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(studentExercise.id, actorId);
+    console.log(studentExerciseGradeCount);
     let isGraded = false;
     if (studentExerciseGradeCount) {
       isGraded = true;

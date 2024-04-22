@@ -153,7 +153,7 @@ export class AssignmentService extends BaseService {
   async getList(dto: AssignmentGetListDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     try {
-      const response = await this.assignmentRepository.find(dto);
+      const response = await this.assignmentRepository.find(dto, actorId);
 
       return this.success({
         classRO: AssignmentGetListRO,
@@ -171,7 +171,7 @@ export class AssignmentService extends BaseService {
     let assignment: AssignmentGetDetailRO;
 
     try {
-      assignment = await this.assignmentRepository.findOneById(id);
+      assignment = await this.assignmentRepository.findOneById(id, actorId);
     } catch (error) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.GET_DETAIL_FAILED;
       this.logger.error(error);
@@ -255,7 +255,8 @@ export class AssignmentService extends BaseService {
     const { student } = await this.validateGetSubmission(id, actorId);
 
     try {
-      const submission = this.assignmentSubmitRepository.findOneByAssignmentIdAndStudentId(id, student.id);
+      const submission = await this.assignmentSubmitRepository.findOneByAssignmentIdAndStudentId(id, student.id);
+      console.log(submission);
 
       return this.success({
         classRO: AssignmentGetSubmissionRO,
@@ -315,7 +316,7 @@ export class AssignmentService extends BaseService {
 
   private async validateUpdate(id: number, dto: AssignmentUpdateDTO, actorId: number) {
     // Check exist
-    const assignment = await this.assignmentRepository.findOneById(id);
+    const assignment = await this.assignmentRepository.findOneById(id, actorId);
     if (!assignment) {
       const { code, status, message } = EXCEPTION.ASSIGNMENT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
