@@ -32,8 +32,6 @@ export class StudentExerciseGradeRepository {
   }
 
   async countByStudentExerciseId(studentExerciseId: number, actorId: number) {
-    console.log(studentExerciseId);
-    console.log(actorId);
     const { count } = await this.database
       .selectFrom('studentExerciseGrade')
       .where('studentExerciseGrade.studentExerciseId', '=', studentExerciseId)

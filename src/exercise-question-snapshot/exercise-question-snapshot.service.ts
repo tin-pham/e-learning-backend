@@ -45,7 +45,7 @@ export class ExerciseQuestionSnapshotService extends BaseService {
     try {
       let response: any;
       if (isGraded) {
-        response = await this.exerciseQuestionSnapshotRepository.findByStudentExerciseId(dto, studentExercise.id);
+        response = await this.exerciseQuestionSnapshotRepository.findByStudentExerciseId(dto, studentExercise.id, actorId);
       } else {
         response = await this.exerciseQuestionSnapshotRepository.findWithoutOption(dto, studentExercise.id);
       }
@@ -73,7 +73,6 @@ export class ExerciseQuestionSnapshotService extends BaseService {
 
     // Is exercise graded
     const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(studentExercise.id, actorId);
-    console.log(studentExerciseGradeCount);
     let isGraded = false;
     if (studentExerciseGradeCount) {
       isGraded = true;

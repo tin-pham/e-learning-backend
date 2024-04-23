@@ -26,7 +26,8 @@ export class ExerciseQuestionOptionSnapshotRepository {
     return Number(count);
   }
 
-  getCorrectIdByQuestionId(exerciseQuestionSnapshotId: number) {
+  getCorrectIdByQuestionSnapshotId(exerciseQuestionSnapshotId: number) {
+    console.log({ exerciseQuestionSnapshotId });
     return this.database
       .selectFrom('exerciseQuestionOptionSnapshot')
       .select(['id'])

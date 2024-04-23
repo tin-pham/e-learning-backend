@@ -20,7 +20,6 @@ export class ExerciseQuestionSnapshotGetListOptionRO {
     if (value === undefined) {
       return false;
     }
-    console.log(value);
 
     if (value === null) {
       return false;

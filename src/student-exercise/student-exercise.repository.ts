@@ -72,6 +72,8 @@ export class StudentExerciseRepository {
         'studentExercise.submittedAt',
         'studentExercise.isLate',
         'users.displayName as userDisplayName',
+        'users.id as userId',
+        'users.username as username',
         'image.url as userImageUrl',
         'studentExerciseGrade.point',
         'studentExerciseGrade.totalCount',

@@ -40,7 +40,6 @@ export class QuestionCategoryRepository {
           .where('exerciseQuestion.id', 'is', null),
       )
       .select(({ fn }) => ['questionCategory.id as id', 'questionCategory.name as name', fn.count('question.id').as('questionCount')]);
-    console.log(search);
 
     if (search) {
       query = query.where((eb) => eb.or([eb('questionCategory.name', 'ilike', `%${search}%`)]));

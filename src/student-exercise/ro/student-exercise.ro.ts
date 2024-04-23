@@ -47,6 +47,14 @@ export class StudentExerciseGetListSubmittedDataRO {
 
   @ApiProperty()
   @Expose()
+  userId: number;
+
+  @ApiProperty()
+  @Expose()
+  username: string;
+
+  @ApiProperty()
+  @Expose()
   point: number;
 
   @ApiProperty()

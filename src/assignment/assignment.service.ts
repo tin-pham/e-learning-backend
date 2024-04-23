@@ -256,7 +256,6 @@ export class AssignmentService extends BaseService {
 
     try {
       const submission = await this.assignmentSubmitRepository.findOneByAssignmentIdAndStudentId(id, student.id);
-      console.log(submission);
 
       return this.success({
         classRO: AssignmentGetSubmissionRO,

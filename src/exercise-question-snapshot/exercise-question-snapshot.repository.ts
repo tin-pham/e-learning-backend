@@ -75,13 +75,14 @@ export class ExerciseQuestionSnapshotRepository {
   }
 
   find(dto: ExerciseQuestionSnapshotGetListDTO) {
-    const { page, limit } = dto;
+    const { page, limit, exerciseId } = dto;
 
     const query = this.database
       .selectFrom('exerciseQuestionSnapshot')
       .where('exerciseQuestionSnapshot.deletedAt', 'is', null)
       .innerJoin('exercise', 'exercise.id', 'exerciseQuestionSnapshot.exerciseId')
       .where('exercise.deletedAt', 'is', null)
+      .where('exercise.id', '=', exerciseId)
       .innerJoin('difficulty', 'difficulty.id', 'exerciseQuestionSnapshot.difficultyId')
       .where('difficulty.deletedAt', 'is', null)
       .innerJoin(
@@ -125,7 +126,7 @@ export class ExerciseQuestionSnapshotRepository {
     });
   }
 
-  findByStudentExerciseId(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number) {
+  findByStudentExerciseId(dto: ExerciseQuestionSnapshotGetListDTO, studentExerciseId: number, actorId: number) {
     const { page, limit } = dto;
 
     const query = this.database
@@ -147,7 +148,8 @@ export class ExerciseQuestionSnapshotRepository {
       .leftJoin('studentExerciseOption', (join) =>
         join
           .onRef('studentExerciseOption.questionOptionSnapshotId', '=', 'exerciseQuestionOptionSnapshot.id')
-          .on('studentExerciseOption.deletedAt', 'is', null),
+          .on('studentExerciseOption.deletedAt', 'is', null)
+          .on('studentExerciseOption.createdBy', '=', actorId),
       )
       .select(({ fn, ref }) => [
         'exerciseQuestionSnapshot.id',

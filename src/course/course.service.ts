@@ -140,7 +140,6 @@ export class CourseService extends BaseService {
 
     try {
       response = await this.courseRepository.findOneById(id, dto);
-      console.log(response);
     } catch (error) {
       const { code, status, message } = EXCEPTION.COURSE.GET_DETAIL_FAILED;
       this.logger.error(error);

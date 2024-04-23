@@ -46,18 +46,19 @@ export class StudentExerciseGradeService extends BaseService {
 
   async calculate(dto: StudentExerciseGradeCalculateDTO, decoded: IJwtPayload, transaction?: Transaction) {
     const actorId = decoded.userId;
-    const { studentExercise, questionIds } = await this.validateCalculate(dto, actorId);
+    const { studentExercise, questionSnapshotIds } = await this.validateCalculate(dto, actorId);
     let response: StudentExerciseGradeCalculateRO;
 
     try {
       const studentExerciseGradeData = new StudentExerciseGradeEntity();
       studentExerciseGradeData.correctCount = 0;
       studentExerciseGradeData.studentExerciseId = studentExercise.id;
-      studentExerciseGradeData.totalCount = questionIds.length;
+      studentExerciseGradeData.totalCount = questionSnapshotIds.length;
 
-      for (const questionId of questionIds) {
+      for (const questionId of questionSnapshotIds) {
         // Get correct question option
-        const correctQuestionOptions = await this.exerciseQuestionOptionSnapshotRepository.getCorrectIdByQuestionId(questionId);
+        const correctQuestionOptions = await this.exerciseQuestionOptionSnapshotRepository.getCorrectIdByQuestionSnapshotId(questionId);
+        console.log(correctQuestionOptions);
         const correctQuestionOptionIds = correctQuestionOptions.map((option) => option.id);
 
         // Get student exercise option (snapshot)
@@ -65,6 +66,7 @@ export class StudentExerciseGradeService extends BaseService {
           studentExercise.id,
           questionId,
         );
+        console.log(studentExerciseOptions);
         const studentExerciseOptionIds = studentExerciseOptions.map((option) => option.questionOptionSnapshotId);
 
         // Compare
@@ -218,15 +220,15 @@ export class StudentExerciseGradeService extends BaseService {
     }
 
     // Get question ids by exercise id
-    const questions = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseId(studentExercise.exerciseId);
+    const questionSnapshots = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseId(studentExercise.exerciseId);
 
-    if (!questions.length) {
+    if (!questionSnapshots.length) {
       const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
-    const questionIds = questions.map((question) => question.id);
+    const questionSnapshotIds = questionSnapshots.map((question) => question.id);
 
-    return { studentExercise, questionIds };
+    return { studentExercise, questionSnapshotIds };
   }
 
   private async validateDelete(id: number, actorId: number) {

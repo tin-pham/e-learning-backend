@@ -7,6 +7,7 @@ export interface IExerciseSubmitOptionInsertMultiple {
   questionSnapshotId: number;
   questionOptionSnapshotIds: number[];
   studentExerciseId: number;
+  createdBy: number;
 }
 
 @Injectable()
@@ -24,15 +25,16 @@ export class StudentExerciseOptionRepository {
   }
 
   insertMultipleQuestionOptionIdsWithTransaction(data: IExerciseSubmitOptionInsertMultiple) {
-    const { transaction, studentExerciseId, questionSnapshotId, questionOptionSnapshotIds } = data;
+    const { transaction, studentExerciseId, questionSnapshotId, questionOptionSnapshotIds, createdBy } = data;
     return transaction
       .insertInto('studentExerciseOption')
-      .columns(['questionOptionSnapshotId', 'studentExerciseId', 'questionSnapshotId'])
+      .columns(['questionOptionSnapshotId', 'studentExerciseId', 'questionSnapshotId', 'createdBy'])
       .expression(() =>
         this.database.selectNoFrom(() => [
           sql`unnest(${questionOptionSnapshotIds}::int[])`.as('questionOptionSnapshotId'),
           sql`${studentExerciseId}`.as('studentExerciseId'),
           sql`${questionSnapshotId}`.as('questionSnapshotId'),
+          sql`${createdBy}`.as('createdBy'),
         ]),
       )
       .execute();

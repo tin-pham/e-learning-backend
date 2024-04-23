@@ -96,13 +96,13 @@ export class StudentExerciseService extends BaseService {
         await this.studentExerciseRepository.updateWithTransaction(trx || transaction, id, studentExerciseData);
 
         for (const questionSnapshot of dto.snapshotQuestions) {
-          console.log(questionSnapshot.snapshotOptionIds);
           if (questionSnapshot.snapshotOptionIds.length) {
             await this.studentExerciseOptionRepository.insertMultipleQuestionOptionIdsWithTransaction({
               questionSnapshotId: questionSnapshot.id,
               questionOptionSnapshotIds: questionSnapshot.snapshotOptionIds,
               studentExerciseId: id,
               transaction: trx || transaction,
+              createdBy: actorId,
             });
           }
         }

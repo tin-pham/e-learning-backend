@@ -184,7 +184,6 @@ export class LessonService extends BaseService {
       const lesson = await this.lessonRepository.getCourseIdById(id);
       const student = await this.studentRepository.getStudentIdByUserId(actorId);
       const courseStudent = await this.courseStudentRepository.countByCourseIdAndStudentId(lesson.courseId, student.id);
-      console.log({ courseStudent });
 
       if (!courseStudent) {
         const { status, message, code } = EXCEPTION.COURSE_STUDENT.NOT_REGISTERED;
@@ -233,7 +232,6 @@ export class LessonService extends BaseService {
         const lesson = await this.lessonRepository.updateWithTransaction(transaction, id, lessonData);
 
         let video: VideoEntity;
-        console.log({ videoData });
         if (videoData) {
           video = await this.videoRepository.updateWithTransaction(transaction, lesson.videoId, videoData);
         }
