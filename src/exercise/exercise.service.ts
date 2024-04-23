@@ -365,7 +365,10 @@ export class ExerciseService extends BaseService {
         // Update the current question in exercise
         for (const exerciseQuestion of exerciseQuestions) {
           // Update if question is exist
-          let questionSnapshot = await this.exerciseQuestionSnapshotRepository.getIdByQuestionId(exerciseQuestion.questionId);
+          let questionSnapshot = await this.exerciseQuestionSnapshotRepository.getIdByQuestionIdAndExerciseId(
+            exerciseQuestion.questionId,
+            id,
+          );
           const questionSnapshotData = {
             text: exerciseQuestion.questionText,
             capturedAt: new Date(),
@@ -403,7 +406,7 @@ export class ExerciseService extends BaseService {
 
           for (const option of options) {
             // Update if option is exist
-            const optionSnapshot = await this.exerciseQuestionOptionSnapshotRepository.getIdByOptionId(option.id);
+            const optionSnapshot = await this.exerciseQuestionOptionSnapshotRepository.getIdByOptionIdAndExerciseId(option.id, id);
             const optionSnapshotData = {
               text: option.text,
               isCorrect: option.isCorrect,
@@ -420,6 +423,7 @@ export class ExerciseService extends BaseService {
                 updatedAt: new Date(),
               });
             } else {
+              console.log('wtf bro');
               // Insert new option snapshot with new option
               await this.exerciseQuestionOptionSnapshotRepository.insertWithTransaction(transaction, {
                 ...optionSnapshotData,

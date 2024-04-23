@@ -101,11 +101,12 @@ export class ExerciseQuestionOptionSnapshotRepository {
       .execute();
   }
 
-  getIdByOptionId(optionId: number) {
+  getIdByOptionIdAndExerciseId(optionId: number, exerciseId: number) {
     return this.database
       .selectFrom('exerciseQuestionOptionSnapshot')
       .where('deletedAt', 'is', null)
       .where('questionOptionId', '=', optionId)
+      .where('exerciseId', '=', exerciseId)
       .select(['id'])
       .executeTakeFirst();
   }

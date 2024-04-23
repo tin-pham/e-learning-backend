@@ -260,11 +260,12 @@ export class ExerciseQuestionSnapshotRepository {
       .execute();
   }
 
-  getIdByQuestionId(questionId: number) {
+  getIdByQuestionIdAndExerciseId(questionId: number, exerciseId: number) {
     return this.database
       .selectFrom('exerciseQuestionSnapshot')
       .select(['id'])
       .where('questionId', '=', questionId)
+      .where('exerciseId', '=', exerciseId)
       .where('deletedAt', 'is', null)
       .executeTakeFirst();
   }
