@@ -18,7 +18,11 @@ import { UserNotificationRepository } from '../user-notification/user-notificati
 import { NotificationRepository } from '../notification/notification.repository';
 import { StudentExerciseNotificationRepository } from '../student-exercise-notification/student-exercise-notification.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { StudentExerciseGradeBulkCalculateDTO, StudentExerciseGradeCalculateDTO } from './dto/student-exercise-grade.dto';
+import {
+  StudentExerciseGradeBulkCalculateDTO,
+  StudentExerciseGradeCalculateDTO,
+  StudentExerciseGradeDeleteAllDTO,
+} from './dto/student-exercise-grade.dto';
 import { StudentExerciseGradeCalculateRO, StudentExerciseGradeDeleteRO } from './ro/student-exercise-grade.ro';
 import { ResultRO } from '../common/ro/result.ro';
 
@@ -111,6 +115,15 @@ export class StudentExerciseGradeService extends BaseService {
     const actorId = decoded.userId;
     const { studentExercises, exercise } = await this.validateBulkCalculate(dto, decoded.userId);
 
+    if (!studentExercises.length) {
+      return this.success({
+        classRO: ResultRO,
+        response: { result: true },
+        message: 'Calculate all student exercise grade success',
+        actorId,
+      });
+    }
+
     try {
       await this.database.transaction().execute(async (transaction) => {
         for (const studentExercise of studentExercises) {
@@ -199,6 +212,34 @@ export class StudentExerciseGradeService extends BaseService {
     });
   }
 
+  async deleteAll(dto: StudentExerciseGradeDeleteAllDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    const { studentExerciseGradeCount } = await this.validateDeleteAll(dto, actorId);
+
+    try {
+      if (!studentExerciseGradeCount) {
+        return this.success({
+          classRO: ResultRO,
+          response: { result: true },
+          message: 'Delete all student exercise grade success',
+          actorId,
+        });
+      }
+      await this.studentExerciseGradeRepository.deleteByExerciseId(dto.exerciseId, actorId);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.DELETE_ALL_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+
+    return this.success({
+      classRO: ResultRO,
+      response: { result: true },
+      message: 'Delete all student exercise grade success',
+      actorId,
+    });
+  }
+
   private async validateCalculate(dto: StudentExerciseGradeCalculateDTO, actorId: number) {
     // Check unique
     // const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByStudentExerciseId(dto.studentExerciseId);
@@ -221,6 +262,7 @@ export class StudentExerciseGradeService extends BaseService {
 
     // Get question ids by exercise id
     const questionSnapshots = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseId(studentExercise.exerciseId);
+    console.log(questionSnapshots);
 
     if (!questionSnapshots.length) {
       const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
@@ -251,11 +293,6 @@ export class StudentExerciseGradeService extends BaseService {
     // Get student exercise list
     const studentExercises = await this.studentExerciseRepository.findByExerciseId(dto.exerciseId);
 
-    if (!studentExercises.length) {
-      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE_GRADE.DOES_NOT_EXIST;
-      this.throwException({ code, status, message, actorId });
-    }
-
     // Get exercise
     const exercise = await this.exerciseRepository.getNameById(dto.exerciseId);
     if (!exercise) {
@@ -266,6 +303,22 @@ export class StudentExerciseGradeService extends BaseService {
     return {
       studentExercises,
       exercise,
+    };
+  }
+
+  private async validateDeleteAll(dto: StudentExerciseGradeDeleteAllDTO, actorId: number) {
+    // Check exercise exist
+    const exerciseCount = await this.exerciseRepository.countById(dto.exerciseId);
+    if (!exerciseCount) {
+      const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+
+    // Check student exercise grade exist
+    const studentExerciseGradeCount = await this.studentExerciseGradeRepository.countByExerciseId(dto.exerciseId);
+
+    return {
+      studentExerciseGradeCount,
     };
   }
 }

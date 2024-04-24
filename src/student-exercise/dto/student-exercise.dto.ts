@@ -35,3 +35,11 @@ export class StudentExerciseGetListSubmittedDTO extends PaginateDTO {
   @IsNotEmpty()
   exerciseId: number;
 }
+
+export class StudentExerciseBulkDeleteDTO {
+  @ApiProperty({ example: 1 })
+  @IsNumber()
+  @Type(() => Number)
+  @IsNotEmpty()
+  exerciseId: number;
+}

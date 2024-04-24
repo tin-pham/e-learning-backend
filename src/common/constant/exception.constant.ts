@@ -870,6 +870,11 @@ export const EXCEPTION = {
     },
   },
   STUDENT_EXERCISE_GRADE: {
+    DELETE_ALL_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete all student exercise grade',
+      code: 'STUDENT_EXERCISE_GRADE.DELETE_ALL_FAILED',
+    },
     BULK_CALCULATE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to bulk calculate student exercise grade',
@@ -1213,6 +1218,11 @@ export const EXCEPTION = {
     },
   },
   STUDENT_EXERCISE: {
+    BULK_DELETE_FAILED: {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to bulk delete student exercise',
+      code: 'STUDENT_EXERCISE.BULK_DELETE_FAILED',
+    },
     DELETE_FAILED: {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to delete student exercise',

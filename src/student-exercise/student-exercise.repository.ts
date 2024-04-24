@@ -48,6 +48,15 @@ export class StudentExerciseRepository {
       .executeTakeFirst();
   }
 
+  getIdsByExerciseIds(exerciseIds: number[]) {
+    return this.database
+      .selectFrom('studentExercise')
+      .select('id')
+      .where('exerciseId', 'in', exerciseIds)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
   find(dto: StudentExerciseGetListSubmittedDTO) {
     const { page, limit, exerciseId } = dto;
 
@@ -109,6 +118,7 @@ export class StudentExerciseRepository {
       .selectFrom('studentExercise')
       .where('studentId', '=', studentId)
       .where('exerciseId', '=', exerciseId)
+      .where('deletedAt', 'is', null)
       .select(({ fn }) => fn.countAll().as('count'))
       .executeTakeFirst();
     return Number(count);
@@ -158,6 +168,14 @@ export class StudentExerciseRepository {
         'studentExerciseGrade.id as studentExerciseGradeId',
         //'studentExerciseGrade.basePoint as studentExerciseGradeBasePoint',
       ])
+      .execute();
+  }
+
+  deleteByExerciseId(exerciseId: number, actorId: number) {
+    return this.database
+      .updateTable('studentExercise')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('exerciseId', '=', exerciseId)
       .execute();
   }
 }

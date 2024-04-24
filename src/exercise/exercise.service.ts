@@ -19,7 +19,6 @@ import { CourseNotificationRepository } from '../course-notification/course-noti
 import { ExerciseNotificationRepository } from '../exercise-notification/exercise-notification.repository';
 import { StudentRepository } from '../student/student.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
-import { StudentExerciseOptionRepository } from '../student-exercise-option/student-exercise-option.repository';
 import { ExerciseRepository } from './exercise.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseGetDetailDTO, ExerciseGetListDTO, ExerciseStoreDTO, ExerciseUpdateDTO } from './dto/exercise.dto';
@@ -47,7 +46,6 @@ export class ExerciseService extends BaseService {
     private readonly exerciseNotificationRepository: ExerciseNotificationRepository,
     private readonly courseStudentRepository: CourseStudentRepository,
     private readonly studentRepository: StudentRepository,
-    private readonly studentExerciseOptionRepository: StudentExerciseOptionRepository,
   ) {
     super(elasticLogger);
   }
@@ -337,31 +335,42 @@ export class ExerciseService extends BaseService {
         // Get current question belong to this exercise
         const exerciseQuestions = await this.exerciseQuestionRepository.findQuestionsByExerciseId(id);
 
-        // Get deleted exercise question
-        const deletedExerciseQuestions = await this.exerciseQuestionRepository.findDeletedByExerciseId(id);
-
-        // Delete snapshot of deleted exercise question
-        if (deletedExerciseQuestions.length) {
-          const exerciseQuestionsSnapshot = await this.exerciseQuestionSnapshotRepository.deleteByQuestionIdsWithTransaction(
-            transaction,
-            deletedExerciseQuestions.map((question) => question.questionId),
-          );
-
-          // Delete options of these snapshot question
-          const questionOptionSnapshots =
-            await this.exerciseQuestionOptionSnapshotRepository.deleteByExerciseQuestionSnapshotIdsWithTransaction(
-              transaction,
-              exerciseQuestionsSnapshot.map((questionSnapshot) => questionSnapshot.id),
-            );
-
-          // Delete student options
-          const questionoptionSnapshotIds = questionOptionSnapshots.map((questionOptionSnapshot) => questionOptionSnapshot.id);
-          await this.studentExerciseOptionRepository.deleteByExerciseQuestionSnapshotIdsWithTransaction(
-            transaction,
-            questionoptionSnapshotIds,
-          );
-        }
-
+        // // Get deleted exercise question
+        // const deletedExerciseQuestions = await this.exerciseQuestionRepository.findDeletedByExerciseId(id);
+        // const deletedQuestionIds = deletedExerciseQuestions.map((question) => question.questionId);
+        //
+        // if (deletedExerciseQuestions.length) {
+        //   // Get deleted question snapshot id
+        //   const exerciseQuestionSnapshots = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseIdAndQuestionIds(
+        //     id,
+        //     deletedQuestionIds,
+        //   );
+        //   const exerciseQuestionSnapshotIds = exerciseQuestionSnapshots.map((exerciseQuestionSnapshot) => exerciseQuestionSnapshot.id);
+        //   console.log(exerciseQuestionSnapshotIds);
+        //
+        //   if (exerciseQuestionSnapshotIds.length) {
+        //     // Delete student options
+        //     await this.studentExerciseOptionRepository.deleteByExerciseQuestionSnapshotIdsWithTransaction(
+        //       transaction,
+        //       exerciseQuestionSnapshotIds,
+        //     );
+        //
+        //     // Delete options of these snapshot question
+        //     await this.exerciseQuestionOptionSnapshotRepository.deleteByExerciseIdAndQuestionSnapshotIdsWithTransaction(
+        //       transaction,
+        //       id,
+        //       exerciseQuestionSnapshotIds,
+        //     );
+        //
+        //     // Delete snapshot of deleted exercise question
+        //     await this.exerciseQuestionSnapshotRepository.deleteByExerciseIdAndIdsWithTransaction(
+        //       transaction,
+        //       id,
+        //       exerciseQuestionSnapshotIds,
+        //     );
+        //   }
+        // }
+        //
         // Update the current question in exercise
         for (const exerciseQuestion of exerciseQuestions) {
           // Update if question is exist

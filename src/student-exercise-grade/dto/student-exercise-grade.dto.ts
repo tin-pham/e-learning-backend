@@ -20,3 +20,9 @@ export class StudentExerciseGradeBulkCalculateDTO {
   @IsNumber()
   exerciseId: number;
 }
+
+export class StudentExerciseGradeDeleteAllDTO {
+  @ApiProperty()
+  @IsNumber()
+  exerciseId: number;
+}

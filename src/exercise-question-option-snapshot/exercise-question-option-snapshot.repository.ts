@@ -136,4 +136,20 @@ export class ExerciseQuestionOptionSnapshotRepository {
       .where('deletedAt', 'is', null)
       .execute();
   }
+
+  deleteByExerciseIdsAndQuestionSnapshotIdsWithTransaction(transaction: Transaction, exerciseIds: number[], questionSnapshotIds: number[]) {
+    return transaction
+      .deleteFrom('exerciseQuestionOptionSnapshot')
+      .where('exerciseId', 'in', exerciseIds)
+      .where('exerciseQuestionSnapshotId', 'in', questionSnapshotIds)
+      .execute();
+  }
+
+  deleteByExerciseIdAndQuestionSnapshotIdsWithTransaction(transaction: Transaction, exerciseId: number, questionSnapshotIds: number[]) {
+    return transaction
+      .deleteFrom('exerciseQuestionOptionSnapshot')
+      .where('exerciseId', '=', exerciseId)
+      .where('exerciseQuestionSnapshotId', 'in', questionSnapshotIds)
+      .execute();
+  }
 }

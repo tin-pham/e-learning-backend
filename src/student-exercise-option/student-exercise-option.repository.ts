@@ -14,6 +14,19 @@ export interface IExerciseSubmitOptionInsertMultiple {
 export class StudentExerciseOptionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  deleteByStudentExerciseIdsAndQuestionSnapshotIdsWithTransaction(
+    transaction: Transaction,
+    studentExerciseIds: number[],
+    questionSnapshotIds: number[],
+  ) {
+    return transaction
+      .deleteFrom('studentExerciseOption')
+      .where('deletedAt', 'is', null)
+      .where('studentExerciseId', 'in', studentExerciseIds)
+      .where('questionSnapshotId', 'in', questionSnapshotIds)
+      .execute();
+  }
+
   getQuestionOptionByStudentExerciseIdAndQuestionId(studentExerciseId: number, questionSnapshotId: number) {
     return this.database
       .selectFrom('studentExerciseOption')

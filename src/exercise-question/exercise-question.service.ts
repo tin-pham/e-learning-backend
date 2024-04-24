@@ -1,10 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
+import { DatabaseService } from '../database';
 import { ExerciseQuestionEntity } from './exercise-question.entity';
 import { ExerciseRepository } from '../exercise/exercise.repository';
 import { QuestionRepository } from '../question/question.repository';
+import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapshot/exercise-question-snapshot.repository';
 import { ExerciseQuestionRepository } from './exercise-question.repository';
+import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
+import { StudentExerciseOptionRepository } from '../student-exercise-option/student-exercise-option.repository';
+import { StudentExerciseRepository } from '../student-exercise/student-exercise.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import { ExerciseQuestionBulkDeleteDTO, ExerciseQuestionBulkStoreDTO } from './dto/exercise-question.dto';
 import { ResultRO } from '../common/ro/result.ro';
@@ -15,9 +20,14 @@ export class ExerciseQuestionService extends BaseService {
 
   constructor(
     elasticLogger: ElasticsearchLoggerService,
+    private readonly database: DatabaseService,
     private readonly exerciseRepository: ExerciseRepository,
     private readonly questionRepository: QuestionRepository,
     private readonly exerciseQuestionRepository: ExerciseQuestionRepository,
+    private readonly exerciseQuestionSnapshotRepository: ExerciseQuestionSnapshotRepository,
+    private readonly exerciseQuestionOptionSnapshotRepository: ExerciseQuestionOptionSnapshotRepository,
+    private readonly studentExerciseRepository: StudentExerciseRepository,
+    private readonly studentExerciseOptionRepository: StudentExerciseOptionRepository,
   ) {
     super(elasticLogger);
   }
@@ -48,10 +58,30 @@ export class ExerciseQuestionService extends BaseService {
 
   async bulkDelete(dto: ExerciseQuestionBulkDeleteDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
-    await this.validateBulkDelete(dto, actorId);
+    const { exerciseQuestionSnapshotIds } = await this.validateBulkDelete(dto, actorId);
 
     try {
-      await this.exerciseQuestionRepository.deleteMultipleByExerciseIdsAndQuestionIds(dto.exerciseIds, dto.questionIds, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        await this.exerciseQuestionRepository.deleteMultipleByExerciseIdsAndQuestionIds(dto.exerciseIds, dto.questionIds, actorId);
+
+        if (exerciseQuestionSnapshotIds.length) {
+          const studentExercises = await this.studentExerciseRepository.getIdsByExerciseIds(dto.exerciseIds);
+          const studentExerciseIds = studentExercises.map((studentExercise) => studentExercise.id);
+          await this.studentExerciseOptionRepository.deleteByStudentExerciseIdsAndQuestionSnapshotIdsWithTransaction(transaction, studentExerciseIds, exerciseQuestionSnapshotIds);
+
+          await this.exerciseQuestionOptionSnapshotRepository.deleteByExerciseIdsAndQuestionSnapshotIdsWithTransaction(
+            transaction,
+            dto.exerciseIds,
+            exerciseQuestionSnapshotIds,
+          );
+
+          await this.exerciseQuestionSnapshotRepository.deleteByExerciseIdsAndQuestionSnapshotIdsWithTransaction(
+            transaction,
+            dto.exerciseIds,
+            exerciseQuestionSnapshotIds,
+          );
+        }
+      });
     } catch (error) {
       const { code, status, message } = EXCEPTION.EXERCISE_QUESTION.BULK_DELETE_FAILED;
       this.logger.error(error);
@@ -103,5 +133,15 @@ export class ExerciseQuestionService extends BaseService {
       const { code, status, message } = EXCEPTION.QUESTION.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
+
+    // Check if any snapshot exist
+    const exerciseQuestionSnapshots = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseIdsAndQuestionIds(
+      dto.exerciseIds,
+      dto.questionIds,
+    );
+
+    return {
+      exerciseQuestionSnapshotIds: exerciseQuestionSnapshots.map((exerciseQuestionSnapshot) => exerciseQuestionSnapshot.id),
+    };
   }
 }

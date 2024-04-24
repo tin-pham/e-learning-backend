@@ -18,11 +18,16 @@ import { JwtGuard } from '../auth/jwt/jwt.guard';
 import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { StudentExerciseService } from './student-exercise.service';
-import { StudentExerciseGetListSubmittedDTO, StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
+import {
+  StudentExerciseBulkDeleteDTO,
+  StudentExerciseGetListSubmittedDTO,
+  StudentExerciseStoreDTO,
+  StudentExerciseSubmitDTO,
+} from './dto/student-exercise.dto';
 import { ResultRO } from '../common/ro/result.ro';
 import { StudentExerciseStoreRO } from './ro/student-exercise.ro';
 
-const { TAGS, CONTROLLER, STORE, SUBMIT, GET_SUBMITTED_LIST, DELETE } = API.STUDENT_EXERCISE;
+const { TAGS, CONTROLLER, STORE, SUBMIT, GET_SUBMITTED_LIST, DELETE, BULK_DELETE } = API.STUDENT_EXERCISE;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -73,7 +78,7 @@ export class StudentExerciseController {
     return this.studentExerciseService.getListSubmitted(dto, decoded);
   }
 
-  @ApiOperation({ summary: 'Delete student exercise' })
+  @ApiOperation({ summary: DELETE.OPERATION })
   @ApiOkResponse({ type: ResultRO })
   @ApiBadRequestResponse({ type: HttpExceptionRO })
   @ApiUnauthorizedResponse({ type: HttpExceptionRO })
@@ -86,5 +91,20 @@ export class StudentExerciseController {
   @HttpCode(HttpStatus.OK)
   delete(@Param('id', ParseIntPipe) id: number, @JwtPayload() decoded: IJwtPayload) {
     return this.studentExerciseService.delete(id, decoded);
+  }
+
+  @ApiOperation({ summary: BULK_DELETE.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(BULK_DELETE.ROUTE)
+  @Roles(ROLE.TEACHER)
+  @UseGuards(JwtGuard)
+  @HttpCode(HttpStatus.OK)
+  bulkDelete(@Body() dto: StudentExerciseBulkDeleteDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.studentExerciseService.bulkDelete(dto, decoded);
   }
 }

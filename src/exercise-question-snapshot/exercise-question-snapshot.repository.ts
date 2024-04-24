@@ -10,6 +10,33 @@ import { ExerciseQuestionSnapshotEntity } from './exercise-question-snapshot.ent
 export class ExerciseQuestionSnapshotRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  getIdsByExerciseIdAndQuestionIds(exerciseId: number, questionIds: number[]) {
+    return this.database
+      .selectFrom('exerciseQuestionSnapshot')
+      .select(['id'])
+      .where('exerciseId', '=', exerciseId)
+      .where('questionId', 'in', questionIds)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
+
+  deleteByExerciseIdsAndQuestionSnapshotIdsWithTransaction(transaction: Transaction, exerciseIds: number[], questionSnapshotIds: number[]) {
+    return transaction
+      .deleteFrom('exerciseQuestionSnapshot')
+      .where('exerciseId', 'in', exerciseIds)
+      .where('exerciseQuestionSnapshot.id', 'in', questionSnapshotIds)
+      .execute();
+  }
+
+  getIdsByExerciseIdsAndQuestionIds(exerciseIds: number[], questionIds: number[]) {
+    return this.database
+      .selectFrom('exerciseQuestionSnapshot')
+      .select(['id'])
+      .where('exerciseId', 'in', exerciseIds)
+      .where('questionId', 'in', questionIds)
+      .where('deletedAt', 'is', null)
+      .execute();
+  }
   async countById(id: number) {
     const { count } = await this.database
       .selectFrom('exerciseQuestionSnapshot')
@@ -288,5 +315,14 @@ export class ExerciseQuestionSnapshotRepository {
 
   deleteByQuestionIdsWithTransaction(transaction: Transaction, questionIds: number[]) {
     return transaction.deleteFrom('exerciseQuestionSnapshot').where('questionId', 'in', questionIds).returning(['id']).execute();
+  }
+
+  deleteByExerciseIdAndIdsWithTransaction(transaction: Transaction, exerciseId: number, ids: number[]) {
+    return transaction
+      .deleteFrom('exerciseQuestionSnapshot')
+      .where('id', 'in', ids)
+      .where('exerciseId', '=', exerciseId)
+      .returning(['id'])
+      .execute();
   }
 }

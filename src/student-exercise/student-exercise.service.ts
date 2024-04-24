@@ -11,7 +11,12 @@ import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapsho
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
-import { StudentExerciseGetListSubmittedDTO, StudentExerciseStoreDTO, StudentExerciseSubmitDTO } from './dto/student-exercise.dto';
+import {
+  StudentExerciseBulkDeleteDTO,
+  StudentExerciseGetListSubmittedDTO,
+  StudentExerciseStoreDTO,
+  StudentExerciseSubmitDTO,
+} from './dto/student-exercise.dto';
 import { StudentExerciseEntity } from './student-exercise.entity';
 import { ResultRO } from '../common/ro/result.ro';
 import { StudentExerciseGetListSubmittedRO, StudentExerciseStoreRO } from './ro/student-exercise.ro';
@@ -167,6 +172,19 @@ export class StudentExerciseService extends BaseService {
     });
   }
 
+  async bulkDelete(dto: StudentExerciseBulkDeleteDTO, decoded: IJwtPayload) {
+    const actorId = decoded.userId;
+    await this.validateBulkDelete(dto, actorId);
+
+    try {
+      await this.studentExerciseRepository.deleteByExerciseId(dto.exerciseId, actorId);
+    } catch (error) {
+      const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.BULK_DELETE_FAILED;
+      this.logger.error(error);
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
   private async validateStore(dto: StudentExerciseStoreDTO, actorId: number) {
     // Check exercise exist and active
     const exercise = await this.exerciseRepository.findOneById(dto.exerciseId);
@@ -282,6 +300,15 @@ export class StudentExerciseService extends BaseService {
     const studentExerciseCount = await this.studentExerciseRepository.countById(id);
     if (!studentExerciseCount) {
       const { code, status, message } = EXCEPTION.STUDENT_EXERCISE.DOES_NOT_EXIST;
+      this.throwException({ code, status, message, actorId });
+    }
+  }
+
+  private async validateBulkDelete(dto: StudentExerciseBulkDeleteDTO, actorId: number) {
+    // Check exercise exist
+    const exerciseCount = await this.exerciseRepository.countById(dto.exerciseId);
+    if (!exerciseCount) {
+      const { code, status, message } = EXCEPTION.EXERCISE.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
   }

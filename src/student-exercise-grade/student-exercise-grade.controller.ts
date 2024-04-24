@@ -19,10 +19,14 @@ import { RoleGuard } from '../auth/role/role.guard';
 import { ROLE } from '../role/enum/role.enum';
 import { StudentExerciseGradeService } from './student-exercise-grade.service';
 import { StudentExerciseGradeCalculateRO, StudentExerciseGradeDeleteRO } from './ro/student-exercise-grade.ro';
-import { StudentExerciseGradeBulkCalculateDTO, StudentExerciseGradeCalculateDTO } from './dto/student-exercise-grade.dto';
+import {
+  StudentExerciseGradeBulkCalculateDTO,
+  StudentExerciseGradeCalculateDTO,
+  StudentExerciseGradeDeleteAllDTO,
+} from './dto/student-exercise-grade.dto';
 import { ResultRO } from '../common/ro/result.ro';
 
-const { TAGS, CONTROLLER, CALCULATE, DELETE, BULK_CALCULATE } = API.STUDENT_EXERCISE_GRADE;
+const { TAGS, CONTROLLER, CALCULATE, DELETE, BULK_CALCULATE, DELETE_ALL } = API.STUDENT_EXERCISE_GRADE;
 
 @ApiTags(TAGS)
 @Controller(CONTROLLER)
@@ -59,6 +63,20 @@ export class StudentExerciseGradeController {
   @HttpCode(HttpStatus.CREATED)
   bulkCalculate(@Body() dto: StudentExerciseGradeBulkCalculateDTO, @JwtPayload() decoded: IJwtPayload) {
     return this.studentExerciseGradeService.bulkCalculate(dto, decoded);
+  }
+
+  @ApiOperation({ summary: DELETE_ALL.OPERATION })
+  @ApiOkResponse({ type: ResultRO })
+  @ApiBadRequestResponse({ type: HttpExceptionRO })
+  @ApiUnauthorizedResponse({ type: HttpExceptionRO })
+  @ApiForbiddenResponse({ type: HttpExceptionRO })
+  @ApiInternalServerErrorResponse({ type: HttpExceptionRO })
+  @ApiBearerAuth('Authorization')
+  @Post(DELETE_ALL.ROUTE)
+  @Roles(ROLE.STUDENT)
+  @UseGuards(JwtGuard, RoleGuard)
+  deleteAll(@Body() dto: StudentExerciseGradeDeleteAllDTO, @JwtPayload() decoded: IJwtPayload) {
+    return this.studentExerciseGradeService.deleteAll(dto, decoded);
   }
 
   @ApiOperation({ summary: DELETE.OPERATION })

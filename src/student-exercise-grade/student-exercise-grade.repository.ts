@@ -6,6 +6,18 @@ import { StudentExerciseGradeEntity } from './student-exercise-grade.entity';
 export class StudentExerciseGradeRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  deleteByExerciseId(exerciseId: number, actorId: number) {
+    return this.database
+      .updateTable('studentExerciseGrade')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .innerJoin('studentExercise', 'studentExercise.id', 'studentExerciseGrade.studentExerciseId')
+      .where('studentExercise.deletedAt', 'is', null)
+      .innerJoin('exercise', 'exercise.id', 'studentExercise.exerciseId')
+      .where('exercise.deletedAt', 'is', null)
+      .where('exercise.id', '=', exerciseId)
+      .execute();
+  }
+
   insert(entity: StudentExerciseGradeEntity) {
     return this.database
       .insertInto('studentExerciseGrade')
@@ -64,5 +76,19 @@ export class StudentExerciseGradeRepository {
 
   deleteWithTransaction(transaction: Transaction, id: number) {
     return transaction.deleteFrom('studentExerciseGrade').where('id', '=', id).where('deletedAt', 'is', null).execute();
+  }
+
+  async countByExerciseId(exerciseId: number) {
+    const { count } = await this.database
+      .selectFrom('studentExerciseGrade')
+      .where('studentExerciseGrade.deletedAt', 'is', null)
+      .innerJoin('studentExercise', 'studentExercise.id', 'studentExerciseGrade.studentExerciseId')
+      .where('studentExercise.deletedAt', 'is', null)
+      .innerJoin('exercise', 'exercise.id', 'studentExercise.exerciseId')
+      .where('exercise.deletedAt', 'is', null)
+      .where('exercise.id', '=', exerciseId)
+      .select(({ fn }) => fn.countAll().as('count'))
+      .executeTakeFirst();
+    return Number(count);
   }
 }
