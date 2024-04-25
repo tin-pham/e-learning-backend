@@ -90,6 +90,10 @@ export class AssignmentGetDetailRO {
 
   @ApiProperty()
   @Expose()
+  createdBy: number;
+
+  @ApiProperty()
+  @Expose()
   createdByDisplayName: string;
 
   @ApiProperty()

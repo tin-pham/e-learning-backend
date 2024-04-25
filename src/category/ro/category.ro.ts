@@ -62,6 +62,10 @@ export class CategoryGetListDataRO {
   @ApiPropertyOptional()
   @Expose()
   courseCount?: number;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
 }
 
 export class CategoryGetListRO extends PaginateRO<CategoryGetListDataRO> {

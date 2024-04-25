@@ -71,6 +71,8 @@ export class AssignmentSubmitRepository {
       .selectFrom('assignmentSubmit')
       .where('assignmentSubmit.id', '=', id)
       .where('assignmentSubmit.deletedAt', 'is', null)
+      .innerJoin('assignment', 'assignment.id', 'assignmentSubmit.assignmentId')
+      .where('assignment.deletedAt', 'is', null)
       .innerJoin('attachment', 'attachment.id', 'assignmentSubmit.attachmentId')
       .where('attachment.deletedAt', 'is', null)
       .innerJoin('student', 'student.id', 'assignmentSubmit.studentId')
@@ -82,6 +84,7 @@ export class AssignmentSubmitRepository {
         'assignmentSubmit.id',
         'assignmentSubmit.createdBy',
         'assignmentSubmit.createdAt',
+        'assignment.createdBy as assignmentCreatedBy',
         'attachment.url as attachmentUrl',
         'attachment.name as attachmentName',
         'users.displayName as studentName',

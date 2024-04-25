@@ -142,6 +142,7 @@ export class ExerciseRepository {
         'exercise.time',
         'exercise.instantMark',
         'exercise.allowRedo',
+        'exercise.createdBy',
         'studentExercise.studentId',
         'studentExercise.id as studentExerciseId',
         'studentExercise.id as isStartDoing',

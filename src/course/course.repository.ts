@@ -133,6 +133,7 @@ export class CourseRepository {
         'level.name as levelName',
         'level.id as levelId',
         'course.hours',
+        'course.createdBy',
         fn.count('courseStudent.id').as('studentCount'),
       ])
       .groupBy(['course.id', 'course.name', 'image.url', 'level.name', 'level.id', 'course.hours']);

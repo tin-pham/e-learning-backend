@@ -120,6 +120,7 @@ export class AssignmentRepository {
         'assignment.description',
         'assignment.lessonId',
         'users.displayName as createdByDisplayName',
+        'users.createdBy',
         'assignmentSubmit.id as submissionId',
         'assignmentSubmit.createdAt as submissionDate',
         'assignmentSubmitGrade.grade as submissionGrade',

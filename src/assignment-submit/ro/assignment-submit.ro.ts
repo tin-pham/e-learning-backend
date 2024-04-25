@@ -76,6 +76,10 @@ export class AssignmentSubmitGetDetailRO {
 
   @ApiProperty()
   @Expose()
+  assignmentCreatedBy: number;
+
+  @ApiProperty()
+  @Expose()
   attachmentUrl: string;
 
   @ApiProperty()

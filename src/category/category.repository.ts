@@ -25,11 +25,11 @@ export class CategoryRepository {
         )
         .leftJoin('course', (join) => join.onRef('course.id', '=', 'categoryCourse.courseId').on('course.deletedAt', 'is', null))
         .where('category.deletedAt', 'is', null)
-        .select(({ fn }) => ['category.id', 'category.name', fn.count('course.id').as('courseCount')])
+        .select(({ fn }) => ['category.id', 'category.name', 'category.createdBy', fn.count('course.id').as('courseCount')])
         .where('category.deletedAt', 'is', null)
         .groupBy(['category.id', 'category.name']);
     } else {
-      query = this.database.selectFrom('category').select(['id', 'name']).where('deletedAt', 'is', null);
+      query = this.database.selectFrom('category').select(['id', 'name', 'createdBy']).where('deletedAt', 'is', null);
     }
 
     if (search) {

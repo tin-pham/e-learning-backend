@@ -226,6 +226,10 @@ export class ExerciseGetDetailRO {
     }
   })
   isGraded: boolean;
+
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
 }
 
 export class ExerciseUpdateRO {
