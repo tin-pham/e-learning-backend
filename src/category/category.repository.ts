@@ -44,7 +44,7 @@ export class CategoryRepository {
       .selectFrom('category')
       .where('category.id', '=', id)
       .where('category.deletedAt', 'is', null)
-      .select(['id', 'name', 'description'])
+      .select(['id', 'name', 'description', 'createdBy'])
       .executeTakeFirst();
   }
 

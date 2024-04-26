@@ -3,6 +3,7 @@ import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService } from '../database';
 import { LessonCommentEntity } from './lesson-comment.entity';
+import { NotificationGateway } from '../socket/notification.gateway';
 import { CommentNotificationEntity } from '../comment-notification/comment-notification.entity';
 import { NotificationEntity } from '../notification/notification.entity';
 import { UserNotificationEntity } from '../user-notification/user-notification.entity';
@@ -28,6 +29,7 @@ export class LessonCommentService extends BaseService {
   constructor(
     elasticLogger: ElasticsearchLoggerService,
     private readonly database: DatabaseService,
+    private readonly notificationGateway: NotificationGateway,
     private readonly lessonRepository: LessonRepository,
     private readonly lessonCommentRepository: LessonCommentRepository,
     private readonly commentNotificationRepository: CommentNotificationRepository,
@@ -81,6 +83,9 @@ export class LessonCommentService extends BaseService {
           userNotificationData.notificationId = notification.id;
           await this.userNotificationRepository.insertWithTransaction(transaction, userNotificationData);
         }
+
+        // Send notification
+        this.notificationGateway.sendNotification();
 
         response = new LessonCommentStoreRO({
           id: comment.id,

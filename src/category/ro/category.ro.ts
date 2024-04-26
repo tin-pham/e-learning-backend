@@ -88,6 +88,10 @@ export class CategoryGetDetailRO {
   @Expose()
   description: object;
 
+  @ApiProperty()
+  @Expose()
+  createdBy: number;
+
   constructor(data?: CategoryGetDetailRO) {
     Object.assign(this, data);
   }

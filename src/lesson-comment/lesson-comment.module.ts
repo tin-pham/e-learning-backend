@@ -6,6 +6,8 @@ import { CommentNotificationRepository } from '../comment-notification/comment-n
 import { NotificationRepository } from '../notification/notification.repository';
 import { UserNotificationRepository } from '../user-notification/user-notification.repository';
 import { LessonCommentService } from './lesson-comment.service';
+import { NotificationGateway } from '../socket/notification.gateway';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
   controllers: [LessonCommentController],
@@ -16,6 +18,9 @@ import { LessonCommentService } from './lesson-comment.service';
     CommentNotificationRepository,
     NotificationRepository,
     UserNotificationRepository,
+
+    NotificationGateway,
+    UserRepository,
   ],
 })
 export class LessonCommentModule {}

@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 import { BaseService } from '../base';
 import { EXCEPTION, IJwtPayload } from '../common';
 import { DatabaseService, Transaction } from '../database';
@@ -10,6 +12,7 @@ import { StudentExerciseOptionRepository } from '../student-exercise-option/stud
 import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapshot/exercise-question-snapshot.repository';
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
+import { StudentExerciseNotificationRepository } from '../student-exercise-notification/student-exercise-notification.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import {
   StudentExerciseBulkDeleteDTO,
@@ -20,8 +23,6 @@ import {
 import { StudentExerciseEntity } from './student-exercise.entity';
 import { ResultRO } from '../common/ro/result.ro';
 import { StudentExerciseGetListSubmittedRO, StudentExerciseStoreRO } from './ro/student-exercise.ro';
-import { CronJob } from 'cron';
-import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class StudentExerciseService extends BaseService {
@@ -38,6 +39,7 @@ export class StudentExerciseService extends BaseService {
     private readonly exerciseQuestionOptionSnapshotRepository: ExerciseQuestionOptionSnapshotRepository,
     private readonly studentExerciseOptionRepository: StudentExerciseOptionRepository,
     private readonly studentExerciseGradeRepository: StudentExerciseGradeRepository,
+    private readonly studentExerciseNotificationRepository: StudentExerciseNotificationRepository,
   ) {
     super(elasticLogger);
   }
@@ -131,6 +133,7 @@ export class StudentExerciseService extends BaseService {
 
     try {
       const studentExercises = await this.studentExerciseRepository.find(dto);
+      console.log(studentExercises);
 
       return this.success({
         classRO: StudentExerciseGetListSubmittedRO,
@@ -149,6 +152,9 @@ export class StudentExerciseService extends BaseService {
 
     try {
       await this.database.transaction().execute(async (transaction) => {
+        // Delete notificaiton
+        await this.studentExerciseNotificationRepository.deleteByStudentExerciseIdWithTransaction(transaction, id);
+
         // Delete student exercise grade
         await this.studentExerciseGradeRepository.deleteByStudentExerciseIdWithTransaction(transaction, id);
 

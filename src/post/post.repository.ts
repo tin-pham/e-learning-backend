@@ -11,11 +11,12 @@ export class PostRepository {
   constructor(private readonly database: DatabaseService) {}
 
   find(dto: PostGetListDTO) {
-    const { limit, page } = dto;
+    const { limit, page, courseId } = dto;
 
     const query = this.database
       .selectFrom('post')
       .where('post.deletedAt', 'is', null)
+      .where('post.courseId', '=', courseId)
       .leftJoin('postAttachment', (join) => join.onRef('post.id', '=', 'postAttachment.postId').on('postAttachment.deletedAt', 'is', null))
       .leftJoin('attachment', (join) =>
         join.onRef('attachment.id', '=', 'postAttachment.attachmentId').on('attachment.deletedAt', 'is', null),
@@ -24,7 +25,7 @@ export class PostRepository {
       .where('users.deletedAt', 'is', null)
       .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
-      .groupBy(['post.id', 'post.courseId', 'users.displayName', 'image.url'])
+      .groupBy(['post.id', 'post.courseId', 'users.displayName', 'image.url', 'users.username'])
       .orderBy(['post.updatedAt desc', 'post.createdAt desc'])
       .select(({ fn, ref }) => [
         'post.id',
@@ -33,6 +34,7 @@ export class PostRepository {
         'post.createdAt',
         'post.updatedAt',
         'users.displayName as createdByDisplayName',
+        'users.username as createdByUsername',
         'image.url as createdByImageUrl',
         fn
           .coalesce(
@@ -68,8 +70,8 @@ export class PostRepository {
       .leftJoin('userImage', (join) => join.onRef('userImage.userId', '=', 'users.id').on('userImage.deletedAt', 'is', null))
       .leftJoin('image', (join) => join.onRef('image.id', '=', 'userImage.imageId').on('image.deletedAt', 'is', null))
       .groupBy(['post.id', 'post.courseId', 'users.displayName', 'image.url'])
-      .orderBy(['post.createdAt desc', 'post.updatedAt desc', ])
-      .groupBy(['post.id', 'post.courseId'])
+      .orderBy(['post.createdAt desc', 'post.updatedAt desc'])
+      .groupBy(['post.id', 'post.courseId', 'users.username'])
       .select(({ fn, ref }) => [
         'post.id',
         'post.content',
@@ -77,6 +79,7 @@ export class PostRepository {
         'post.createdAt',
         'post.updatedAt',
         'users.displayName as createdByDisplayName',
+        'users.username as createdByUsername',
         'image.url as createdByImageUrl',
         fn
           .coalesce(

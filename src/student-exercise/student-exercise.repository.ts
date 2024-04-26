@@ -87,6 +87,7 @@ export class StudentExerciseRepository {
         'studentExerciseGrade.point',
         'studentExerciseGrade.totalCount',
         'studentExerciseGrade.correctCount',
+        'studentExerciseGrade.basePoint',
       ]);
 
     return paginate(query, { limit, page });

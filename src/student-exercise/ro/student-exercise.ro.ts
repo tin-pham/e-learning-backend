@@ -64,6 +64,10 @@ export class StudentExerciseGetListSubmittedDataRO {
   @ApiProperty()
   @Expose()
   correctCount: number;
+
+  @ApiProperty()
+  @Expose()
+  basePoint: number;
 }
 
 export class StudentExerciseGetListSubmittedRO extends PaginateRO<StudentExerciseGetListSubmittedDataRO> {

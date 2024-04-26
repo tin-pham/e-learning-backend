@@ -50,6 +50,10 @@ export class PostGetListDataRO {
 
   @ApiProperty()
   @Expose()
+  createdByUsername: string;
+
+  @ApiProperty()
+  @Expose()
   createdBy: number;
 
   @ApiProperty()
@@ -107,6 +111,10 @@ export class PostGetDetailRO {
   @ApiProperty()
   @Expose()
   createdByDisplayName: string;
+
+  @ApiProperty()
+  @Expose()
+  createdByUsername: string;
 
   @ApiProperty()
   @Expose()
