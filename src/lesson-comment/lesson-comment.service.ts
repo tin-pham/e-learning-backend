@@ -204,10 +204,20 @@ export class LessonCommentService extends BaseService {
     let response: LessonCommentDeleteRO;
 
     try {
-      const lessonComment = await this.lessonCommentRepository.delete(id, actorId);
+      await this.database.transaction().execute(async (transaction) => {
+        const lessonComment = await this.lessonCommentRepository.deleteWithTransaction(transaction, id, actorId);
 
-      response = new LessonCommentDeleteRO({
-        id: lessonComment.id,
+        const commentNotifications = await this.commentNotificationRepository.deleteByCommentIdWithTransaction(transaction, id, actorId);
+
+        const commentNotificationIds = commentNotifications.map((commentNotification) => commentNotification.notificationId);
+
+        if (commentNotificationIds.length > 0) {
+          await this.notificationRepository.deleteByIdsWithTransaction(transaction, commentNotificationIds, actorId);
+        }
+
+        response = new LessonCommentDeleteRO({
+          id: lessonComment.id,
+        });
       });
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON_COMMENT.DELETE_FAILED;

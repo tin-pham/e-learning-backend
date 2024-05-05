@@ -13,6 +13,7 @@ export class StudentExerciseNotificationRepository {
       .deleteFrom('studentExerciseNotification')
       .where('studentExerciseId', '=', studentExerciseId)
       .where('deletedAt', 'is', null)
+      .returning(['notificationId'])
       .execute();
   }
 }

@@ -87,6 +87,15 @@ export class NotificationGetListDataRO {
 
   @ApiPropertyOptional()
   @Expose()
+  assignmentSubmitAssignmentId: number;
+
+  @ApiPropertyOptional()
+  @Expose()
+  assignmentSubmitAssignmentName: number;
+
+
+  @ApiPropertyOptional()
+  @Expose()
   assignmentId: number;
 
   @ApiPropertyOptional()

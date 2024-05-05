@@ -198,8 +198,8 @@ export class LessonCommentRepository {
       .executeTakeFirst();
   }
 
-  delete(id: number, actorId: number) {
-    return this.database
+  deleteWithTransaction(transaction: Transaction, id: number, actorId: number) {
+    return transaction
       .withRecursive('commentTree', (qb) =>
         qb
           .selectFrom('lessonComment')

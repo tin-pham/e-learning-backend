@@ -13,6 +13,7 @@ import { ExerciseQuestionSnapshotRepository } from '../exercise-question-snapsho
 import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-option-snapshot/exercise-question-option-snapshot.repository';
 import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
 import { StudentExerciseNotificationRepository } from '../student-exercise-notification/student-exercise-notification.repository';
+import { NotificationRepository } from '../notification/notification.repository';
 import { ElasticsearchLoggerService } from '../elastic-search-logger/elastic-search-logger.service';
 import {
   StudentExerciseBulkDeleteDTO,
@@ -40,6 +41,7 @@ export class StudentExerciseService extends BaseService {
     private readonly studentExerciseOptionRepository: StudentExerciseOptionRepository,
     private readonly studentExerciseGradeRepository: StudentExerciseGradeRepository,
     private readonly studentExerciseNotificationRepository: StudentExerciseNotificationRepository,
+    private readonly notificationRepository: NotificationRepository,
   ) {
     super(elasticLogger);
   }
@@ -153,7 +155,18 @@ export class StudentExerciseService extends BaseService {
     try {
       await this.database.transaction().execute(async (transaction) => {
         // Delete notificaiton
-        await this.studentExerciseNotificationRepository.deleteByStudentExerciseIdWithTransaction(transaction, id);
+        const studentExerciseNotifications = await this.studentExerciseNotificationRepository.deleteByStudentExerciseIdWithTransaction(
+          transaction,
+          id,
+        );
+
+        const notificationIds = studentExerciseNotifications.map(
+          (studentExerciseNotification) => studentExerciseNotification.notificationId,
+        );
+
+        if (notificationIds.length) {
+          await this.notificationRepository.deleteByIdsWithTransaction(transaction, notificationIds, actorId);
+        }
 
         // Delete student exercise grade
         await this.studentExerciseGradeRepository.deleteByStudentExerciseIdWithTransaction(transaction, id);

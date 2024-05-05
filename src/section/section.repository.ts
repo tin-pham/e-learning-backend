@@ -158,4 +158,27 @@ export class SectionRepository {
       .select(['course.id as courseId', 'course.name as courseName'])
       .executeTakeFirst();
   }
+
+  getCourseIdById(id: number) {
+    return this.database
+      .selectFrom('section')
+      .where('section.id', '=', id)
+      .where('section.deletedAt', 'is', null)
+      .innerJoin('course', 'course.id', 'section.courseId')
+      .where('course.deletedAt', 'is', null)
+      .select(['course.id as courseId'])
+      .executeTakeFirst();
+  }
+
+  async countByNameAndCourseIdExceptId(name: string, courseId: number, id: number) {
+    const { count } = await this.database
+      .selectFrom('section')
+      .select(({ fn }) => fn.countAll().as('count'))
+      .where('section.name', '=', name)
+      .where('section.courseId', '=', courseId)
+      .where('section.deletedAt', 'is', null)
+      .where('section.id', '!=', id)
+      .executeTakeFirst();
+    return Number(count);
+  }
 }

@@ -9,6 +9,7 @@ import { ExerciseQuestionOptionSnapshotRepository } from '../exercise-question-o
 import { StudentExerciseOptionRepository } from '../student-exercise-option/student-exercise-option.repository';
 import { StudentExerciseGradeRepository } from '../student-exercise-grade/student-exercise-grade.repository';
 import { StudentExerciseNotificationRepository } from '../student-exercise-notification/student-exercise-notification.repository';
+import { NotificationRepository } from '../notification/notification.repository';
 
 @Module({
   controllers: [StudentExerciseController],
@@ -22,6 +23,7 @@ import { StudentExerciseNotificationRepository } from '../student-exercise-notif
     StudentExerciseOptionRepository,
     StudentExerciseGradeRepository,
     StudentExerciseNotificationRepository,
+    NotificationRepository,
   ],
 })
 export class StudentExerciseModule {}

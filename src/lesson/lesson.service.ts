@@ -215,9 +215,9 @@ export class LessonService extends BaseService {
           lessonData.body = dto.body;
         }
 
-        let videoData;
+        const videoData = new VideoEntity();
+        console.log({ dto });
         if (dto.videoUrl) {
-          videoData = new VideoEntity();
           videoData.url = dto.videoUrl;
 
           // New metadata
@@ -229,16 +229,21 @@ export class LessonService extends BaseService {
           videoData.duration = durationParser(response.data.items[0].contentDetails.duration);
         }
 
-        const lesson = await this.lessonRepository.updateWithTransaction(transaction, id, lessonData);
-
-        let video: VideoEntity;
-        if (videoData) {
-          video = await this.videoRepository.updateWithTransaction(transaction, lesson.videoId, videoData);
+        let video: any;
+        if (videoData?.url) {
+          video = await this.videoRepository.getIdByLessonId(id);
+          if (video) {
+            await this.videoRepository.deleteWithTransaction(transaction, video.id, actorId);
+          }
+          video = await this.videoRepository.insertWithTransaction(transaction, videoData);
         }
+
+        lessonData.videoId = video?.id;
+        const lesson = await this.lessonRepository.updateWithTransaction(transaction, id, lessonData);
 
         response.id = lesson.id;
         response.title = lesson.title;
-        response.videoUrl = video.url;
+        response.videoUrl = video?.url;
       });
     } catch (error) {
       const { status, message, code } = EXCEPTION.LESSON.UPDATE_FAILED;

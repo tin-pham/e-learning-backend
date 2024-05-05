@@ -170,6 +170,7 @@ export class AssignmentSubmitService extends BaseService {
 
     try {
       const response = await this.assignmentSubmitRepository.findOneById(id);
+      console.log(response);
 
       return this.success({
         classRO: AssignmentSubmitGetDetailRO,

@@ -51,6 +51,7 @@ export class StudentExerciseGradeService extends BaseService {
   async calculate(dto: StudentExerciseGradeCalculateDTO, decoded: IJwtPayload, transaction?: Transaction) {
     const actorId = decoded.userId;
     const { studentExercise, questionSnapshotIds } = await this.validateCalculate(dto, actorId);
+    console.log('2');
     let response: StudentExerciseGradeCalculateRO;
 
     try {
@@ -79,8 +80,15 @@ export class StudentExerciseGradeService extends BaseService {
         }
       }
 
-      studentExerciseGradeData.point = (studentExerciseGradeData.correctCount / studentExerciseGradeData.totalCount) * dto.basePoint;
       studentExerciseGradeData.basePoint = dto.basePoint;
+
+      if(questionSnapshotIds.length)  {
+      studentExerciseGradeData.point = (studentExerciseGradeData.correctCount / studentExerciseGradeData.totalCount) * dto.basePoint;
+
+      }else {
+        studentExerciseGradeData.point = 0;
+
+      }
 
       let studentExerciseGrade = null;
       if (transaction) {
@@ -114,6 +122,7 @@ export class StudentExerciseGradeService extends BaseService {
   async bulkCalculate(dto: StudentExerciseGradeBulkCalculateDTO, decoded: IJwtPayload) {
     const actorId = decoded.userId;
     const { studentExercises, exercise } = await this.validateBulkCalculate(dto, decoded.userId);
+    console.log('1');
 
     if (!studentExercises.length) {
       return this.success({
@@ -264,10 +273,10 @@ export class StudentExerciseGradeService extends BaseService {
     const questionSnapshots = await this.exerciseQuestionSnapshotRepository.getIdsByExerciseId(studentExercise.exerciseId);
     console.log(questionSnapshots);
 
-    if (!questionSnapshots.length) {
-      const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
-      this.throwException({ code, status, message, actorId });
-    }
+    // if (!questionSnapshots.length) {
+    //   const { code, status, message } = EXCEPTION.EXERCISE_QUESTION_SNAPSHOT.DOES_NOT_EXIST;
+    //   this.throwException({ code, status, message, actorId });
+    // }
     const questionSnapshotIds = questionSnapshots.map((question) => question.id);
 
     return { studentExercise, questionSnapshotIds };

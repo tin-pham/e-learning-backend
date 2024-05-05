@@ -8,6 +8,15 @@ import { NotificationGetListDTO } from './dto/notification.dto';
 export class NotificationRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  deleteByIdsWithTransaction(transaction: Transaction, ids: number[], actorId: number) {
+    return transaction
+      .updateTable('notification')
+      .set({ deletedAt: new Date(), deletedBy: actorId })
+      .where('notification.id', 'in', ids)
+      .where('notification.deletedAt', 'is', null)
+      .execute();
+  }
+
   async countByIds(ids: number[]) {
     const { count } = await this.database
       .selectFrom('notification')
@@ -102,14 +111,10 @@ export class NotificationRepository {
       .leftJoin('studentExerciseNotification', (join) =>
         join
           .onRef('studentExerciseNotification.notificationId', '=', 'notification.id')
-          .on('studentExerciseNotification.deletedAt', 'is', null),
+          .on('studentExerciseNotification.deletedAt', 'is', null)
       )
-      .leftJoin('studentExercise', (join) =>
-        join.onRef('studentExercise.id', '=', 'studentExerciseNotification.studentExerciseId').on('studentExercise.deletedAt', 'is', null),
-      )
-      .leftJoin('exercise as exerciseSubmit', (join) =>
-        join.onRef('exerciseSubmit.id', '=', 'studentExercise.exerciseId').on('exerciseSubmit.deletedAt', 'is', null),
-      )
+      .leftJoin('studentExercise', (join) => join.onRef('studentExercise.id', '=', 'studentExerciseNotification.studentExerciseId'))
+      .leftJoin('exercise as exerciseSubmit', (join) => join.onRef('exerciseSubmit.id', '=', 'studentExercise.exerciseId'))
       .leftJoin('assignmentSubmitNotification', (join) =>
         join
           .onRef('assignmentSubmitNotification.notificationId', '=', 'notification.id')
@@ -120,6 +125,10 @@ export class NotificationRepository {
           .onRef('assignmentSubmit.id', '=', 'assignmentSubmitNotification.assignmentSubmitId')
           .on('assignmentSubmit.deletedAt', 'is', null),
       )
+      .leftJoin('assignment as assignmentSubmitAssignment', (join) =>
+        join.onRef('assignmentSubmitAssignment.id', '=', 'assignmentSubmit.assignmentId'),
+      )
+
       .leftJoin('lessonNotification', (join) =>
         join.onRef('lessonNotification.notificationId', '=', 'notification.id').on('lessonNotification.deletedAt', 'is', null),
       )
@@ -160,6 +169,8 @@ export class NotificationRepository {
         'studentExerciseNotification.id as studentExerciseNotificationId',
         'exerciseSubmit.id as exerciseSubmitId',
         'assignmentSubmitNotification.id as assignmentSubmitNotificationId',
+        'assignmentSubmitAssignment.id as assignmentSubmitAssignmentId',
+        'assignmentSubmitAssignment.name as assignmentSubmitAssignmentName',
         'assignment.id as assignmentId',
         'assignment.name as assignmentName',
         'lessonNotification.lessonId',

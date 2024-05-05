@@ -179,14 +179,14 @@ export class SectionService extends BaseService {
 
   private async validateUpdate(id: number, dto: SectionUpdateDTO, actorId: number) {
     // Check exist
-    const sectionCount = await this.sectionRepository.countById(id);
-    if (!sectionCount) {
+    const section = await this.sectionRepository.getCourseIdById(id);
+    if (!section) {
       const { code, status, message } = EXCEPTION.SECTION.DOES_NOT_EXIST;
       this.throwException({ code, status, message, actorId });
     }
 
-    // Check name exist except id
-    const nameCount = await this.sectionRepository.countByNameExceptId(dto.name, id);
+    // Check name exist in course except id
+    const nameCount = await this.sectionRepository.countByNameAndCourseIdExceptId(dto.name, section.courseId, id);
     if (nameCount) {
       const { code, status, message } = EXCEPTION.SECTION.ALREADY_EXIST;
       this.throwException({ code, status, message, actorId });

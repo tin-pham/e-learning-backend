@@ -136,7 +136,8 @@ export class CourseRepository {
         'course.createdBy',
         fn.count('courseStudent.id').as('studentCount'),
       ])
-      .groupBy(['course.id', 'course.name', 'image.url', 'level.name', 'level.id', 'course.hours']);
+      .groupBy(['course.id', 'course.name', 'image.url', 'level.name', 'level.id', 'course.hours'])
+      .orderBy('studentCount', 'desc');
 
     if (search) {
       query = query.where((eb) => eb.or([eb('course.name', 'ilike', `%${search}%`)]));
