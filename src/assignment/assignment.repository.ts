@@ -124,6 +124,7 @@ export class AssignmentRepository {
         'assignmentSubmit.id as submissionId',
         'assignmentSubmit.createdAt as submissionDate',
         'assignmentSubmitGrade.grade as submissionGrade',
+        'assignmentSubmitGrade.message as submissionMessage',
         'lesson.id as lessonId',
         'lesson.title as lessonTitle',
         'section.id as sectionId',

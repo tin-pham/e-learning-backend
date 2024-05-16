@@ -110,6 +110,10 @@ export class AssignmentGetDetailRO {
 
   @ApiProperty()
   @Expose()
+  submissionMessage?: string;
+
+  @ApiProperty()
+  @Expose()
   lessonId?: number;
 
   @ApiProperty()
